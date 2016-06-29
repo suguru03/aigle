@@ -11,5 +11,9 @@
     "async"
   ],
   "author": "Suguru Motegi",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "bluebird": "^3.4.1",
+    "mocha.parallel": "^0.12.0"
+  }
 }
