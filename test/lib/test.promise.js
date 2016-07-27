@@ -24,11 +24,9 @@ parallel('#Promise', () => {
     .then(value => {
       assert.strictEqual(value, 1);
       ++called;
-    });
-    setTimeout(() => {
       assert.strictEqual(called, 3);
       done();
-    }, DELAY);
+    });
   });
 
   it('should resolve on asynchronous', done => {
@@ -52,11 +50,9 @@ parallel('#Promise', () => {
     .then(value => {
       assert.strictEqual(value, 1);
       called++;
-    });
-    setTimeout(() => {
       assert.strictEqual(called, 3);
       done();
-    }, DELAY * 3);
+    });
   });
 
   it('should catch an error', done => {
@@ -75,11 +71,9 @@ parallel('#Promise', () => {
     .then(res => {
       assert.strictEqual(res, str);
       called++;
-    });
-    setTimeout(() => {
       assert.strictEqual(called, 3);
       done();
-    }, DELAY);
+    });
   });
 
   it('should catch TypeError from error type', done => {
@@ -97,16 +91,48 @@ parallel('#Promise', () => {
     })
     // should not be called this function
     .catch(err => {
-      assert(!err);
+      assert(false);
       called++;
+      return err;
     })
     .then(res => {
       assert.strictEqual(res, str);
       called++;
-    });
-    setTimeout(() => {
       assert.strictEqual(called, 3);
       done();
-    }, DELAY);
+    });
+  });
+
+  it('should resolve', done => {
+
+    var str = 'test';
+    var p = Promise.resolve(str);
+    p.then(res => {
+      assert.strictEqual(res, str);
+      done();
+    });
+  });
+
+  it('should reject', done => {
+
+    var called = 0;
+    var err = new Error('error');
+    var p = Promise.reject(err);
+    p.then(res => {
+      assert(false);
+      called++;
+      return res;
+    })
+    .catch(err => {
+      assert.ok(err);
+      called++;
+      return err;
+    })
+    .then(err => {
+      assert.ok(err);
+      called++;
+      assert.strictEqual(called, 2);
+      done();
+    });
   });
 });
