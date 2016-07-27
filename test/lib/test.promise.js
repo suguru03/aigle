@@ -34,16 +34,16 @@ parallel('#Promise', () => {
     let called = 0;
     new Promise(resolve => {
       setTimeout(() => {
-        resolve(0);
         called++;
+        resolve(0);
       }, DELAY);
     })
     .then(value => {
       assert.strictEqual(value, 0);
       return new Promise(resolve => {
         setTimeout(() => {
-          resolve(1);
           called++;
+          resolve(1);
         }, DELAY);
       });
     })
@@ -155,8 +155,8 @@ parallel('#Promise', () => {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           called++;
-          reject(new Error('error2'));
           assert.strictEqual(called, 2);
+          reject(new Error('error2'));
         }, DELAY);
       });
     })
