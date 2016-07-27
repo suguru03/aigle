@@ -135,4 +135,48 @@ parallel('#Promise', () => {
       done();
     });
   });
+
+  it('should call finally function', done => {
+
+    var called = 0;
+    var err = new Error('error');
+    var p = Promise.reject(err);
+    p.then(res => {
+      assert(false);
+      called++;
+      return res;
+    })
+    .catch(err => {
+      assert.ok(err);
+      called++;
+      return err;
+    })
+    .finally(() => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          called++;
+          reject(new Error('error2'));
+          assert.strictEqual(called, 2);
+        }, DELAY);
+      });
+    })
+    .catch(err => {
+      assert.ok(err);
+      assert.strictEqual(err.message, 'error2');
+      called++;
+      assert.strictEqual(called, 3);
+      return 'catch';
+    })
+    .finally(() => {
+      called++;
+      assert.strictEqual(called, 4);
+      return 'finally';
+    })
+    .then(res => {
+      assert.strictEqual(res, 'catch');
+      called++;
+      assert.strictEqual(called, 5);
+      done();
+    });
+  });
 });
