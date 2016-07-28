@@ -57,8 +57,8 @@ parallel('#Promise', () => {
 
   it('should catch an error', done => {
 
-    var str = 'test';
-    var called = 0;
+    const str = 'test';
+    let called = 0;
     new Promise((resolve, reject) => {
       reject(new Error('error'));
       called++;
@@ -78,8 +78,8 @@ parallel('#Promise', () => {
 
   it('should catch TypeError from error type', done => {
 
-    var str = 'test';
-    var called = 0;
+    const str = 'test';
+    let called = 0;
     new Promise((resolve, reject) => {
       reject(new TypeError('error'));
       called++;
@@ -105,8 +105,8 @@ parallel('#Promise', () => {
 
   it('should resolve', done => {
 
-    var str = 'test';
-    var p = Promise.resolve(str);
+    const str = 'test';
+    const p = Promise.resolve(str);
     p.then(res => {
       assert.strictEqual(res, str);
       done();
@@ -115,9 +115,9 @@ parallel('#Promise', () => {
 
   it('should reject', done => {
 
-    var called = 0;
-    var err = new Error('error');
-    var p = Promise.reject(err);
+    let called = 0;
+    const err = new Error('error');
+    const p = Promise.reject(err);
     p.then(res => {
       assert(false);
       called++;
@@ -138,9 +138,9 @@ parallel('#Promise', () => {
 
   it('should call finally function', done => {
 
-    var called = 0;
-    var err = new Error('error');
-    var p = Promise.reject(err);
+    let called = 0;
+    const err = new Error('error');
+    const p = Promise.reject(err);
     p.then(res => {
       assert(false);
       called++;
