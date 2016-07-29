@@ -2,8 +2,8 @@
 
 const assert = require('assert');
 
+const _ = require('lodash');
 const parallel = require('mocha.parallel');
-// const Promise = require('bluebird');
 const Promise = require('../../');
 const util = require('../util');
 const DELAY = require('../config').DELAY;
@@ -54,6 +54,25 @@ parallel('#all', () => {
           'test3',
           'test2'
         ]);
+      });
+  });
+
+  it('should execute on native promise', () => {
+
+    const limit = 5;
+    const order = [];
+    const tasks = _.times(limit, (n) => {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          order.push(n);
+          resolve(n);
+        }, DELAY * (limit - n));
+      });
+    });
+    return global.Promise.all(tasks)
+      .then(res => {
+        assert.deepEqual(res, [0, 1, 2, 3, 4]);
+        assert.deepEqual(order, [4, 3, 2, 1, 0]);
       });
   });
 });
