@@ -69,7 +69,7 @@ parallel('#Promise#all', () => {
         }, DELAY * (limit - n));
       });
     });
-    return Promise.all(tasks)
+    return global.Promise.all(tasks)
       .then(res => {
         assert.deepEqual(res, [0, 1, 2, 3, 4]);
         assert.deepEqual(order, [4, 3, 2, 1, 0]);
