@@ -5,6 +5,7 @@ const assert = require('assert');
 
 const parallel = require('mocha.parallel');
 const Promise = require('../../');
+const B = require('bluebird');
 const DELAY = require('../config').DELAY;
 
 parallel('#Promise', () => {
@@ -140,7 +141,7 @@ parallel('#Promise', () => {
 
     let called = 0;
     const err = new Error('error');
-    const p = Promise.reject(err);
+    const p = B.reject(err);
     p.then(res => {
       assert(false);
       called++;
@@ -178,5 +179,30 @@ parallel('#Promise', () => {
       assert.strictEqual(called, 5);
       done();
     });
+  });
+
+  it('should re-call', done => {
+
+    const p = new Promise(resolve => {
+      resolve('hoge');
+    });
+    Promise.resolve()
+      .then(() => {
+        return p;
+      })
+      .then(value => {
+        assert.strictEqual(value, 'hoge');
+        return p;
+      })
+      .then(value => {
+        assert.strictEqual(value, 'hoge');
+        p.then(() => {
+          return 'fuga';
+        })
+        .then(value => {
+          assert.strictEqual(value, 'fuga');
+          done();
+        });
+      });
   });
 });
