@@ -5,7 +5,6 @@ const assert = require('assert');
 
 const parallel = require('mocha.parallel');
 const Promise = require('../../');
-const B = require('bluebird');
 const DELAY = require('../config').DELAY;
 
 parallel('#Promise', () => {
@@ -141,7 +140,7 @@ parallel('#Promise', () => {
 
     let called = 0;
     const err = new Error('error');
-    const p = B.reject(err);
+    const p = Promise.reject(err);
     p.then(res => {
       assert(false);
       called++;
