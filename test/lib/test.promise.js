@@ -182,32 +182,33 @@ parallel('#Promise', () => {
 
   it('should re-call', done => {
 
+    // const Promise = require('bluebird');
     const p = new Promise(resolve => {
-      resolve('hoge');
+      resolve(1);
     });
     Promise.resolve()
       .then(() => {
         return p;
       })
       .then(value => {
-        assert.strictEqual(value, 'hoge');
+        assert.strictEqual(value, 1);
         return p;
       })
       .then(value => {
-        assert.strictEqual(value, 'hoge');
+        assert.strictEqual(value, 1);
         var p2 = p.then(() => {
-          return 'fuga';
+          return 2;
         })
         .then(value => {
-          assert.strictEqual(value, 'fuga');
+          assert.strictEqual(value, 2);
           p.then(value => {
-            assert.strictEqual(value, 'hoge');
+            assert.strictEqual(value, 1);
             p2.then(value => {
-              assert.strictEqual(value, 'piyo');
+              assert.strictEqual(value, 3);
               done();
             });
           });
-          return 'piyo';
+          return 3;
         });
       });
   });
