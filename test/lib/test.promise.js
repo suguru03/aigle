@@ -195,12 +195,19 @@ parallel('#Promise', () => {
       })
       .then(value => {
         assert.strictEqual(value, 'hoge');
-        p.then(() => {
+        var p2 = p.then(() => {
           return 'fuga';
         })
         .then(value => {
           assert.strictEqual(value, 'fuga');
-          done();
+          p.then(value => {
+            assert.strictEqual(value, 'hoge');
+            p2.then(value => {
+              assert.strictEqual(value, 'piyo');
+              done();
+            });
+          });
+          return 'piyo';
         });
       });
   });
