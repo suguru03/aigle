@@ -44,9 +44,7 @@ parallel('#Promise#all', () => {
       delay('test3', null, DELAY * 1)
     ];
     return Promise.all(tasks)
-      .then(() => {
-        assert(false);
-      })
+      .then(() => assert(false))
       .catch(err => {
         assert.ok(err);
         assert.strictEqual(err.message, 'error2');
@@ -61,7 +59,7 @@ parallel('#Promise#all', () => {
 
     const limit = 5;
     const order = [];
-    const tasks = _.times(limit, (n) => {
+    const tasks = _.times(limit, n => {
       return new Promise(resolve => {
         setTimeout(() => {
           order.push(n);
@@ -73,6 +71,19 @@ parallel('#Promise#all', () => {
       .then(res => {
         assert.deepEqual(res, [0, 1, 2, 3, 4]);
         assert.deepEqual(order, [4, 3, 2, 1, 0]);
+      });
+  });
+
+  it('should execute with instances of Aigle promise', () => {
+
+    const tasks = [
+      new Promise(resolve => resolve(1)),
+      new Promise(resolve => setTimeout(() => resolve(2), 20)),
+      new Promise(resolve => setTimeout(() => resolve(3), 10))
+    ];
+    return Promise.all(tasks)
+      .then(res => {
+        assert.deepEqual(res, [1, 2, 3]);
       });
   });
 
@@ -117,9 +128,7 @@ parallel('#Promise.prototype.all', () => {
     ];
     return Promise.resolve(tasks)
       .all()
-      .then(() => {
-        assert(false);
-      })
+      .then(() => assert(false))
       .catch(err => {
         assert.ok(err);
         assert.strictEqual(err.message, 'error2');
