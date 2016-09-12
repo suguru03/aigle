@@ -1,4 +1,3 @@
-/* global it */
 'use strict';
 
 const assert = require('assert');
