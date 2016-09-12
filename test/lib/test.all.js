@@ -8,7 +8,7 @@ const Promise = require('../../');
 const util = require('../util');
 const DELAY = require('../config').DELAY;
 
-parallel('#Promise#all', () => {
+parallel('all', () => {
 
   it('should execute on parallel', () => {
 
@@ -90,7 +90,7 @@ parallel('#Promise#all', () => {
 });
 
 
-parallel('#Promise.prototype.all', () => {
+parallel('#all', () => {
 
   it('should execute on parallel', () => {
 

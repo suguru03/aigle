@@ -5,7 +5,7 @@ const assert = require('assert');
 const parallel = require('mocha.parallel');
 const Promise = require('../../');
 
-parallel('#Promise#promisify', () => {
+parallel('promisify', () => {
 
   it('should execute', () => {
     const fn = callback => {

@@ -7,7 +7,7 @@ const Promise = require('../../');
 const util = require('../util');
 const DELAY = require('../config').DELAY;
 
-parallel('#Promise#race', () => {
+parallel('race', () => {
 
   it('should execute', () => {
 
@@ -46,7 +46,7 @@ parallel('#Promise#race', () => {
 });
 
 
-parallel('#Promise.prototype.race', () => {
+parallel('#race', () => {
 
   it('should execute', () => {
 
