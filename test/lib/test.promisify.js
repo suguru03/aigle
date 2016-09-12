@@ -12,8 +12,7 @@ parallel('#Promise#promisify', () => {
       setTimeout(() => callback(null, 1), 10);
     };
     return Promise.promisify(fn)()
-      .then(res => assert.strictEqual(res, 1))
-      .catch(() => assert.ok(false));
+      .then(res => assert.strictEqual(res, 1));
   });
 
   it('should execute with an argument', () => {
@@ -22,8 +21,7 @@ parallel('#Promise#promisify', () => {
       setTimeout(() => callback(null, a + 1), 10);
     };
     return Promise.promisify(fn)(1)
-      .then(res => assert.strictEqual(res, 2))
-      .catch(() => assert.ok(false));
+      .then(res => assert.strictEqual(res, 2));
   });
 
   it('should execute with two arguments', () => {
@@ -33,8 +31,7 @@ parallel('#Promise#promisify', () => {
       setTimeout(() => callback(null, a + b + 1), 10);
     };
     return Promise.promisify(fn)(1, 2)
-      .then(res => assert.strictEqual(res, 4))
-      .catch(() => assert.ok(false));
+      .then(res => assert.strictEqual(res, 4));
   });
 
   it('should execute with five arguments', () => {
@@ -43,11 +40,31 @@ parallel('#Promise#promisify', () => {
       assert.strictEqual(b, 2);
       assert.strictEqual(c, 3);
       assert.strictEqual(d, 4);
-      assert.strictEqual(e, undefined);
-      callback(null, a + b + c + d + 1);
+      assert.strictEqual(e, 5);
+      callback(null, a + b + c + d + e + 1);
     };
-    return Promise.promisify(fn)(1, 2, 3, 4)
-      .then(res => assert.strictEqual(res, 11))
-      .catch(() => assert.ok(false));
+    return Promise.promisify(fn)(1, 2, 3, 4, 5)
+      .then(res => assert.strictEqual(res, 16));
+  });
+
+  it('should execute with non-argument', () => {
+    const fn = (callback, arg) => {
+      assert.strictEqual(arg, undefined);
+      callback(null, 1);
+    };
+    return Promise.promisify(fn)()
+      .then(res => assert.strictEqual(res, 1));
+  });
+
+  it('should call again', () => {
+    let callCount = 0;
+    const fn = callback => {
+      callCount++;
+      callback(null, callCount);
+    };
+    const promisefied = Promise.promisify(fn);
+    promisefied().then(res => assert.strictEqual(res, 1));
+    promisefied().then(res => assert.strictEqual(res, 2));
+    assert.strictEqual(callCount, 2);
   });
 });
