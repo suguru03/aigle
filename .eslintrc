@@ -22,6 +22,7 @@ rules:
   no-unused-vars: 2
   no-use-before-define: 0
   no-case-declarations: 0
+  no-empty: 0
 
   # Stylistic Issues
   indent: [2, 2]
