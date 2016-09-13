@@ -87,6 +87,19 @@ parallel('all', () => {
       });
   });
 
+  it('should execute with not promise instance', () => {
+
+    const tasks = [
+      new Promise(resolve => resolve(1)),
+      2,
+      3
+    ];
+    return Promise.all(tasks)
+      .then(res => {
+        assert.deepEqual(res, [1, 2, 3]);
+      });
+  });
+
 });
 
 
