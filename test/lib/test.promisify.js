@@ -63,8 +63,12 @@ parallel('promisify', () => {
       callback(null, callCount);
     };
     const promisefied = Promise.promisify(fn);
-    promisefied().then(res => assert.strictEqual(res, 1));
-    promisefied().then(res => assert.strictEqual(res, 2));
+    const first = promisefied();
+    const second = promisefied();
+    first.then(res => assert.strictEqual(res, 1));
+    second.then(res => assert.strictEqual(res, 2));
+    first.then(res => assert.strictEqual(res, 1));
+    second.then(res => assert.strictEqual(res, 2));
     assert.strictEqual(callCount, 2);
   });
 });
