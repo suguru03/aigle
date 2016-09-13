@@ -4,7 +4,6 @@ const assert = require('assert');
 
 const parallel = require('mocha.parallel');
 const Promise = require('../../');
-const util = require('../util');
 const DELAY = require('../config').DELAY;
 
 parallel('each', () => {
@@ -12,38 +11,44 @@ parallel('each', () => {
   it('should execute on parallel', () => {
 
     const order = [];
-    const delay = util.makeDelayTask(order);
-    const tasks = [
-      delay('test1', DELAY * 3),
-      delay('test2', DELAY * 2),
-      delay('test3', DELAY * 1)
-    ];
-    return Promise.each(tasks)
+    const tasks = [1, 4, 2];
+    const iterator = (value, key) => {
+      return new Promise(resolve => setTimeout(() => {
+        order.push([key, value]);
+        return resolve(value);
+      }, DELAY * value));
+    };
+    return Promise.each(tasks, iterator)
       .then(res => {
         assert.deepEqual(res, undefined);
         assert.deepEqual(order, [
-          'test3',
-          'test2',
-          'test1'
+          [0, 1],
+          [2, 2],
+          [1, 4]
         ]);
       });
   });
 
   it('should execute on parallel with object tasks', () => {
     const order = [];
-    const delay = util.makeDelayTask(order);
     const tasks = {
-      task1: delay('test1', DELAY * 3),
-      task2: delay('test2', DELAY * 2),
-      task3: delay('test3', DELAY * 1)
+      task1: 1,
+      task2: 4,
+      task3: 2
     };
-    return Promise.each(tasks)
+    const iterator = (value, key) => {
+      return new Promise(resolve => setTimeout(() => {
+        order.push([key, value]);
+        return resolve(value);
+      }, DELAY * value));
+    };
+    return Promise.each(tasks, iterator)
       .then(res => {
         assert.deepEqual(res, undefined);
         assert.deepEqual(order, [
-          'test3',
-          'test2',
-          'test1'
+          ['task1', 1],
+          ['task3', 2],
+          ['task2', 4]
         ]);
       });
   });
@@ -55,40 +60,46 @@ parallel('#each', () => {
   it('should execute on parallel', () => {
 
     const order = [];
-    const delay = util.makeDelayTask(order);
-    const tasks = [
-      delay('test1', DELAY * 3),
-      delay('test2', DELAY * 2),
-      delay('test3', DELAY * 1)
-    ];
+    const tasks = [1, 4, 2];
+    const iterator = (value, key) => {
+      return new Promise(resolve => setTimeout(() => {
+        order.push([key, value]);
+        return resolve(value);
+      }, DELAY * value));
+    };
     return Promise.resolve(tasks)
-      .each()
+      .each(iterator)
       .then(res => {
         assert.deepEqual(res, undefined);
         assert.deepEqual(order, [
-          'test3',
-          'test2',
-          'test1'
+          [0, 1],
+          [2, 2],
+          [1, 4]
         ]);
       });
   });
 
   it('should execute on parallel with object tasks', () => {
     const order = [];
-    const delay = util.makeDelayTask(order);
     const tasks = {
-      task1: delay('test1', DELAY * 3),
-      task2: delay('test2', DELAY * 2),
-      task3: delay('test3', DELAY * 1)
+      task1: 1,
+      task2: 4,
+      task3: 2
+    };
+    const iterator = (value, key) => {
+      return new Promise(resolve => setTimeout(() => {
+        order.push([key, value]);
+        return resolve(value);
+      }, DELAY * value));
     };
     return Promise.resolve(tasks)
-      .each()
+      .each(iterator)
       .then(res => {
         assert.deepEqual(res, undefined);
         assert.deepEqual(order, [
-          'test3',
-          'test2',
-          'test1'
+          ['task1', 1],
+          ['task3', 2],
+          ['task2', 4]
         ]);
       });
   });
