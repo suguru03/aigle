@@ -6,9 +6,9 @@ const parallel = require('mocha.parallel');
 const Promise = require('../../');
 const DELAY = require('../config').DELAY;
 
-parallel('each', () => {
+parallel('eachSeries', () => {
 
-  it('should execute on parallel', () => {
+  it('should execute on series', () => {
 
     const order = [];
     const tasks = [1, 4, 2];
@@ -18,13 +18,13 @@ parallel('each', () => {
         return resolve(value);
       }, DELAY * value));
     };
-    return Promise.each(tasks, iterator)
+    return Promise.eachSeries(tasks, iterator)
       .then(res => {
         assert.deepEqual(res, undefined);
         assert.deepEqual(order, [
           [0, 1],
-          [2, 2],
-          [1, 4]
+          [1, 4],
+          [2, 2]
         ]);
       });
   });
@@ -42,13 +42,13 @@ parallel('each', () => {
         return resolve(value);
       }, DELAY * value));
     };
-    return Promise.each(tasks, iterator)
+    return Promise.eachSeries(tasks, iterator)
       .then(res => {
         assert.deepEqual(res, undefined);
         assert.deepEqual(order, [
           ['task1', 1],
-          ['task3', 2],
-          ['task2', 4]
+          ['task2', 4],
+          ['task3', 2]
         ]);
       });
   });
@@ -68,13 +68,13 @@ parallel('#each', () => {
       }, DELAY * value));
     };
     return Promise.resolve(tasks)
-      .each(iterator)
+      .eachSeries(iterator)
       .then(res => {
         assert.deepEqual(res, undefined);
         assert.deepEqual(order, [
           [0, 1],
-          [2, 2],
-          [1, 4]
+          [1, 4],
+          [2, 2]
         ]);
       });
   });
@@ -93,13 +93,13 @@ parallel('#each', () => {
       }, DELAY * value));
     };
     return Promise.resolve(tasks)
-      .each(iterator)
+      .eachSeries(iterator)
       .then(res => {
         assert.deepEqual(res, undefined);
         assert.deepEqual(order, [
           ['task1', 1],
-          ['task3', 2],
-          ['task2', 4]
+          ['task2', 4],
+          ['task3', 2]
         ]);
       });
   });
