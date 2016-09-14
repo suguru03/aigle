@@ -211,4 +211,49 @@ parallel('#Promise', () => {
         });
       });
   });
+
+  it('should catch ReferenceError', done => {
+
+    Promise.resolve()
+      .then(() => {
+        test;
+      })
+      .catch(ReferenceError, err => {
+        assert.ok(err);
+        done();
+      });
+  });
+
+  it('should catch TypeError', done => {
+
+    Promise.resolve()
+      .then(() => {
+        const test = 1;
+        test.test();
+      })
+      .catch(TypeError, err => {
+        assert.ok(err);
+        done();
+      });
+  });
+
+  it('should catch Unhandled rejection error', done => {
+
+    let called = false;
+    process.on('unhandledRejection', err => {
+      assert.ok(err);
+      called = true;
+    });
+    const p = Promise.resolve()
+      .then(() => {
+        test;
+      });
+    setTimeout(() => {
+      p.catch(ReferenceError, err => {
+        assert.ok(err);
+        assert.ok(called);
+        done();
+      });
+    }, DELAY);
+  });
 });
