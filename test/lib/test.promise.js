@@ -102,6 +102,20 @@ parallel('#Promise', () => {
     });
   });
 
+  it('should execute', done => {
+
+    new Promise(resolve => {
+      process.nextTick(() => resolve(1));
+    })
+    .then(2)
+    .catch()
+    .finally()
+    .then(res => {
+      assert.strictEqual(res, 1);
+      done();
+    });
+  });
+
   it('should resolve', done => {
 
     const str = 'test';
