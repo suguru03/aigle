@@ -4,6 +4,7 @@ const assert = require('assert');
 
 const parallel = require('mocha.parallel');
 const Promise = require('../../');
+const DELAY = require('../config').DELAY;
 
 parallel('promisify', () => {
 
@@ -56,7 +57,7 @@ parallel('promisify', () => {
       .then(res => assert.strictEqual(res, 1));
   });
 
-  it('should call again', () => {
+  it('should call again', done => {
     let callCount = 0;
     const fn = callback => {
       callCount++;
@@ -70,5 +71,38 @@ parallel('promisify', () => {
     first.then(res => assert.strictEqual(res, 1));
     second.then(res => assert.strictEqual(res, 2));
     assert.strictEqual(callCount, 2);
+    setTimeout(done, DELAY);
   });
+
+  it('should bind oneself with string argument', () => {
+    const obj = {
+      fn: function(arg, callback) {
+        assert.strictEqual(this, obj);
+        assert.strictEqual(arg, 1);
+        callback(null, 2);
+      }
+    };
+    const promisefied = Promise.promisify(obj, 'fn');
+    return promisefied(1)
+      .then(res => {
+        assert.strictEqual(res, 2);
+      });
+  });
+
+  it('should bind context', () => {
+    const ctx = {};
+    const obj = {
+      fn: function(arg, callback) {
+        assert.strictEqual(this, ctx);
+        assert.strictEqual(arg, 1);
+        callback(null, 2);
+      }
+    };
+    const promisefied = Promise.promisify(obj.fn, { context: ctx });
+    return promisefied(1)
+      .then(res => {
+        assert.strictEqual(res, 2);
+      });
+  });
+
 });
