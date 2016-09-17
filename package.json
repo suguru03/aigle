@@ -13,8 +13,11 @@
   "author": "Suguru Motegi",
   "license": "MIT",
   "devDependencies": {
-    "bluebird": "^3.4.1",
-    "lodash": "^4.14.0",
+    "benchmark": "^2.1.1",
+    "bluebird": "^3.4.6",
+    "func-comparator": "^0.7.2",
+    "lodash": "^4.15.0",
+    "minimist": "^1.2.0",
     "mocha": "^2.5.3",
     "mocha.parallel": "^0.12.0"
   }
