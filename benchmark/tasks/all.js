@@ -14,7 +14,7 @@ module.exports = funcs => {
       count: 100,
       times: 10000
     },
-    'promise:then': {
+    'all': {
       setup: config => {
         count = config.count;
       },

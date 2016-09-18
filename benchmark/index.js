@@ -40,8 +40,17 @@ _.forOwn(functions, (obj, key) => console.log(`[${key}], v${obj.version}`));
 
 let tasks = require('./tasks')(functions);
 if (target) {
-  const reg = new RegExp(`^${target}$`);
-  tasks = _.pickBy(tasks, (obj, name) => reg.test(name) || reg.test(_.first(name.split(':'))));
+  const reg = new RegExp(`^(config|${target})$`);
+  console.log(reg);
+  tasks = _.chain(tasks)
+    .mapValues((obj, name) => {
+      if (reg.test(name)) {
+        return obj;
+      }
+      return _.pickBy(obj, (obj, name) => reg.test(name) || reg.test(_.first(name.split(':'))));
+    })
+    .omit(obj => _.isEmpty(obj))
+    .value();
 }
 const benchmarkTasks = _.transform(tasks, (result, obj) => {
   const config = {

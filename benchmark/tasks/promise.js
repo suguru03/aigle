@@ -14,6 +14,14 @@ module.exports = funcs => {
       count: 100,
       times: 10000
     },
+    'promise:new': {
+      aigle: () => {
+        return new Aigle(resolve => resolve(0));
+      },
+      bluebird: () => {
+        return new Bluebird(resolve => resolve(0));
+      }
+    },
     'promise:then': {
       setup: config => {
         count = config.count;
