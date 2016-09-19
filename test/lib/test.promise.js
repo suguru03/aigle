@@ -226,6 +226,16 @@ parallel('#Promise', () => {
       });
   });
 
+  it('should re-call on synchronous', done => {
+
+    const p = new Promise(resolve => resolve(0));
+    p.then(value => ++value);
+    p.then(value => {
+      assert.strictEqual(value, 1);
+      done();
+    });
+  });
+
   it('should catch ReferenceError', done => {
 
     Promise.resolve()
