@@ -41,7 +41,6 @@ _.forOwn(functions, (obj, key) => console.log(`[${key}], v${obj.version}`));
 let tasks = require('./tasks')(functions);
 if (target) {
   const reg = new RegExp(`^(config|${target})$`);
-  console.log(reg);
   tasks = _.chain(tasks)
     .mapValues((obj, name) => {
       if (reg.test(name)) {

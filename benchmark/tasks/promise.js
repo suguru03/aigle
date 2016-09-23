@@ -12,7 +12,7 @@ module.exports = funcs => {
   return {
     config: {
       count: 100,
-      times: 10000
+      times: 100000
     },
     'promise:new': {
       aigle: () => {
