@@ -209,7 +209,7 @@ parallel('#Promise', () => {
       })
       .then(value => {
         assert.strictEqual(value, 1);
-        var p2 = p.then(() => {
+        const p2 = p.then(() => {
           return 2;
         })
         .then(value => {
@@ -231,7 +231,7 @@ parallel('#Promise', () => {
     const p = new Promise(resolve => resolve(0));
     p.then(value => ++value);
     p.then(value => {
-      assert.strictEqual(value, 1);
+      assert.strictEqual(value, 0);
       done();
     });
   });
