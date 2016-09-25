@@ -195,7 +195,6 @@ parallel('#Promise', () => {
 
   it('should re-call', done => {
 
-    // const Promise = require('bluebird');
     const p = new Promise(resolve => {
       resolve(1);
     });
