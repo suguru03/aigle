@@ -4,6 +4,7 @@ rules:
   comma-dangle: 2
   no-constant-condition: 2
   no-unreachable: 2
+  no-cond-assign: 0
 
   # Best Practices
   consistent-return: 0
