@@ -29,14 +29,18 @@ module.exports = funcs => {
       aigle: () => {
         let p = new Aigle(resolve => resolve(0));
         _.times(count, () => {
-          p = p.then(value => ++value);
+          p = p.then(value => {
+            return ++value;
+          });
         });
         return p;
       },
       bluebird: () => {
         let p = new Bluebird(resolve => resolve(0));
         _.times(count, () => {
-          p = p.then(value => ++value);
+          p = p.then(value => {
+            return ++value;
+          });
         });
         return p;
       }
