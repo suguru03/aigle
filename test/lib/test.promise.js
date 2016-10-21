@@ -227,12 +227,32 @@ parallel('#Promise', () => {
 
   it('should re-call on synchronous', done => {
 
+    let called = 0;
     const p = new Promise(resolve => resolve(0));
-    p.then(value => ++value);
     p.then(value => {
+      called++;
       assert.strictEqual(value, 0);
-      done();
+      return ++value;
     });
+    p.then(value => {
+      called++;
+      assert.strictEqual(value, 0);
+      return ++value;
+    });
+    p.then(value => {
+      called++;
+      assert.strictEqual(value, 0);
+      return ++value;
+    });
+    p.then(value => {
+      called++;
+      assert.strictEqual(value, 0);
+      return ++value;
+    });
+    setTimeout(() => {
+      assert.strictEqual(called, 4);
+      done();
+    }, DELAY);
   });
 
   it('should catch ReferenceError', done => {
