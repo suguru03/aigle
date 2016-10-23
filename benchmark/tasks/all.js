@@ -2,10 +2,7 @@
 
 const _ = require('lodash');
 
-module.exports = funcs => {
-
-  const Aigle = funcs.Aigle;
-  const Bluebird = funcs.Bluebird;
+module.exports = ({ Aigle, Bluebird }) => {
 
   let count;
 
