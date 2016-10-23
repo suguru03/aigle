@@ -14,7 +14,7 @@ module.exports = funcs => {
       count: 100,
       times: 10000
     },
-    'all': {
+    'promise:all': {
       setup: config => {
         count = config.count;
         this.atasks = _.times(count, n => {
@@ -24,12 +24,21 @@ module.exports = funcs => {
           return new Bluebird(resolve => resolve(n));
         });
       },
-      aigle: () => {
-        return Aigle.all(this.atasks);
+      aigle: () => Aigle.all(this.atasks),
+      bluebird: () => Bluebird.all(this.btasks)
+    },
+    'promise:all:async': {
+      setup: config => {
+        count = config.count;
+        this.atasks = _.times(count, () => {
+          return new Aigle(resolve => setImmediate(resolve));
+        });
+        this.btasks = _.times(count, () => {
+          return new Bluebird(resolve => setImmediate(resolve));
+        });
       },
-      bluebird: () => {
-        return Bluebird.all(this.btasks);
-      }
+      aigle: () => Aigle.all(this.atasks),
+      bluebird: () => Bluebird.all(this.btasks)
     }
   };
 };
