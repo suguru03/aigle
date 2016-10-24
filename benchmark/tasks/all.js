@@ -9,33 +9,41 @@ module.exports = ({ Aigle, Bluebird }) => {
   return {
     config: {
       count: 100,
-      times: 10000
+      times: 100000
     },
     'promise:all': {
       setup: config => {
         count = config.count;
-        this.atasks = _.times(count, n => {
+      },
+      aigle: () => {
+        const tasks = _.times(count, n => {
           return new Aigle(resolve => resolve(n));
         });
-        this.btasks = _.times(count, n => {
+        return Aigle.all(tasks);
+      },
+      bluebird: () => {
+        const tasks = _.times(count, n => {
           return new Bluebird(resolve => resolve(n));
         });
-      },
-      aigle: () => Aigle.all(this.atasks),
-      bluebird: () => Bluebird.all(this.btasks)
+        return Bluebird.all(tasks);
+      }
     },
     'promise:all:async': {
       setup: config => {
         count = config.count;
-        this.atasks = _.times(count, () => {
+      },
+      aigle: () => {
+        const tasks = _.times(count, () => {
           return new Aigle(resolve => setImmediate(resolve));
         });
-        this.btasks = _.times(count, () => {
+        return Aigle.all(tasks);
+      },
+      bluebird: () => {
+        const tasks = _.times(count, () => {
           return new Bluebird(resolve => setImmediate(resolve));
         });
-      },
-      aigle: () => Aigle.all(this.atasks),
-      bluebird: () => Bluebird.all(this.btasks)
+        return Bluebird.all(tasks);
+      }
     }
   };
 };
