@@ -9,12 +9,15 @@ const Bluebird = require('bluebird');
 
 const defaults = {
   count: 100,
-  times: 10000 // for func-comparator
+  // for func-comparator
+  times: 10000,
+  concurrency: 8
 };
 
 const benchmark = argv.b || argv.benchmark; // ['benchmark', 'func-comparator'], -b func-comparator
 const count = argv.c || argv.count;
 const times = argv.t || argv.times;
+const { concurrency } = argv;
 const target = argv.target; // -t <function name>
 let Promise = global.Promise;
 if (argv.p) {
@@ -31,8 +34,8 @@ const benchmarks = _.chain([
 .value();
 
 const functions = {
-  Aigle: Aigle,
-  Bluebird: Bluebird
+  Aigle,
+  Bluebird
 };
 
 console.log('======================================');
@@ -54,13 +57,15 @@ if (target) {
 const benchmarkTasks = _.transform(tasks, (result, obj) => {
   const config = {
     count: count || _.get(obj.config, ['count'], defaults.count),
-    times: times || _.get(obj.config, ['times'], defaults.times)
+    times: times || _.get(obj.config, ['times'], defaults.times),
+    concurrency: concurrency || _.get(obj.config, ['concurrency'], defaults.concurrency)
   };
   obj = _.omit(obj, 'config');
   _.forOwn(obj, (tasks, name) => {
     result.push(() => {
       console.log('======================================');
-      console.log(`[${name}] Comparating... `);
+      console.log(`[${name}] Comparating...`);
+      console.log(`concurrency: ${config.concurrency}`);
     });
     const setup = _.get(tasks, ['setup'], _.noop);
     tasks = _.omit(tasks, 'setup');
@@ -73,11 +78,9 @@ const benchmarkTasks = _.transform(tasks, (result, obj) => {
           .config(config)
           .tasks(tasks)
           .execute()
-          .then(result => _.forEach(result, (data, index, array) => {
-            var name = data.name;
-            var mean = data.mean;
-            var diff = (_.first(array).mean) / mean;
-            var rate = mean / (_.first(array).mean);
+          .then(result => _.forEach(result, ({ name, mean }, index, array) => {
+            const diff = (_.first(array).mean) / mean;
+            const rate = mean / (_.first(array).mean);
             console.log(`[${++index}] "${name}" ${mean.toPrecision(3)}μs[${diff.toPrecision(3)}][${rate.toPrecision(3)}]`);
           }));
       });
