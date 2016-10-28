@@ -11,7 +11,7 @@ const defaults = {
   count: 100,
   // for func-comparator
   times: 10000,
-  concurrency: 8
+  concurrency: 4
 };
 
 const benchmark = argv.b || argv.benchmark; // ['benchmark', 'func-comparator'], -b func-comparator
