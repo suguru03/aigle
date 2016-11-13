@@ -82,9 +82,7 @@ parallel('all', () => {
       new Promise(resolve => setTimeout(() => resolve(3), 10))
     ];
     return Promise.all(tasks)
-      .then(res => {
-        assert.deepEqual(res, [1, 2, 3]);
-      });
+      .then(res => assert.deepEqual(res, [1, 2, 3]));
   });
 
   it('should execute with not promise instance', () => {
@@ -95,9 +93,13 @@ parallel('all', () => {
       3
     ];
     return Promise.all(tasks)
-      .then(res => {
-        assert.deepEqual(res, [1, 2, 3]);
-      });
+      .then(res => assert.deepEqual(res, [1, 2, 3]));
+  });
+
+  it('should return immediately', () => {
+
+    return Promise.all([])
+      .then(res => assert.deepEqual(res, []));
   });
 
 });
