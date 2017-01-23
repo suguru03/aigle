@@ -1,3 +1,3 @@
 'use strict';
 
-module.exports = require('./lib/promise2');
+module.exports = require('./lib/promise');
