@@ -261,6 +261,47 @@ parallel('#Promise', () => {
     }, DELAY);
   });
 
+  it('should re-call on asynchronous', done => {
+
+    let called = 0;
+    const p = new Promise(resolve => setImmediate(() => resolve(0)));
+    p.then(value => {
+      called++;
+      assert.strictEqual(value, 0);
+      return new Promise(resolve => {
+        setImmediate(() => resolve(++value));
+      });
+    });
+    p.then(value => {
+      called++;
+      assert.strictEqual(value, 0);
+      return new Promise(resolve => {
+        setImmediate(() => resolve(++value));
+      });
+    });
+    p.then(value => {
+      called++;
+      assert.strictEqual(value, 0);
+      return new Promise(resolve => {
+        setImmediate(() => resolve(++value));
+      });
+    })
+    .then(value => {
+      assert.strictEqual(value, 1);
+    });
+    p.then(value => {
+      called++;
+      assert.strictEqual(value, 0);
+      return new Promise(resolve => {
+        setImmediate(() => resolve(++value));
+      });
+    });
+    setTimeout(() => {
+      assert.strictEqual(called, 4);
+      done();
+    }, DELAY);
+  });
+
   it('should catch ReferenceError', done => {
 
     Promise.resolve()
