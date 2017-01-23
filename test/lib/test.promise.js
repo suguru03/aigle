@@ -165,13 +165,19 @@ parallel('#Promise', () => {
       return err;
     })
     .finally(() => {
-      return new Promise((resolve, reject) => {
+      const p = new Promise((resolve, reject) => {
         setTimeout(() => {
           called++;
           assert.strictEqual(called, 2);
           reject(new Error('error2'));
         }, DELAY);
       });
+      return p;
+    })
+    .then(() => {
+      assert(false);
+      called++;
+      return 'then';
     })
     .catch(err => {
       assert.ok(err);
