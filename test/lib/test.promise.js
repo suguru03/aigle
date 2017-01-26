@@ -360,4 +360,18 @@ describe('#spread', () => {
         assert.strictEqual(arg3, array[2]);
       });
   });
+
+  it('should not execute if error is caused', () => {
+
+    const array = [1, 2, 3];
+    const error = new Error('error');
+    return Promise.resolve(array)
+      .then(() => Promise.reject(error))
+      .spread(() => {
+        assert.ok(false);
+      })
+      .catch(err => {
+        assert.strictEqual(err, error);
+      });
+  });
 });
