@@ -347,3 +347,17 @@ parallel('#Promise', () => {
     }, DELAY);
   });
 });
+
+describe('#spread', () => {
+
+  it('should work', () => {
+
+    const array = [1, 2, 3];
+    return Promise.resolve(array)
+      .spread((arg1, arg2, arg3) => {
+        assert.strictEqual(arg1, array[0]);
+        assert.strictEqual(arg2, array[1]);
+        assert.strictEqual(arg3, array[2]);
+      });
+  });
+});
