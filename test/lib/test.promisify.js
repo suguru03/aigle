@@ -3,7 +3,7 @@
 const assert = require('assert');
 
 const parallel = require('mocha.parallel');
-const Promise = require('../../');
+const Aigle = require('../../');
 const DELAY = require('../config').DELAY;
 
 parallel('promisify', () => {
@@ -12,7 +12,7 @@ parallel('promisify', () => {
     const fn = callback => {
       setTimeout(() => callback(null, 1), 10);
     };
-    return Promise.promisify(fn)()
+    return Aigle.promisify(fn)()
       .then(res => assert.strictEqual(res, 1));
   });
 
@@ -21,7 +21,7 @@ parallel('promisify', () => {
       assert.strictEqual(a, 1);
       setTimeout(() => callback(null, a + 1), 10);
     };
-    return Promise.promisify(fn)(1)
+    return Aigle.promisify(fn)(1)
       .then(res => assert.strictEqual(res, 2));
   });
 
@@ -31,7 +31,7 @@ parallel('promisify', () => {
       assert.strictEqual(b, 2);
       setTimeout(() => callback(null, a + b + 1), 10);
     };
-    return Promise.promisify(fn)(1, 2)
+    return Aigle.promisify(fn)(1, 2)
       .then(res => assert.strictEqual(res, 4));
   });
 
@@ -44,7 +44,7 @@ parallel('promisify', () => {
       assert.strictEqual(e, 5);
       callback(null, a + b + c + d + e + 1);
     };
-    return Promise.promisify(fn)(1, 2, 3, 4, 5)
+    return Aigle.promisify(fn)(1, 2, 3, 4, 5)
       .then(res => assert.strictEqual(res, 16));
   });
 
@@ -53,7 +53,7 @@ parallel('promisify', () => {
       assert.strictEqual(arg, undefined);
       callback(null, 1);
     };
-    return Promise.promisify(fn)()
+    return Aigle.promisify(fn)()
       .then(res => assert.strictEqual(res, 1));
   });
 
@@ -63,7 +63,7 @@ parallel('promisify', () => {
       callCount++;
       callback(null, callCount);
     };
-    const promisefied = Promise.promisify(fn);
+    const promisefied = Aigle.promisify(fn);
     const first = promisefied();
     const second = promisefied();
     first.then(res => assert.strictEqual(res, 1));
@@ -82,7 +82,7 @@ parallel('promisify', () => {
         callback(null, 2);
       }
     };
-    const promisefied = Promise.promisify(obj, 'fn');
+    const promisefied = Aigle.promisify(obj, 'fn');
     return promisefied(1)
       .then(res => {
         assert.strictEqual(res, 2);
@@ -98,7 +98,7 @@ parallel('promisify', () => {
         callback(null, 2);
       }
     };
-    const promisefied = Promise.promisify(obj.fn, { context: ctx });
+    const promisefied = Aigle.promisify(obj.fn, { context: ctx });
     return promisefied(1)
       .then(res => {
         assert.strictEqual(res, 2);
