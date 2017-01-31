@@ -3,7 +3,7 @@
 const assert = require('assert');
 
 const parallel = require('mocha.parallel');
-const Promise = require('../../');
+const Aigle = require('../../');
 const DELAY = require('../config').DELAY;
 
 parallel('each', () => {
@@ -13,12 +13,12 @@ parallel('each', () => {
     const order = [];
     const tasks = [1, 4, 2];
     const iterator = (value, key) => {
-      return new Promise(resolve => setTimeout(() => {
+      return new Aigle(resolve => setTimeout(() => {
         order.push([key, value]);
         return resolve(value);
       }, DELAY * value));
     };
-    return Promise.each(tasks, iterator)
+    return Aigle.each(tasks, iterator)
       .then(res => {
         assert.deepEqual(res, undefined);
         assert.deepEqual(order, [
@@ -37,12 +37,12 @@ parallel('each', () => {
       task3: 2
     };
     const iterator = (value, key) => {
-      return new Promise(resolve => setTimeout(() => {
+      return new Aigle(resolve => setTimeout(() => {
         order.push([key, value]);
         return resolve(value);
       }, DELAY * value));
     };
-    return Promise.each(tasks, iterator)
+    return Aigle.each(tasks, iterator)
       .then(res => {
         assert.deepEqual(res, undefined);
         assert.deepEqual(order, [
@@ -62,12 +62,12 @@ parallel('#each', () => {
     const order = [];
     const tasks = [1, 4, 2];
     const iterator = (value, key) => {
-      return new Promise(resolve => setTimeout(() => {
+      return new Aigle(resolve => setTimeout(() => {
         order.push([key, value]);
         return resolve(value);
       }, DELAY * value));
     };
-    return Promise.resolve(tasks)
+    return Aigle.resolve(tasks)
       .each(iterator)
       .then(res => {
         assert.deepEqual(res, undefined);
@@ -87,12 +87,12 @@ parallel('#each', () => {
       task3: 2
     };
     const iterator = (value, key) => {
-      return new Promise(resolve => setTimeout(() => {
+      return new Aigle(resolve => setTimeout(() => {
         order.push([key, value]);
         return resolve(value);
       }, DELAY * value));
     };
-    return Promise.resolve(tasks)
+    return Aigle.resolve(tasks)
       .each(iterator)
       .then(res => {
         assert.deepEqual(res, undefined);
