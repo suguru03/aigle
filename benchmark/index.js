@@ -6,6 +6,7 @@ const argv = require('minimist')(process.argv.slice(2));
 
 const Aigle = require('../');
 const Bluebird = require('bluebird');
+const neoAsync = require('neo-async');
 
 const defaults = {
   count: 100,
@@ -26,11 +27,12 @@ if (argv.p) {
 const Benchmark = require('./benchmark')(Promise);
 const functions = {
   Aigle,
-  Bluebird
+  Bluebird,
+  neoAsync
 };
 
 console.log('======================================');
-_.forOwn(functions, (obj, key) => console.log(`[${key}], v${obj.version}`));
+_.forOwn(functions, (obj, key) => console.log(`[${key}] v${obj.version||obj.VERSION}`));
 
 let tasks = require('./tasks')(functions);
 if (target) {
