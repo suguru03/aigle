@@ -11,14 +11,14 @@ parallel('each', () => {
   it('should execute on parallel', () => {
 
     const order = [];
-    const tasks = [1, 4, 2];
+    const collection = [1, 4, 2];
     const iterator = (value, key) => {
       return new Aigle(resolve => setTimeout(() => {
         order.push([key, value]);
         return resolve(value);
       }, DELAY * value));
     };
-    return Aigle.each(tasks, iterator)
+    return Aigle.each(collection, iterator)
       .then(res => {
         assert.deepEqual(res, undefined);
         assert.deepEqual(order, [
@@ -29,9 +29,10 @@ parallel('each', () => {
       });
   });
 
-  it('should execute with object tasks on parallel', () => {
+  it('should execute with object collection on parallel', () => {
+
     const order = [];
-    const tasks = {
+    const collection = {
       task1: 1,
       task2: 4,
       task3: 2
@@ -42,7 +43,7 @@ parallel('each', () => {
         return resolve(value);
       }, DELAY * value));
     };
-    return Aigle.each(tasks, iterator)
+    return Aigle.each(collection, iterator)
       .then(res => {
         assert.deepEqual(res, undefined);
         assert.deepEqual(order, [
@@ -53,6 +54,19 @@ parallel('each', () => {
       });
   });
 
+  it('should throw TypeError', () => {
+
+    const collection = [1, 4, 2];
+    const iterator = value => {
+      value.test();
+    };
+    return Aigle.each(collection, iterator)
+      .then(() => assert.ok(false))
+      .catch(TypeError, error => {
+        assert.ok(error);
+        assert.ok(error instanceof TypeError);
+      });
+  });
 });
 
 parallel('#each', () => {
@@ -60,14 +74,14 @@ parallel('#each', () => {
   it('should execute on parallel', () => {
 
     const order = [];
-    const tasks = [1, 4, 2];
+    const collection = [1, 4, 2];
     const iterator = (value, key) => {
       return new Aigle(resolve => setTimeout(() => {
         order.push([key, value]);
         return resolve(value);
       }, DELAY * value));
     };
-    return Aigle.resolve(tasks)
+    return Aigle.resolve(collection)
       .each(iterator)
       .then(res => {
         assert.deepEqual(res, undefined);
@@ -79,9 +93,9 @@ parallel('#each', () => {
       });
   });
 
-  it('should execute with object tasks on parallel', () => {
+  it('should execute with object collection on parallel', () => {
     const order = [];
-    const tasks = {
+    const collection = {
       task1: 1,
       task2: 4,
       task3: 2
@@ -92,7 +106,7 @@ parallel('#each', () => {
         return resolve(value);
       }, DELAY * value));
     };
-    return Aigle.resolve(tasks)
+    return Aigle.resolve(collection)
       .each(iterator)
       .then(res => {
         assert.deepEqual(res, undefined);
@@ -104,4 +118,18 @@ parallel('#each', () => {
       });
   });
 
+  it('should throw TypeError', () => {
+
+    const collection = [1, 4, 2];
+    const iterator = value => {
+      value.test();
+    };
+    return Aigle.resolve(collection)
+      .each(iterator)
+      .then(() => assert.ok(false))
+      .catch(TypeError, error => {
+        assert.ok(error);
+        assert.ok(error instanceof TypeError);
+      });
+  });
 });
