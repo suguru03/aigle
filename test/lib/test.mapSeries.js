@@ -30,6 +30,17 @@ parallel('mapSeries', () => {
       });
   });
 
+  it('should execute on synchronous', () => {
+
+    const collection = [1, 4, 2];
+    const iterator = value => value * 2;
+    return Aigle.mapSeries(collection, iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
+        assert.deepEqual(res, [2, 8, 4]);
+      });
+  });
+
   it('should execute with object collection on parallel', () => {
 
     const order = [];
