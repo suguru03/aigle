@@ -29,6 +29,16 @@ parallel('each', () => {
       });
   });
 
+  it('should execute on synchronous', () => {
+
+    const collection = [1, 4, 2];
+    const iterator = value => value;
+    return Aigle.each(collection, iterator)
+      .then(res => {
+        assert.strictEqual(res, undefined);
+      });
+  });
+
   it('should execute with object collection on parallel', () => {
 
     const order = [];
