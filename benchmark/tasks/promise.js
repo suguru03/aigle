@@ -7,10 +7,6 @@ let count = 0;
 module.exports = ({ Aigle, Bluebird }) => {
 
   return {
-    config: {
-      count: 100,
-      times: 100000
-    },
     'promise:single': {
       aigle: () => {
         return new Aigle(resolve => resolve(0));

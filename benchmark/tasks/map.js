@@ -9,7 +9,7 @@ module.exports = ({ Aigle, Bluebird, neoAsync }) => {
       setup: config => {
         this.array = _.times(config.count);
         this.promiseIterator = value => value * 2;
-        this.neoAsyncIterator = (n, cb) => cb();
+        this.neoAsyncIterator = (n, cb) => cb(null, n * 2);
       },
       aigle: () => {
         return Aigle.map(this.array, this.promiseIterator);
@@ -25,7 +25,7 @@ module.exports = ({ Aigle, Bluebird, neoAsync }) => {
       setup: config => {
         this.array = _.times(config.count);
         this.promiseIterator = value => new Aigle(resolve => setImmediate(() => resolve(value * 2)));
-        this.neoAsyncIterator = (n, cb) => setImmediate(cb);
+        this.neoAsyncIterator = (n, cb) => setImmediate(() => cb(null, n * 2));
       },
       aigle: () => {
         return Aigle.map(this.array, this.promiseIterator);

@@ -8,15 +8,9 @@ const Aigle = require('../');
 const Bluebird = require('bluebird');
 const neoAsync = require('neo-async');
 
-const defaults = {
-  count: 100,
-  times: 10000,
-  concurrency: 4
-};
+const defaults = { count: 100 };
 
 const count = argv.c || argv.count;
-const times = argv.t || argv.times;
-const { concurrency } = argv;
 const target = argv.target; // -t <function name>
 let Promise = global.Promise;
 if (argv.p) {
@@ -49,21 +43,40 @@ if (target) {
 }
 const benchmarkTasks = _.transform(tasks, (result, obj) => {
   const config = {
-    count: count || _.get(obj.config, ['count'], defaults.count),
-    times: times || _.get(obj.config, ['times'], defaults.times),
-    concurrency: concurrency || _.get(obj.config, ['concurrency'], defaults.concurrency)
+    count: count || _.get(obj.config, ['count'], defaults.count)
   };
   obj = _.omit(obj, 'config');
   _.forOwn(obj, (tasks, name) => {
-    result.push(() => {
-      console.log('======================================');
-      console.log(`[${name}] Comparating...`);
-      console.log(`concurrency: ${config.concurrency}`);
-    });
+
     const setup = _.get(tasks, ['setup'], _.noop);
     tasks = _.omit(tasks, 'setup');
     result.push(() => {
+      console.log('======================================');
+      console.log(`[${name}] Preparing...`);
+
+      // validate functions
       setup(config);
+      return Aigle.mapValues(tasks, func => {
+        return !func.length ? func() : Aigle.promisify(func)();
+      })
+      .then(obj => {
+        // validate all results
+        const keys = Object.keys(obj);
+        _.forEach(keys, (key1, index) => {
+          _.forEach(keys.slice(index + 1), key2 => {
+            const value1 = obj[key1];
+            const value2 = obj[key2];
+            if (!_.isEqual(value1, value2)) {
+              console.error(`[${key1}]`, value1);
+              console.error(`[${key2}]`, value2);
+              throw new Error(`Validation is failed ${key1}, ${key2}`);
+            }
+          });
+        });
+      });
+    });
+
+    result.push(() => {
       console.log('--------------------------------------');
       console.log(`[${name}] Executing...`);
       return new Benchmark()
