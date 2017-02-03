@@ -6,7 +6,7 @@ const parallel = require('mocha.parallel');
 const Aigle = require('../../');
 const DELAY = require('../config').DELAY;
 
-parallel('map', () => {
+parallel('mapValues', () => {
 
   it('should execute on parallel', () => {
 
@@ -18,10 +18,14 @@ parallel('map', () => {
         resolve(value * 2);
       }, DELAY * value));
     };
-    return Aigle.map(collection, iterator)
+    return Aigle.mapValues(collection, iterator)
       .then(res => {
-        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [2, 8, 4]);
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
+        assert.deepEqual(res, {
+          '0': 2,
+          '1': 8,
+          '2': 4
+        });
         assert.deepEqual(order, [
           [0, 1],
           [2, 2],
@@ -44,9 +48,9 @@ parallel('map', () => {
         resolve(value * 2);
       }, DELAY * value));
     };
-    return Aigle.map(collection, iterator)
+    return Aigle.mapValues(collection, iterator)
       .then(res => {
-        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepEqual(res, {
           task1: 2,
           task2: 8,
@@ -66,7 +70,7 @@ parallel('map', () => {
     const iterator = value => {
       value.test();
     };
-    return Aigle.map(collection, iterator)
+    return Aigle.mapValues(collection, iterator)
       .then(() => assert.ok(false))
       .catch(TypeError, error => {
         assert.ok(error);
@@ -75,7 +79,7 @@ parallel('map', () => {
   });
 });
 
-parallel('#map', () => {
+parallel('#mapValues', () => {
 
   it('should execute on parallel', () => {
 
@@ -88,9 +92,13 @@ parallel('#map', () => {
       }, DELAY * value));
     };
     return Aigle.resolve(collection)
-      .map(iterator)
+      .mapValues(iterator)
       .then(res => {
-        assert.deepEqual(res, [2, 8, 4]);
+        assert.deepEqual(res, {
+          '0': 2,
+          '1': 8,
+          '2': 4
+        });
         assert.deepEqual(order, [
           [0, 1],
           [2, 2],
@@ -113,7 +121,7 @@ parallel('#map', () => {
       }, DELAY * value));
     };
     return Aigle.resolve(collection)
-      .map(iterator)
+      .mapValues(iterator)
       .then(res => {
         assert.deepEqual(res, {
           task1: 2,
@@ -135,7 +143,7 @@ parallel('#map', () => {
       value.test();
     };
     return Aigle.resolve(collection)
-      .map(iterator)
+      .mapValues(iterator)
       .then(() => assert.ok(false))
       .catch(TypeError, error => {
         assert.ok(error);

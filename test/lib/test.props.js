@@ -88,7 +88,7 @@ parallel('props', () => {
 
     return Aigle.props({})
       .then(res => {
-        assert.strictEqual(String(res), '[object Object]');
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepEqual(res, {});
       });
   });
