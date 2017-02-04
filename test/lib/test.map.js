@@ -47,11 +47,7 @@ parallel('map', () => {
     return Aigle.map(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, {
-          task1: 2,
-          task2: 8,
-          task3: 4
-        });
+        assert.deepEqual(res, [2, 8, 4]);
         assert.deepEqual(order, [
           ['task1', 1],
           ['task3', 2],
@@ -115,11 +111,7 @@ parallel('#map', () => {
     return Aigle.resolve(collection)
       .map(iterator)
       .then(res => {
-        assert.deepEqual(res, {
-          task1: 2,
-          task2: 8,
-          task3: 4
-        });
+        assert.deepEqual(res, [2, 8, 4]);
         assert.deepEqual(order, [
           ['task1', 1],
           ['task3', 2],
