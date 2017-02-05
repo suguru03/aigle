@@ -73,6 +73,42 @@ parallel('rejectLimit', () => {
         assert.deepEqual(order, _.times(8));
       });
   });
+
+  it('should return an empty array if collection is an empty array', () => {
+
+    const iterator = value => {
+      value.test();
+    };
+    return Aigle.rejectLimit([], iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
+        assert.strictEqual(res.length, 0);
+      });
+  });
+
+  it('should return an empty array if collection is an empty object', () => {
+
+    const iterator = value => {
+      value.test();
+    };
+    return Aigle.rejectLimit({}, iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
+        assert.strictEqual(res.length, 0);
+      });
+  });
+
+  it('should return an empty array if collection is string', () => {
+
+    const iterator = value => {
+      value.test();
+    };
+    return Aigle.rejectLimit('test', iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
+        assert.strictEqual(res.length, 0);
+      });
+  });
 });
 
 parallel('#rejectLimit', () => {

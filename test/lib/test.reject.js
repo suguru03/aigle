@@ -56,6 +56,42 @@ parallel('reject', () => {
       });
   });
 
+  it('should return an empty array if collection is an empty array', () => {
+
+    const iterator = value => {
+      value.test();
+    };
+    return Aigle.reject([], iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
+        assert.strictEqual(res.length, 0);
+      });
+  });
+
+  it('should return an empty array if collection is an empty object', () => {
+
+    const iterator = value => {
+      value.test();
+    };
+    return Aigle.reject({}, iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
+        assert.strictEqual(res.length, 0);
+      });
+  });
+
+  it('should return an empty array if collection is string', () => {
+
+    const iterator = value => {
+      value.test();
+    };
+    return Aigle.reject('test', iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
+        assert.strictEqual(res.length, 0);
+      });
+  });
+
   it('should throw TypeError', () => {
 
     const collection = [1, 4, 2];
