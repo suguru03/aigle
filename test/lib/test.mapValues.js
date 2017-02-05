@@ -64,6 +64,42 @@ parallel('mapValues', () => {
       });
   });
 
+  it('should return an empty object if collection is an empty array', () => {
+
+    const iterator = value => {
+      value.test();
+    };
+    return Aigle.mapValues([], iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
+        assert.deepEqual(res, {});
+      });
+  });
+
+  it('should return an empty ojbect if collection is an empty object', () => {
+
+    const iterator = value => {
+      value.test();
+    };
+    return Aigle.mapValues({}, iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
+        assert.deepEqual(res, {});
+      });
+  });
+
+  it('should return an empty object if collection is string', () => {
+
+    const iterator = value => {
+      value.test();
+    };
+    return Aigle.mapValues('test', iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
+        assert.deepEqual(res, {});
+      });
+  });
+
   it('should throw TypeError', () => {
 
     const collection = [1, 4, 2];

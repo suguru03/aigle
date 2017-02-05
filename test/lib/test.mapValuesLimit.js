@@ -83,6 +83,42 @@ parallel('mapValuesLimit', () => {
         assert.deepEqual(order, _.times(8));
       });
   });
+
+  it('should return an empty object if collection is an empty array', () => {
+
+    const iterator = value => {
+      value.test();
+    };
+    return Aigle.mapValuesLimit([], iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
+        assert.deepEqual(res, {});
+      });
+  });
+
+  it('should return an empty ojbect if collection is an empty object', () => {
+
+    const iterator = value => {
+      value.test();
+    };
+    return Aigle.mapValuesLimit({}, iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
+        assert.deepEqual(res, {});
+      });
+  });
+
+  it('should return an empty object if collection is string', () => {
+
+    const iterator = value => {
+      value.test();
+    };
+    return Aigle.mapValuesLimit('test', iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
+        assert.deepEqual(res, {});
+      });
+  });
 });
 
 parallel('#mapValuesLimit', () => {
