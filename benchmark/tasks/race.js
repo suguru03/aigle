@@ -7,7 +7,8 @@ module.exports = ({ Aigle, Bluebird }) => {
   let count;
 
   return {
-    'promise:race': {
+    'race': {
+      doc: true,
       setup: config => count = config.count,
       aigle: () => {
         const tasks = _.times(count, n => {
@@ -22,7 +23,8 @@ module.exports = ({ Aigle, Bluebird }) => {
         return Bluebird.race(tasks);
       }
     },
-    'promise:race:async': {
+    'race:async': {
+      doc: true,
       setup: config => count = config.count,
       aigle: () => {
         const tasks = _.times(count, () => {

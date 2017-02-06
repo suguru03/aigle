@@ -56,8 +56,11 @@ const benchmarkTasks = _.transform(tasks, (result, obj) => {
   obj = _.omit(obj, 'config');
   _.forOwn(obj, (tasks, name) => {
 
+    if (makeDock && !tasks.doc) {
+      return;
+    }
     const setup = _.get(tasks, ['setup'], _.noop);
-    tasks = _.omit(tasks, 'setup');
+    tasks = _.omit(tasks, 'setup', 'doc');
     result.push(() => {
       console.log('======================================');
       console.log(`[${name}] Preparing...`);
@@ -107,12 +110,12 @@ if (makeDock) {
   benchmarkTasks.push(() => {
     console.log('======================================');
     console.log('Making README...');
-    let doc = '## Benchmark (using [benchmark.js](https://github.com/bestiejs/benchmark.js))\n';
+    let doc = '## Benchmark \n\n(using [benchmark.js](https://github.com/bestiejs/benchmark.js))\n';
 
     // version
     doc += '\n### Libraries\n';
     doc += _.reduce(versionMap, (result, version, key) => {
-      return `${result}- [${key}] version:${version}\n`;
+      return `${result}- ${key} v${version}\n`;
     }, '');
 
     // benchmarks
@@ -123,6 +126,9 @@ if (makeDock) {
     doc += _.reduce(resultMap, (result, obj, key) => {
       const array = _.map(names, key => {
         const { index, mean, diff } = obj[key] || {};
+        if (!index) {
+          return '';
+        }
         if (index === 1) {
           return `**${mean.toPrecision(3)}μs**`;
         }

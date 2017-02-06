@@ -3,7 +3,8 @@
 module.exports = ({ Aigle, Bluebird }) => {
 
   return {
-    'promise:join:1': {
+    'join:1': {
+      doc: true,
       setup: () => {
         this._f0 = () => 0;
         this._fn = () => {};
@@ -15,7 +16,8 @@ module.exports = ({ Aigle, Bluebird }) => {
         return Bluebird.join(this._f0, this._fn);
       }
     },
-    'promise:join:5': {
+    'join:5': {
+      doc: true,
       setup: () => {
         this._f0 = () => 0;
         this._f1 = () => 1;
@@ -31,7 +33,8 @@ module.exports = ({ Aigle, Bluebird }) => {
         return Bluebird.join(this._f0, this._f1, this._f2, this._f3, this._f4, this._fn);
       }
     },
-    'promise:join:10': {
+    'join:10': {
+      doc: true,
       setup: () => {
         this._f0 = () => 0;
         this._f1 = () => 1;

@@ -7,7 +7,8 @@ module.exports = ({ Aigle, Bluebird }) => {
   let count;
 
   return {
-    'promise:props': {
+    'props': {
+      doc: true,
       setup: config => count = config.count,
       aigle: () => {
         const tasks = _.chain(count)
@@ -28,7 +29,8 @@ module.exports = ({ Aigle, Bluebird }) => {
         return Bluebird.props(tasks);
       }
     },
-    'promise:props:async': {
+    'props:async': {
+      doc: true,
       setup: config => count = config.count,
       aigle: () => {
         const tasks = _.chain(count)

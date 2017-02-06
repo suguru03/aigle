@@ -5,7 +5,8 @@ const _ = require('lodash');
 module.exports = ({ Aigle, Bluebird }) => {
 
   return {
-    'promise:spread:10': {
+    'spread:10': {
+      doc: true,
       setup: () => {
         this._args = _.times(10, n => () => n);
         this._fn = () => {};
@@ -17,7 +18,8 @@ module.exports = ({ Aigle, Bluebird }) => {
         return Bluebird.resolve(this._args).spread(this._fn);
       }
     },
-    'promise:spread:100': {
+    'spread:100': {
+      doc: true,
       setup: () => {
         this._args = _.times(100, n => () => n);
         this._fn = () => {};

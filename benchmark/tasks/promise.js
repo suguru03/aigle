@@ -8,6 +8,7 @@ module.exports = ({ Aigle, Bluebird }) => {
 
   return {
     'promise:single': {
+      doc: true,
       aigle: () => {
         return new Aigle(resolve => resolve(0));
       },
@@ -16,6 +17,7 @@ module.exports = ({ Aigle, Bluebird }) => {
       }
     },
     'promise:single:async': {
+      doc: true,
       aigle: () => {
         return new Aigle(resolve => setImmediate(() => resolve(0)));
       },
@@ -24,6 +26,7 @@ module.exports = ({ Aigle, Bluebird }) => {
       }
     },
     'promise:multiple': {
+      doc: true,
       setup: config => {
         count = config.count;
       },
@@ -39,6 +42,7 @@ module.exports = ({ Aigle, Bluebird }) => {
       }
     },
     'promise:multiple:async': {
+      doc: true,
       setup: config => {
         count = config.count;
       },
