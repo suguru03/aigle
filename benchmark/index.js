@@ -1,5 +1,7 @@
 'use strict';
 
+const fs = require('fs');
+const path = require('path');
 const _ = require('lodash');
 
 const argv = require('minimist')(process.argv.slice(2));
@@ -11,7 +13,8 @@ const neoAsync = require('neo-async');
 const defaults = { count: 100 };
 
 const count = argv.c || argv.count;
-const target = argv.target; // -t <function name>
+const target = argv.t || argv.target; // -t <function name>
+const makeDock = argv.d || argv.docs; // -d make documents
 let Promise = global.Promise;
 if (argv.p) {
   const regExp = RegExp(argv.p);
@@ -26,7 +29,11 @@ const functions = {
 };
 
 console.log('======================================');
-_.forOwn(functions, (obj, key) => console.log(`[${key}] v${obj.version||obj.VERSION}`));
+const versionMap = _.mapValues(functions, (obj, key) => {
+  const version = obj.version || obj.VERSION || '0.0.0';
+  console.log(`[${key}] v${version}`);
+  return version;
+});
 
 let tasks = require('./tasks')(functions);
 if (target) {
@@ -41,6 +48,7 @@ if (target) {
     .omit(obj => _.isEmpty(obj))
     .value();
 }
+const resultMap = {};
 const benchmarkTasks = _.transform(tasks, (result, obj) => {
   const config = {
     count: count || _.get(obj.config, ['count'], defaults.count)
@@ -79,6 +87,7 @@ const benchmarkTasks = _.transform(tasks, (result, obj) => {
     result.push(() => {
       console.log('--------------------------------------');
       console.log(`[${name}] Executing...`);
+      const map = resultMap[name] = {};
       return new Benchmark()
         .config(config)
         .tasks(tasks)
@@ -86,11 +95,44 @@ const benchmarkTasks = _.transform(tasks, (result, obj) => {
         .then(result => _.forEach(result, ({ name, mean }, index, array) => {
           const diff = (_.first(array).mean) / mean;
           const rate = mean / (_.first(array).mean);
-          console.log(`[${++index}] "${name}" ${mean.toPrecision(3)}μs[${diff.toPrecision(3)}][${rate.toPrecision(3)}]`);
+          ++index;
+          map[name] = { index, mean, diff, rate };
+          console.log(`[${index}] "${name}" ${mean.toPrecision(3)}μs[${diff.toPrecision(3)}][${rate.toPrecision(3)}]`);
         }));
     });
   });
 }, []);
+
+if (makeDock) {
+  benchmarkTasks.push(() => {
+    console.log('======================================');
+    console.log('Making README...');
+    let doc = '## Benchmark (using [benchmark.js](https://github.com/bestiejs/benchmark.js))\n';
+
+    // version
+    doc += '\n### Libraries\n';
+    doc += _.reduce(versionMap, (result, version, key) => {
+      return `${result}- [${key}] version:${version}\n`;
+    }, '');
+
+    // benchmarks
+    const names = _.map(versionMap, (value, key) => _.camelCase(key));
+    doc += '\n### Results\n';
+    doc += `|benchmark|${names.join('|')}|\n`;
+    doc += `|---|${_.times(names.length, _.constant('---')).join('|')}|\n`;
+    doc += _.reduce(resultMap, (result, obj, key) => {
+      const array = _.map(names, key => {
+        const { index, mean, diff } = obj[key] || {};
+        if (index === 1) {
+          return `**${mean.toPrecision(3)}μs**`;
+        }
+        return `${mean.toPrecision(3)}μs [${diff.toPrecision(3)}]`;
+      });
+      return `${result}|${key}|${array.join('|')}|\n`;
+    }, '');
+    fs.writeFileSync(path.resolve(__dirname, 'README.md'), doc, 'utf8');
+  });
+}
 
 (function exec() {
   const task = benchmarkTasks.shift();

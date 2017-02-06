@@ -24,7 +24,7 @@ module.exports = ({ Aigle, Bluebird, neoAsync }) => {
         return Bluebird.all(tasks);
       },
       neoAsync: callback => {
-        neoAsync.times(count, (n, cb) => cb(), callback);
+        neoAsync.times(count, (n, cb) => cb(null, n), callback);
       }
     },
     'promise:all:async': {
