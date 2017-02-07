@@ -9,7 +9,7 @@ const DELAY = require('../config').DELAY;
 
 parallel('props', () => {
 
-  it('should execute on parallel', () => {
+  it('should execute in parallel', () => {
 
     const order = [];
     const delay = util.makeDelayTask(order);
@@ -96,7 +96,7 @@ parallel('props', () => {
 
 parallel('#props', () => {
 
-  it('should execute on parallel', () => {
+  it('should execute in parallel', () => {
 
     const order = [];
     const delay = util.makeDelayTask(order);

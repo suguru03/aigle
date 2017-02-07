@@ -8,7 +8,7 @@ const DELAY = require('../config').DELAY;
 
 parallel('pick', () => {
 
-  it('should execute on parallel', () => {
+  it('should execute in parallel', () => {
 
     const order = [];
     const collection = [1, 4, 2];
@@ -32,7 +32,7 @@ parallel('pick', () => {
       });
   });
 
-  it('should execute with object collection on parallel', () => {
+  it('should execute with object collection in parallel', () => {
 
     const order = [];
     const collection = {
@@ -113,7 +113,7 @@ parallel('pick', () => {
 
 parallel('#pick', () => {
 
-  it('should execute on parallel', () => {
+  it('should execute in parallel', () => {
 
     const order = [];
     const collection = [1, 4, 2];
@@ -138,7 +138,7 @@ parallel('#pick', () => {
       });
   });
 
-  it('should execute with object collection on parallel', () => {
+  it('should execute with object collection in parallel', () => {
     const order = [];
     const collection = {
       task1: 1,

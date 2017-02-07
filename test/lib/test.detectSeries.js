@@ -8,7 +8,7 @@ const DELAY = require('../config').DELAY;
 
 parallel('detectSeries', () => {
 
-  it('should execute on parallel', () => {
+  it('should execute in series', () => {
 
     const order = [];
     const collection = [1, 4, 2];
@@ -35,7 +35,7 @@ parallel('detectSeries', () => {
       .then(res => assert.strictEqual(res, 1));
   });
 
-  it('should execute with object collection on parallel', () => {
+  it('should execute with object collection in series', () => {
 
     const order = [];
     const collection = {
@@ -101,7 +101,7 @@ parallel('detectSeries', () => {
 
 parallel('#detectSeries', () => {
 
-  it('should execute on parallel', () => {
+  it('should execute in series', () => {
 
     const order = [];
     const collection = [1, 4, 2];
@@ -121,7 +121,7 @@ parallel('#detectSeries', () => {
       });
   });
 
-  it('should execute with object collection on parallel', () => {
+  it('should execute with object collection in series', () => {
     const order = [];
     const collection = {
       task1: 1,

@@ -8,7 +8,7 @@ const DELAY = require('../config').DELAY;
 
 parallel('mapValues', () => {
 
-  it('should execute on parallel', () => {
+  it('should execute in parallel', () => {
 
     const order = [];
     const collection = [1, 4, 2];
@@ -34,7 +34,7 @@ parallel('mapValues', () => {
       });
   });
 
-  it('should execute with object collection on parallel', () => {
+  it('should execute with object collection in parallel', () => {
 
     const order = [];
     const collection = {
@@ -117,7 +117,7 @@ parallel('mapValues', () => {
 
 parallel('#mapValues', () => {
 
-  it('should execute on parallel', () => {
+  it('should execute in parallel', () => {
 
     const order = [];
     const collection = [1, 4, 2];
@@ -143,7 +143,7 @@ parallel('#mapValues', () => {
       });
   });
 
-  it('should execute with object collection on parallel', () => {
+  it('should execute with object collection in parallel', () => {
     const order = [];
     const collection = {
       task1: 1,
