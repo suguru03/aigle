@@ -2,43 +2,52 @@
 
 const assert = require('assert');
 
-const _ = require('lodash');
 const parallel = require('mocha.parallel');
 const Aigle = require('../../');
 const DELAY = require('../config').DELAY;
 
-parallel('sortByLimit', () => {
+parallel('sortBySeries', () => {
 
-  it('should execute', () => {
+  it('should execute in series', () => {
 
     const order = [];
-    const collection = [1, 4, 2, 1];
+    const collection = [1, 4, 2];
     const iterator = (value, key) => {
       return new Aigle(resolve => setTimeout(() => {
         order.push([key, value]);
         resolve(value);
       }, DELAY * value));
     };
-    return Aigle.sortByLimit(collection, 2, iterator)
+    return Aigle.sortBySeries(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 1, 2, 4]);
+        assert.deepEqual(res, [1, 2, 4]);
         assert.deepEqual(order, [
           [0, 1],
-          [2, 2],
           [1, 4],
-          [3, 1]
+          [2, 2]
         ]);
       });
   });
 
-  it('should execute with object collection', () => {
+  it('should execute on synchronous', () => {
+
+    const collection = [1, 4, 2];
+    const iterator = value => value * 2;
+    return Aigle.sortBySeries(collection, iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
+        assert.deepEqual(res, [1, 2, 4]);
+      });
+  });
+
+  it('should execute with object collection in series', () => {
+
     const order = [];
     const collection = {
       task1: 1,
       task2: 4,
-      task3: 2,
-      task4: 1
+      task3: 2
     };
     const iterator = (value, key) => {
       return new Aigle(resolve => setTimeout(() => {
@@ -46,31 +55,15 @@ parallel('sortByLimit', () => {
         resolve(value);
       }, DELAY * value));
     };
-    return Aigle.sortByLimit(collection, 2, iterator)
+    return Aigle.sortBySeries(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 1, 2, 4]);
+        assert.deepEqual(res, [1, 2, 4]);
         assert.deepEqual(order, [
           ['task1', 1],
-          ['task3', 2],
           ['task2', 4],
-          ['task4', 1]
+          ['task3', 2]
         ]);
-      });
-  });
-
-  it('should execute with default concurrency which is 8', () => {
-
-    const collection = _.times(10);
-    const order = [];
-    const iterator = value => {
-      order.push(value);
-      return new Aigle(_.noop);
-    };
-    Aigle.sortByLimit(collection, iterator);
-    return Aigle.delay(DELAY)
-      .then(() => {
-        assert.deepEqual(order, _.times(8));
       });
   });
 
@@ -79,7 +72,7 @@ parallel('sortByLimit', () => {
     const iterator = value => {
       value.test();
     };
-    return Aigle.sortByLimit([], iterator)
+    return Aigle.sortBySeries([], iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.strictEqual(res.length, 0);
@@ -91,7 +84,7 @@ parallel('sortByLimit', () => {
     const iterator = value => {
       value.test();
     };
-    return Aigle.sortByLimit({}, iterator)
+    return Aigle.sortBySeries({}, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.strictEqual(res.length, 0);
@@ -103,65 +96,90 @@ parallel('sortByLimit', () => {
     const iterator = value => {
       value.test();
     };
-    return Aigle.sortByLimit('test', iterator)
+    return Aigle.sortBySeries('test', iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.strictEqual(res.length, 0);
       });
   });
+
+  it('should throw TypeError', () => {
+
+    const collection = [1, 4, 2];
+    const iterator = value => {
+      value.test();
+    };
+    return Aigle.sortBySeries(collection, iterator)
+      .then(() => assert.ok(false))
+      .catch(TypeError, error => {
+        assert.ok(error);
+        assert.ok(error instanceof TypeError);
+      });
+  });
 });
 
-parallel('#sortByLimit', () => {
+parallel('#sortBySeries', () => {
 
-  it('should execute', () => {
+  it('should execute in series', () => {
 
     const order = [];
-    const collection = [1, 4, 2, 1];
+    const collection = [1, 4, 2];
     const iterator = (value, key) => {
       return new Aigle(resolve => setTimeout(() => {
         order.push([key, value]);
-        resolve(value);
+        resolve(value * 2);
       }, DELAY * value));
     };
     return Aigle.resolve(collection)
-      .sortByLimit(2, iterator)
+      .sortBySeries(iterator)
       .then(res => {
-        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 1, 2, 4]);
+        assert.deepEqual(res, [1, 2, 4]);
         assert.deepEqual(order, [
           [0, 1],
-          [2, 2],
           [1, 4],
-          [3, 1]
+          [2, 2]
         ]);
       });
   });
 
-  it('should execute with object collection', () => {
+  it('should execute with object collection in series', () => {
     const order = [];
     const collection = {
       task1: 1,
       task2: 4,
-      task3: 2,
-      task4: 1
+      task3: 2
     };
     const iterator = (value, key) => {
       return new Aigle(resolve => setTimeout(() => {
         order.push([key, value]);
-        resolve(value);
+        resolve(value * 2);
       }, DELAY * value));
     };
     return Aigle.resolve(collection)
-      .sortByLimit(2, iterator)
+      .sortBySeries(iterator)
       .then(res => {
-        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 1, 2, 4]);
+        assert.deepEqual(res, [1, 2, 4]);
         assert.deepEqual(order, [
           ['task1', 1],
-          ['task3', 2],
           ['task2', 4],
-          ['task4', 1]
+          ['task3', 2]
         ]);
       });
   });
+
+  it('should throw TypeError', () => {
+
+    const collection = [1, 4, 2];
+    const iterator = value => {
+      value.test();
+    };
+    return Aigle.resolve(collection)
+      .sortBySeries(iterator)
+      .then(() => assert.ok(false))
+      .catch(TypeError, error => {
+        assert.ok(error);
+        assert.ok(error instanceof TypeError);
+      });
+  });
 });
+
