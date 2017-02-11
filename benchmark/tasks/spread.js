@@ -6,7 +6,6 @@ module.exports = ({ Aigle, Bluebird }) => {
 
   return {
     'spread:10': {
-      doc: true,
       setup: () => {
         this._args = _.times(10, n => () => n);
         this._fn = () => {};
@@ -19,7 +18,6 @@ module.exports = ({ Aigle, Bluebird }) => {
       }
     },
     'spread:100': {
-      doc: true,
       setup: () => {
         this._args = _.times(100, n => () => n);
         this._fn = () => {};

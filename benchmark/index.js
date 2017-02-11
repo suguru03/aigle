@@ -27,6 +27,9 @@ const functions = {
   Bluebird,
   neoAsync
 };
+if (makeDock) {
+  delete functions.neoAsync;
+}
 
 console.log('======================================');
 const versionMap = _.mapValues(functions, (obj, key) => {
