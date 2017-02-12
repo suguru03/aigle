@@ -64,7 +64,7 @@ parallel('someSeries', () => {
       value.test();
     };
     return Aigle.someSeries([], iterator)
-      .then(res => assert.strictEqual(res, undefined));
+      .then(res => assert.strictEqual(res, false));
   });
 
   it('should return an empty array if collection is an empty object', () => {
@@ -73,7 +73,7 @@ parallel('someSeries', () => {
       value.test();
     };
     return Aigle.someSeries({}, iterator)
-      .then(res => assert.strictEqual(res, undefined));
+      .then(res => assert.strictEqual(res, false));
   });
 
   it('should return an empty array if collection is string', () => {
@@ -82,7 +82,7 @@ parallel('someSeries', () => {
       value.test();
     };
     return Aigle.someSeries('test', iterator)
-      .then(res => assert.strictEqual(res, undefined));
+      .then(res => assert.strictEqual(res, false));
   });
   it('should throw TypeError', () => {
 

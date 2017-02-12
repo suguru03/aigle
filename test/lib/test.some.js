@@ -56,7 +56,7 @@ parallel('some', () => {
       value.test();
     };
     return Aigle.some([], iterator)
-      .then(res => assert.strictEqual(res, undefined));
+      .then(res => assert.strictEqual(res, false));
   });
 
   it('should return undefined if collection is an empty object', () => {
@@ -65,7 +65,7 @@ parallel('some', () => {
       value.test();
     };
     return Aigle.some({}, iterator)
-      .then(res => assert.strictEqual(res, undefined));
+      .then(res => assert.strictEqual(res, false));
   });
 
   it('should return undefined if collection is string', () => {
@@ -74,7 +74,7 @@ parallel('some', () => {
       value.test();
     };
     return Aigle.some('test', iterator)
-      .then(res => assert.strictEqual(res, undefined));
+      .then(res => assert.strictEqual(res, false));
   });
 
   it('should throw TypeError', () => {

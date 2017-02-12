@@ -72,7 +72,7 @@ parallel('someLimit', () => {
       value.test();
     };
     return Aigle.someLimit([], iterator)
-      .then(res => assert.strictEqual(res, undefined));
+      .then(res => assert.strictEqual(res, false));
   });
 
   it('should return an empty array if collection is an empty object', () => {
@@ -81,7 +81,7 @@ parallel('someLimit', () => {
       value.test();
     };
     return Aigle.someLimit({}, iterator)
-      .then(res => assert.strictEqual(res, undefined));
+      .then(res => assert.strictEqual(res, false));
   });
 
   it('should return an empty array if collection is string', () => {
@@ -90,7 +90,7 @@ parallel('someLimit', () => {
       value.test();
     };
     return Aigle.someLimit('test', iterator)
-      .then(res => assert.strictEqual(res, undefined));
+      .then(res => assert.strictEqual(res, false));
   });
 });
 
