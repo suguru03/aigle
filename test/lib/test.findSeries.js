@@ -2,24 +2,23 @@
 
 const assert = require('assert');
 
-const _ = require('lodash');
 const parallel = require('mocha.parallel');
 const Aigle = require('../../');
 const DELAY = require('../config').DELAY;
 
-parallel('detectLimit', () => {
+parallel('findSeries', () => {
 
-  it('should execute', () => {
+  it('should execute in series', () => {
 
     const order = [];
-    const collection = [1, 4, 2, 1];
+    const collection = [1, 4, 2];
     const iterator = (value, key) => {
       return new Aigle(resolve => setTimeout(() => {
         order.push([key, value]);
         resolve(value % 2);
       }, DELAY * value));
     };
-    return Aigle.detectLimit(collection, 2, iterator)
+    return Aigle.findSeries(collection, iterator)
       .then(res => {
         assert.strictEqual(res, 1);
         assert.deepEqual(order, [
@@ -28,13 +27,21 @@ parallel('detectLimit', () => {
       });
   });
 
-  it('should execute with object collection', () => {
+  it('should execute on synchronous', () => {
+
+    const collection = [1, 4, 2];
+    const iterator = value => value % 2;
+    return Aigle.findSeries(collection, iterator)
+      .then(res => assert.strictEqual(res, 1));
+  });
+
+  it('should execute with object collection in series', () => {
+
     const order = [];
     const collection = {
       task1: 1,
       task2: 4,
-      task3: 2,
-      task4: 1
+      task3: 2
     };
     const iterator = (value, key) => {
       return new Aigle(resolve => setTimeout(() => {
@@ -42,27 +49,12 @@ parallel('detectLimit', () => {
         resolve(value % 2);
       }, DELAY * value));
     };
-    return Aigle.detectLimit(collection, 2, iterator)
+    return Aigle.findSeries(collection, iterator)
       .then(res => {
         assert.strictEqual(res, 1);
         assert.deepEqual(order, [
           ['task1', 1]
         ]);
-      });
-  });
-
-  it('should execute with default concurrency which is 8', () => {
-
-    const collection = _.times(10);
-    const order = [];
-    const iterator = value => {
-      order.push(value);
-      return new Aigle(_.noop);
-    };
-    Aigle.detectLimit(collection, iterator);
-    return Aigle.delay(DELAY)
-      .then(() => {
-        assert.deepEqual(order, _.times(8));
       });
   });
 
@@ -71,7 +63,7 @@ parallel('detectLimit', () => {
     const iterator = value => {
       value.test();
     };
-    return Aigle.detectLimit([], iterator)
+    return Aigle.findSeries([], iterator)
       .then(res => assert.strictEqual(res, undefined));
   });
 
@@ -80,7 +72,7 @@ parallel('detectLimit', () => {
     const iterator = value => {
       value.test();
     };
-    return Aigle.detectLimit({}, iterator)
+    return Aigle.findSeries({}, iterator)
       .then(res => assert.strictEqual(res, undefined));
   });
 
@@ -89,17 +81,30 @@ parallel('detectLimit', () => {
     const iterator = value => {
       value.test();
     };
-    return Aigle.detectLimit('test', iterator)
+    return Aigle.findSeries('test', iterator)
       .then(res => assert.strictEqual(res, undefined));
+  });
+  it('should throw TypeError', () => {
+
+    const collection = [1, 4, 2];
+    const iterator = value => {
+      value.test();
+    };
+    return Aigle.findSeries(collection, iterator)
+      .then(() => assert.ok(false))
+      .catch(TypeError, error => {
+        assert.ok(error);
+        assert.ok(error instanceof TypeError);
+      });
   });
 });
 
-parallel('#detectLimit', () => {
+parallel('#findSeries', () => {
 
-  it('should execute', () => {
+  it('should execute in series', () => {
 
     const order = [];
-    const collection = [1, 4, 2, 1];
+    const collection = [1, 4, 2];
     const iterator = (value, key) => {
       return new Aigle(resolve => setTimeout(() => {
         order.push([key, value]);
@@ -107,7 +112,7 @@ parallel('#detectLimit', () => {
       }, DELAY * value));
     };
     return Aigle.resolve(collection)
-      .detectLimit(2, iterator)
+      .findSeries(iterator)
       .then(res => {
         assert.strictEqual(res, 1);
         assert.deepEqual(order, [
@@ -116,13 +121,12 @@ parallel('#detectLimit', () => {
       });
   });
 
-  it('should execute with object collection', () => {
+  it('should execute with object collection in series', () => {
     const order = [];
     const collection = {
       task1: 1,
       task2: 4,
-      task3: 2,
-      task4: 1
+      task3: 2
     };
     const iterator = (value, key) => {
       return new Aigle(resolve => setTimeout(() => {
@@ -131,12 +135,27 @@ parallel('#detectLimit', () => {
       }, DELAY * value));
     };
     return Aigle.resolve(collection)
-      .detectLimit(2, iterator)
+      .findSeries(iterator)
       .then(res => {
         assert.strictEqual(res, 1);
         assert.deepEqual(order, [
           ['task1', 1]
         ]);
+      });
+  });
+
+  it('should throw TypeError', () => {
+
+    const collection = [1, 4, 2];
+    const iterator = value => {
+      value.test();
+    };
+    return Aigle.resolve(collection)
+      .findSeries(iterator)
+      .then(() => assert.ok(false))
+      .catch(TypeError, error => {
+        assert.ok(error);
+        assert.ok(error instanceof TypeError);
       });
   });
 });

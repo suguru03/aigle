@@ -6,9 +6,9 @@ const parallel = require('mocha.parallel');
 const Aigle = require('../../');
 const DELAY = require('../config').DELAY;
 
-parallel('detectSeries', () => {
+parallel('find', () => {
 
-  it('should execute in series', () => {
+  it('should execute in parallel', () => {
 
     const order = [];
     const collection = [1, 4, 2];
@@ -18,7 +18,7 @@ parallel('detectSeries', () => {
         resolve(value % 2);
       }, DELAY * value));
     };
-    return Aigle.detectSeries(collection, iterator)
+    return Aigle.find(collection, iterator)
       .then(res => {
         assert.strictEqual(res, 1);
         assert.deepEqual(order, [
@@ -27,15 +27,7 @@ parallel('detectSeries', () => {
       });
   });
 
-  it('should execute on synchronous', () => {
-
-    const collection = [1, 4, 2];
-    const iterator = value => value % 2;
-    return Aigle.detectSeries(collection, iterator)
-      .then(res => assert.strictEqual(res, 1));
-  });
-
-  it('should execute with object collection in series', () => {
+  it('should execute with object collection in parallel', () => {
 
     const order = [];
     const collection = {
@@ -49,7 +41,7 @@ parallel('detectSeries', () => {
         resolve(value % 2);
       }, DELAY * value));
     };
-    return Aigle.detectSeries(collection, iterator)
+    return Aigle.find(collection, iterator)
       .then(res => {
         assert.strictEqual(res, 1);
         assert.deepEqual(order, [
@@ -58,39 +50,40 @@ parallel('detectSeries', () => {
       });
   });
 
-  it('should return an empty array if collection is an empty array', () => {
+  it('should return undefined if collection is an empty array', () => {
 
     const iterator = value => {
       value.test();
     };
-    return Aigle.detectSeries([], iterator)
+    return Aigle.find([], iterator)
       .then(res => assert.strictEqual(res, undefined));
   });
 
-  it('should return an empty array if collection is an empty object', () => {
+  it('should return undefined if collection is an empty object', () => {
 
     const iterator = value => {
       value.test();
     };
-    return Aigle.detectSeries({}, iterator)
+    return Aigle.find({}, iterator)
       .then(res => assert.strictEqual(res, undefined));
   });
 
-  it('should return an empty array if collection is string', () => {
+  it('should return undefined if collection is string', () => {
 
     const iterator = value => {
       value.test();
     };
-    return Aigle.detectSeries('test', iterator)
+    return Aigle.find('test', iterator)
       .then(res => assert.strictEqual(res, undefined));
   });
+
   it('should throw TypeError', () => {
 
     const collection = [1, 4, 2];
     const iterator = value => {
       value.test();
     };
-    return Aigle.detectSeries(collection, iterator)
+    return Aigle.find(collection, iterator)
       .then(() => assert.ok(false))
       .catch(TypeError, error => {
         assert.ok(error);
@@ -99,9 +92,9 @@ parallel('detectSeries', () => {
   });
 });
 
-parallel('#detectSeries', () => {
+parallel('#find', () => {
 
-  it('should execute in series', () => {
+  it('should execute in parallel', () => {
 
     const order = [];
     const collection = [1, 4, 2];
@@ -112,7 +105,7 @@ parallel('#detectSeries', () => {
       }, DELAY * value));
     };
     return Aigle.resolve(collection)
-      .detectSeries(iterator)
+      .find(iterator)
       .then(res => {
         assert.strictEqual(res, 1);
         assert.deepEqual(order, [
@@ -121,7 +114,7 @@ parallel('#detectSeries', () => {
       });
   });
 
-  it('should execute with object collection in series', () => {
+  it('should execute with object collection in parallel', () => {
     const order = [];
     const collection = {
       task1: 1,
@@ -135,7 +128,7 @@ parallel('#detectSeries', () => {
       }, DELAY * value));
     };
     return Aigle.resolve(collection)
-      .detectSeries(iterator)
+      .find(iterator)
       .then(res => {
         assert.strictEqual(res, 1);
         assert.deepEqual(order, [
@@ -151,7 +144,7 @@ parallel('#detectSeries', () => {
       value.test();
     };
     return Aigle.resolve(collection)
-      .detectSeries(iterator)
+      .find(iterator)
       .then(() => assert.ok(false))
       .catch(TypeError, error => {
         assert.ok(error);
@@ -159,3 +152,4 @@ parallel('#detectSeries', () => {
       });
   });
 });
+
