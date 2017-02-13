@@ -63,6 +63,27 @@ parallel('doWhilst', () => {
     sync = false;
     return promise;
   });
+
+  it('should execute with an asynchronous test case', () => {
+
+    let count = 0;
+    const limit = 5;
+    const order = { test: [], iterator: [] };
+    const test = () => {
+      order.test.push(count);
+      return new Aigle(resolve => setImmediate(() => resolve(count < limit)));
+    };
+    const iterator = () => {
+      order.iterator.push(count++);
+      return new Aigle(resolve => setImmediate(() => resolve(count)));
+    };
+    return Aigle.doWhilst(iterator, test)
+      .then(res => {
+        assert.deepEqual(order.iterator, [0, 1, 2, 3, 4]);
+        assert.deepEqual(order.test, [1, 2, 3, 4, 5]);
+        assert.strictEqual(res, 5);
+      });
+  });
 });
 
 parallel('#doWhilst', () => {

@@ -84,7 +84,6 @@ parallel('whilst', () => {
         assert.strictEqual(res, 5);
       });
   });
-
 });
 
 parallel('#whilst', () => {
