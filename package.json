@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "DELAY=70 mocha test --recursive"
+    "test": "DELAY=100 mocha test --recursive"
   },
   "keywords": [
     "promise",

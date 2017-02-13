@@ -14,7 +14,7 @@ parallel('delay', () => {
     return Aigle.delay(DELAY)
       .then(() => {
         const diff = Date.now() - start;
-        assert.ok(diff > DELAY);
+        assert.ok(diff >= DELAY);
       });
   });
 
@@ -25,7 +25,7 @@ parallel('delay', () => {
     return Aigle.delay(DELAY, str)
       .then(value => {
         const diff = Date.now() - start;
-        assert.ok(diff > DELAY);
+        assert.ok(diff >= DELAY);
         assert.strictEqual(value, str);
       });
   });
@@ -41,7 +41,7 @@ parallel('#delay', () => {
       .delay(DELAY)
       .then(() => {
         const diff = Date.now() - start;
-        assert.ok(diff > DELAY);
+        assert.ok(diff >= DELAY);
       });
   });
 
@@ -53,7 +53,7 @@ parallel('#delay', () => {
       .delay(DELAY)
       .then(value => {
         const diff = Date.now() - start;
-        assert.ok(diff > DELAY);
+        assert.ok(diff >= DELAY);
         assert.strictEqual(value, str);
       });
   });
