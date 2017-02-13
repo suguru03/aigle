@@ -22,6 +22,6 @@
     "neo-async": "^2.0.1"
   },
   "dependencies": {
-    "aigle-core": "0.0.0"
+    "aigle-core": "^0.1.0"
   }
 }
