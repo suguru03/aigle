@@ -4,20 +4,29 @@ const assert = require('assert');
 
 const parallel = require('mocha.parallel');
 const Aigle = require('../../');
+const DELAY = require('../config').DELAY;
 
 parallel('times', () => {
 
   it('should execute', () => {
 
     const count = 5;
+    const order = [];
     const iterator = n => {
-      return new Aigle(resolve => setImmediate(() => resolve(n * 2)));
+      const delay = n % 2 ? n * 5 * DELAY : n * DELAY;
+      return new Aigle(resolve => {
+        setTimeout(() => {
+          order.push(n);
+          resolve(n * 2);
+        }, delay);
+      });
     };
     return Aigle.times(count, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.strictEqual(res.length, count);
         assert.deepEqual(res, [0, 2, 4, 6, 8]);
+        assert.deepEqual(order, [0, 2, 4, 1, 3]);
       });
   });
 
@@ -39,8 +48,15 @@ parallel('#times', () => {
   it('should execute', () => {
 
     const count = 5;
+    const order = [];
     const iterator = n => {
-      return new Aigle(resolve => setImmediate(() => resolve(n * 2)));
+      const delay = n % 2 ? n * 5 * DELAY : n * DELAY;
+      return new Aigle(resolve => {
+        setTimeout(() => {
+          order.push(n);
+          resolve(n * 2);
+        }, delay);
+      });
     };
     return Aigle.resolve(count)
       .times(iterator)
@@ -48,6 +64,7 @@ parallel('#times', () => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.strictEqual(res.length, count);
         assert.deepEqual(res, [0, 2, 4, 6, 8]);
+        assert.deepEqual(order, [0, 2, 4, 1, 3]);
       });
   });
 });
