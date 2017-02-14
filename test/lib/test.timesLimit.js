@@ -14,7 +14,7 @@ parallel('timesLimit', () => {
     const count = 5;
     const order = [];
     const iterator = n => {
-      const delay = n % 2 ? n * 5 * DELAY : n * DELAY;
+      const delay = n % 2 ? (n + 5) * DELAY : (n + 1) * DELAY;
       return new Aigle(resolve => setTimeout(() => {
         order.push(n);
         resolve(n * 2);
@@ -63,7 +63,7 @@ parallel('#timesLimit', () => {
     const count = 5;
     const order = [];
     const iterator = n => {
-      const delay = n % 2 ? n * 5 * DELAY : n * DELAY;
+      const delay = n % 2 ? (n + 5) * DELAY : (n + 1) * DELAY;
       return new Aigle(resolve => setTimeout(() => {
         order.push(n);
         resolve(n * 2);
