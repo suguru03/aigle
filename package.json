@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "DELAY=100 mocha test --recursive"
+    "test": "DELAY=100 mocha test --recursive",
+    "build": "node build"
   },
   "keywords": [
     "promise",
@@ -13,13 +14,18 @@
   "author": "Suguru Motegi",
   "license": "MIT",
   "devDependencies": {
+    "babili": "0.0.11",
     "benchmark": "^2.1.1",
     "bluebird": "^3.4.6",
+    "browserify": "^14.1.0",
+    "buble": "^0.15.2",
     "lodash": "^4.15.0",
     "minimist": "^1.2.0",
     "mocha": "^2.5.3",
     "mocha.parallel": "^0.12.0",
-    "neo-async": "^2.0.1"
+    "neo-async": "^2.0.1",
+    "setimmediate": "^1.0.5",
+    "uglify-js": "^2.7.5"
   },
   "dependencies": {
     "aigle-core": "^0.1.0"
