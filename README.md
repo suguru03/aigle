@@ -3,6 +3,10 @@ Aigle
 
 [Work In Progress]
 
+[![npm](https://img.shields.io/npm/v/aigle.svg)](https://www.npmjs.com/package/aigle)
+[![CircleCI branch](https://img.shields.io/circleci/project/github/suguru03/aigle/master.svg)](https://circleci.com/gh/suguru03/aigle/tree/master)
+[![Codecov branch](https://img.shields.io/codecov/c/github/codecov/aigle/master.svg)]()
+
 Aigle is an ideal promise library.  
 Aigle is never slow down even if you mix different Aigle versions and other promise libraries.  
 All Aigle class is extended by same [Aigle-Core](https://github.com/suguru03/aigle-core). ([benchmark](https://github.com/suguru03/aigle-benchmark) is here)  
