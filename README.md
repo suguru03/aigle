@@ -20,7 +20,7 @@ npm install --save aigle
 ```
 
 ```js
-var Promise = require('aigle');
+const Promise = require('aigle');
 ```
 
 #### browser

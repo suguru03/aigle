@@ -1,8 +1,8 @@
 const fs = require('fs');
-const exec = require('child_process').exec;
+const { exec } = require('child_process');
 
 const builds = [
-  ['browserify', './index.js -s Promise',                      './dist/aigle.js'        ],
+  ['browserify', './browser.js -s Promise',                    './dist/aigle.js'        ],
   ['babili',     './dist/aigle.js',                            './dist/aigle.min.js'    ],
   ['buble',      './dist/aigle.js',                            './dist/aigle-es5.js'    ],
   ['uglifyjs',   '--compress --mangle -- ./dist/aigle-es5.js', './dist/aigle-es5.min.js'] 
