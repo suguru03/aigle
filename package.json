@@ -5,7 +5,7 @@
   "main": "index.js",
   "browser": "browser.js",
   "scripts": {
-    "test": "DELAY=100 mocha test --recursive",
+    "test": "DELAY=50 mocha test --recursive",
     "build": "node build"
   },
   "keywords": [
