@@ -12,7 +12,7 @@ parallel('someLimit', () => {
   it('should execute', () => {
 
     const order = [];
-    const collection = [1, 4, 2, 1];
+    const collection = [1, 5, 3, 4, 2];
     const iterator = (value, key) => {
       return new Aigle(resolve => setTimeout(() => {
         order.push([key, value]);
@@ -32,9 +32,10 @@ parallel('someLimit', () => {
     const order = [];
     const collection = {
       task1: 1,
-      task2: 4,
-      task3: 2,
-      task4: 1
+      task2: 5,
+      task3: 3,
+      task4: 4,
+      task5: 2
     };
     const iterator = (value, key) => {
       return new Aigle(resolve => setTimeout(() => {
@@ -99,7 +100,7 @@ parallel('#someLimit', () => {
   it('should execute', () => {
 
     const order = [];
-    const collection = [1, 4, 2, 1];
+    const collection = [1, 5, 3, 4, 2];
     const iterator = (value, key) => {
       return new Aigle(resolve => setTimeout(() => {
         order.push([key, value]);
@@ -120,9 +121,10 @@ parallel('#someLimit', () => {
     const order = [];
     const collection = {
       task1: 1,
-      task2: 4,
-      task3: 2,
-      task4: 1
+      task2: 5,
+      task3: 3,
+      task4: 4,
+      task5: 2
     };
     const iterator = (value, key) => {
       return new Aigle(resolve => setTimeout(() => {

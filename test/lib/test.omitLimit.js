@@ -12,7 +12,7 @@ parallel('omitLimit', () => {
   it('should execute', () => {
 
     const order = [];
-    const collection = [1, 4, 2, 1];
+    const collection = [1, 5, 3, 4, 2];
     const iterator = (value, key) => {
       return new Aigle(resolve => setTimeout(() => {
         order.push([key, value]);
@@ -23,14 +23,15 @@ parallel('omitLimit', () => {
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepEqual(res, {
-          '1': 4,
-          '2': 2
+          '3': 4,
+          '4': 2
         });
         assert.deepEqual(order, [
           [0, 1],
-          [2, 2],
-          [1, 4],
-          [3, 1]
+          [2, 3],
+          [1, 5],
+          [4, 2],
+          [3, 4]
         ]);
       });
   });
@@ -39,9 +40,10 @@ parallel('omitLimit', () => {
     const order = [];
     const collection = {
       task1: 1,
-      task2: 4,
-      task3: 2,
-      task4: 1
+      task2: 5,
+      task3: 3,
+      task4: 4,
+      task5: 2
     };
     const iterator = (value, key) => {
       return new Aigle(resolve => setTimeout(() => {
@@ -53,14 +55,15 @@ parallel('omitLimit', () => {
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepEqual(res, {
-          'task2': 4,
-          'task3': 2
+          task4: 4,
+          task5: 2
         });
         assert.deepEqual(order, [
           ['task1', 1],
-          ['task3', 2],
-          ['task2', 4],
-          ['task4', 1]
+          ['task3', 3],
+          ['task2', 5],
+          ['task5', 2],
+          ['task4', 4]
         ]);
       });
   });
@@ -122,7 +125,7 @@ parallel('#omitLimit', () => {
   it('should execute', () => {
 
     const order = [];
-    const collection = [1, 4, 2, 1];
+    const collection = [1, 5, 3, 4, 2];
     const iterator = (value, key) => {
       return new Aigle(resolve => setTimeout(() => {
         order.push([key, value]);
@@ -134,14 +137,15 @@ parallel('#omitLimit', () => {
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepEqual(res, {
-          '1': 4,
-          '2': 2
+          '3': 4,
+          '4': 2
         });
         assert.deepEqual(order, [
           [0, 1],
-          [2, 2],
-          [1, 4],
-          [3, 1]
+          [2, 3],
+          [1, 5],
+          [4, 2],
+          [3, 4]
         ]);
       });
   });
@@ -150,9 +154,10 @@ parallel('#omitLimit', () => {
     const order = [];
     const collection = {
       task1: 1,
-      task2: 4,
-      task3: 2,
-      task4: 1
+      task2: 5,
+      task3: 3,
+      task4: 4,
+      task5: 2
     };
     const iterator = (value, key) => {
       return new Aigle(resolve => setTimeout(() => {
@@ -165,14 +170,15 @@ parallel('#omitLimit', () => {
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepEqual(res, {
-          'task2': 4,
-          'task3': 2
+          task4: 4,
+          task5: 2
         });
         assert.deepEqual(order, [
           ['task1', 1],
-          ['task3', 2],
-          ['task2', 4],
-          ['task4', 1]
+          ['task3', 3],
+          ['task2', 5],
+          ['task5', 2],
+          ['task4', 4]
         ]);
       });
   });

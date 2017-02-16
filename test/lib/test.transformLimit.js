@@ -12,7 +12,7 @@ parallel('transformLimit', () => {
   it('should execute', () => {
 
     const order = [];
-    const collection = [1, 4, 2, 1];
+    const collection = [1, 5, 3, 4, 2];
     const iterator = (result, value, key) => {
       return new Aigle(resolve => setTimeout(() => {
         order.push([key, value]);
@@ -23,12 +23,13 @@ parallel('transformLimit', () => {
     return Aigle.transformLimit(collection, 2, [], iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 2, 4, 1]);
+        assert.deepEqual(res, [1, 3, 5, 2, 4]);
         assert.deepEqual(order, [
           [0, 1],
-          [2, 2],
-          [1, 4],
-          [3, 1]
+          [2, 3],
+          [1, 5],
+          [4, 2],
+          [3, 4]
         ]);
       });
   });
@@ -37,9 +38,10 @@ parallel('transformLimit', () => {
     const order = [];
     const collection = {
       task1: 1,
-      task2: 4,
-      task3: 2,
-      task4: 1
+      task2: 5,
+      task3: 3,
+      task4: 4,
+      task5: 2
     };
     const iterator = (result, value, key) => {
       return new Aigle(resolve => setTimeout(() => {
@@ -51,12 +53,13 @@ parallel('transformLimit', () => {
     return Aigle.transformLimit(collection, 2, [], iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 2, 4, 1]);
+        assert.deepEqual(res, [1, 3, 5, 2, 4]);
         assert.deepEqual(order, [
           ['task1', 1],
-          ['task3', 2],
-          ['task2', 4],
-          ['task4', 1]
+          ['task3', 3],
+          ['task2', 5],
+          ['task5', 2],
+          ['task4', 4]
         ]);
       });
   });
@@ -88,7 +91,7 @@ parallel('transformLimit', () => {
       });
   });
 
-  it('should return an empty array if collection is an empty object', () => {
+  it('should return an empty object if collection is an empty object', () => {
 
     const iterator = value => {
       value.test();
@@ -100,7 +103,7 @@ parallel('transformLimit', () => {
       });
   });
 
-  it('should return an empty array if collection is string', () => {
+  it('should return an empty object if collection is string', () => {
 
     const iterator = value => {
       value.test();
@@ -118,7 +121,7 @@ parallel('#transformLimit', () => {
   it('should execute', () => {
 
     const order = [];
-    const collection = [1, 4, 2, 1];
+    const collection = [1, 5, 3, 4, 2];
     const iterator = (result, value, key) => {
       return new Aigle(resolve => setTimeout(() => {
         order.push([key, value]);
@@ -130,12 +133,13 @@ parallel('#transformLimit', () => {
       .transformLimit(2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 2, 4, 1]);
+        assert.deepEqual(res, [1, 3, 5, 2, 4]);
         assert.deepEqual(order, [
           [0, 1],
-          [2, 2],
-          [1, 4],
-          [3, 1]
+          [2, 3],
+          [1, 5],
+          [4, 2],
+          [3, 4]
         ]);
       });
   });
@@ -144,9 +148,10 @@ parallel('#transformLimit', () => {
     const order = [];
     const collection = {
       task1: 1,
-      task2: 4,
-      task3: 2,
-      task4: 1
+      task2: 5,
+      task3: 3,
+      task4: 4,
+      task5: 2
     };
     const iterator = (result, value, key) => {
       return new Aigle(resolve => setTimeout(() => {
@@ -161,15 +166,17 @@ parallel('#transformLimit', () => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepEqual(res, {
           task1: 1,
-          task2: 4,
-          task3: 2,
-          task4: 1
+          task2: 5,
+          task3: 3,
+          task4: 4,
+          task5: 2
         });
         assert.deepEqual(order, [
           ['task1', 1],
-          ['task3', 2],
-          ['task2', 4],
-          ['task4', 1]
+          ['task3', 3],
+          ['task2', 5],
+          ['task5', 2],
+          ['task4', 4]
         ]);
       });
   });
