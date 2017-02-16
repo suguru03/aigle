@@ -3,6 +3,7 @@
   "version": "0.2.0",
   "description": "",
   "main": "index.js",
+  "browser": "browser.js",
   "scripts": {
     "test": "DELAY=100 mocha test --recursive",
     "build": "node build"
