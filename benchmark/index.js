@@ -12,9 +12,10 @@ const neoAsync = require('neo-async');
 
 const defaults = { count: 100 };
 
+// node --expose_gc ./benchmark -d
 const count = argv.c || argv.count;
 const target = argv.t || argv.target; // -t <function name>
-const makeDock = argv.d || argv.docs; // -d make documents
+const makeDoc = argv.d || argv.docs; // -d make documents
 let Promise = global.Promise;
 if (argv.p) {
   const regExp = RegExp(argv.p);
@@ -27,7 +28,7 @@ const functions = {
   Bluebird,
   neoAsync
 };
-if (makeDock) {
+if (makeDoc) {
   delete functions.neoAsync;
 }
 
@@ -59,7 +60,7 @@ const benchmarkTasks = _.transform(tasks, (result, obj) => {
   obj = _.omit(obj, 'config');
   _.forOwn(obj, (tasks, name) => {
 
-    if (makeDock && !tasks.doc) {
+    if (makeDoc && !tasks.doc) {
       return;
     }
     const setup = _.get(tasks, ['setup'], _.noop);
@@ -67,6 +68,9 @@ const benchmarkTasks = _.transform(tasks, (result, obj) => {
     result.push(() => {
       console.log('======================================');
       console.log(`[${name}] Preparing...`);
+      if (global.gc) {
+        global.gc();
+      }
 
       // validate functions
       setup(config);
@@ -109,7 +113,7 @@ const benchmarkTasks = _.transform(tasks, (result, obj) => {
   });
 }, []);
 
-if (makeDock) {
+if (makeDoc) {
   benchmarkTasks.push(() => {
     console.log('======================================');
     console.log('Making README...');
