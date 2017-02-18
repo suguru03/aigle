@@ -5,7 +5,8 @@ const assert = require('assert');
 const _ = require('lodash');
 const parallel = require('mocha.parallel');
 const Aigle = require('../../');
-const DELAY = require('../config').DELAY;
+const { DELAY } = require('../config');
+const { TimeoutError } = Aigle;
 
 parallel('someLimit', () => {
 
@@ -139,6 +140,24 @@ parallel('#someLimit', () => {
         assert.deepEqual(order, [
           ['task1', 1]
         ]);
+      });
+  });
+
+  it('should execute with default concurrency which is 8', () => {
+
+    const collection = _.times(10);
+    const order = [];
+    const iterator = value => {
+      order.push(value);
+      return new Aigle(_.noop);
+    };
+    return Aigle.resolve(collection)
+      .someLimit(iterator)
+      .timeout(DELAY)
+      .catch(TimeoutError, error => error)
+      .then(error => {
+        assert.ok(error instanceof TimeoutError);
+        assert.deepEqual(order, _.times(8));
       });
   });
 });
