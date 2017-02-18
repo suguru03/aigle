@@ -40,8 +40,8 @@ parallel('using', () => {
 
     let res;
     return Aigle.using(getConnection(), resource => {
-      assert(resource instanceof Resource);
-      assert(resource.closed === false);
+      assert.ok(resource instanceof Resource);
+      assert.strictEqual(resource.closed, false);
       res = resource;
       return res.get();
     })
@@ -56,8 +56,8 @@ parallel('using', () => {
     let res;
     let async = false;
     return Aigle.using(getConnection(), resource => {
-      assert(resource instanceof Resource);
-      assert(resource.closed === false);
+      assert.ok(resource instanceof Resource);
+      assert.strictEqual(resource.closed, false);
       res = resource;
       return Aigle.delay(DELAY)
         .then(() => async = true);
@@ -72,10 +72,10 @@ parallel('using', () => {
   it('should get two connections', () => {
 
     return Aigle.using(getConnection(), getConnection(), 1, (r1, r2, r3) => {
-      assert(r1 instanceof Resource);
-      assert(r1.closed === false);
-      assert(r2 instanceof Resource);
-      assert(r2.closed === false);
+      assert.ok(r1 instanceof Resource);
+      assert.strictEqual(r1.closed, false);
+      assert.ok(r2 instanceof Resource);
+      assert.strictEqual(r1.closed, false);
       assert.strictEqual(r3, 1);
       return Aigle.all([r1.get(), r2.get(), r3]);
     })
