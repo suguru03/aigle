@@ -113,6 +113,58 @@ parallel('rejectLimit', () => {
         assert.strictEqual(res.length, 0);
       });
   });
+
+  it('should stop execution if error is caused', () => {
+
+    const order = [];
+    const collection = [1, 5, 3, 4, 2];
+    const iterator = (value, key) => {
+      return new Aigle((resolve, reject) => setTimeout(() => {
+        order.push([key, value]);
+        value === 3 ? reject('error') : resolve(value);
+      }, DELAY * value));
+    };
+    return Aigle.rejectLimit(collection, 2, iterator)
+      .catch(error => error)
+      .delay(DELAY * 5)
+      .then(res => {
+        assert.deepEqual(res, 'error');
+        assert.deepEqual(order, [
+          [0, 1],
+          [2, 3],
+          [1, 5]
+        ]);
+      });
+  });
+
+  it('should stop execution if error is caused', () => {
+
+    const order = [];
+    const collection = {
+      task1: 1,
+      task2: 5,
+      task3: 3,
+      task4: 4,
+      task5: 2
+    };
+    const iterator = (value, key) => {
+      return new Aigle((resolve, reject) => setTimeout(() => {
+        order.push([key, value]);
+        value === 3 ? reject('error') : resolve(value);
+      }, DELAY * value));
+    };
+    return Aigle.rejectLimit(collection, 2, iterator)
+      .catch(error => error)
+      .delay(DELAY * 5)
+      .then(res => {
+        assert.deepEqual(res, 'error');
+        assert.deepEqual(order, [
+          ['task1', 1],
+          ['task3', 3],
+          ['task2', 5]
+        ]);
+      });
+  });
 });
 
 parallel('#rejectLimit', () => {

@@ -54,6 +54,24 @@ parallel('timesLimit', () => {
         assert.deepEqual(order, _.times(8));
       });
   });
+
+  it('should stop execution if error is caused', () => {
+
+    const order = [];
+    const iterator = value => {
+      return new Aigle((resolve, reject) => {
+        order.push(value);
+        value === 3 ? reject('error') : resolve(value);
+      });
+    };
+    return Aigle.timesLimit(10, 2, iterator)
+      .catch(error => error)
+      .delay(DELAY)
+      .then(res => {
+        assert.strictEqual(res, 'error');
+        assert.deepEqual(order, _.times(5));
+      });
+  });
 });
 
 parallel('#timesLimit', () => {
