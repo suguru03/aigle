@@ -3,15 +3,15 @@
 const assert = require('assert');
 
 const parallel = require('mocha.parallel');
-const Promise = require('../../');
+const Aigle = require('../../');
 const DELAY = require('../config').DELAY;
 
-parallel('#Promise', () => {
+parallel('#Aigle', () => {
 
   it('should resolve on synchronous', done => {
 
     let called = 0;
-    new Promise(resolve => {
+    new Aigle(resolve => {
       resolve(0);
       ++called;
     })
@@ -31,7 +31,7 @@ parallel('#Promise', () => {
   it('should resolve on asynchronous', done => {
 
     let called = 0;
-    new Promise(resolve => {
+    new Aigle(resolve => {
       setTimeout(() => {
         called++;
         resolve(0);
@@ -39,7 +39,7 @@ parallel('#Promise', () => {
     })
     .then(value => {
       assert.strictEqual(value, 0);
-      return new Promise(resolve => {
+      return new Aigle(resolve => {
         setTimeout(() => {
           called++;
           resolve(1);
@@ -58,7 +58,7 @@ parallel('#Promise', () => {
 
     const str = 'test';
     let called = 0;
-    new Promise((resolve, reject) => {
+    new Aigle((resolve, reject) => {
       reject(new Error('error'));
       called++;
     })
@@ -79,7 +79,7 @@ parallel('#Promise', () => {
 
     const str = 'test';
     let called = 0;
-    new Promise((resolve, reject) => {
+    new Aigle((resolve, reject) => {
       reject(new TypeError('error'));
       called++;
     })
@@ -104,7 +104,7 @@ parallel('#Promise', () => {
 
   it('should execute', done => {
 
-    new Promise(resolve => {
+    new Aigle(resolve => {
       process.nextTick(() => resolve(1));
     })
     .then(2)
@@ -119,7 +119,7 @@ parallel('#Promise', () => {
   it('should resolve', done => {
 
     const str = 'test';
-    const p = Promise.resolve(str);
+    const p = Aigle.resolve(str);
     p.then(res => {
       assert.strictEqual(res, str);
       done();
@@ -130,7 +130,7 @@ parallel('#Promise', () => {
 
     let called = 0;
     const err = new Error('error');
-    const p = Promise.reject(err);
+    const p = Aigle.reject(err);
     p.then(res => {
       assert(false);
       called++;
@@ -153,7 +153,7 @@ parallel('#Promise', () => {
 
     let called = 0;
     const err = new Error('error');
-    const p = Promise.reject(err);
+    const p = Aigle.reject(err);
     p.then(res => {
       assert(false);
       called++;
@@ -165,7 +165,7 @@ parallel('#Promise', () => {
       return err;
     })
     .finally(() => {
-      const p = new Promise((resolve, reject) => {
+      const p = new Aigle((resolve, reject) => {
         setTimeout(() => {
           called++;
           assert.strictEqual(called, 2);
@@ -201,10 +201,10 @@ parallel('#Promise', () => {
 
   it('should re-call', done => {
 
-    const p = new Promise(resolve => {
+    const p = new Aigle(resolve => {
       resolve(1);
     });
-    Promise.resolve()
+    Aigle.resolve()
       .then(() => {
         return p;
       })
@@ -234,7 +234,7 @@ parallel('#Promise', () => {
   it('should re-call on synchronous', done => {
 
     let called = 0;
-    const p = new Promise(resolve => resolve(0));
+    const p = new Aigle(resolve => resolve(0));
     p.then(value => {
       called++;
       assert.strictEqual(value, 0);
@@ -264,25 +264,25 @@ parallel('#Promise', () => {
   it('should re-call on asynchronous', done => {
 
     let called = 0;
-    const p = new Promise(resolve => setImmediate(() => resolve(0)));
+    const p = new Aigle(resolve => setImmediate(() => resolve(0)));
     p.then(value => {
       called++;
       assert.strictEqual(value, 0);
-      return new Promise(resolve => {
+      return new Aigle(resolve => {
         setImmediate(() => resolve(++value));
       });
     });
     p.then(value => {
       called++;
       assert.strictEqual(value, 0);
-      return new Promise(resolve => {
+      return new Aigle(resolve => {
         setImmediate(() => resolve(++value));
       });
     });
     p.then(value => {
       called++;
       assert.strictEqual(value, 0);
-      return new Promise(resolve => {
+      return new Aigle(resolve => {
         setImmediate(() => resolve(++value));
       });
     })
@@ -292,7 +292,7 @@ parallel('#Promise', () => {
     p.then(value => {
       called++;
       assert.strictEqual(value, 0);
-      return new Promise(resolve => {
+      return new Aigle(resolve => {
         setImmediate(() => resolve(++value));
       });
     });
@@ -304,7 +304,7 @@ parallel('#Promise', () => {
 
   it('should catch ReferenceError', done => {
 
-    Promise.resolve()
+    Aigle.resolve()
       .then(() => {
         test;
       })
@@ -316,7 +316,7 @@ parallel('#Promise', () => {
 
   it('should catch TypeError', done => {
 
-    Promise.resolve()
+    Aigle.resolve()
       .then(() => {
         const test = 1;
         test.test();
@@ -334,7 +334,7 @@ parallel('#Promise', () => {
       assert.ok(err);
       called = true;
     });
-    const p = Promise.resolve()
+    const p = Aigle.resolve()
       .then(() => {
         test;
       });
@@ -345,33 +345,5 @@ parallel('#Promise', () => {
         done();
       });
     }, DELAY);
-  });
-});
-
-describe('#spread', () => {
-
-  it('should work', () => {
-
-    const array = [1, 2, 3];
-    return Promise.resolve(array)
-      .spread((arg1, arg2, arg3) => {
-        assert.strictEqual(arg1, array[0]);
-        assert.strictEqual(arg2, array[1]);
-        assert.strictEqual(arg3, array[2]);
-      });
-  });
-
-  it('should not execute if error is caused', () => {
-
-    const array = [1, 2, 3];
-    const error = new Error('error');
-    return Promise.resolve(array)
-      .then(() => Promise.reject(error))
-      .spread(() => {
-        assert.ok(false);
-      })
-      .catch(err => {
-        assert.strictEqual(err, error);
-      });
   });
 });

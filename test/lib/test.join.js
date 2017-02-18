@@ -3,9 +3,9 @@
 const assert = require('assert');
 
 const parallel = require('mocha.parallel');
-const Promise = require('../../');
+const Aigle = require('../../');
 const util = require('../util');
-const DELAY = require('../config').DELAY;
+const { DELAY } = require('../config');
 
 parallel('join', () => {
 
@@ -19,7 +19,7 @@ parallel('join', () => {
       delay(3, DELAY * 1)
     ];
     const fn = (arg1, arg2, arg3) =>  arg1 + arg2 + arg3;
-    return Promise.join(tasks[0], tasks[1], tasks[2], fn)
+    return Aigle.join(tasks[0], tasks[1], tasks[2], fn)
       .then(res => {
         assert.strictEqual(res, 6);
         assert.deepEqual(order, [3, 2, 1]);
@@ -30,9 +30,72 @@ parallel('join', () => {
 
     const tasks = [2, 3, 1];
     const fn = (arg1, arg2, arg3) =>  arg1 + arg2 + arg3;
-    return Promise.join(tasks[0], tasks[1], tasks[2], fn)
-      .then(res => {
-        assert.strictEqual(res, 6);
+    return Aigle.join(tasks[0], tasks[1], tasks[2], fn)
+      .then(res => assert.strictEqual(res, 6));
+  });
+
+  it('should ignore if last argument is not function', () => {
+
+    const tasks = [2, 3, 1];
+    return Aigle.join(tasks[0], tasks[1], tasks[2])
+      .then(res => assert.deepEqual(res, [2, 3, 1]));
+  });
+});
+
+describe('#spread', () => {
+
+  it('should work', () => {
+
+    const array = [1, 2, 3];
+    return Aigle.resolve(array)
+      .spread((arg1, arg2, arg3) => {
+        assert.strictEqual(arg1, array[0]);
+        assert.strictEqual(arg2, array[1]);
+        assert.strictEqual(arg3, array[2]);
       });
+  });
+
+  it('should work with object', () => {
+
+    const object = {
+      task1: 1,
+      task2: 4,
+      task3: 2
+    };
+    return Aigle.resolve(object)
+      .spread((arg1, arg2, arg3) => {
+        assert.strictEqual(arg1, object.task1);
+        assert.strictEqual(arg2, object.task2);
+        assert.strictEqual(arg3, object.task3);
+      });
+  });
+
+  it('should not spread if first argument is a number', () => {
+
+    const num = 10;
+    return Aigle.resolve(num)
+      .spread(arg1 => assert.strictEqual(arg1, num));
+  });
+
+  it('should spread if first argument is a string', () => {
+
+    const str = 'test';
+    return Aigle.resolve(str)
+      .spread((arg1, arg2, arg3, arg4) => {
+        assert.strictEqual(arg1, 't');
+        assert.strictEqual(arg2, 'e');
+        assert.strictEqual(arg3, 's');
+        assert.strictEqual(arg4, 't');
+      });
+  });
+
+  it('should not execute if error is caused', () => {
+
+    const array = [1, 2, 3];
+    const error = new Error('error');
+    return Aigle.resolve(array)
+      .then(() => Aigle.reject(error))
+      .spread(() => assert.ok(false))
+      .catch(err => assert.strictEqual(err, error));
   });
 });
