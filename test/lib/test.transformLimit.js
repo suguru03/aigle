@@ -36,6 +36,7 @@ parallel('transformLimit', () => {
   });
 
   it('should execute with object collection', () => {
+
     const order = [];
     const collection = {
       task1: 1,
@@ -77,6 +78,62 @@ parallel('transformLimit', () => {
     return Aigle.delay(DELAY)
       .then(() => {
         assert.deepEqual(order, _.times(8));
+      });
+  });
+
+  it('should break if value is false', () => {
+
+    const order = [];
+    const collection = [1, 5, 3, 4, 2];
+    const iterator = (result, value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        result.push(value);
+        resolve(value !== 5);
+      }, DELAY * value));
+    };
+    return Aigle.transformLimit(collection, 2, iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
+        assert.deepEqual(res, [1, 3, 5]);
+        assert.deepEqual(order, [
+          [0, 1],
+          [2, 3],
+          [1, 5]
+        ]);
+      });
+  });
+
+  it('should break if value is false', () => {
+
+    const order = [];
+    const collection = {
+      task1: 1,
+      task2: 5,
+      task3: 3,
+      task4: 4,
+      task5: 2
+    };
+    const iterator = (result, value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        result[key] = value;
+        resolve(value !== 5);
+      }, DELAY * value));
+    };
+    return Aigle.transformLimit(collection, 2, iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
+        assert.deepEqual(res, {
+          task1: 1,
+          task2: 5,
+          task3: 3
+        });
+        assert.deepEqual(order, [
+          ['task1', 1],
+          ['task3', 3],
+          ['task2', 5]
+        ]);
       });
   });
 

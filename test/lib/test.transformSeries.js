@@ -69,6 +69,54 @@ parallel('transformSeries', () => {
       });
   });
 
+  it('should break if value is false', () => {
+
+    const order = [];
+    const collection = [1, 4, 2];
+    const iterator = (result, value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        result.push(value);
+        resolve(value !== 4);
+      }, DELAY * value));
+    };
+    return Aigle.transformSeries(collection, [], iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
+        assert.deepEqual(res, [1, 4]);
+        assert.deepEqual(order, [
+          [0, 1],
+          [1, 4]
+        ]);
+      });
+  });
+
+  it('should break if value is false', () => {
+
+    const order = [];
+    const collection = {
+      task1: 1,
+      task2: 4,
+      task3: 2
+    };
+    const iterator = (result, value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        result.push(value);
+        resolve(value !== 4);
+      }, DELAY * value));
+    };
+    return Aigle.transformSeries(collection, [], iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
+        assert.deepEqual(res, [1, 4]);
+        assert.deepEqual(order, [
+          ['task1', 1],
+          ['task2', 4]
+        ]);
+      });
+  });
+
   it('should return an empty array if collection is an empty array', () => {
 
     const iterator = value => {

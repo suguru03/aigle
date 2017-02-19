@@ -112,6 +112,54 @@ parallel('transform', () => {
       });
   });
 
+  it('should break if value is false', () => {
+
+    const order = [];
+    const collection = [1, 4, 2];
+    const iterator = (result, value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        result.push(value);
+        resolve(value !== 2);
+      }, DELAY * value));
+    };
+    return Aigle.transform(collection, [], iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
+        assert.deepEqual(res, [1, 2]);
+        assert.deepEqual(order, [
+          [0, 1],
+          [2, 2]
+        ]);
+      });
+  });
+
+  it('should break if value is false', () => {
+
+    const order = [];
+    const collection = {
+      task1: 1,
+      task2: 4,
+      task3: 2
+    };
+    const iterator = (result, value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        result.push(value);
+        resolve(value !== 2);
+      }, DELAY * value));
+    };
+    return Aigle.transform(collection, [], iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
+        assert.deepEqual(res, [1, 2]);
+        assert.deepEqual(order, [
+          ['task1', 1],
+          ['task3', 2]
+        ]);
+      });
+  });
+
   it('should return an empty array if collection is an empty array', () => {
 
     const iterator = value => {
