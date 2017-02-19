@@ -76,6 +76,53 @@ parallel('eachLimit', () => {
       });
   });
 
+  it('should break if value is false', () => {
+
+    const order = [];
+    const collection = [1, 5, 3, 4, 2];
+    const iterator = (value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        resolve(value !== 5);
+      }, DELAY * value));
+    };
+    return Aigle.eachLimit(collection, 2, iterator)
+      .then(res => {
+        assert.deepEqual(res, undefined);
+        assert.deepEqual(order, [
+          [0, 1],
+          [2, 3],
+          [1, 5]
+        ]);
+      });
+  });
+
+  it('should break if value is false', () => {
+    const order = [];
+    const collection = {
+      task1: 1,
+      task2: 5,
+      task3: 3,
+      task4: 4,
+      task5: 2
+    };
+    const iterator = (value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        resolve(value !== 5);
+      }, DELAY * value));
+    };
+    return Aigle.eachLimit(collection, 2, iterator)
+      .then(res => {
+        assert.deepEqual(res, undefined);
+        assert.deepEqual(order, [
+          ['task1', 1],
+          ['task3', 3],
+          ['task2', 5]
+        ]);
+      });
+  });
+
   it('should stop execution if error is caused', () => {
 
     const order = [];
