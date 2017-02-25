@@ -123,6 +123,30 @@ parallel('each', () => {
   });
 });
 
+parallel('forEach', () => {
+
+  it('should execute in parallel', () => {
+
+    const order = [];
+    const collection = [1, 4, 2];
+    const iterator = (value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        resolve(value);
+      }, DELAY * value));
+    };
+    return Aigle.forEach(collection, iterator)
+      .then(res => {
+        assert.strictEqual(res, undefined);
+        assert.deepEqual(order, [
+          [0, 1],
+          [2, 2],
+          [1, 4]
+        ]);
+      });
+  });
+});
+
 parallel('#each', () => {
 
   it('should execute in parallel', () => {
@@ -184,6 +208,31 @@ parallel('#each', () => {
       .catch(TypeError, error => {
         assert.ok(error);
         assert.ok(error instanceof TypeError);
+      });
+  });
+});
+
+parallel('#forEach', () => {
+
+  it('should execute in parallel', () => {
+
+    const order = [];
+    const collection = [1, 4, 2];
+    const iterator = (value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        resolve(value);
+      }, DELAY * value));
+    };
+    return Aigle.resolve(collection)
+      .forEach(iterator)
+      .then(res => {
+        assert.strictEqual(res, undefined);
+        assert.deepEqual(order, [
+          [0, 1],
+          [2, 2],
+          [1, 4]
+        ]);
       });
   });
 });

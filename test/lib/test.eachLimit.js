@@ -176,6 +176,32 @@ parallel('eachLimit', () => {
   });
 });
 
+parallel('forEachLimit', () => {
+
+  it('should execute', () => {
+
+    const order = [];
+    const collection = [1, 5, 3, 4, 2];
+    const iterator = (value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        resolve(value);
+      }, DELAY * value));
+    };
+    return Aigle.forEachLimit(collection, 2, iterator)
+      .then(res => {
+        assert.deepEqual(res, undefined);
+        assert.deepEqual(order, [
+          [0, 1],
+          [2, 3],
+          [1, 5],
+          [4, 2],
+          [3, 4]
+        ]);
+      });
+  });
+});
+
 parallel('#eachLimit', () => {
 
   it('should execute', () => {
@@ -246,6 +272,33 @@ parallel('#eachLimit', () => {
       .then(error => {
         assert.ok(error instanceof TimeoutError);
         assert.deepEqual(order, _.times(8));
+      });
+  });
+});
+
+parallel('#eachLimit', () => {
+
+  it('should execute', () => {
+
+    const order = [];
+    const collection = [1, 5, 3, 4, 2];
+    const iterator = (value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        resolve(value);
+      }, DELAY * value));
+    };
+    return Aigle.resolve(collection)
+      .eachLimit(2, iterator)
+      .then(res => {
+        assert.deepEqual(res, undefined);
+        assert.deepEqual(order, [
+          [0, 1],
+          [2, 3],
+          [1, 5],
+          [4, 2],
+          [3, 4]
+        ]);
       });
   });
 });
