@@ -126,7 +126,7 @@ parallel('#then', () => {
       });
   });
 
-  it('should re-call on synchronous', done => {
+  it('should execute with multiple receivers on synchronous', done => {
 
     let called = 0;
     const p = new Aigle(resolve => resolve(0));
@@ -156,7 +156,7 @@ parallel('#then', () => {
     }, DELAY);
   });
 
-  it('should re-call on asynchronous', done => {
+  it('should execute with multiple receivers on asynchronous', done => {
 
     let called = 0;
     const p = new Aigle(resolve => setImmediate(() => resolve(0)));

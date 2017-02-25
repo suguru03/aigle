@@ -4,7 +4,7 @@ const assert = require('assert');
 
 const _ = require('lodash');
 const parallel = require('mocha.parallel');
-const Promise = require('../../');
+const Aigle = require('../../');
 const util = require('../util');
 const DELAY = require('../config').DELAY;
 
@@ -19,7 +19,7 @@ parallel('all', () => {
       delay('test2', DELAY * 2),
       delay('test3', DELAY * 1)
     ];
-    return Promise.all(tasks)
+    return Aigle.all(tasks)
       .then(res => {
         assert.deepEqual(res, [
           'test1',
@@ -43,7 +43,7 @@ parallel('all', () => {
       delay('test2', new Error('error2'), DELAY * 2),
       delay('test3', null, DELAY * 1)
     ];
-    return Promise.all(tasks)
+    return Aigle.all(tasks)
       .then(() => assert(false))
       .catch(err => {
         assert.ok(err);
@@ -60,7 +60,7 @@ parallel('all', () => {
     const limit = 5;
     const order = [];
     const tasks = _.times(limit, n => {
-      return new Promise(resolve => {
+      return new Aigle(resolve => {
         setTimeout(() => {
           order.push(n);
           resolve(n);
@@ -77,28 +77,24 @@ parallel('all', () => {
   it('should execute with instances of Aigle promise', () => {
 
     const tasks = [
-      new Promise(resolve => resolve(1)),
-      new Promise(resolve => setTimeout(() => resolve(2), 20)),
-      new Promise(resolve => setTimeout(() => resolve(3), 10))
-    ];
-    return Promise.all(tasks)
-      .then(res => assert.deepEqual(res, [1, 2, 3]));
-  });
+      new Aigle(resolve => resolve(1)),
+      new Aigle(resolve => setTimeout(() => resolve(2), 20)),
+      new Aigle(resolve => setTimeout(() => resolve(3), 10)) ]; return Aigle.all(tasks) .then(res => assert.deepEqual(res, [1, 2, 3])); });
 
   it('should execute with not promise instance', () => {
 
     const tasks = [
-      new Promise(resolve => resolve(1)),
+      new Aigle(resolve => resolve(1)),
       2,
       3
     ];
-    return Promise.all(tasks)
+    return Aigle.all(tasks)
       .then(res => assert.deepEqual(res, [1, 2, 3]));
   });
 
   it('should return immediately', () => {
 
-    return Promise.all([])
+    return Aigle.all([])
       .then(res => assert.deepEqual(res, []));
   });
 
@@ -116,7 +112,7 @@ parallel('#all', () => {
       delay('test2', DELAY * 2),
       delay('test3', DELAY * 1)
     ];
-    return Promise.resolve(tasks)
+    return Aigle.resolve(tasks)
       .all()
       .then(res => {
         assert.deepEqual(res, [
@@ -141,7 +137,7 @@ parallel('#all', () => {
       delay('test2', new Error('error2'), DELAY * 2),
       delay('test3', null, DELAY * 1)
     ];
-    return Promise.resolve(tasks)
+    return Aigle.resolve(tasks)
       .all()
       .then(() => assert(false))
       .catch(err => {
@@ -152,6 +148,54 @@ parallel('#all', () => {
           'test2'
         ]);
       });
+  });
+
+  it('should execute with multiple receivers on synchronous', () => {
+
+    const array = [1, 2, 3];
+    const promise = Aigle.resolve(array);
+    return Aigle.all([
+      promise.all()
+        .then(value => {
+          assert.deepEqual(value, array);
+          return 4;
+        }),
+      promise.all()
+        .then(value => {
+          assert.deepEqual(value, array);
+          return 5;
+        }),
+      promise.all()
+        .then(value => {
+          assert.deepEqual(value, array);
+          return 6;
+        })
+    ])
+    .then(value => assert.deepEqual(value, [4, 5, 6]));
+  });
+
+  it('should execute with multiple receivers on asynchronous', () => {
+
+    const array = [1, 2, 3];
+    const promise = new Aigle(resolve => setImmediate(() => resolve(array)));
+    return Aigle.all([
+      promise.all()
+        .then(value => {
+          assert.deepEqual(value, array);
+          return 4;
+        }),
+      promise.all()
+        .then(value => {
+          assert.deepEqual(value, array);
+          return 5;
+        }),
+      promise.all()
+        .then(value => {
+          assert.deepEqual(value, array);
+          return 6;
+        })
+    ])
+    .then(value => assert.deepEqual(value, [4, 5, 6]));
   });
 
 });
