@@ -32,6 +32,6 @@
     "uglify-js": "^2.7.5"
   },
   "dependencies": {
-    "aigle-core": "^0.1.0"
+    "aigle-core": "^0.2.0"
   }
 }
