@@ -39,6 +39,16 @@ parallel('timesSeries', () => {
         assert.deepEqual(res, [0, 2, 4, 6, 8]);
       });
   });
+
+  it('should return an empty array if times is not number', () => {
+
+    const iterator = n => n * 2;
+    return Aigle.timesSeries('test', iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
+        assert.strictEqual(res.length, 0);
+      });
+  });
 });
 
 parallel('#timesSeries', () => {
