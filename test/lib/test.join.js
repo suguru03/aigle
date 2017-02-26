@@ -70,6 +70,54 @@ describe('#spread', () => {
       });
   });
 
+  it('should execute even if argument length is 0', () => {
+
+    const array = [];
+    return Aigle.resolve(array)
+      .spread((arg1, arg2, arg3, arg4) => {
+        assert.strictEqual(arg1, undefined);
+        assert.strictEqual(arg2, undefined);
+        assert.strictEqual(arg3, undefined);
+        assert.strictEqual(arg4, undefined);
+      });
+  });
+
+  it('should execute even if argument length is 1', () => {
+
+    const array = [1];
+    return Aigle.resolve(array)
+      .spread((arg1, arg2, arg3, arg4) => {
+        assert.strictEqual(arg1, 1);
+        assert.strictEqual(arg2, undefined);
+        assert.strictEqual(arg3, undefined);
+        assert.strictEqual(arg4, undefined);
+      });
+  });
+
+  it('should execute even if argument length is 2', () => {
+
+    const array = [1, 2];
+    return Aigle.resolve(array)
+      .spread((arg1, arg2, arg3, arg4) => {
+        assert.strictEqual(arg1, 1);
+        assert.strictEqual(arg2, 2);
+        assert.strictEqual(arg3, undefined);
+        assert.strictEqual(arg4, undefined);
+      });
+  });
+
+  it('should execute even if argument length is 4', () => {
+
+    const array = [1, 2, 3, 4];
+    return Aigle.resolve(array)
+      .spread((arg1, arg2, arg3, arg4) => {
+        assert.strictEqual(arg1, 1);
+        assert.strictEqual(arg2, 2);
+        assert.strictEqual(arg3, 3);
+        assert.strictEqual(arg4, 4);
+      });
+  });
+
   it('should not spread if first argument is a number', () => {
 
     const num = 10;

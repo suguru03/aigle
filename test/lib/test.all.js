@@ -97,6 +97,16 @@ parallel('all', () => {
     return Aigle.all([])
       .then(res => assert.deepEqual(res, []));
   });
+
+  it('should throw an error', () => {
+
+    return Aigle.all([
+      Aigle.reject(new TypeError('error1')),
+      Aigle.reject(new TypeError('error2'))
+    ])
+    .then(() => assert(false))
+    .catch(TypeError, error => assert.ok(error));
+  });
 });
 
 parallel('#all', () => {

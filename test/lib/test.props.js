@@ -92,6 +92,16 @@ parallel('props', () => {
         assert.deepEqual(res, {});
       });
   });
+
+  it('should throw an error', () => {
+
+    return Aigle.props({
+      e1: Aigle.reject(new TypeError('error1')),
+      e2: Aigle.reject(new TypeError('error2'))
+    })
+    .then(() => assert(false))
+    .catch(TypeError, error => assert.ok(error));
+  });
 });
 
 parallel('#props', () => {

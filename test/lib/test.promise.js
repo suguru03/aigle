@@ -370,6 +370,7 @@ parallel('#catch', () => {
   });
 
   it('should catch ReferenceError in onRejected', done => {
+
     const error = new Error('error');
     Aigle.reject(error)
       .catch(err => {
@@ -383,6 +384,7 @@ parallel('#catch', () => {
   });
 
   it('should catch error and call Aigle instance', done => {
+
     Aigle.reject(new TypeError('error'))
       .catch(error => {
         assert.ok(error instanceof Error);
@@ -407,7 +409,7 @@ parallel('#catch', () => {
 
   it('should execute with native Promise', done => {
 
-    new Aigle.reject(1)
+    Aigle.reject(1)
       .catch(value => new Promise((resolve, reject) => {
         setImmediate(() => reject(++value));
       }))
