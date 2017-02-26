@@ -84,6 +84,26 @@ parallel('whilst', () => {
         assert.strictEqual(res, 5);
       });
   });
+
+  it('should throw TypeError', () => {
+
+    const test = () => test.value();
+    const iterator = () => {
+      return new Aigle(resolve => setImmediate(() => resolve()));
+    };
+    return Aigle.whilst(test, iterator)
+      .then(() => assert(false))
+      .catch(TypeError, error => assert.ok(error));
+  });
+
+  it('should throw TypeError', () => {
+
+    const test = () => true;
+    const iterator = () => test.value();
+    return Aigle.whilst(test, iterator)
+      .then(() => assert(false))
+      .catch(TypeError, error => assert.ok(error));
+  });
 });
 
 parallel('#whilst', () => {
