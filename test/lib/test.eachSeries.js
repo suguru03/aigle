@@ -96,6 +96,28 @@ parallel('eachSeries', () => {
         ]);
       });
   });
+
+  it('should return undefined if collection is an empty array', () => {
+
+    const iterator = value => value;
+    return Aigle.eachSeries([], iterator)
+      .then(res => assert.strictEqual(res, undefined));
+  });
+
+  it('should return undefined if collection is an empty object', () => {
+
+    const iterator = value => value;
+    return Aigle.eachSeries({}, iterator)
+      .then(res => assert.strictEqual(res, undefined));
+  });
+
+  it('should return undefined if collection is an empty string', () => {
+
+    const iterator = value => value;
+    return Aigle.eachSeries('', iterator)
+      .then(res => assert.strictEqual(res, undefined));
+  });
+
 });
 
 parallel('forEachSeries', () => {

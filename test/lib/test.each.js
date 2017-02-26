@@ -1,8 +1,5 @@
 'use strict';
-
-const assert = require('assert');
-
-const parallel = require('mocha.parallel');
+const assert = require('assert'); const parallel = require('mocha.parallel');
 const Aigle = require('../../');
 const DELAY = require('../config').DELAY;
 
@@ -106,6 +103,27 @@ parallel('each', () => {
           ['task3', 2]
         ]);
       });
+  });
+
+  it('should return undefined if collection is an empty array', () => {
+
+    const iterator = value => value;
+    return Aigle.each([], iterator)
+      .then(res => assert.strictEqual(res, undefined));
+  });
+
+  it('should return undefined if collection is an empty object', () => {
+
+    const iterator = value => value;
+    return Aigle.each({}, iterator)
+      .then(res => assert.strictEqual(res, undefined));
+  });
+
+  it('should return undefined if collection is an empty string', () => {
+
+    const iterator = value => value;
+    return Aigle.each('', iterator)
+      .then(res => assert.strictEqual(res, undefined));
   });
 
   it('should throw TypeError', () => {

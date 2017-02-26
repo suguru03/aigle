@@ -97,9 +97,7 @@ parallel('all', () => {
     return Aigle.all([])
       .then(res => assert.deepEqual(res, []));
   });
-
 });
-
 
 parallel('#all', () => {
 
@@ -197,5 +195,4 @@ parallel('#all', () => {
     ])
     .then(value => assert.deepEqual(value, [4, 5, 6]));
   });
-
 });
