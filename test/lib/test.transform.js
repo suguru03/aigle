@@ -199,9 +199,23 @@ parallel('transform', () => {
   it('should throw TypeError', () => {
 
     const collection = [1, 4, 2];
-    const iterator = value => {
-      value.test();
+    const iterator = value => value.test();
+    return Aigle.transform(collection, iterator)
+      .then(() => assert.ok(false))
+      .catch(TypeError, error => {
+        assert.ok(error);
+        assert.ok(error instanceof TypeError);
+      });
+  });
+
+  it('should throw TypeError', () => {
+
+    const collection = {
+      task1: 1,
+      task2: 4,
+      task3: 2
     };
+    const iterator = value => value.test();
     return Aigle.transform(collection, iterator)
       .then(() => assert.ok(false))
       .catch(TypeError, error => {

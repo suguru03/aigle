@@ -137,6 +137,31 @@ parallel('transformLimit', () => {
       });
   });
 
+  it('should execute with default limit', () => {
+
+    const order = [];
+    const collection = [1, 5, 3, 4, 2];
+    const iterator = (result, value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        result.push(value);
+        resolve();
+      }, DELAY * value));
+    };
+    return Aigle.transformLimit(collection, [], iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
+        assert.deepEqual(res, [1, 2, 3, 4, 5]);
+        assert.deepEqual(order, [
+          [0, 1],
+          [4, 2],
+          [2, 3],
+          [3, 4],
+          [1, 5]
+        ]);
+      });
+  });
+
   it('should return an empty array if collection is an empty array', () => {
 
     const iterator = value => {
