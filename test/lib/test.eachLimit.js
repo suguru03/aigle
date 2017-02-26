@@ -276,7 +276,7 @@ parallel('#eachLimit', () => {
   });
 });
 
-parallel('#eachLimit', () => {
+parallel('#forEachLimit', () => {
 
   it('should execute', () => {
 
@@ -289,7 +289,7 @@ parallel('#eachLimit', () => {
       }, DELAY * value));
     };
     return Aigle.resolve(collection)
-      .eachLimit(2, iterator)
+      .forEachLimit(2, iterator)
       .then(res => {
         assert.deepEqual(res, undefined);
         assert.deepEqual(order, [

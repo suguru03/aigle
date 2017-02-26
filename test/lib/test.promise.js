@@ -196,6 +196,19 @@ parallel('#then', () => {
       done();
     }, DELAY);
   });
+
+  it('should execute with native Promise', done => {
+
+    new Aigle.resolve(1)
+      .then(value => new Promise(resolve => {
+        setImmediate(() => resolve(++value));
+      }))
+      .then(value => new Promise(resolve => resolve(++value)))
+      .then(value => {
+        assert.strictEqual(value, 3);
+        done();
+      });
+  });
 });
 
 parallel('#catch', () => {
@@ -391,6 +404,21 @@ parallel('#catch', () => {
         done();
       });
   });
+
+  it('should execute with native Promise', done => {
+
+    new Aigle.reject(1)
+      .catch(value => new Promise((resolve, reject) => {
+        setImmediate(() => reject(++value));
+      }))
+      .catch(value => new Promise((resolve, reject) => {
+        reject(++value);
+      }))
+      .catch(value => {
+        assert.strictEqual(value, 3);
+        done();
+      });
+  });
 });
 
 parallel('#finally', () => {
@@ -409,7 +437,7 @@ parallel('#finally', () => {
     });
   });
 
-  it('should call finally function', done => {
+  it('should execute finally function', done => {
 
     let called = 0;
     const err = new Error('error');
@@ -460,9 +488,47 @@ parallel('#finally', () => {
 
   it('should call on asynchronous', done => {
 
+    let async = false;
     Aigle.resolve(1)
       .finally(value => {
         assert.strictEqual(value, undefined);
+        assert.ok(async);
+        done();
+      });
+    async = true;
+  });
+
+  it('should cause TypeError in handler', done => {
+
+    Aigle.resolve(1)
+      .finally(value => value.test())
+      .catch(TypeError, error => {
+        assert.ok(error instanceof TypeError);
+        done();
+      });
+  });
+
+  it('should execute with aigle instance', done => {
+
+    Aigle.resolve(1)
+      .finally(() => new Aigle(resolve => resolve(2)))
+      .then(value => assert.strictEqual(value, 1))
+      .finally(() => new Aigle((resolve, reject) => reject(3)))
+      .catch(error => {
+        assert.strictEqual(error, 3);
+        done();
+      });
+  });
+
+  it('should execute with error', done => {
+
+    Aigle.reject(1)
+      .finally(value => {
+        assert.strictEqual(value, undefined);
+        return new Promise(value => setImmediate(() => value(2)));
+      })
+      .catch(error => {
+        assert.strictEqual(error, 1);
         done();
       });
   });
