@@ -59,6 +59,51 @@ parallel('everyLimit', () => {
       });
   });
 
+  it('should execute', () => {
+
+    const order = [];
+    const collection = [1, 5, 3];
+    const iterator = (value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        resolve(value % 2);
+      }, DELAY * value));
+    };
+    return Aigle.everyLimit(collection, 2, iterator)
+      .then(res => {
+        assert.strictEqual(res, true);
+        assert.deepEqual(order, [
+          [0, 1],
+          [2, 3],
+          [1, 5]
+        ]);
+      });
+  });
+
+  it('should execute with object collection', () => {
+    const order = [];
+    const collection = {
+      task1: 1,
+      task2: 5,
+      task3: 3
+    };
+    const iterator = (value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        resolve(value % 2);
+      }, DELAY * value));
+    };
+    return Aigle.everyLimit(collection, 2, iterator)
+      .then(res => {
+        assert.strictEqual(res, true);
+        assert.deepEqual(order, [
+          ['task1', 1],
+          ['task3', 3],
+          ['task2', 5]
+        ]);
+      });
+  });
+
   it('should execute with default concurrency which is 8', () => {
 
     const collection = _.times(10);

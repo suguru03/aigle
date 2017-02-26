@@ -52,7 +52,53 @@ parallel('every', () => {
       });
   });
 
-  it('should return undefined if collection is an empty array', () => {
+  it('should execute in parallel', () => {
+
+    const order = [];
+    const collection = [1, 5, 3];
+    const iterator = (value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        resolve(value % 2);
+      }, DELAY * value));
+    };
+    return Aigle.every(collection, iterator)
+      .then(res => {
+        assert.strictEqual(res, true);
+        assert.deepEqual(order, [
+          [0, 1],
+          [2, 3],
+          [1, 5]
+        ]);
+      });
+  });
+
+  it('should execute with object collection in parallel', () => {
+
+    const order = [];
+    const collection = {
+      task1: 1,
+      task2: 5,
+      task3: 3
+    };
+    const iterator = (value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        resolve(value % 2);
+      }, DELAY * value));
+    };
+    return Aigle.every(collection, iterator)
+      .then(res => {
+        assert.strictEqual(res, true);
+        assert.deepEqual(order, [
+          ['task1', 1],
+          ['task3', 3],
+          ['task2', 5]
+        ]);
+      });
+  });
+
+  it('should return true if collection is an empty array', () => {
 
     const iterator = value => {
       value.test();
@@ -61,7 +107,7 @@ parallel('every', () => {
       .then(res => assert.strictEqual(res, true));
   });
 
-  it('should return undefined if collection is an empty object', () => {
+  it('should return true if collection is an empty object', () => {
 
     const iterator = value => {
       value.test();
@@ -70,7 +116,7 @@ parallel('every', () => {
       .then(res => assert.strictEqual(res, true));
   });
 
-  it('should return undefined if collection is string', () => {
+  it('should return true if collection is string', () => {
 
     const iterator = value => {
       value.test();
