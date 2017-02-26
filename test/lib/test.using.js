@@ -84,14 +84,17 @@ parallel('using', () => {
 
   it('should cause an error', () => {
 
-    return Aigle.using(getConnection(), getError(), () => {
-      assert(false);
-    })
+    return Aigle.using(getConnection(), getError(), () => assert(false))
     .catch(TestError, error => {
       assert(error instanceof TestError);
     });
   });
 
+  it('should ignore invalid last argument', () => {
+
+    return Aigle.using(getConnection(), 'test')
+      .then(value => assert.strictEqual(value, undefined));
+  });
 });
 
 function getConnection() {
