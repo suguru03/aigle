@@ -5,7 +5,6 @@ const assert = require('assert');
 const parallel = require('mocha.parallel');
 const Aigle = require('../../');
 const DELAY = require('../config').DELAY;
-
 parallel('delay', () => {
 
   it('should be delay', () => {
@@ -58,4 +57,16 @@ parallel('#delay', () => {
       });
   });
 
+  it('should not delay if error is caused', () => {
+
+    const start = Date.now();
+    const str = 'test';
+    return Aigle.reject(str)
+      .delay(DELAY)
+      .catch(value => {
+        const diff = Date.now() - start;
+        assert.ok(diff < DELAY);
+        assert.strictEqual(value, str);
+      });
+  });
 });
