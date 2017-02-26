@@ -105,4 +105,53 @@ parallel('promisify', () => {
       });
   });
 
+  it('should execute with five arguments', () => {
+    const fn = (a, b, c, d, e, callback) => {
+      assert.strictEqual(a, 1);
+      assert.strictEqual(b, 2);
+      assert.strictEqual(c, 3);
+      assert.strictEqual(d, 4);
+      assert.strictEqual(e, 5);
+      callback(null, a + b + c + d + e + 1);
+    };
+    const obj = { fn };
+    return Aigle.promisify(obj, 'fn')(1, 2, 3, 4, 5)
+      .then(res => assert.strictEqual(res, 16));
+  });
+
+  it('should throw an error if second argument is boolean', () => {
+
+    let error;
+    const obj = {
+      fn: callback => callback()
+    };
+    try {
+      Aigle.promisify(obj, true);
+    } catch(e) {
+      error = e;
+    }
+    assert.ok(error);
+  });
+
+  it('should throw an error if first argument is invalid', () => {
+
+    let error;
+    try {
+      Aigle.promisify('test');
+    } catch(e) {
+      error = e;
+    }
+    assert.ok(error);
+  });
+
+  it('should throw an error if error is caused', () => {
+
+    const error = new TypeError('error');
+    const obj = {
+      test: callback => callback(error)
+    };
+    return Aigle.promisify(obj, 'test')()
+      .then(() => assert(false))
+      .catch(TypeError, err => assert.strictEqual(err, error));
+  });
 });
