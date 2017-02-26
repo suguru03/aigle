@@ -50,4 +50,36 @@ parallel('promisifyAll', () => {
       .then(value => assert.strictEqual(value, `${key}_${test}`));
   });
 
+  it('should throw an error if suffix is invalid', () => {
+
+    let error;
+    const obj = {
+      get: () => {},
+      getAsync: () => {}
+    };
+    try {
+      Aigle.promisifyAll(obj);
+    } catch (e) {
+      error = e;
+    }
+    assert.ok(error);
+  });
+
+  it('should not affect getter/setter', () => {
+    const obj = {
+      _value: undefined,
+      get value() {
+        return this._value;
+      },
+      set value(value) {
+        this._value = value + 10;
+      }
+    };
+    const promisified = Aigle.promisifyAll(obj);
+    assert.strictEqual(promisified.getAsync, undefined);
+    assert.strictEqual(promisified.setAsync, undefined);
+    promisified.value = 10;
+    assert.strictEqual(promisified.value, 20);
+  });
+
 });
