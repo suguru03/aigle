@@ -14,7 +14,7 @@ parallel('#timeout', () => {
     const value = 10;
     return Aigle.delay(DELAY * 3, value)
       .timeout(DELAY)
-      .then(() => assert.ok(false))
+      .then(() => assert(false))
       .catch(error => {
         assert.ok(error);
         assert.ok(error instanceof TimeoutError);
@@ -32,4 +32,12 @@ parallel('#timeout', () => {
       .catch(() => assert.ok(false));
   });
 
+  it('should time out with message', () => {
+
+    const message = 'timeout';
+    return Aigle.delay(DELAY * 3, 'delay')
+      .timeout(DELAY, message)
+      .then(() => assert(false))
+      .catch(error => assert.strictEqual(error, message));
+  });
 });

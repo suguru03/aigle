@@ -146,4 +146,13 @@ describe('#spread', () => {
       .spread(() => assert.ok(false))
       .catch(err => assert.strictEqual(err, error));
   });
+
+  it('should throw TypeError', () => {
+
+    return Aigle.resolve('test')
+      .spread(arg1 => arg1())
+      .then(() => assert(false))
+      .catch(TypeError, error => assert.ok(error));
+  });
+
 });
