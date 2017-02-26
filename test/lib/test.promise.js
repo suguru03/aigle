@@ -196,7 +196,6 @@ parallel('#then', () => {
       done();
     }, DELAY);
   });
-
 });
 
 parallel('#catch', () => {
@@ -294,6 +293,104 @@ parallel('#catch', () => {
     }, DELAY);
   });
 
+  it('should caatch error with multiple receivers on synchronous', done => {
+
+    let called = 0;
+    const error = new Error('error');
+    const p = Aigle.reject(error);
+    p.catch(err => {
+      called++;
+      assert.strictEqual(err, error);
+    });
+    p.catch(err => {
+      called++;
+      assert.strictEqual(err, error);
+    });
+    p.catch(err => {
+      called++;
+      assert.strictEqual(err, error);
+    });
+    p.catch(err => {
+      called++;
+      assert.strictEqual(err, error);
+    });
+    setTimeout(() => {
+      assert.strictEqual(called, 4);
+      done();
+    }, DELAY);
+  });
+
+  it('should caatch error with multiple receivers on asynchronous', done => {
+
+    let called = 0;
+    const error = new Error('error');
+    const p = new Aigle((resolve, reject) => setImmediate(() => reject(error)));
+    p.catch(err => {
+      called++;
+      assert.strictEqual(err, error);
+    });
+    p.catch(err => {
+      called++;
+      assert.strictEqual(err, error);
+    });
+    p.catch(err => {
+      called++;
+      assert.strictEqual(err, error);
+    });
+    p.catch(err => {
+      called++;
+      assert.strictEqual(err, error);
+    });
+    setTimeout(() => {
+      assert.strictEqual(called, 4);
+      done();
+    }, DELAY);
+  });
+
+  it('should catch TypeError caused by executor', done => {
+
+    new Aigle(resolve => resolve.test())
+      .catch(TypeError, error => {
+        assert.ok(error instanceof TypeError);
+        done();
+      });
+  });
+
+  it('should catch ReferenceError in onRejected', done => {
+    const error = new Error('error');
+    Aigle.reject(error)
+      .catch(err => {
+        assert.strictEqual(err, error);
+        test;
+      })
+      .catch(ReferenceError, error => {
+        assert.ok(error instanceof ReferenceError);
+        done();
+      });
+  });
+
+  it('should catch error and call Aigle instance', done => {
+    Aigle.reject(new TypeError('error'))
+      .catch(error => {
+        assert.ok(error instanceof Error);
+        return Aigle.reject(new TypeError('error'));
+      })
+      .catch(ReferenceError, () => assert(false))
+      .catch(TypeError, error => {
+        assert.ok(error instanceof TypeError);
+        return new Aigle((resolve, reject) => setImmediate(() => {
+          reject(new SyntaxError('error'));
+        }));
+      })
+      .catch(SyntaxError, error => {
+        assert.ok(error instanceof SyntaxError);
+        return Aigle.resolve(new RangeError('error'));
+      })
+      .then(value => {
+        assert.ok(value instanceof RangeError);
+        done();
+      });
+  });
 });
 
 parallel('#finally', () => {
@@ -328,14 +425,13 @@ parallel('#finally', () => {
       return err;
     })
     .finally(() => {
-      const p = new Aigle((resolve, reject) => {
+      return new Aigle((resolve, reject) => {
         setTimeout(() => {
           called++;
           assert.strictEqual(called, 2);
           reject(new Error('error2'));
         }, DELAY);
       });
-      return p;
     })
     .then(() => {
       assert(false);
