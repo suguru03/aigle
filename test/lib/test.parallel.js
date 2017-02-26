@@ -57,15 +57,32 @@ parallel('parallel', () => {
       });
   });
 
-  it('should return immediately', () => {
+  it('should return an empty array immediately', () => {
 
-    return Aigle.props({})
+    return Aigle.parallel([])
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
+        assert.deepEqual(res, []);
+      });
+  });
+
+  it('should return an empty object immediately', () => {
+
+    return Aigle.parallel({})
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepEqual(res, {});
       });
   });
 
+  it('should return an empty object immediately', () => {
+
+    return Aigle.parallel()
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
+        assert.deepEqual(res, {});
+      });
+  });
 });
 
 
