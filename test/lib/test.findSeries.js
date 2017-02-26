@@ -58,6 +58,53 @@ parallel('findSeries', () => {
       });
   });
 
+  it('should execute in series', () => {
+
+    const order = [];
+    const collection = [0, 4, 2];
+    const iterator = (value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        resolve(value % 2);
+      }, DELAY * value));
+    };
+    return Aigle.findSeries(collection, iterator)
+      .then(res => {
+        assert.strictEqual(res, undefined);
+        assert.deepEqual(order, [
+          [0, 0],
+          [1, 4],
+          [2, 2]
+        ]);
+      });
+  });
+
+  it('should execute with object collection in series', () => {
+
+    const order = [];
+    const collection = {
+      task1: 0,
+      task2: 4,
+      task3: 2
+    };
+    const iterator = (value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        resolve(value % 2);
+      }, DELAY * value));
+    };
+    return Aigle.findSeries(collection, iterator)
+      .then(res => {
+        assert.strictEqual(res, undefined);
+        assert.deepEqual(order, [
+          ['task1', 0],
+          ['task2', 4],
+          ['task3', 2]
+        ]);
+      });
+  });
+
+
   it('should return an empty array if collection is an empty array', () => {
 
     const iterator = value => {
