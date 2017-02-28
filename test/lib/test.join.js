@@ -70,6 +70,17 @@ describe('#spread', () => {
       });
   });
 
+  it('should work on asynchronous', () => {
+
+    const array = [1, 2, 3];
+    return new Aigle(resolve => setImmediate(() => resolve(array)))
+      .spread((arg1, arg2, arg3) => {
+        assert.strictEqual(arg1, array[0]);
+        assert.strictEqual(arg2, array[1]);
+        assert.strictEqual(arg3, array[2]);
+      });
+  });
+
   it('should execute even if argument length is 0', () => {
 
     const array = [];
