@@ -40,6 +40,25 @@ parallel('join', () => {
     return Aigle.join(tasks[0], tasks[1], tasks[2])
       .then(res => assert.deepEqual(res, [2, 3, 1]));
   });
+
+  it('should throw typeEror', () => {
+
+    const tasks = [2, 3, 1];
+    return Aigle.join(tasks[0], tasks[1], tasks[2])
+      .then(res => assert.deepEqual(res, [2, 3, 1]));
+  });
+
+  it('should throw TypeError', () => {
+
+    const tasks = [1, 4, 2];
+    const fn = value => value.test();
+    return Aigle.join(tasks[0], tasks[1], tasks[2], fn)
+      .then(() => assert.ok(false))
+      .catch(TypeError, error => {
+        assert.ok(error);
+        assert.ok(error instanceof TypeError);
+      });
+  });
 });
 
 describe('#spread', () => {
