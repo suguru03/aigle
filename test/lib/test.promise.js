@@ -2,6 +2,7 @@
 
 const assert = require('assert');
 
+const _ = require('lodash');
 const parallel = require('mocha.parallel');
 const Aigle = require('../../');
 const DELAY = require('../config').DELAY;
@@ -220,6 +221,25 @@ parallel('#then', () => {
         done();
       });
   });
+
+  it('should not change status', done => {
+
+    const str = 'success';
+    const err = new Error('error');
+    const p = new Aigle((resolve, reject) => {
+      resolve(str);
+      setTimeout(() => reject(err), DELAY);
+    });
+
+    p.then(value => assert.strictEqual(value, str));
+    setTimeout(() => {
+      p.then(value => {
+        assert.strictEqual(value, str);
+        done();
+      });
+      p.catch(done);
+    }, DELAY * 2);
+  });
 });
 
 parallel('#catch', () => {
@@ -431,6 +451,27 @@ parallel('#catch', () => {
         assert.strictEqual(value, 3);
         done();
       });
+  });
+
+  it('should not change status', done => {
+
+    const str = 'success';
+    const err = new Error('error');
+    const p = new Aigle((resolve, reject) => {
+      process.once('unhandledRejection', _.noop);
+      reject(err);
+      setTimeout(() => resolve(str), DELAY);
+    });
+
+    p.then(done);
+    p.catch(error => assert.strictEqual(error, err));
+    setTimeout(() => {
+      p.then(() => done(err));
+      p.catch(error => {
+        assert.strictEqual(error, err);
+        done();
+      });
+    }, DELAY * 2);
   });
 });
 
