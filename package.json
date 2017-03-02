@@ -6,7 +6,7 @@
   "browser": "browser.js",
   "scripts": {
     "test": "DELAY=50 istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- -R spec ./test --recursive && codecov",
-    "build": "node build"
+    "build": "gulp build"
   },
   "keywords": [
     "aigle",
@@ -22,12 +22,14 @@
     "browserify": "^14.1.0",
     "buble": "^0.15.2",
     "codecov": "^1.0.1",
+    "gulp": "^3.9.1",
     "istanbul": "^0.4.5",
     "lodash": "^4.15.0",
     "minimist": "^1.2.0",
     "mocha": "^2.5.3",
     "mocha.parallel": "^0.12.0",
     "neo-async": "^2.0.1",
+    "require-dir": "^0.3.1",
     "setimmediate": "^1.0.5",
     "uglify-js": "^2.7.5"
   },
