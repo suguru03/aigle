@@ -116,6 +116,26 @@ parallel('using', () => {
     return Aigle.using(disposer, () => assert(false))
       .catch(TypeError, assert);
   });
+
+  it('should only call disposer which is not calused any errors when error is caused', () => {
+    let res;
+    const disposer1 = new Aigle(resolve => {
+      setTimeout(() => {
+        res = new Resource();
+        resolve(res);
+      }, DELAY);
+    }).disposer(resource => resource.close());
+    const error = new ReferenceError('error');
+    const disposer2 = new Aigle((resolve, reject) => reject(error))
+      .disposer(resource => resource.close());
+    return Aigle.using(disposer1, disposer2, () => assert(false))
+      .catch(ReferenceError, err => assert.strictEqual(err, error))
+      .then(() => {
+        assert(res);
+        assert(res.closed);
+      });
+  });
+
 });
 
 function getConnection() {
