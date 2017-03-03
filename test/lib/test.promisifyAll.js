@@ -8,6 +8,7 @@ const Aigle = require('../../');
 parallel('promisifyAll', () => {
 
   it('should extend an instance', () => {
+
     class Test {
       constructor() {
         this._value = undefined;
@@ -28,9 +29,15 @@ parallel('promisifyAll', () => {
     assert.ok(test.setAsync);
     assert.ok(test.getAsync);
     assert.ok(test.putAsync);
+
+    const str = 'test';
+    return test.setAsync(str)
+      .then(() => test.getAsync())
+      .then(value => assert.strictEqual(value, str));
   });
 
   it('should extend redis sample', () => {
+
     const test = 'test';
     function RedisClient() {}
     RedisClient.prototype.get = function(key, callback) {
@@ -81,5 +88,4 @@ parallel('promisifyAll', () => {
     promisified.value = 10;
     assert.strictEqual(promisified.value, 20);
   });
-
 });

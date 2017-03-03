@@ -84,10 +84,22 @@ parallel('using', () => {
 
   it('should cause an error', () => {
 
-    return Aigle.using(getConnection(), getError(), () => assert(false))
-    .catch(TestError, error => {
-      assert(error instanceof TestError);
+    let res;
+    return Aigle.using(get(), getError(), () => assert(false))
+    .catch(TestError, error => assert(error instanceof TestError))
+    .then(() => {
+      assert(res instanceof Resource);
+      assert(res.closed);
     });
+
+    function get() {
+      return new Aigle(resolve => {
+        setTimeout(() => {
+          res = new Resource();
+          resolve(res);
+        }, DELAY);
+      }).disposer(resource => resource.close());
+    }
   });
 
   it('should ignore invalid last argument', () => {
