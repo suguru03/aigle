@@ -107,6 +107,15 @@ parallel('using', () => {
     return Aigle.using(getConnection(), 'test')
       .then(value => assert.strictEqual(value, undefined));
   });
+
+  it('should throw an error if disposer causes error', () => {
+
+    const disposer = new Aigle(resolve => {
+      setTimeout(() => resolve(new Resource()), DELAY);
+    }).disposer(resource => resource.test());
+    return Aigle.using(disposer, () => assert(false))
+      .catch(TypeError, assert);
+  });
 });
 
 function getConnection() {
