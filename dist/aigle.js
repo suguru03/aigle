@@ -41,6 +41,9 @@ class Aigle extends AigleCore {
     execute(this, executor);
   }
 
+  /**
+   * @return {string}
+   */
   toString() {
     return '[object Promise]';
   }
@@ -48,6 +51,7 @@ class Aigle extends AigleCore {
   /**
    * @param {Function} onFulfilled
    * @param {Function} [onRejected]
+   * @return {Aigle} Returns an Aigle instance
    */
   then(onFulfilled, onRejected) {
     return addAigle(this, new Aigle(INTERNAL), onFulfilled, onRejected);
@@ -55,6 +59,7 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Object|Function} onRejected
+   * @return {Aigle} Returns an Aigle instance
    * @example
    * return Aigle.reject(new TypeError('error'))
    *   .catch(TypeError, error => console.log(error));
@@ -74,6 +79,7 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} handler
+   * @return {Aigle} Returns an Aigle instance
    */
   finally(handler) {
     handler = typeof handler !== 'function' ? handler : createFinallyHandler(this, handler);
@@ -4218,7 +4224,13 @@ class Disposer {
   }
 
   _dispose() {
-    return call1(this._handler, this._promise._value);
+    const { _promise } = this;
+    switch (_promise._resolved) {
+    case 0:
+      return _promise.then(() => this._dispose());
+    case 1:
+      return call1(this._handler, this._promise._value);
+    }
   }
 }
 
@@ -4288,6 +4300,9 @@ class Using extends AigleProxy {
   }
 
   _callReject(reason) {
+    if (this._error) {
+      return this._promise._reject(reason);
+    }
     this._error = reason;
     this._release();
   }
@@ -4771,13 +4786,12 @@ process.umask = function() { return 0; };
 },{"_process":71}],73:[function(require,module,exports){
 module.exports={
   "name": "aigle",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "browser": "browser.js",
   "scripts": {
-    "test": "DELAY=50 istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- -R spec ./test --recursive && codecov",
-    "build": "node build"
+    "test": "DELAY=50 istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- -R spec ./test --recursive && codecov"
   },
   "keywords": [
     "aigle",
@@ -4793,12 +4807,20 @@ module.exports={
     "browserify": "^14.1.0",
     "buble": "^0.15.2",
     "codecov": "^1.0.1",
+    "docdash": "^0.4.0",
+    "gulp": "^3.9.1",
+    "gulp-bump": "^2.7.0",
+    "gulp-git": "^2.0.0",
+    "gulp-tag-version": "^1.3.0",
     "istanbul": "^0.4.5",
+    "jsdoc": "^3.4.3",
     "lodash": "^4.15.0",
     "minimist": "^1.2.0",
     "mocha": "^2.5.3",
     "mocha.parallel": "^0.12.0",
     "neo-async": "^2.0.1",
+    "require-dir": "^0.3.1",
+    "run-sequence": "^1.2.2",
     "setimmediate": "^1.0.5",
     "uglify-js": "^2.7.5"
   },
