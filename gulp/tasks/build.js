@@ -15,7 +15,6 @@ const builds = [
 ];
 
 gulp.task('build', () => {
-
   return Aigle.eachSeries(builds, ([command, args, output]) => {
     return new Aigle(resolve => {
       exec(`./node_modules/.bin/${command} ${args}`)

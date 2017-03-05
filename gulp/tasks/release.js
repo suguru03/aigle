@@ -18,6 +18,7 @@ _.forEach(types, type => {
     `release:package:${type}`,
     'build',
     'release:commit',
+    'gh-pages',
     'release:tag'
   ));
 });
