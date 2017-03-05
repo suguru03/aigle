@@ -88,4 +88,22 @@ parallel('promisifyAll', () => {
     promisified.value = 10;
     assert.strictEqual(promisified.value, 20);
   });
+
+  it('should not cause error even if object is promisified twice', () => {
+
+    class Test {
+      constructor() {
+        this._value = undefined;
+      }
+      get(callback) {
+        setImmediate(() => callback(null, this._value));
+      }
+    }
+    try {
+      Aigle.promisifyAll(Test);
+      Aigle.promisifyAll(Test);
+    } catch (e) {
+      throw e;
+    }
+  });
 });

@@ -154,4 +154,21 @@ parallel('promisify', () => {
       .then(() => assert(false))
       .catch(TypeError, err => assert.strictEqual(err, error));
   });
+
+  it('should not cause error even if the function is already promisefied', () => {
+    const obj = {
+      fn: function(arg, callback) {
+        assert.strictEqual(this, obj);
+        assert.strictEqual(arg, 1);
+        callback(null, 2);
+      }
+    };
+    const promisefied = Aigle.promisify(obj, 'fn');
+    Aigle.promisify(promisefied);
+    const key = 'test';
+    obj[key] = promisefied;
+    Aigle.promisify(obj, key);
+    return obj[key](1)
+      .then(value => assert.strictEqual(value, 2));
+  });
 });
