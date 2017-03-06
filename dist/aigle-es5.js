@@ -91,19 +91,73 @@ var Aigle = (function (AigleCore) {
 
   /**
    * @param {Function} handler
+   * @example
+   * const array = [1, 2, 3];
+   * Aigle.resolve(array)
+   *   .spread((arg1, arg2, arg3) => {
+   *     console.log(arg1, arg2, arg3); // 1, 2, 3
+   *   });
+   *
+   * @example
+   * const object = { a: 1, b: 2, c: 3 };
+   * Aigle.resolve(object)
+   *   .spread((arg1, arg2, arg3) => {
+   *     console.log(arg1, arg2, arg3); // 1, 2, 3
+   *   });
+   *
+   * @example
+   * const string = '123';
+   * Aigle.resolve(string)
+   *   .spread((arg1, arg2, arg3) => {
+   *     console.log(arg1, arg2, arg3); // 1, 2, 3
+   *   });
    */
   Aigle.prototype.spread = function spread (handler) {
     return addReceiver(this, new Spread(handler));
   };
 
+  /**
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * Aigle.resolve([
+   *   new Aigle(resolve => setTimeout(() => resolve(1), 30)),
+   *   new Aigle(resolve => setTimeout(() => resolve(2), 20)),
+   *   new Aigle(resolve => setTimeout(() => resolve(3), 10))
+   * ])
+   * .all()
+   * .then(value => console.log(value)); // [1, 2, 3]
+   */
   Aigle.prototype.all = function all$1 () {
     return this.then(all);
   };
 
+  /**
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * Aigle.resolve([
+   *   new Aigle(resolve => setTimeout(() => resolve(1), 30)),
+   *   new Aigle(resolve => setTimeout(() => resolve(2), 20)),
+   *   new Aigle(resolve => setTimeout(() => resolve(3), 10))
+   * ])
+   * .race()
+   * .then(value => console.log(value)); // 3
+   */
   Aigle.prototype.race = function race$1 () {
     return this.then(race);
   };
 
+  /**
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * Aigle.resolve({
+   *   a: new Aigle(resolve => setTimeout(() => resolve(1), 30)),
+   *   b: new Aigle(resolve => setTimeout(() => resolve(2), 20)),
+   *   c: new Aigle(resolve => setTimeout(() => resolve(3), 10)),
+   *   d: 4
+   * })
+   * .props()
+   * .then(value => console.log(value)); // { a: 1, b: 2, c: 3, d: 4 }
+   */
   Aigle.prototype.props = function props$1 () {
     return this.then(props);
   };
@@ -2464,16 +2518,17 @@ function callProxyReciever(promise, receiver, index) {
 
 function promiseArrayEach(receiver) {
   var _array = receiver._array;
-  var l = _array.length;
-  while (l--) {
-    var promise = _array[l];
+  var _rest = receiver._rest;
+  var i = -1;
+  while (++i < _rest) {
+    var promise = _array[i];
     if (promise instanceof AigleCore) {
       switch (promise._resolved) {
       case 0:
-        promise._addReceiver(receiver, l);
+        promise._addReceiver(receiver, i);
         continue;
       case 1:
-        receiver._callResolve(promise._value, l);
+        receiver._callResolve(promise._value, i);
         continue;
       case 2:
         receiver._callReject(promise._value);
@@ -2481,9 +2536,9 @@ function promiseArrayEach(receiver) {
       }
     }
     if (promise && promise.then) {
-      callProxyThen(promise, receiver, l);
+      callProxyThen(promise, receiver, i);
     } else {
-      receiver._callResolve(promise, l);
+      receiver._callResolve(promise, i);
     }
   }
 }
@@ -2491,9 +2546,10 @@ function promiseArrayEach(receiver) {
 function promiseObjectEach(receiver) {
   var _keys = receiver._keys;
   var _object = receiver._object;
-  var l = _keys.length;
-  while (l--) {
-    var key = _keys[l];
+  var _rest = receiver._rest;
+  var i = -1;
+  while (++i < _rest) {
+    var key = _keys[i];
     var promise = _object[key];
     if (promise instanceof AigleCore) {
       switch (promise._resolved) {
@@ -3375,11 +3431,17 @@ function promisify(fn, opts) {
     switch (typeof opts) {
     case 'string':
     case 'number':
+      if (fn[opts].__isPromisified__) {
+        return fn[opts];
+      }
       return makeFunctionByKey(fn, opts);
     default:
       throw new TypeError('Second argument is invalid');
     }
   case 'function':
+    if (fn.__isPromisified__) {
+      return fn;
+    }
     var ctx = opts && opts.context !== undefined ? opts.context : undefined;
     return makeFunction(fn, ctx);
   default:
@@ -3399,6 +3461,7 @@ function makeCallback(promise) {
 
 function makeFunctionByKey(obj, key) {
 
+  promisified.__isPromisified__ = true;
   return promisified;
 
   function promisified(arg) {
@@ -3429,6 +3492,7 @@ function makeFunctionByKey(obj, key) {
 
 function makeFunction(fn, ctx) {
 
+  promisified.__isPromisified__ = true;
   return promisified;
 
   function promisified(arg) {
@@ -3461,6 +3525,17 @@ function makeFunction(fn, ctx) {
 'use strict';
 
 var promisify = require('./promisify');
+var skipMap = {
+  constructor: true,
+  arity: true,
+  length: true,
+  name: true,
+  arguments: true,
+  caller: true,
+  callee: true,
+  prototype: true,
+  __isPromisified__: true
+};
 
 module.exports = promisifyAll;
 
@@ -3491,9 +3566,12 @@ function _promisifyAll(suffix, filter, obj, key, target, depth) {
     if (target) {
       var _key = "" + key + suffix;
       if (target[_key]) {
-        throw new TypeError(("Cannot promisify an API that has normal methods with '" + suffix + "'-suffix"));
+        if (!target[_key].__isPromisified__) {
+          throw new TypeError(("Cannot promisify an API that has normal methods with '" + suffix + "'-suffix"));
+        }
+      } else {
+        target[_key] = promisify(obj);
       }
-      target[_key] = promisify(obj);
     }
     iterate(suffix, filter, obj, obj, depth, memo);
     iterate(suffix, filter, obj.prototype, obj.prototype, depth, memo);
@@ -3517,7 +3595,7 @@ function iterate(suffix, filter, obj, target, depth, memo) {
   var l = keys.length;
   while (l--) {
     var key = keys[l];
-    if (memo[key] === true || key === 'constructor' || filter(key)) {
+    if (skipMap[key] === true || memo[key] === true || filter(key)) {
       continue;
     }
     var desc = Object.getOwnPropertyDescriptor(obj, key);
@@ -3616,7 +3694,7 @@ var RaceArray = (function (AigleProxy) {
   };
 
   RaceArray.prototype._callReject = function _callReject (reason) {
-    this._promise._reject(reason);
+    this._promise._resolved === 0 && this._promise._reject(reason);
   };
 
   return RaceArray;
@@ -3647,7 +3725,7 @@ var RaceObject = (function (AigleProxy) {
   };
 
   RaceObject.prototype._callReject = function _callReject (reason) {
-    this._promise._reject(reason);
+    this._promise._resolved === 0 && this._promise._reject(reason);
   };
 
   return RaceObject;
@@ -5449,7 +5527,7 @@ process.umask = function() { return 0; };
 },{"_process":71}],73:[function(require,module,exports){
 module.exports={
   "name": "aigle",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "browser": "browser.js",
