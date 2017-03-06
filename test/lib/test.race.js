@@ -132,4 +132,19 @@ parallel('#race', () => {
         assert.deepEqual(order, ['test3']);
       });
   });
+
+  it('should return first object if previous promise is already resolved', () => {
+
+    const order = [];
+    const delay = util.makeDelayTask(order);
+    const tasks = [
+      delay('test1', DELAY * 3),
+      delay('test2', DELAY * 2),
+      delay('test3', DELAY * 1)
+    ];
+    const promise = Aigle.resolve(tasks);
+    return Aigle.delay(DELAY * 4)
+      .then(() => promise.race())
+      .then(value => assert.strictEqual(value, 'test1'));
+  });
 });
