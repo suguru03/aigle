@@ -19,7 +19,7 @@ parallel('reduce', () => {
         resolve(result + value);
       }, DELAY * value));
     };
-    return Aigle.reduce(collection, result, iterator)
+    return Aigle.reduce(collection, iterator, result)
       .then(res => {
         assert.strictEqual(res, 'result142');
         assert.deepEqual(order, [
@@ -35,7 +35,7 @@ parallel('reduce', () => {
     const collection = [1, 4, 2];
     const result = 'result';
     const iterator = (result, value) => result + value;
-    return Aigle.reduce(collection, result, iterator)
+    return Aigle.reduce(collection, iterator, result)
       .then(res => assert.strictEqual(res, 'result142'));
   });
 
@@ -54,7 +54,7 @@ parallel('reduce', () => {
         resolve(result + value);
       }, DELAY * value));
     };
-    return Aigle.reduce(collection, result, iterator)
+    return Aigle.reduce(collection, iterator, result)
       .then(res => {
         assert.strictEqual(res, 'result142');
         assert.deepEqual(order, [
@@ -112,30 +112,24 @@ parallel('reduce', () => {
   it('should return result if collection is an empty array', () => {
 
     const result = 'result';
-    const iterator = value => {
-      value.test();
-    };
-    return Aigle.reduce([], result, iterator)
+    const iterator = value => value.test();
+    return Aigle.reduce([], iterator, result)
       .then(res => assert.strictEqual(res, result));
   });
 
   it('should return result if collection is an empty object', () => {
 
     const result = 0;
-    const iterator = value => {
-      value.test();
-    };
-    return Aigle.reduce({}, result, iterator)
+    const iterator = value => value.test();
+    return Aigle.reduce({}, iterator, result)
       .then(res => assert.strictEqual(res, result));
   });
 
   it('should return result if collection is string', () => {
 
     const result = 'result';
-    const iterator = value => {
-      value.test();
-    };
-    return Aigle.reduce('test', result, iterator)
+    const iterator = value => value.test();
+    return Aigle.reduce('test', iterator, result)
       .then(res => assert.strictEqual(res, result));
   });
 
@@ -182,7 +176,7 @@ parallel('#reduce', () => {
       }, DELAY * value));
     };
     return Aigle.resolve(collection)
-      .reduce(result, iterator)
+      .reduce(iterator, result)
       .then(res => {
         assert.strictEqual(res, 'result142');
         assert.deepEqual(order, [
@@ -209,7 +203,7 @@ parallel('#reduce', () => {
       }, DELAY * value));
     };
     return Aigle.resolve(collection)
-      .reduce(result, iterator)
+      .reduce(iterator, result)
       .then(res => {
         assert.strictEqual(res, 'result142');
         assert.deepEqual(order, [
@@ -223,9 +217,7 @@ parallel('#reduce', () => {
   it('should throw TypeError', () => {
 
     const collection = [1, 4, 2];
-    const iterator = value => {
-      value.test();
-    };
+    const iterator = value => value.test();
     return Aigle.resolve(collection)
       .reduce(iterator)
       .then(() => assert.ok(false))
