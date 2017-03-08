@@ -19,7 +19,7 @@ parallel('transformSeries', () => {
         resolve();
       }, DELAY * value));
     };
-    return Aigle.transformSeries(collection, [], iterator)
+    return Aigle.transformSeries(collection, iterator, [])
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.deepEqual(res, [1, 4, 2]);
@@ -35,7 +35,7 @@ parallel('transformSeries', () => {
 
     const collection = [1, 4, 2];
     const iterator = (result, value) => result.push(value);
-    return Aigle.transformSeries(collection, [], iterator)
+    return Aigle.transformSeries(collection, iterator, [])
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.deepEqual(res, [1, 4, 2]);
@@ -57,7 +57,7 @@ parallel('transformSeries', () => {
         resolve();
       }, DELAY * value));
     };
-    return Aigle.transformSeries(collection, [], iterator)
+    return Aigle.transformSeries(collection, iterator, [])
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.deepEqual(res, [1, 4, 2]);
@@ -80,7 +80,7 @@ parallel('transformSeries', () => {
         resolve(value !== 4);
       }, DELAY * value));
     };
-    return Aigle.transformSeries(collection, [], iterator)
+    return Aigle.transformSeries(collection, iterator, [])
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.deepEqual(res, [1, 4]);
@@ -106,7 +106,7 @@ parallel('transformSeries', () => {
         resolve(value !== 4);
       }, DELAY * value));
     };
-    return Aigle.transformSeries(collection, [], iterator)
+    return Aigle.transformSeries(collection, iterator, [])
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.deepEqual(res, [1, 4]);
@@ -226,9 +226,7 @@ parallel('#transformSeries', () => {
   it('should throw TypeError', () => {
 
     const collection = [1, 4, 2];
-    const iterator = value => {
-      value.test();
-    };
+    const iterator = value => value.test();
     return Aigle.resolve(collection)
       .transformSeries(iterator)
       .then(() => assert.ok(false))

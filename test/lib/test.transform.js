@@ -19,7 +19,7 @@ parallel('transform', () => {
         resolve();
       }, DELAY * value));
     };
-    return Aigle.transform(collection, [], iterator)
+    return Aigle.transform(collection, iterator, [])
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.deepEqual(res, [1, 2, 4]);
@@ -46,7 +46,7 @@ parallel('transform', () => {
         resolve();
       }, DELAY * value));
     };
-    return Aigle.transform(collection, [], iterator)
+    return Aigle.transform(collection, iterator, [])
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.deepEqual(res, [1, 2, 4]);
@@ -123,7 +123,7 @@ parallel('transform', () => {
         resolve(value !== 2);
       }, DELAY * value));
     };
-    return Aigle.transform(collection, [], iterator)
+    return Aigle.transform(collection, iterator, [])
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.deepEqual(res, [1, 2]);
@@ -149,7 +149,7 @@ parallel('transform', () => {
         resolve(value !== 2);
       }, DELAY * value));
     };
-    return Aigle.transform(collection, [], iterator)
+    return Aigle.transform(collection, iterator, [])
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.deepEqual(res, [1, 2]);
@@ -285,9 +285,7 @@ parallel('#transform', () => {
   it('should throw TypeError', () => {
 
     const collection = [1, 4, 2];
-    const iterator = value => {
-      value.test();
-    };
+    const iterator = value => value.test();
     return Aigle.resolve(collection)
       .transform(iterator)
       .then(() => assert.ok(false))

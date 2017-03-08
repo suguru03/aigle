@@ -21,7 +21,7 @@ parallel('transformLimit', () => {
         resolve();
       }, DELAY * value));
     };
-    return Aigle.transformLimit(collection, 2, [], iterator)
+    return Aigle.transformLimit(collection, 2, iterator, [])
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.deepEqual(res, [1, 3, 5, 2, 4]);
@@ -52,7 +52,7 @@ parallel('transformLimit', () => {
         resolve();
       }, DELAY * value));
     };
-    return Aigle.transformLimit(collection, 2, [], iterator)
+    return Aigle.transformLimit(collection, 2, iterator, [])
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.deepEqual(res, [1, 3, 5, 2, 4]);
@@ -148,7 +148,7 @@ parallel('transformLimit', () => {
         resolve();
       }, DELAY * value));
     };
-    return Aigle.transformLimit(collection, [], iterator)
+    return Aigle.transformLimit(collection, iterator, [])
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.deepEqual(res, [1, 2, 3, 4, 5]);
