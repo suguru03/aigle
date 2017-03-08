@@ -88,6 +88,7 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} handler
+   * @return {Aigle} Returns an Aigle instance
    * @example
    * const array = [1, 2, 3];
    * Aigle.resolve(array)
@@ -196,6 +197,7 @@ class Aigle extends AigleCore {
   /**
    * @param {number} [limit=8] - if you don't define, the default is 8
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
    * @example
    * const collection = [1, 5, 3, 4, 2];
    * return Aigle.resolve(collection)
@@ -384,36 +386,122 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * @param {Function} iterator
    * @param {*} result
-   * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const collection = [1, 4, 2];
+   * const iterator = (result, num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => result + num);
+   * };
+   * return Aigle.resolve(collection)
+   *  .reduce(iterator, 1)
+   *  .then(value => console.log(value)); // 8
+   *
+   * @example
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = (result, num, key) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => result + num);
+   * };
+   * return Aigle.resolve(collection)
+   *   .reduce(iterator, '')
+   *   .then(value => console.log(value)); // '142'
    */
-  reduce(result, iterator) {
-    return this.then(value => reduce(value, result, iterator));
+  reduce(iterator, result) {
+    return this.then(value => reduce(value, iterator, result));
   }
 
   /**
-   * @param {Array|Object} result
    * @param {Function} iterator
+   * @param {Array|Object} [accumulator]
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const collection = [1, 4, 2];
+   * const iterator = (result, num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => result[index] = num);
+   * };
+   * return Aigle.resolve(collection)
+   *   .transform(iterator, {})
+   *   .then(value => console.log(value)); // { '0': 1, '1': 4, '2': 2 }
+   *
+   * @example
+   * const collection = [1, 4, 2];
+   * const iterator = (result, num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => result.push(num));
+   * };
+   * return Aigle.resolve(collection)
+   *   .transform(iterator)
+   *   .then(value => console.log(value)); // [1, 2, 4]
+   *
+   * @example
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = (result, num, key) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       result.push(num);
+   *       return num !== 2;
+   *     });
+   * };
+   * return Aigle.resolve(collection)
+   *   .transform(iterator, [])
+   *   .then(value => console.log(value)); // [1, 2]
    */
-  transform(result, iterator) {
-    return this.then(value => transform(value, result, iterator));
+  transform(iterator, accumulator) {
+    return this.then(value => transform(value, iterator, accumulator));
   }
 
   /**
-   * @param {Array|Object} result
    * @param {Function} iterator
+   * @param {Array|Object} [accumulator]
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const collection = [1, 4, 2];
+   * const iterator = (result, num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => result[index] = num);
+   * };
+   * return Aigle.resolve(collection)
+   *   .transformSeries(iterator, {})
+   *   .then(value => console.log(value)); // { '0': 1, '1': 4, '2': 2 }
+   *
+   * @example
+   * const collection = [1, 4, 2];
+   * const iterator = (result, num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => result.push(num));
+   * };
+   * return Aigle.resolve(collection)
+   *   transformSeries(iterator)
+   *   .then(value => console.log(value)); // [1, 4, 2]
+   *
+   * @example
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = (result, num, key) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       result.push(num);
+   *       return num !== 4;
+   *     });
+   * };
+   * return Aigle.resolve(collection)
+   *   .transformSeries(iterator, [])
+   *   .then(value => console.log(value)); // [1, 4]
    */
-  transformSeries(result, iterator) {
-    return this.then(value => transformSeries(value, result, iterator));
+  transformSeries(iterator, accumulator) {
+    return this.then(value => transformSeries(value, iterator, accumulator));
   }
 
   /**
    * @param {number} [limit=8]
-   * @param {Array|Object} result
    * @param {Function} iterator
+   * @param {Array|Object} [accumulator]
    */
-  transformLimit(limit, result, iterator) {
-    return this.then(value => transformLimit(value, limit, result, iterator));
+  transformLimit(limit, iterator, accumulator) {
+    return this.then(value => transformLimit(value, limit, iterator, accumulator));
   }
 
   /**
@@ -3387,11 +3475,30 @@ class ReduceObject extends AigleProxy {
 
 module.exports = reduce;
 
-function reduce(collection, result, iterator) {
-  if (iterator === undefined && typeof result === 'function') {
-    iterator = result;
-    result = undefined;
-  }
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @param {*} [result]
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const collection = [1, 4, 2];
+ * const iterator = (result, num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => result + num);
+ * };
+ * return Aigle.reduce(collection, iterator, 1)
+ *   .then(value => console.log(value)); // 8
+ *
+ * @example
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = (result, num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => result + num);
+ * };
+ * return Aigle.reduce(collection, iterator, '')
+ *   .then(value => console.log(value)); // '142'
+ */
+function reduce(collection, iterator, result) {
   if (Array.isArray(collection)) {
     return new ReduceArray(collection, iterator, result)._promise;
   }
@@ -4003,7 +4110,7 @@ const { INTERNAL, call3, callProxyReciever } = require('./internal/util');
 
 class TransformArray extends AigleProxy {
 
-  constructor(array, iterator, result) {
+  constructor(array, iterator, result = []) {
     super();
     const size = array.length;
     this._promise = new Aigle(INTERNAL);
@@ -4031,7 +4138,7 @@ class TransformArray extends AigleProxy {
 
 class TransformObject extends AigleProxy {
 
-  constructor(object, iterator, result) {
+  constructor(object, iterator, result = {}) {
     super();
     const keys = Object.keys(object);
     const size = keys.length;
@@ -4067,25 +4174,47 @@ module.exports = transform;
 
 /**
  * @param {Array|Object} collection
- * @param {Array|Object|Function} [accumulator]
  * @param {Function} iterator
+ * @param {Array|Object} [accumulator]
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const collection = [1, 4, 2];
+ * const iterator = (result, num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => result[index] = num);
+ * };
+ * return Aigle.transform(collection, iterator, {})
+ *   .then(value => console.log(value)); // { '0': 1, '1': 4, '2': 2 }
+ *
+ * @example
+ * const collection = [1, 4, 2];
+ * const iterator = (result, num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => result.push(num));
+ * };
+ * return Aigle.transform(collection, iterator)
+ *   .then(value => console.log(value)); // [1, 2, 4]
+ *
+ * @example
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = (result, num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       result.push(num);
+ *       return num !== 2;
+ *     });
+ * };
+ * return Aigle.transform(collection, iterator, [])
+ *   .then(value => console.log(value)); // [1, 2]
  */
-function transform(collection, accumulator, iterator) {
+function transform(collection, iterator, accumulator) {
   if (Array.isArray(collection)) {
-    if (iterator === undefined && typeof accumulator === 'function') {
-      iterator = accumulator;
-      accumulator = [];
-    }
     return new TransformArray(collection, iterator, accumulator)._promise;
   }
   if (collection && typeof collection === 'object') {
-    if (iterator === undefined && typeof accumulator === 'function') {
-      iterator = accumulator;
-      accumulator = {};
-    }
     return new TransformObject(collection, iterator, accumulator)._promise;
   }
-  return Aigle.resolve(arguments.length === 2 ? {} : accumulator);
+  return Aigle.resolve(accumulator || {});
 }
 
 },{"./aigle":2,"./internal/util":30,"aigle-core":70}],65:[function(require,module,exports){
@@ -4097,7 +4226,7 @@ const { INTERNAL, DEFAULT_LIMIT, call3, callProxyReciever, clone } = require('./
 
 class TransformLimitArray extends AigleProxy {
 
-  constructor(array, iterator, result, limit) {
+  constructor(array, iterator, result = [], limit) {
     super();
     const size = array.length;
     this._promise = new Aigle(INTERNAL);
@@ -4142,7 +4271,7 @@ class TransformLimitArray extends AigleProxy {
 
 class TransformLimitObject extends AigleProxy {
 
-  constructor(object, iterator, result, limit) {
+  constructor(object, iterator, result = {}, limit) {
     super();
     const keys = Object.keys(object);
     const size = keys.length;
@@ -4193,37 +4322,21 @@ module.exports = transformLimit;
 /**
  * @param {Array|Object} collection
  * @param {integer} [limit]
- * @param {Array|Object} [accumulator]
  * @param {Function} iterator
+ * @param {Array|Object} [accumulator]
  */
-function transformLimit(collection, limit, accumulator, iterator) {
-  if (iterator === undefined) {
-    if (typeof accumulator === 'function') {
-      iterator = accumulator;
-      accumulator = undefined;
-    } else if (typeof limit === 'function') {
-      iterator = limit;
-      accumulator = undefined;
-      limit = undefined;
-    }
-  }
-  const isArray = Array.isArray(collection);
-  if (typeof limit === 'object' && accumulator === undefined) {
-    accumulator = limit;
-    limit = DEFAULT_LIMIT;
-  } else if (limit === undefined) {
+function transformLimit(collection, limit, iterator, accumulator) {
+  if (typeof limit === 'function') {
+    iterator = limit;
     limit = DEFAULT_LIMIT;
   }
-  if (accumulator === undefined) {
-    accumulator = isArray ? [] : {};
-  }
-  if (isArray) {
+  if (Array.isArray(collection)) {
     return new TransformLimitArray(collection, iterator, accumulator, limit)._promise;
   }
   if (collection && typeof collection === 'object') {
     return new TransformLimitObject(collection, iterator, accumulator, limit)._promise;
   }
-  return Aigle.resolve(accumulator);
+  return Aigle.resolve(accumulator || {});
 }
 
 },{"./aigle":2,"./internal/util":30,"aigle-core":70}],66:[function(require,module,exports){
@@ -4235,11 +4348,41 @@ module.exports = transformSeries;
 
 /**
  * @param {Array|Object} collection
- * @param {Array|Object} [accumulator]
  * @param {Function} iterator
+ * @param {Array|Object} [accumulator]
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const collection = [1, 4, 2];
+ * const iterator = (result, num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => result[index] = num);
+ * };
+ * return Aigle.transformSeries(collection, iterator, {})
+ *   .then(value => console.log(value)); // { '0': 1, '1': 4, '2': 2 }
+ *
+ * @example
+ * const collection = [1, 4, 2];
+ * const iterator = (result, num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => result.push(num));
+ * };
+ * return Aigle.transformSeries(collection, iterator)
+ *   .then(value => console.log(value)); // [1, 4, 2]
+ *
+ * @example
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = (result, num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       result.push(num);
+ *       return num !== 4;
+ *     });
+ * };
+ * return Aigle.transformSeries(collection, iterator, [])
+ *   .then(value => console.log(value)); // [1, 4]
  */
-function transformSeries(collection, accumulator, iterator) {
-  return transformLimit(collection, 1, accumulator, iterator);
+function transformSeries(collection, iterator, accumulator) {
+  return transformLimit(collection, 1, iterator, accumulator);
 }
 
 },{"./transformLimit":65}],67:[function(require,module,exports){
@@ -4862,7 +5005,7 @@ process.umask = function() { return 0; };
 },{"_process":71}],73:[function(require,module,exports){
 module.exports={
   "name": "aigle",
-  "version": "0.4.6",
+  "version": "0.5.0",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "browser": "browser.js",
