@@ -39,6 +39,43 @@ parallel('#inject', () => {
       });
   });
 
+  it('should work with an empty object', () => {
+
+    const object = {};
+    return Aigle.resolve(object)
+      .inject((b, c, d, a) => {
+        assert.strictEqual(a, undefined);
+        assert.strictEqual(b, undefined);
+        assert.strictEqual(c, undefined);
+        assert.strictEqual(d, undefined);
+      });
+  });
+
+  it('should inject with an object which has a key', () => {
+
+    const object = { a: 1 };
+    return Aigle.resolve(object)
+      .inject((b, c, d, a) => {
+        assert.strictEqual(a, object.a);
+        assert.strictEqual(b, undefined);
+        assert.strictEqual(c, undefined);
+        assert.strictEqual(d, undefined);
+      });
+  });
+
+  it('should inject with an object which has two keys', () => {
+
+    const object = { a: 1, c: 2 };
+    return Aigle.resolve(object)
+      .inject((b, c, d, a) => {
+        assert.strictEqual(a, object.a);
+        assert.strictEqual(b, undefined);
+        assert.strictEqual(c, object.c);
+        assert.strictEqual(d, undefined);
+      });
+  });
+
+
   it('should not inject', () => {
 
     return Aigle.resolve(1)
@@ -65,5 +102,20 @@ parallel('#inject', () => {
       .inject(arg1 => arg1())
       .then(() => assert(false))
       .catch(TypeError, error => assert.ok(error));
+  });
+
+  it('should throw ReferenceError if error is caused in inject', () => {
+
+    const object = {
+      a: 1,
+      b: 4,
+      c: 2
+    };
+    return Aigle.resolve(object)
+      .inject(b => {
+        assert.strictEqual(b, object.b);
+        test;
+      })
+      .catch(ReferenceError, error => assert.ok(error));
   });
 });
