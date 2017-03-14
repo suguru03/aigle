@@ -86,6 +86,69 @@ parallel('#inject', () => {
       });
   });
 
+  it('should work with a function which doesn\'t have any argument', () => {
+
+    const object = {
+      a: 1,
+      b: 4,
+      c: 2
+    };
+    return Aigle.resolve(object)
+      .inject(() => assert.ok(true));
+  });
+
+  it('should work with a function which has an argument', () => {
+
+    const object = {
+      a: 1,
+      b: 4,
+      c: 2
+    };
+    return Aigle.resolve(object)
+      .inject((c) => assert.strictEqual(c, object.c));
+  });
+
+  it('should work with a function which has two arguments', () => {
+
+    const object = {
+      a: 1,
+      b: 4,
+      c: 2
+    };
+    return Aigle.resolve(object)
+      .inject((b, c) => {
+        assert.strictEqual(b, object.b);
+        assert.strictEqual(c, object.c);
+      });
+  });
+
+  it('should work with a function which has three arguments', () => {
+
+    const object = {
+      a: 1,
+      b: 4,
+      c: 2
+    };
+    return Aigle.resolve(object)
+      .inject((b, c, a) => {
+        assert.strictEqual(a, object.a);
+        assert.strictEqual(b, object.b);
+        assert.strictEqual(c, object.c);
+      });
+  });
+
+  it.skip('should work with a function which has an argument using shorthand', () => {
+
+    const object = {
+      a: 1,
+      b: 4,
+      c: 2
+    };
+    return Aigle.resolve(object)
+      .inject(c => assert.strictEqual(c, object.c));
+  });
+
+
   it('should not execute if error is caused', () => {
 
     const array = [1, 2, 3];
