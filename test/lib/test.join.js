@@ -61,7 +61,7 @@ parallel('join', () => {
   });
 });
 
-describe('#spread', () => {
+parallel('#spread', () => {
 
   it('should work', () => {
 
