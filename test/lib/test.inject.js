@@ -137,7 +137,7 @@ parallel('#inject', () => {
       });
   });
 
-  it.skip('should work with a function which has an argument using shorthand', () => {
+  it('should work with a function which has an argument using shorthand', () => {
 
     const object = {
       a: 1,
