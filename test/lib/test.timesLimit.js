@@ -59,14 +59,15 @@ parallel('timesLimit', () => {
 
     const order = [];
     const iterator = value => {
-      return new Aigle((resolve, reject) => {
-        order.push(value);
-        value === 3 ? reject('error') : resolve(value);
-      });
+      return Aigle.delay(DELAY)
+        .then(() => {
+          order.push(value);
+          return value !== 3 ? value : Aigle.reject('error');
+        });
     };
     return Aigle.timesLimit(10, 2, iterator)
       .catch(error => error)
-      .delay(DELAY)
+      .delay(DELAY * 2)
       .then(res => {
         assert.strictEqual(res, 'error');
         assert.deepEqual(order, _.times(5));

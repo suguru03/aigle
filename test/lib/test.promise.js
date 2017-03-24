@@ -2,7 +2,6 @@
 
 const assert = require('assert');
 
-const _ = require('lodash');
 const parallel = require('mocha.parallel');
 const Aigle = require('../../');
 const DELAY = require('../config').DELAY;
@@ -242,7 +241,7 @@ parallel('#then', () => {
   });
 });
 
-parallel('#catch', () => {
+describe('#catch', () => {
 
   it('should catch an error', done => {
 
@@ -333,7 +332,8 @@ parallel('#catch', () => {
         assert.ok(err);
         assert.ok(called);
         done();
-      });
+      })
+      .finally(() => process.removeAllListeners('unhandledRejection'));
     }, DELAY);
   });
 
@@ -453,12 +453,22 @@ parallel('#catch', () => {
       });
   });
 
+  it('should not call unhandledRejection', done => {
+
+    process.on('unhandledRejection', done);
+    new Aigle((resolve, reject) => reject('error'))
+      .catch(error => {
+        assert.strictEqual(error, 'error');
+        done();
+      })
+      .finally(() => process.removeAllListeners('unhandledRejection'));
+  });
+
   it('should not change status', done => {
 
     const str = 'success';
     const err = new Error('error');
     const p = new Aigle((resolve, reject) => {
-      process.once('unhandledRejection', _.noop);
       reject(err);
       setTimeout(() => resolve(str), DELAY);
     });
@@ -466,7 +476,7 @@ parallel('#catch', () => {
     p.then(done);
     p.catch(error => assert.strictEqual(error, err));
     setTimeout(() => {
-      p.then(() => done(err));
+      p.then(() => done('should be not called'));
       p.catch(error => {
         assert.strictEqual(error, err);
         done();
