@@ -1,7 +1,7 @@
 'use strict';
 
 const fs = require('fs');
-const { exec } = require('child_process');
+const { spawn } = require('child_process');
 
 const gulp = require('gulp');
 
@@ -17,12 +17,12 @@ const builds = [
 gulp.task('build', () => {
   return Aigle.eachSeries(builds, ([command, args, output]) => {
     return new Aigle(resolve => {
-      exec(`./node_modules/.bin/${command} ${args}`)
-        .stdout
-        .on('end', () => {
+      spawn(`./node_modules/.bin/${command}`, args.split(' '))
+        .on('close', () => {
           console.log(`built: \x1b[32m${output}\x1b[0m`);
           resolve();
         })
+        .stdout
         .pipe(fs.createWriteStream(output));
     });
   });
