@@ -107,6 +107,20 @@ parallel('all', () => {
     .then(() => assert(false))
     .catch(TypeError, error => assert.ok(error));
   });
+
+  it('should execute with an error promise', done => {
+
+    process.on('unhandledRejection', done);
+    const promise = Aigle.reject(1);
+    Aigle.all([
+      Aigle.reject(1),
+      promise
+    ])
+    .catch(error => {
+      assert(error);
+      done();
+    });
+  });
 });
 
 parallel('#all', () => {

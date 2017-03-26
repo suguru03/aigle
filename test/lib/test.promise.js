@@ -316,7 +316,7 @@ describe('#catch', () => {
       });
   });
 
-  it('should catch Unhandled rejection error', done => {
+  it('should catch unhandled rejection error', done => {
 
     let called = false;
     process.on('unhandledRejection', err => {
@@ -333,6 +333,7 @@ describe('#catch', () => {
         assert.ok(called);
         done();
       })
+      .catch(done)
       .finally(() => process.removeAllListeners('unhandledRejection'));
     }, DELAY);
   });
@@ -593,6 +594,18 @@ parallel('#finally', () => {
       })
       .catch(error => {
         assert.strictEqual(error, 1);
+        done();
+      });
+  });
+
+  it('should return an error promise in finally function', done => {
+
+    const promise = Aigle.reject(1);
+    promise.catch(error => assert(error));
+    Aigle.resolve()
+      .finally(() => promise)
+      .catch(error => {
+        assert(error);
         done();
       });
   });

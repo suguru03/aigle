@@ -155,6 +155,17 @@ parallel('each', () => {
         assert.ok(error instanceof TypeError);
       });
   });
+
+  it('should throw error if iterator returns an error promise', done => {
+
+    process.on('unhandledRejection', done);
+    const promise = Aigle.reject(1);
+    const collection = [1, 4, 2];
+    const iterator = () => promise;
+    Aigle.each(collection, iterator)
+      .catch(error => assert(error))
+      .then(done);
+  });
 });
 
 parallel('forEach', () => {
