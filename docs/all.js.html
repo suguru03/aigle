@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>retry.js - Documentation</title>
+    <title>all.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,7 +27,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">retry.js</h1>
+    <h1 class="page-title">all.js</h1>
     
 
     
@@ -41,73 +41,64 @@
 
 const { AigleProxy } = require('aigle-core');
 const { Aigle } = require('./aigle');
-const { INTERNAL, call0, callProxyReciever } = require('./internal/util');
-const DEFAULT_RETRY = 5;
+const { INTERNAL, promiseArrayEach } = require('./internal/util');
 
-class Retry extends AigleProxy {
+class AigleAll extends AigleProxy {
 
-  constructor(handler, times) {
+  constructor(array) {
     super();
+    const size = array.length;
     this._promise = new Aigle(INTERNAL);
-    this._rest = times;
-    this._handler = handler;
-    this._next();
-  }
-
-  _next() {
-    callProxyReciever(call0(this._handler), this, undefined);
-  }
-
-  _callResolve(value) {
-    this._promise._resolve(value);
-  }
-
-  _callReject(reason) {
-    if (--this._rest === 0) {
-      this._promise._reject(reason);
+    this._rest = size;
+    this._array = array;
+    this._result = Array(size);
+    if (size === 0) {
+      this._promise._resolve(this._result);
     } else {
-      this._next();
+      promiseArrayEach(this);
     }
   }
 
+  _callResolve(value, index) {
+    this._result[index] = value;
+    if (--this._rest === 0) {
+      this._promise._resolve(this._result);
+    }
+  }
+
+  _callReject(reason) {
+    this._promise._reject(reason);
+  }
 }
 
-module.exports = retry;
+module.exports = { all, AigleAll };
 
 /**
- * @param {Integer} [times=5]
- * @param {Function} handler
+ * @param {Array} array
+ * @return {Aigle} Returns an Aigle instance
  * @example
- * let called = 0;
- * Aigle.retry(3, () => {
- *   return new Aigle((resolve, reject) => {
- *     setTimeout(() => reject(++called), 10);
- *   });
- * })
- * .catch(error => {
- *   console.log(error); // 3
- *   console.log(called); // 3
- * });
- *
- * @example
- * let called = 0;
- * Aigle.retry(() => {
- *   return new Aigle((resolve, reject) => {
- *     setTimeout(() => reject(++called), 10);
- *   });
- * })
- * .catch(error => {
- *   console.log(error); // 5
- *   console.log(called); // 5
+ * const order = [];
+ * const makeDelay = (num, delay) => {
+ *   return Aigle.delay(delay)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num;
+ *     });
+ * };
+ * Aigle.all([
+ *   makeDelay(1, 30),
+ *   makeDelay(2, 20),
+ *   makeDelay(3, 10)
+ * ])
+ * .then(array => {
+ *   console.log(array); // [1, 2, 3];
+ *   console.log(order); // [3, 2, 1];
  * });
  */
-function retry(times, handler) {
-  if (typeof times === 'function') {
-    handler = times;
-    times = DEFAULT_RETRY;
-  }
-  return new Retry(handler, times)._promise;
+function all(array) {
+  return new AigleAll(array)._promise;
 }
+
 </code></pre>
         </article>
     </section>

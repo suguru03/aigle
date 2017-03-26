@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>retry.js - Documentation</title>
+    <title>delay.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,7 +27,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">retry.js</h1>
+    <h1 class="page-title">delay.js</h1>
     
 
     
@@ -41,72 +41,43 @@
 
 const { AigleProxy } = require('aigle-core');
 const { Aigle } = require('./aigle');
-const { INTERNAL, call0, callProxyReciever } = require('./internal/util');
-const DEFAULT_RETRY = 5;
+const { INTERNAL } = require('./internal/util');
 
-class Retry extends AigleProxy {
+class Delay extends AigleProxy {
 
-  constructor(handler, times) {
+  constructor(ms) {
     super();
     this._promise = new Aigle(INTERNAL);
-    this._rest = times;
-    this._handler = handler;
-    this._next();
-  }
-
-  _next() {
-    callProxyReciever(call0(this._handler), this, undefined);
+    this._ms = ms;
   }
 
   _callResolve(value) {
-    this._promise._resolve(value);
+    setTimeout(() => this._promise._resolve(value), this._ms);
   }
 
   _callReject(reason) {
-    if (--this._rest === 0) {
-      this._promise._reject(reason);
-    } else {
-      this._next();
-    }
+    this._promise._reject(reason);
   }
-
 }
 
-module.exports = retry;
+module.exports = { delay, Delay };
 
 /**
- * @param {Integer} [times=5]
- * @param {Function} handler
+ * @param {number} ms
+ * @param {*} value
+ * @return {Aigle} Returns an Aigle instance
  * @example
- * let called = 0;
- * Aigle.retry(3, () => {
- *   return new Aigle((resolve, reject) => {
- *     setTimeout(() => reject(++called), 10);
- *   });
- * })
- * .catch(error => {
- *   console.log(error); // 3
- *   console.log(called); // 3
- * });
+ * Aigle.delay(10)
+ *   .then(value => console.log(value); // undefined
  *
  * @example
- * let called = 0;
- * Aigle.retry(() => {
- *   return new Aigle((resolve, reject) => {
- *     setTimeout(() => reject(++called), 10);
- *   });
- * })
- * .catch(error => {
- *   console.log(error); // 5
- *   console.log(called); // 5
- * });
+ * Aigle.delay(10, 'test')
+ *   .then(value => console.log(value); // 'test'
  */
-function retry(times, handler) {
-  if (typeof times === 'function') {
-    handler = times;
-    times = DEFAULT_RETRY;
-  }
-  return new Retry(handler, times)._promise;
+function delay(ms, value) {
+  const delay = new Delay(ms);
+  delay._callResolve(value);
+  return delay._promise;
 }
 </code></pre>
         </article>

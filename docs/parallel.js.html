@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>retry.js - Documentation</title>
+    <title>parallel.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,7 +27,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">retry.js</h1>
+    <h1 class="page-title">parallel.js</h1>
     
 
     
@@ -39,75 +39,62 @@
         <article>
             <pre class="prettyprint source linenums"><code>'use strict';
 
-const { AigleProxy } = require('aigle-core');
 const { Aigle } = require('./aigle');
-const { INTERNAL, call0, callProxyReciever } = require('./internal/util');
-const DEFAULT_RETRY = 5;
+const { AigleAll } = require('./all');
+const { AigleProps } = require('./props');
 
-class Retry extends AigleProxy {
-
-  constructor(handler, times) {
-    super();
-    this._promise = new Aigle(INTERNAL);
-    this._rest = times;
-    this._handler = handler;
-    this._next();
-  }
-
-  _next() {
-    callProxyReciever(call0(this._handler), this, undefined);
-  }
-
-  _callResolve(value) {
-    this._promise._resolve(value);
-  }
-
-  _callReject(reason) {
-    if (--this._rest === 0) {
-      this._promise._reject(reason);
-    } else {
-      this._next();
-    }
-  }
-
-}
-
-module.exports = retry;
+module.exports = parallel;
 
 /**
- * @param {Integer} [times=5]
- * @param {Function} handler
+ * @param {Array|Object} collection - it should be an array/object of Promise instances
  * @example
- * let called = 0;
- * Aigle.retry(3, () => {
- *   return new Aigle((resolve, reject) => {
- *     setTimeout(() => reject(++called), 10);
- *   });
- * })
- * .catch(error => {
- *   console.log(error); // 3
- *   console.log(called); // 3
+ * const order = [];
+ * const makeDelay = (num, delay) => {
+ *   return Aigle.delay(delay)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num;
+ *     });
+ * };
+ * Aigle.parallel([
+ *   makeDelay(1, 30),
+ *   makeDelay(2, 20),
+ *   makeDelay(3, 10)
+ * ])
+ * .then(array => {
+ *   console.log(array); // [1, 2, 3]
+ *   console.log(order); // [3, 2, 1]
  * });
  *
  * @example
- * let called = 0;
- * Aigle.retry(() => {
- *   return new Aigle((resolve, reject) => {
- *     setTimeout(() => reject(++called), 10);
- *   });
+ * const order = [];
+ * const makeDelay = (num, delay) => {
+ *   return Aigle.delay(delay)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num;
+ *     });
+ * };
+ * Aigle.parallel({
+ *   a: makeDelay(1, 30),
+ *   b: makeDelay(2, 20),
+ *   c: makeDelay(3, 10)
  * })
- * .catch(error => {
- *   console.log(error); // 5
- *   console.log(called); // 5
+ * .then(object => {
+ *   console.log(object); // { a: 1, b: 2, c: 3 }
+ *   console.log(order); // [3, 2, 1]
  * });
  */
-function retry(times, handler) {
-  if (typeof times === 'function') {
-    handler = times;
-    times = DEFAULT_RETRY;
+function parallel(collection) {
+  if (Array.isArray(collection)) {
+    return new AigleAll(collection)._promise;
   }
-  return new Retry(handler, times)._promise;
+  if (collection &amp;&amp; typeof collection === 'object') {
+    return new AigleProps(collection)._promise;
+  }
+  return Aigle.resolve({});
 }
+
 </code></pre>
         </article>
     </section>

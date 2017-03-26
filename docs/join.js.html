@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>retry.js - Documentation</title>
+    <title>join.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,7 +27,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">retry.js</h1>
+    <h1 class="page-title">join.js</h1>
     
 
     
@@ -41,72 +41,112 @@
 
 const { AigleProxy } = require('aigle-core');
 const { Aigle } = require('./aigle');
-const { INTERNAL, call0, callProxyReciever } = require('./internal/util');
-const DEFAULT_RETRY = 5;
+const {
+  INTERNAL,
+  call1,
+  apply,
+  callProxyReciever
+} = require('./internal/util');
 
-class Retry extends AigleProxy {
+class Join extends AigleProxy {
 
-  constructor(handler, times) {
+  constructor(handler, size) {
     super();
     this._promise = new Aigle(INTERNAL);
-    this._rest = times;
+    this._rest = size;
+    this._result = Array(size);
     this._handler = handler;
-    this._next();
   }
 
-  _next() {
-    callProxyReciever(call0(this._handler), this, undefined);
-  }
-
-  _callResolve(value) {
-    this._promise._resolve(value);
-  }
-
-  _callReject(reason) {
+  _callResolve(value, index) {
+    if (index === INTERNAL) {
+      return this._promise._resolve(value);
+    }
+    this._result[index] = value;
     if (--this._rest === 0) {
-      this._promise._reject(reason);
-    } else {
-      this._next();
+      spread(this, this._result);
     }
   }
 
+  _callReject(reason) {
+    this._promise._reject(reason);
+  }
 }
 
-module.exports = retry;
+class Spread extends AigleProxy {
+
+  constructor(handler) {
+    super();
+    this._promise = new Aigle(INTERNAL);
+    this._handler = handler;
+  }
+
+  _callResolve(value, index) {
+    if (index === INTERNAL) {
+      return this._promise._resolve(value);
+    }
+    spread(this, value);
+  }
+
+  _callReject(reason) {
+    this._promise._reject(reason);
+  }
+}
+
+module.exports = { join, Spread };
 
 /**
- * @param {Integer} [times=5]
- * @param {Function} handler
  * @example
- * let called = 0;
- * Aigle.retry(3, () => {
- *   return new Aigle((resolve, reject) => {
- *     setTimeout(() => reject(++called), 10);
- *   });
- * })
- * .catch(error => {
- *   console.log(error); // 3
- *   console.log(called); // 3
- * });
- *
- * @example
- * let called = 0;
- * Aigle.retry(() => {
- *   return new Aigle((resolve, reject) => {
- *     setTimeout(() => reject(++called), 10);
- *   });
- * })
- * .catch(error => {
- *   console.log(error); // 5
- *   console.log(called); // 5
+ * const p1 = Aigle.delay(20).then(() => 1);
+ * const p2 = Aigle.delay(10).then(() => 2);
+ * Aigle.join(p1, p2, (v1, v2) => {
+ *   console.log(v1, v2); // 1 2
  * });
  */
-function retry(times, handler) {
-  if (typeof times === 'function') {
-    handler = times;
-    times = DEFAULT_RETRY;
+function join() {
+  let l = arguments.length;
+  const handler = typeof arguments[l - 1] === 'function' ? arguments[--l] : undefined;
+  const receiver = new Join(handler, l);
+  while (l--) {
+    callProxyReciever(arguments[l], receiver, l);
   }
-  return new Retry(handler, times)._promise;
+  return receiver._promise;
+}
+
+/**
+ * @private
+ * @param {AigleProxy} proxy
+ * @param {string|Array|Object} array
+ */
+function spread(proxy, array) {
+  const { _handler } = proxy;
+  if (_handler === undefined) {
+    return proxy._promise._resolve(array);
+  }
+  switch (typeof array) {
+  case 'string':
+    array = array.split('');
+    break;
+  case 'object':
+    if (Array.isArray(array)) {
+      break;
+    }
+    if (array) {
+      const keys = Object.keys(array);
+      let l = keys.length;
+      const arr = Array(l);
+      while (l--) {
+        arr[l] = array[keys[l]];
+      }
+      array = arr;
+      break;
+    }
+  /* eslint no-fallthrough: 0 */
+  default:
+  /* eslint no-fallthrough: 1 */
+    return callProxyReciever(call1(_handler, array), proxy, INTERNAL);
+  }
+  callProxyReciever(apply(_handler, array), proxy, INTERNAL);
 }
 </code></pre>
         </article>

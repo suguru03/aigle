@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>retry.js - Documentation</title>
+    <title>someSeries.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,7 +27,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">retry.js</h1>
+    <h1 class="page-title">someSeries.js</h1>
     
 
     
@@ -39,74 +39,64 @@
         <article>
             <pre class="prettyprint source linenums"><code>'use strict';
 
-const { AigleProxy } = require('aigle-core');
-const { Aigle } = require('./aigle');
-const { INTERNAL, call0, callProxyReciever } = require('./internal/util');
-const DEFAULT_RETRY = 5;
+const someLimit = require('./someLimit');
 
-class Retry extends AigleProxy {
-
-  constructor(handler, times) {
-    super();
-    this._promise = new Aigle(INTERNAL);
-    this._rest = times;
-    this._handler = handler;
-    this._next();
-  }
-
-  _next() {
-    callProxyReciever(call0(this._handler), this, undefined);
-  }
-
-  _callResolve(value) {
-    this._promise._resolve(value);
-  }
-
-  _callReject(reason) {
-    if (--this._rest === 0) {
-      this._promise._reject(reason);
-    } else {
-      this._next();
-    }
-  }
-
-}
-
-module.exports = retry;
+module.exports = someSeries;
 
 /**
- * @param {Integer} [times=5]
- * @param {Function} handler
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
  * @example
- * let called = 0;
- * Aigle.retry(3, () => {
- *   return new Aigle((resolve, reject) => {
- *     setTimeout(() => reject(++called), 10);
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2 === 0;
+ *     });
+ * };
+ * Aigle.someSeries(collection, iterator)
+ *   .then(bool => {
+ *     console.log(bool); // true
+ *     console.log(order); // [1, 4]
  *   });
- * })
- * .catch(error => {
- *   console.log(error); // 3
- *   console.log(called); // 3
- * });
  *
  * @example
- * let called = 0;
- * Aigle.retry(() => {
- *   return new Aigle((resolve, reject) => {
- *     setTimeout(() => reject(++called), 10);
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2 === 0;
+ *     });
+ * };
+ * Aigle.someSeries(collection, iterator)
+ *   .then(bool => {
+ *     console.log(bool); // true
+ *     console.log(order); // [1, 4]
  *   });
- * })
- * .catch(error => {
- *   console.log(error); // 5
- *   console.log(called); // 5
- * });
+ *
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return false;
+ *     });
+ * };
+ * Aigle.someSeries(collection, iterator)
+ *   .then(bool => {
+ *     console.log(bool); // false
+ *     console.log(order); // [1, 4, 2]
+ *   });
  */
-function retry(times, handler) {
-  if (typeof times === 'function') {
-    handler = times;
-    times = DEFAULT_RETRY;
-  }
-  return new Retry(handler, times)._promise;
+function someSeries(collection, iterator) {
+  return someLimit(collection, 1, iterator);
 }
 </code></pre>
         </article>
