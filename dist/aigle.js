@@ -97,13 +97,6 @@ class Aigle extends AigleCore {
    *   });
    *
    * @example
-   * const object = { a: 1, b: 2, c: 3 };
-   * Aigle.resolve(object)
-   *   .spread((arg1, arg2, arg3) => {
-   *     console.log(arg1, arg2, arg3); // 1, 2, 3
-   *   });
-   *
-   * @example
    * const string = '123';
    * Aigle.resolve(string)
    *   .spread((arg1, arg2, arg3) => {
@@ -117,13 +110,24 @@ class Aigle extends AigleCore {
   /**
    * @return {Aigle} Returns an Aigle instance
    * @example
+   * const order = [];
+   * const makeDelay = (num, delay) => {
+   *   return Aigle.delay(delay)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num;
+   *     });
+   * };
    * Aigle.resolve([
-   *   new Aigle(resolve => setTimeout(() => resolve(1), 30)),
-   *   new Aigle(resolve => setTimeout(() => resolve(2), 20)),
-   *   new Aigle(resolve => setTimeout(() => resolve(3), 10))
+   *   makeDelay(1, 30),
+   *   makeDelay(2, 20),
+   *   makeDelay(3, 10)
    * ])
    * .all()
-   * .then(value => console.log(value)); // [1, 2, 3]
+   * .then(array => {
+   *   console.log(array); // [1, 2, 3];
+   *   console.log(order); // [3, 2, 1];
+   * });
    */
   all() {
     return this.then(all);
@@ -147,25 +151,121 @@ class Aigle extends AigleCore {
   /**
    * @return {Aigle} Returns an Aigle instance
    * @example
+   * const order = [];
+   * const makeDelay = (num, delay) => {
+   *   return Aigle.delay(delay)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num;
+   *     });
+   * };
    * Aigle.resolve({
-   *   a: new Aigle(resolve => setTimeout(() => resolve(1), 30)),
-   *   b: new Aigle(resolve => setTimeout(() => resolve(2), 20)),
-   *   c: new Aigle(resolve => setTimeout(() => resolve(3), 10)),
-   *   d: 4
+   *   a: makeDelay(1, 30),
+   *   b: makeDelay(2, 20),
+   *   c: makeDelay(3, 10)
    * })
    * .props()
-   * .then(value => console.log(value)); // { a: 1, b: 2, c: 3, d: 4 }
+   * .then(object => {
+   *   console.log(object); // { a: 1, b: 2, c: 3 }
+   *   console.log(order); // [3, 2, 1]
+   * });
    */
   props() {
     return this.then(props);
   }
 
+  /**
+   * @param {Array|Object} collection - it should be an array of object of Promise instances
+   * @example
+   * const order = [];
+   * const makeDelay = (num, delay) => {
+   *   return Aigle.delay(delay)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num;
+   *     });
+   * };
+   * Aigle.resolve([
+   *   makeDelay(1, 30),
+   *   makeDelay(2, 20),
+   *   makeDelay(3, 10)
+   * ])
+   * .parallel()
+   * .then(array => {
+   *   console.log(array); // [1, 2, 3]
+   *   console.log(order); // [3, 2, 1]
+   * });
+   *
+   * @example
+   * const order = [];
+   * const makeDelay = (num, delay) => {
+   *   return Aigle.delay(delay)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num;
+   *     });
+   * };
+   * Aigle.resolve({
+   *   a: makeDelay(1, 30),
+   *   b: makeDelay(2, 20),
+   *   c: makeDelay(3, 10)
+   * })
+   * .parallel()
+   * .then(object => {
+   *   console.log(object); // { a: 1, b: 2, c: 3 }
+   *   console.log(order); // [3, 2, 1]
+   * });
+   */
   parallel() {
     return this.then(parallel);
   }
 
   /**
    * @param {Function} iterator
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => order.push(num));
+   * };
+   * Aigle.resolve(collection)
+   *   .each(iterator)
+   *   .then(value => {
+   *     console.log(value); // undefined
+   *     console.log(order); // [1, 2, 4];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => order.push(num));
+   * };
+   * Aigle.resolve(collection)
+   *   .each(iterator)
+   *   .then(value => {
+   *     console.log(value); // undefined
+   *     console.log(order); // [1, 2, 4];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num !== 2; // break
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .each(iterator)
+   *   .then(value => {
+   *     console.log(value); // undefined
+   *     console.log(order); // [1, 2];
+   *   });
    */
   each(iterator) {
     return this.then(value => each(value, iterator));
@@ -181,6 +281,50 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => order.push(num));
+   * };
+   * Aigle.resolve(collection)
+   *   .eachSeries(iterator)
+   *   .then(value => {
+   *     console.log(value); // undefined
+   *     console.log(order); // [1, 4, 2];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => order.push(num));
+   * };
+   * Aigle.resolve(collection)
+   *   .eachSeries(iterator)
+   *   .then(value => {
+   *     console.log(value); // undefined
+   *     console.log(order); // [1, 4, 2];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num !== 4; // break
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .eachSeries(iterator)
+   *   .then(value => {
+   *     console.log(value); // undefined
+   *     console.log(order); // [1, 4];
+   *   });
    */
   eachSeries(iterator) {
     return this.then(value => eachSeries(value, iterator));
@@ -195,7 +339,7 @@ class Aigle extends AigleCore {
   }
 
   /**
-   * @param {number} [limit=8] - if you don't define, the default is 8
+   * @param {number} [limit=8]
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -233,21 +377,148 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num * 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .map(iterator)
+   *   .then(array => {
+   *     console.log(array); // [2, 8, 4]
+   *     console.log(order); // [1, 2, 4]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num * 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .map(iterator)
+   *   .then(array => {
+   *     console.log(array); // [2, 8, 4]
+   *     console.log(order); // [1, 2, 4]
+   *   });
    */
   map(iterator) {
     return this.then(value => map(value, iterator));
   }
 
   /**
+   * @param {Array|Object} collection
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num * 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .mapSeries(iterator)
+   *   .then(array => {
+   *     console.log(array); // [2, 8, 4]
+   *     console.log(order); // [1, 4, 2]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num * 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .mapSeries(iterator)
+   *   .then(array => {
+   *     console.log(array); // [2, 8, 4]
+   *     console.log(order); // [1, 4, 2]
+   *   });
    */
   mapSeries(iterator) {
     return this.then(value => mapSeries(value, iterator));
   }
 
   /**
-   * @param {number} [limit=8]
+   * @param {Array|Object} collection
+   * @param {integer} [limit=8]
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = (num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num * 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .mapLimit(2, iterator)
+   *   .then(array => {
+   *     console.log(array); // [2, 10, 6, 8, 4];
+   *     console.log(order); // [1, 3, 5, 2, 4];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = {
+   *   task1: 1,
+   *   task2: 5,
+   *   task3: 3,
+   *   task4: 4,
+   *   task5: 2
+   * };
+   * const iterator = (num, key) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num * 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .mapLimit(2, iterator)
+   *   .then(array => {
+   *     console.log(array); // [2, 10, 6, 8, 4];
+   *     console.log(order); // [1, 3, 5, 2, 4];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num * 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .mapLimit(iterator)
+   *   .then(array => {
+   *     console.log(array); // [2, 10, 6, 8, 4];
+   *     console.log(order); // [1, 2, 3, 4, 5];
+   *   });
    */
   mapLimit(limit, iterator) {
     return this.then(value => mapLimit(value, limit, iterator));
@@ -255,6 +526,40 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num * 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .mapValues(iterator)
+   *   .then(object => {
+   *     console.log(object); // { '0': 2, '1': 8, '2': 4 }
+   *     console.log(order); // [1, 2, 4]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num * 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .mapValues(iterator)
+   *   .then(object => {
+   *     console.log(object); // { a: 2, b: 8, c: 4 }
+   *     console.log(order); // [1, 2, 4]
+   *   });
    */
   mapValues(iterator) {
     return this.then(value => mapValues(value, iterator));
@@ -262,6 +567,40 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num * 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .mapValuesSeries(iterator)
+   *   .then(object => {
+   *     console.log(object); // { '0': 2, '1': 8, '2': 4 }
+   *     console.log(order); // [1, 4, 2]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num * 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .mapValuesSeries(iterator)
+   *   .then(object => {
+   *     console.log(object); // { a: 2, b: 8, c: 4 }
+   *     console.log(order); // [1, 4, 2]
+   *   });
    */
   mapValuesSeries(iterator) {
     return this.then(value => mapValuesSeries(value, iterator));
@@ -270,6 +609,57 @@ class Aigle extends AigleCore {
   /**
    * @param {number} [limit=8]
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = (num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num * 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .mapValuesLimit(2, iterator)
+   *   .then(object => {
+   *     console.log(object); // { '0': 2, '1': 10, '2': 6, '3': 8, '4': 4 }
+   *     console.log(order); // [1, 3, 5, 2, 4]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 5, c: 3, d: 4, e: 2 };
+   * const iterator = (num, key) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num * 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .mapValuesLimit(2, iterator)
+   *   .then(object => {
+   *     console.log(object); // { a: 2, b: 10, c: 6, d: 8, e: 4 }
+   *     console.log(order); // [1, 3, 5, 2, 4]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num * 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .mapValuesLimit(iterator)
+   *   .then(object => {
+   *     console.log(object); // { '0': 2, '1': 10, '2': 6, '3': 8, '4': 4 }
+   *     console.log(order); // [1, 2, 3, 4, 5]
+   *   });
    */
   mapValuesLimit(limit, iterator) {
     return this.then(value => mapValuesLimit(value, limit, iterator));
@@ -277,6 +667,40 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = (num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .filter(iterator)
+   *   .then(array => {
+   *     console.log(array); // [1];
+   *     console.log(order); // [1, 2, 4];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = (num, key) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .filter(iterator)
+   *   .then(array => {
+   *     console.log(array); // [1];
+   *     console.log(order); // [1, 2, 4];
+   *   });
    */
   filter(iterator) {
     return this.then(value => filter(value, iterator));
@@ -284,14 +708,106 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = (num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .filterSeries(iterator)
+   *   .then(array => {
+   *     console.log(array); // [1];
+   *     console.log(order); // [1, 4, 2];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = (num, key) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .filterSeries(iterator)
+   *   .then(array => {
+   *     console.log(array); // [1];
+   *     console.log(order); // [1, 4, 2];
+   *   });
    */
   filterSeries(iterator) {
     return this.then(value => filterSeries(value, iterator));
   }
 
   /**
-   * @param {number} [limit=8]
+   * @param {Array|Object} collection
+   * @param {integer} [limit=8]
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = (num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .filterLimit(2, iterator)
+   *   .then(array => {
+   *     console.log(array); // [1, 5, 3];
+   *     console.log(order); // [1, 3, 5, 2, 4];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = {
+   *   task1: 1,
+   *   task2: 5,
+   *   task3: 3,
+   *   task4: 4,
+   *   task5: 2
+   * };
+   * const iterator = (num, key) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .filterLimit(2, iterator)
+   *   .then(array => {
+   *     console.log(array); // [1, 5, 3];
+   *     console.log(order); // [1, 3, 5, 2, 4];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .filterLimit(iterator)
+   *   .then(array => {
+   *     console.log(array); // [1, 5, 3];
+   *     console.log(order); // [1, 2, 3, 4, 5];
+   *   });
    */
   filterLimit(limit, iterator) {
     return this.then(value => filterLimit(value, limit, iterator));
@@ -299,6 +815,40 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = (num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .reject(iterator)
+   *   .then(array => {
+   *     console.log(array); // [4, 2];
+   *     console.log(order); // [1, 2, 4];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = (num, key) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .reject(iterator)
+   *   .then(array => {
+   *     console.log(array); // [4, 2];
+   *     console.log(order); // [1, 2, 4];
+   *   });
    */
   reject(iterator) {
     return this.then(value => reject(value, iterator));
@@ -306,6 +856,40 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = (num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .rejectSeries(iterator)
+   *   .then(array => {
+   *     console.log(array); // [4, 2];
+   *     console.log(order); // [1, 4, 2];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = (num, key) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .rejectSeries(iterator)
+   *   .then(array => {
+   *     console.log(array); // [4, 2];
+   *     console.log(order); // [1, 4, 2];
+   *   });
    */
   rejectSeries(iterator) {
     return this.then(value => rejectSeries(value, iterator));
@@ -314,6 +898,57 @@ class Aigle extends AigleCore {
   /**
    * @param {number} [limit=8]
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = (num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .rejectLimit(2, iterator)
+   *   .then(array => {
+   *     console.log(array); // [4, 2]
+   *     console.log(order); // [1, 3, 5, 2, 4]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 5, c: 3, d: 4, e: 2 };
+   * const iterator = (num, key) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .rejectLimit(2, iterator)
+   *   .then(array => {
+   *     console.log(array); // [4, 2]
+   *     console.log(order); // [1, 3, 5, 2, 4]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .rejectLimit(iterator)
+   *   .then(array => {
+   *     console.log(array); // [4, 2]
+   *     console.log(order); // [1, 2, 3, 4, 5]
+   *   });
    */
   rejectLimit(limit, iterator) {
     return this.then(value => rejectLimit(value, limit, iterator));
@@ -321,6 +956,57 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2 === 0;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .find(iterator)
+   *   .then(value => {
+   *     console.log(value); // 2
+   *     console.log(order); // [1, 2];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2 === 0;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .find(iterator)
+   *   .then(value => {
+   *     console.log(value); // 2
+   *     console.log(order); // [1, 2];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return false;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .find(iterator)
+   *   .then(value => {
+   *     console.log(value); // undefined
+   *     console.log(order); // [1, 2, 4];
+   *   });
    */
   find(iterator) {
     return this.then(value => find(value, iterator));
@@ -328,14 +1014,122 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2 === 0;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .findSeries(iterator)
+   *   .then(value => {
+   *     console.log(value); // 4
+   *     console.log(order); // [1, 4];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2 === 0;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .findSeries(iterator)
+   *   .then(value => {
+   *     console.log(value); // 4
+   *     console.log(order); // [1, 4];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return false;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .findSeries(iterator)
+   *   .then(value => {
+   *     console.log(value); // undefined
+   *     console.log(order); // [1, 4, 2];
+   *   });
    */
   findSeries(iterator) {
     return this.then(value => findSeries(value, iterator));
   }
 
   /**
-   * @param {number} [limit=8]
+   * @param {integer} [limit=8]
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = (num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2 === 0;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .findLimit(2, iterator)
+   *   .then(value => {
+   *     console.log(value); // 2
+   *     console.log(order); // [1, 3, 5, 2];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = {
+   *   task1: 1,
+   *   task2: 5,
+   *   task3: 3,
+   *   task4: 4,
+   *   task5: 2
+   * };
+   * const iterator = (num, key) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2 === 0;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .findLimit(2, iterator)
+   *   .then(value => {
+   *     console.log(value); // 2
+   *     console.log(order); // [1, 3, 5, 2];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2 === 0;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .findLimit(2, iterator)
+   *   .then(value => {
+   *     console.log(value); // 2
+   *     console.log(order); // [1, 2];
+   *   });
    */
   findLimit(limit, iterator) {
     return this.then(value => findLimit(value, limit, iterator));
@@ -343,6 +1137,40 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .pick(iterator)
+   *   .then(object => {
+   *     console.log(object); // { '0': 1 }
+   *     console.log(order); // [1, 2, 4]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num * 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .pick(iterator)
+   *   .then(object => {
+   *     console.log(object); // { a: 1 }
+   *     console.log(order); // [1, 2, 4]
+   *   });
    */
   pick(iterator) {
     return this.then(value => pick(value, iterator));
@@ -350,6 +1178,40 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .pickSeries(iterator)
+   *   .then(object => {
+   *     console.log(object); // { '0': 1 }
+   *     console.log(order); // [1, 4, 2]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num * 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .pickSeries(iterator)
+   *   .then(object => {
+   *     console.log(object); // { a: 1 }
+   *     console.log(order); // [1, 4, 2]
+   *   });
    */
   pickSeries(iterator) {
     return this.then(value => pickSeries(value, iterator));
@@ -358,6 +1220,57 @@ class Aigle extends AigleCore {
   /**
    * @param {number} [limit=8]
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = (num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .pickLimit(2, iterator)
+   *   .then(object => {
+   *     console.log(object); // { '0': 1, '1': 5, '2': 3 }
+   *     console.log(order); // [1, 3, 5, 2, 4]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 5, c: 3, d: 4, e: 2 };
+   * const iterator = (num, key) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .pickLimit(2, iterator)
+   *   .then(object => {
+   *     console.log(object); // { a: 1, b: 5, c: 3 }
+   *     console.log(order); // [1, 3, 5, 2, 4]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .pickLimit(iterator)
+   *   .then(object => {
+   *     console.log(object); // { '0': 1, '1': 5, '2': 3 }
+   *     console.log(order); // [1, 2, 3, 4, 5]
+   *   });
    */
   pickLimit(limit, iterator) {
     return this.then(value => pickLimit(value, limit, iterator));
@@ -365,6 +1278,38 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.omit(collection, iterator)
+   *   .then(object => {
+   *     console.log(object); // { '1': 4, '2': 4 }
+   *     console.log(order); // [1, 2, 4]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.omit(collection, iterator)
+   *   .then(object => {
+   *     console.log(object); // { b: 4, c: 2 }
+   *     console.log(order); // [1, 2, 4]
+   *   });
    */
   omit(iterator) {
     return this.then(value => omit(value, iterator));
@@ -372,6 +1317,40 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .omitSeries(iterator)
+   *   .then(object => {
+   *     console.log(object); // { '1': 4, '2': 4 }
+   *     console.log(order); // [1, 4, 2]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .omitSeries(iterator)
+   *   .then(object => {
+   *     console.log(object); // { b: 4, c: 2 }
+   *     console.log(order); // [1, 4, 2]
+   *   });
    */
   omitSeries(iterator) {
     return this.then(value => omitSeries(value, iterator));
@@ -380,6 +1359,57 @@ class Aigle extends AigleCore {
   /**
    * @param {number} [limit=8]
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = (num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .omitLimit(2, iterator)
+   *   .then(object => {
+   *     console.log(object); // { '3': 4, '4': 2 }
+   *     console.log(order); // [1, 3, 5, 2, 4]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 5, c: 3, d: 4, e: 2 };
+   * const iterator = (num, key) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .omitLimit(2, iterator)
+   *   .then(object => {
+   *     console.log(object); // { d: 4, e: 2 }
+   *     console.log(order); // [1, 3, 5, 2, 4]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .omitLimit(iterator)
+   *   .then(object => {
+   *     console.log(object); // { '3': 4, '4': 2 }
+   *     console.log(order); // [1, 2, 3, 4, 5]
+   *   });
    */
   omitLimit(limit, iterator) {
     return this.then(value => omitLimit(value, limit, iterator));
@@ -418,37 +1448,56 @@ class Aigle extends AigleCore {
    * @param {Array|Object} [accumulator]
    * @return {Aigle} Returns an Aigle instance
    * @example
+   * const order = [];
    * const collection = [1, 4, 2];
    * const iterator = (result, num, index) => {
    *   return Aigle.delay(num * 10)
-   *     .then(() => result[index] = num);
+   *     .then(() => {
+   *       order.push(num);
+   *       result[index] = num;
+   *     });
    * };
-   * return Aigle.resolve(collection)
+   * Aigle.resolve(collection)
    *   .transform(iterator, {})
-   *   .then(value => console.log(value)); // { '0': 1, '1': 4, '2': 2 }
+   *   .then(object => {
+   *     console.log(object); // { '0': 1, '1': 4, '2': 2 }
+   *     console.log(order); // [1, 2, 4]
+   *   });
    *
    * @example
+   * const order = [];
    * const collection = [1, 4, 2];
    * const iterator = (result, num, index) => {
    *   return Aigle.delay(num * 10)
-   *     .then(() => result.push(num));
+   *     .then(() => {
+   *       order.push(num);
+   *       result.push(num);
+   *     });
    * };
-   * return Aigle.resolve(collection)
-   *   .transform(iterator)
-   *   .then(value => console.log(value)); // [1, 2, 4]
+   * Aigle.resolve(collection)
+   *   .transform(iterator, {})
+   *   .then(array => {
+   *     console.log(array); // [1, 2, 4]
+   *     console.log(order); // [1, 2, 4]
+   *   });
    *
    * @example
+   * const order = [];
    * const collection = { a: 1, b: 4, c: 2 };
    * const iterator = (result, num, key) => {
    *   return Aigle.delay(num * 10)
    *     .then(() => {
+   *       order.push(num);
    *       result.push(num);
    *       return num !== 2;
    *     });
    * };
-   * return Aigle.resolve(collection)
+   * Aigle.resolve(collection)
    *   .transform(iterator, [])
-   *   .then(value => console.log(value)); // [1, 2]
+   *   .then(array => {
+   *     console.log(array); // [1, 2]
+   *     console.log(order); // [1, 2]
+   *   });
    */
   transform(iterator, accumulator) {
     return this.then(value => transform(value, iterator, accumulator));
@@ -459,37 +1508,56 @@ class Aigle extends AigleCore {
    * @param {Array|Object} [accumulator]
    * @return {Aigle} Returns an Aigle instance
    * @example
+   * const order = [];
    * const collection = [1, 4, 2];
    * const iterator = (result, num, index) => {
    *   return Aigle.delay(num * 10)
-   *     .then(() => result[index] = num);
+   *     .then(() => {
+   *       order.push(num);
+   *       result[index] = num;
+   *     });
    * };
-   * return Aigle.resolve(collection)
+   * Aigle.resolve(collection)
    *   .transformSeries(iterator, {})
-   *   .then(value => console.log(value)); // { '0': 1, '1': 4, '2': 2 }
+   *   .then(object => {
+   *     console.log(object); // { '0': 1, '1': 4, '2': 2 }
+   *     console.log(order); // [1, 4, 2]
+   *   });
    *
    * @example
+   * const order = [];
    * const collection = [1, 4, 2];
    * const iterator = (result, num, index) => {
    *   return Aigle.delay(num * 10)
-   *     .then(() => result.push(num));
+   *     .then(() => {
+   *       order.push(num);
+   *       result.push(num);
+   *     });
    * };
-   * return Aigle.resolve(collection)
-   *   transformSeries(iterator)
-   *   .then(value => console.log(value)); // [1, 4, 2]
+   * Aigle.resolve(collection)
+   *   .transformSeries(iterator, {})
+   *   .then(array => {
+   *     console.log(array); // [1, 4, 2]
+   *     console.log(order); // [1, 4, 2]
+   *   });
    *
    * @example
+   * const order = [];
    * const collection = { a: 1, b: 4, c: 2 };
    * const iterator = (result, num, key) => {
    *   return Aigle.delay(num * 10)
    *     .then(() => {
+   *       order.push(num);
    *       result.push(num);
    *       return num !== 4;
    *     });
    * };
-   * return Aigle.resolve(collection)
+   * Aigle.resolve(collection)
    *   .transformSeries(iterator, [])
-   *   .then(value => console.log(value)); // [1, 4]
+   *   .then(array => {
+   *     console.log(array); // [1, 4]
+   *     console.log(order); // [1, 4]
+   *   });
    */
   transformSeries(iterator, accumulator) {
     return this.then(value => transformSeries(value, iterator, accumulator));
@@ -499,6 +1567,75 @@ class Aigle extends AigleCore {
    * @param {number} [limit=8]
    * @param {Function} iterator
    * @param {Array|Object} [accumulator]
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = (result, num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       result[index] = num;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .transformLimit(2, iterator, {})
+   *   .then(object => {
+   *     console.log(object); // { '0': 1, '1': 5, '2': 3, '3': 4, '4': 2 }
+   *     console.log(order); // [1, 5, 3, 4, 2]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = (result, num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       result.push(num);
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .transformLimit(2, iterator, {})
+   *   .then(array => {
+   *     console.log(array); // [1, 5, 3, 4, 2]
+   *     console.log(order); // [1, 5, 3, 4, 2]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 5, c: 3, d: 4, e: 2 };
+   * const iterator = (result, num, key) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       result.push(num);
+   *       return num !== 4;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .transformLimit(2, iterator, [])
+   *   .then(array => {
+   *     console.log(array); // [1, 5, 3, 4]
+   *     console.log(order); // [1, 5, 3, 4]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 5, c: 3, d: 4, e: 2 };
+   * const iterator = (result, num, key) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       result.push(num);
+   *       return num !== 4;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .transformLimit(iterator, [])
+   *   .then(array => {
+   *     console.log(array); // [1, 2, 3, 4]
+   *     console.log(order); // [1, 2, 3, 4]
+   *   });
    */
   transformLimit(limit, iterator, accumulator) {
     return this.then(value => transformLimit(value, limit, iterator, accumulator));
@@ -506,6 +1643,40 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .sortBy(iterator)
+   *   .then(array => {
+   *     console.log(array); // [1, 2, 4]
+   *     console.log(order); // [1, 2, 4]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .sortBy(iterator)
+   *   .then(array => {
+   *     console.log(array); // [1, 2, 4]
+   *     console.log(order); // [1, 2, 4]
+   *   });
    */
   sortBy(iterator) {
     return this.then(value => sortBy(value, iterator));
@@ -513,6 +1684,40 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .sortBySeries(iterator)
+   *   .then(array => {
+   *     console.log(array); // [1, 2, 4]
+   *     console.log(order); // [1, 4, 2]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .sortBySeries(iterator)
+   *   .then(array => {
+   *     console.log(array); // [1, 2, 4]
+   *     console.log(order); // [1, 4, 2]
+   *   });
    */
   sortBySeries(iterator) {
     return this.then(value => sortBySeries(value, iterator));
@@ -521,6 +1726,57 @@ class Aigle extends AigleCore {
   /**
    * @param {number} [limit=8]
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = (num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .sortByLimit(2, iterator)
+   *   .then(array => {
+   *     console.log(array); // [1, 2, 3, 4, 5]
+   *     console.log(order); // [1, 3, 5, 2, 4]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 5, c: 3, d: 4, e: 2 };
+   * const iterator = (num, key) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .sortByLimit(2, iterator)
+   *   .then(array => {
+   *     console.log(array); // [1, 2, 3, 4, 5]
+   *     console.log(order); // [1, 3, 5, 2, 4]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .sortByLimit(iterator)
+   *   .then(array => {
+   *     console.log(array); // [1, 2, 3, 4, 5]
+   *     console.log(order); // [1, 2, 3, 4, 5]
+   *   });
    */
   sortByLimit(limit, iterator) {
     return this.then(value => sortByLimit(value, limit, iterator));
@@ -528,6 +1784,57 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2 === 0;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .some(iterator)
+   *   .then(bool => {
+   *     console.log(bool); // true
+   *     console.log(order); // [1, 2]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2 === 0;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .some(iterator)
+   *   .then(bool => {
+   *     console.log(bool); // true
+   *     console.log(order); // [1, 2]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return false;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .some(iterator)
+   *   .then(bool => {
+   *     console.log(bool); // false
+   *     console.log(order); // [1, 2, 4]
+   *   });
    */
   some(iterator) {
     return this.then(value => some(value, iterator));
@@ -535,6 +1842,57 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2 === 0;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .someSeries(iterator)
+   *   .then(bool => {
+   *     console.log(bool); // true
+   *     console.log(order); // [1, 4]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2 === 0;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .someSeries(iterator)
+   *   .then(bool => {
+   *     console.log(bool); // true
+   *     console.log(order); // [1, 4]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return false;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .someSeries(iterator)
+   *   .then(bool => {
+   *     console.log(bool); // false
+   *     console.log(order); // [1, 4, 2]
+   *   });
    */
   someSeries(iterator) {
     return this.then(value => someSeries(value, iterator));
@@ -543,6 +1901,57 @@ class Aigle extends AigleCore {
   /**
    * @param {number} [limit=8]
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = (num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2 === 0;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .someLimit(2, iterator)
+   *   .then(bool => {
+   *     console.log(bool); // true
+   *     console.log(order); // [1, 3, 5, 2]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 5, c: 3, d: 4, e: 2 };
+   * const iterator = (num, key) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2 === 0;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .someLimit(2, iterator)
+   *   .then(bool => {
+   *     console.log(bool); // true
+   *     console.log(order); // [1, 3, 5, 2]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2 === 0;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .someLimit(2, iterator)
+   *   .then(bool => {
+   *     console.log(bool); // true
+   *     console.log(order); // [1, 2]
+   *   });
    */
   someLimit(limit, iterator) {
     return this.then(value => someLimit(value, limit, iterator));
@@ -550,6 +1959,57 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return true;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .every(iterator)
+   *   .then(value => {
+   *     console.log(value); // true
+   *     console.log(order); // [1, 2, 4];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return true;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .every(iterator)
+   *   .then(value => {
+   *     console.log(value); // true
+   *     console.log(order); // [1, 2, 4];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return n % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .every(iterator)
+   *   .then(value => {
+   *     console.log(value); // false
+   *     console.log(order); // [1, 2];
+   *   });
    */
   every(iterator) {
     return this.then(value => every(value, iterator));
@@ -557,6 +2017,57 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return true;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .everySeries(iterator)
+   *   .then(value => {
+   *     console.log(value); // true
+   *     console.log(order); // [1, 4, 2];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return true;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .everySeries(iterator)
+   *   .then(value => {
+   *     console.log(value); // true
+   *     console.log(order); // [1, 4, 2];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return n % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .everySeries(iterator)
+   *   .then(value => {
+   *     console.log(value); // false
+   *     console.log(order); // [1, 4];
+   *   });
    */
   everySeries(iterator) {
     return this.then(value => everySeries(value, iterator));
@@ -565,6 +2076,63 @@ class Aigle extends AigleCore {
   /**
    * @param {number} [limit=8]
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = (num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return true;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .everyLimit(2, iterator)
+   *   .then(value => {
+   *     console.log(value); // true
+   *     console.log(order); // [1, 3, 5, 2, 4];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = {
+   *   task1: 1,
+   *   task2: 5,
+   *   task3: 3,
+   *   task4: 4,
+   *   task5: 2
+   * };
+   * const iterator = (num, key) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return true;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .everyLimit(2, iterator)
+   *   .then(value => {
+   *     console.log(value); // true
+   *     console.log(order); // [1, 3, 5, 2, 4];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num === 4;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .everyLimit(iterator)
+   *   .then(value => {
+   *     console.log(value); // false
+   *     console.log(order); // [1, 2, 3, 4];
+   *   });
    */
   everyLimit(limit, iterator) {
     return this.then(value => everyLimit(value, limit, iterator));
@@ -572,6 +2140,39 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = (num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .concat(iterator)
+   *   .then(array => {
+   *     console.log(array); // [1, 2, 4];
+   *     console.log(order); // [1, 2, 4];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = (num, key) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .concat(iterator)
+   *   .then(array => {
+   *     console.log(array); // [1, 2, 4];
+   *     console.log(order); // [1, 2, 4];
+   *   });
    */
   concat(iterator) {
     return this.then(value => concat(value, iterator));
@@ -579,14 +2180,103 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = (num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .concatSeries(iterator)
+   *   .then(array => {
+   *     console.log(array); // [1, 4, 2];
+   *     console.log(order); // [1, 4, 2];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = (num, key) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .concatSeries(iterator)
+   *   .then(array => {
+   *     console.log(array); // [1, 4, 2];
+   *     console.log(order); // [1, 4, 2];
+   *   });
    */
   concatSeries(iterator) {
     return this.then(value => concatSeries(value, iterator));
   }
 
   /**
-   * @param {number} [limit=8]
+   * @param {integer} [limit=8]
    * @param {Function} iterator
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = (num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .concatLimit(2, iterator)
+   *   .then(array => {
+   *     console.log(array); // [1, 3, 5, 2, 4];
+   *     console.log(order); // [1, 3, 5, 2, 4];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = {
+   *   task1: 1,
+   *   task2: 5,
+   *   task3: 3,
+   *   task4: 4,
+   *   task5: 2
+   * };
+   * const iterator = (num, key) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .concatLimit(2, iterator)
+   *   .then(array => {
+   *     console.log(array); // [1, 3, 5, 2, 4];
+   *     console.log(order); // [1, 3, 5, 2, 4];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .concatLimit(iterator)
+   *   .then(array => {
+   *     console.log(array); // [1, 3, 5, 2, 4];
+   *     console.log(order); // [1, 3, 5, 2, 4];
+   *   });
    */
   concatLimit(limit, iterator) {
     return this.then(value => concatLimit(value, limit, iterator));
@@ -594,6 +2284,40 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = (num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .groupBy(iterator)
+   *   .then(object => {
+   *     console.log(object); // { '0': [2, 4], '1': [1] };
+   *     console.log(order); // [1, 2, 4];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = (num, key) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .groupBy(iterator)
+   *   .then(object => {
+   *     console.log(object); // { '0': [2, 4], '1': [1] };
+   *     console.log(order); // [1, 2, 4];
+   *   });
    */
   groupBy(iterator) {
     return this.then(value => groupBy(value, iterator));
@@ -601,6 +2325,40 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 4, 2];
+   * const iterator = (num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .groupBySeries(iterator)
+   *   .then(object => {
+   *     console.log(object); // { '0': [4, 2], '1': [1] };
+   *     console.log(order); // [1, 4, 2];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = { a: 1, b: 4, c: 2 };
+   * const iterator = (num, key) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .groupBySeries(iterator)
+   *   .then(object => {
+   *     console.log(object); // { '0': [4, 2], '1': [1] };
+   *     console.log(order); // [1, 4, 2];
+   *   });
    */
   groupBySeries(iterator) {
     return this.then(value => groupBySeries(value, iterator));
@@ -609,6 +2367,63 @@ class Aigle extends AigleCore {
   /**
    * @param {number} [limit=8]
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = (num, index) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .groupByLimit(2, iterator)
+   *   .then(object => {
+   *     console.log(object); // { '0': [2, 4], '1': [1, 3, 5] };
+   *     console.log(order); // [1, 3, 5, 2, 4];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = {
+   *   task1: 1,
+   *   task2: 5,
+   *   task3: 3,
+   *   task4: 4,
+   *   task5: 2
+   * };
+   * const iterator = (num, key) => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .groupByLimit(2, iterator)
+   *   .then(object => {
+   *     console.log(object); // { '0': [2, 4], '1': [1, 3, 5] };
+   *     console.log(order); // [1, 3, 5, 2, 4];
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [1, 5, 3, 4, 2];
+   * const iterator = num => {
+   *   return Aigle.delay(num * 10)
+   *     .then(() => {
+   *       order.push(num);
+   *       return num % 2;
+   *     });
+   * };
+   * Aigle.resolve(collection)
+   *   .groupByLimit(iterator)
+   *   .then(object => {
+   *     console.log(object); // { '0': [2, 4], '1': [1, 3, 5] };
+   *     console.log(order); // [1, 2, 3, 4, 5];
+   *   });
    */
   groupByLimit(limit, iterator) {
     return this.then(value => groupByLimit(value, limit, iterator));
@@ -616,6 +2431,15 @@ class Aigle extends AigleCore {
 
   /**
    * @param {number} ms
+   * @example
+   * Aigle.resolve()
+   *   .delay(10)
+   *   .then(value => console.log(value); // undefined
+   *
+   * @example
+   * Aigle.resolve('test')
+   *   .delay(10)
+   *   .then(value => console.log(value); // 'test'
    */
   delay(ms) {
     return addReceiver(this, new Delay(ms));
@@ -624,6 +2448,13 @@ class Aigle extends AigleCore {
   /**
    * @param {number} ms
    * @param {*} [message]
+   * @example
+   * const { TimeoutError } = Aigle;
+   * Aigle.delay(100)
+   *   .timeout(10)
+   *   .catch(TimeoutError, error => {
+   *     console.log(error); // operation timed out
+   *   });
    */
   timeout(ms, message) {
     return addReceiver(this, new Timeout(ms, message));
@@ -640,6 +2471,25 @@ class Aigle extends AigleCore {
   /**
    * @param {Function} iterator
    * @param {Function} tester
+   * @example
+   * const order = [];
+   * const tester = num => {
+   *   order.push(`t:${num}`);
+   *   return Aigle.delay(10)
+   *     .then(() => num !== 4);
+   * };
+   * const iterator = count => {
+   *   const num = ++count;
+   *   order.push(`i:${num}`);
+   *   return Aigle.delay(10)
+   *     .then(() => num);
+   * };
+   * Aigle.resolve(0)
+   *   .doWhilst(iterator, tester)
+   *   .then(value => {
+   *     console.log(value); // 4
+   *     console.log(order); // [ 'i:1', 't:1', 'i:2', 't:2', 'i:3', 't:3', 'i:4', 't:4' ]
+   *   });
    */
   doWhilst(iterator, tester) {
     return this.then(value => doWhilst(value, iterator, tester));
@@ -656,6 +2506,25 @@ class Aigle extends AigleCore {
   /**
    * @param {Function} iterator
    * @param {Function} tester
+   * @example
+   * const order = [];
+   * const tester = num => {
+   *   order.push(`t:${num}`);
+   *   return Aigle.delay(10)
+   *     .then(() => num === 4);
+   * };
+   * const iterator = count => {
+   *   const num = ++count;
+   *   order.push(`i:${num}`);
+   *   return Aigle.delay(10)
+   *     .then(() => num);
+   * };
+   * Aigle.resolve(0)
+   *   .doUntil(iterator, tester)
+   *   .then(value => {
+   *     console.log(value); // 4
+   *     console.log(order); // [ 'i:1', 't:1', 'i:2', 't:2', 'i:3', 't:3', 'i:4', 't:4' ]
+   *   });
    */
   doUntil(iterator, tester) {
     return this.then(value => doUntil(value, iterator, tester));
@@ -663,6 +2532,23 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const timer = [30, 20, 10];
+   * const iterator = n => {
+   *   return Aigle.delay(timer[n])
+   *     .then(() => {
+   *       order.push(n);
+   *       return n;
+   *     });
+   * };
+   * Aigle.resolve(3)
+   *   .times(iterator)
+   *   .then(array => {
+   *     console.log(array); // [0, 1, 2]
+   *     console.log(order); // [2, 1, 0]
+   *   });
    */
   times(iterator) {
     return this.then(value => times(value, iterator));
@@ -670,6 +2556,23 @@ class Aigle extends AigleCore {
 
   /**
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const timer = [30, 20, 10];
+   * const iterator = n => {
+   *   return Aigle.delay(timer[n])
+   *     .then(() => {
+   *       order.push(n);
+   *       return n;
+   *     });
+   * };
+   * Aigle.resolve(3)
+   *   .timesSeries(iterator)
+   *   .then(array => {
+   *     console.log(array); // [0, 1, 2]
+   *     console.log(order); // [0, 1, 2]
+   *   });
    */
   timesSeries(iterator) {
     return this.then(value => timesSeries(value, iterator));
@@ -678,6 +2581,40 @@ class Aigle extends AigleCore {
   /**
    * @param {number} [limit=8]
    * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * const order = [];
+   * const timer = [30, 20, 10];
+   * const iterator = n => {
+   *   return Aigle.delay(timer[n])
+   *     .then(() => {
+   *       order.push(n);
+   *       return n;
+   *     });
+   * };
+   * Aigle.resolve(3)
+   *   .timesLimit(2, iterator)
+   *   .then(array => {
+   *     console.log(array); // [0, 1, 2]
+   *     console.log(order); // [1, 0, 2]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const timer = [30, 20, 10];
+   * const iterator = n => {
+   *   return Aigle.delay(timer[n])
+   *     .then(() => {
+   *       order.push(n);
+   *       return n;
+   *     });
+   * };
+   * Aigle.resolve(3)
+   *   .timesLimit(iterator)
+   *   .then(array => {
+   *     console.log(array); // [0, 1, 2]
+   *     console.log(order); // [2, 1, 0]
+   *   });
    */
   timesLimit(limit, iterator) {
     return this.then(value => timesLimit(value, limit, iterator));
@@ -693,6 +2630,9 @@ class Aigle extends AigleCore {
   /* internal functions */
 
   _resolve(value) {
+    if (this._resolved !== 0) {
+      return;
+    }
     this._resolved = 1;
     this._value = value;
     if (this._receiver === undefined) {
@@ -718,7 +2658,14 @@ class Aigle extends AigleCore {
     }
   }
 
-  _reject(reason) {
+  _reject(reason, unhandled) {
+    if (this._resolved !== 0) {
+      return;
+    }
+    if (unhandled === undefined && this._receiver === undefined) {
+      push({ _resolved: 2, _value: reason }, this, undefined, () => this._reject(reason, true));
+      return;
+    }
     this._resolved = 2;
     this._value = reason;
     if (this._receiver === undefined) {
@@ -917,8 +2864,7 @@ function _reject(reason, iterator) {
     return reject(reason, iterator);
   }
   const promise = new Aigle(INTERNAL);
-  promise._resolved = 2;
-  promise._value = reason;
+  promise._reject(reason);
   return promise;
 }
 
@@ -932,16 +2878,18 @@ function execute(promise, executor) {
   }
 
   function resolve(value) {
-    if (promise._resolved !== 0) {
+    if (executor === undefined) {
       return;
     }
+    executor = undefined;
     promise._resolve(value);
   }
 
   function reject(reason) {
-    if (promise._resolved !== 0) {
+    if (executor === undefined) {
       return;
     }
+    executor = undefined;
     promise._reject(reason);
   }
 }
@@ -1131,6 +3079,28 @@ class AigleAll extends AigleProxy {
 
 module.exports = { all, AigleAll };
 
+/**
+ * @param {Array} array
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const makeDelay = (num, delay) => {
+ *   return Aigle.delay(delay)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num;
+ *     });
+ * };
+ * Aigle.all([
+ *   makeDelay(1, 30),
+ *   makeDelay(2, 20),
+ *   makeDelay(3, 10)
+ * ])
+ * .then(array => {
+ *   console.log(array); // [1, 2, 3];
+ *   console.log(order); // [3, 2, 1];
+ * });
+ */
 function all(array) {
   return new AigleAll(array)._promise;
 }
@@ -1182,6 +3152,42 @@ class ConcatObject extends AigleEachObject {
 
 module.exports = concat;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = (num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num;
+ *     });
+ * };
+ * Aigle.concat(collection, iterator)
+ *   .then(array => {
+ *     console.log(array); // [1, 2, 4];
+ *     console.log(order); // [1, 2, 4];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = (num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num;
+ *     });
+ * };
+ * Aigle.concat(collection, iterator)
+ *   .then(array => {
+ *     console.log(array); // [1, 2, 4];
+ *     console.log(order); // [1, 2, 4];
+ *   });
+ */
 function concat(collection, iterator) {
   if (Array.isArray(collection)) {
     return new ConcatArray(collection, iterator)._iterate();
@@ -1247,6 +3253,65 @@ class ConcatLimitObject extends AigleLimitObject {
 
 module.exports = concatLimit;
 
+/**
+ * @param {Array|Object} collection
+ * @param {integer} [limit=8]
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = (num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num;
+ *     });
+ * };
+ * Aigle.concatLimit(collection, 2, iterator)
+ *   .then(array => {
+ *     console.log(array); // [1, 3, 5, 2, 4];
+ *     console.log(order); // [1, 3, 5, 2, 4];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = {
+ *   task1: 1,
+ *   task2: 5,
+ *   task3: 3,
+ *   task4: 4,
+ *   task5: 2
+ * };
+ * const iterator = (num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num;
+ *     });
+ * };
+ * Aigle.concatLimit(collection, 2, iterator)
+ *   .then(array => {
+ *     console.log(array); // [1, 3, 5, 2, 4];
+ *     console.log(order); // [1, 3, 5, 2, 4];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num;
+ *     });
+ * };
+ * Aigle.concatLimit(collection, iterator)
+ *   .then(array => {
+ *     console.log(array); // [1, 2, 3, 4, 5];
+ *     console.log(order); // [1, 2, 3, 4, 5];
+ *   });
+ */
 function concatLimit(collection, limit, iterator) {
   if (typeof limit === 'function') {
     iterator = limit;
@@ -1268,6 +3333,42 @@ const concatLimit = require('./concatLimit');
 
 module.exports = concatSeries;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = (num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num;
+ *     });
+ * };
+ * Aigle.concatSeries(collection, iterator)
+ *   .then(array => {
+ *     console.log(array); // [1, 4, 2];
+ *     console.log(order); // [1, 4, 2];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = (num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num;
+ *     });
+ * };
+ * Aigle.concatSeries(collection, iterator)
+ *   .then(array => {
+ *     console.log(array); // [1, 4, 2];
+ *     console.log(order); // [1, 4, 2];
+ *   });
+ */
 function concatSeries(collection, iterator) {
   return concatLimit(collection, 1, iterator);
 }
@@ -1298,6 +3399,18 @@ class Delay extends AigleProxy {
 
 module.exports = { delay, Delay };
 
+/**
+ * @param {number} ms
+ * @param {*} value
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * Aigle.delay(10)
+ *   .then(value => console.log(value); // undefined
+ *
+ * @example
+ * Aigle.delay(10, 'test')
+ *   .then(value => console.log(value); // 'test'
+ */
 function delay(ms, value) {
   const delay = new Delay(ms);
   delay._callResolve(value);
@@ -1316,6 +3429,46 @@ module.exports = doUntil;
  * @param {*} [value]
  * @param {Function} iterator
  * @param {Function} tester
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * let count = 0;
+ * const order = [];
+ * const tester = num => {
+ *   order.push(`t:${num}`);
+ *   return Aigle.delay(10)
+ *     .then(() => num === 4);
+ * };
+ * const iterator = () => {
+ *   const num = ++count;
+ *   order.push(`i:${num}`);
+ *   return Aigle.delay(10)
+ *     .then(() => num);
+ * };
+ * Aigle.doUntil(iterator, tester)
+ *   .then(value => {
+ *     console.log(value); // 4
+ *     console.log(count); // 4
+ *     console.log(order); // [ 'i:1', 't:1', 'i:2', 't:2', 'i:3', 't:3', 'i:4', 't:4' ]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const tester = num => {
+ *   order.push(`t:${num}`);
+ *   return Aigle.delay(10)
+ *     .then(() => num === 4);
+ * };
+ * const iterator = count => {
+ *   const num = ++count;
+ *   order.push(`i:${num}`);
+ *   return Aigle.delay(10)
+ *     .then(() => num);
+ * };
+ * Aigle.doUntil(0, iterator, tester)
+ *   .then(value => {
+ *     console.log(value); // 4
+ *     console.log(order); // [ 'i:1', 't:1', 'i:2', 't:2', 'i:3', 't:3', 'i:4', 't:4' ]
+ *   });
  */
 function doUntil(value, iterator, tester) {
   if (typeof tester !== 'function') {
@@ -1349,6 +3502,46 @@ module.exports = { doWhilst, DoWhilst };
  * @param {*} [value]
  * @param {Function} iterator
  * @param {Function} tester
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * let count = 0;
+ * const order = [];
+ * const tester = num => {
+ *   order.push(`t:${num}`);
+ *   return Aigle.delay(10)
+ *     .then(() => num !== 4);
+ * };
+ * const iterator = () => {
+ *   const num = ++count;
+ *   order.push(`i:${num}`);
+ *   return Aigle.delay(10)
+ *     .then(() => num);
+ * };
+ * Aigle.doWhilst(iterator, tester)
+ *   .then(value => {
+ *     console.log(value); // 4
+ *     console.log(count); // 4
+ *     console.log(order); // [ 'i:1', 't:1', 'i:2', 't:2', 'i:3', 't:3', 'i:4', 't:4' ]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const tester = num => {
+ *   order.push(`t:${num}`);
+ *   return Aigle.delay(10)
+ *     .then(() => num !== 4);
+ * };
+ * const iterator = count => {
+ *   const num = ++count;
+ *   order.push(`i:${num}`);
+ *   return Aigle.delay(10)
+ *     .then(() => num);
+ * };
+ * Aigle.doWhilst(0, iterator, tester)
+ *   .then(value => {
+ *     console.log(value); // 4
+ *     console.log(order); // [ 'i:1', 't:1', 'i:2', 't:2', 'i:3', 't:3', 'i:4', 't:4' ]
+ *   });
  */
 function doWhilst(value, iterator, tester) {
   if (typeof tester !== 'function') {
@@ -1367,6 +3560,52 @@ const { AigleEachArray, AigleEachObject } = require('./internal/aigleEach');
 
 module.exports = each;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => order.push(num));
+ * };
+ * Aigle.each(collection, iterator)
+ *   .then(value => {
+ *     console.log(value); // undefined
+ *     console.log(order); // [1, 2, 4];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => order.push(num));
+ * };
+ * Aigle.each(collection, iterator)
+ *   .then(value => {
+ *     console.log(value); // undefined
+ *     console.log(order); // [1, 2, 4];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num !== 2; // break
+ *     });
+ * };
+ * Aigle.each(collection, iterator)
+ *   .then(value => {
+ *     console.log(value); // undefined
+ *     console.log(order); // [1, 2];
+ *   });
+ */
 function each(collection, iterator) {
   if (Array.isArray(collection)) {
     return new AigleEachArray(collection, iterator)._iterate();
@@ -1385,6 +3624,81 @@ const { DEFAULT_LIMIT, AigleLimitArray, AigleLimitObject } = require('./internal
 
 module.exports = eachLimit;
 
+/**
+ * @param {Array|Object} collection
+ * @param {integer} [limit=8]
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = (num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num;
+ *     });
+ * };
+ * Aigle.eachLimit(collection, 2, iterator)
+ *   .then(value => {
+ *     console.log(value); // undefined
+ *     console.log(order); // [1, 3, 5, 2, 4];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = {
+ *   task1: 1,
+ *   task2: 5,
+ *   task3: 3,
+ *   task4: 4,
+ *   task5: 2
+ * };
+ * const iterator = (num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num;
+ *     });
+ * };
+ * Aigle.eachLimit(collection, 2, iterator)
+ *   .then(value => {
+ *     console.log(value); // undefined
+ *     console.log(order); // [1, 3, 5, 2, 4];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num;
+ *     });
+ * };
+ * Aigle.eachLimit(collection, iterator)
+ *   .then(value => {
+ *     console.log(value); // undefined
+ *     console.log(order); // [1, 2, 3, 4, 5];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num !== 3;
+ *     });
+ * };
+ * Aigle.eachLimit(collection, iterator)
+ *   .then(value => {
+ *     console.log(value); // undefined
+ *     console.log(order); // [1, 2, 3];
+ *   });
+ */
 function eachLimit(collection, limit, iterator) {
   if (typeof limit === 'function') {
     iterator = limit;
@@ -1408,6 +3722,52 @@ const { AigleLimitArray, AigleLimitObject } = require('./internal/aigleLimit');
 
 module.exports = eachSeries;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => order.push(num));
+ * };
+ * Aigle.eachSeries(collection, iterator)
+ *   .then(value => {
+ *     console.log(value); // undefined
+ *     console.log(order); // [1, 4, 2];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => order.push(num));
+ * };
+ * Aigle.eachSeries(collection, iterator)
+ *   .then(value => {
+ *     console.log(value); // undefined
+ *     console.log(order); // [1, 4, 2];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num !== 4; // break
+ *     });
+ * };
+ * Aigle.eachSeries(collection, iterator)
+ *   .then(value => {
+ *     console.log(value); // undefined
+ *     console.log(order); // [1, 4];
+ *   });
+ */
 function eachSeries(collection, iterator) {
   if (Array.isArray(collection)) {
     return new AigleLimitArray(collection, iterator, 1)._iterate();
@@ -1478,6 +3838,58 @@ class EveryObject extends AigleEachObject {
 
 module.exports = every;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return true;
+ *     });
+ * };
+ * Aigle.every(collection, iterator)
+ *   .then(value => {
+ *     console.log(value); // true
+ *     console.log(order); // [1, 2, 4];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return true;
+ *     });
+ * };
+ * Aigle.every(collection, iterator)
+ *   .then(value => {
+ *     console.log(value); // true
+ *     console.log(order); // [1, 2, 4];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return n % 2;
+ *     });
+ * };
+ * Aigle.every(collection, iterator)
+ *   .then(value => {
+ *     console.log(value); // false
+ *     console.log(order); // [1, 2];
+ *   });
+ */
 function every(collection, iterator) {
   if (Array.isArray(collection)) {
     return new EveryArray(collection, iterator)._iterate();
@@ -1537,6 +3949,65 @@ class EveryLimitObject extends AigleLimitObject {
 
 module.exports = everyLimit;
 
+/**
+ * @param {Array|Object} collection
+ * @param {integer} [limit=8]
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = (num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return true;
+ *     });
+ * };
+ * Aigle.everyLimit(collection, 2, iterator)
+ *   .then(value => {
+ *     console.log(value); // true
+ *     console.log(order); // [1, 3, 5, 2, 4];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = {
+ *   task1: 1,
+ *   task2: 5,
+ *   task3: 3,
+ *   task4: 4,
+ *   task5: 2
+ * };
+ * const iterator = (num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return true;
+ *     });
+ * };
+ * Aigle.everyLimit(collection, 2, iterator)
+ *   .then(value => {
+ *     console.log(value); // true
+ *     console.log(order); // [1, 3, 5, 2, 4];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num === 4;
+ *     });
+ * };
+ * Aigle.everyLimit(collection, iterator)
+ *   .then(value => {
+ *     console.log(value); // false
+ *     console.log(order); // [1, 2, 3, 4];
+ *   });
+ */
 function everyLimit(collection, limit, iterator) {
   if (typeof limit === 'function') {
     iterator = limit;
@@ -1558,6 +4029,58 @@ const everyLimit = require('./everyLimit');
 
 module.exports = everySeries;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return true;
+ *     });
+ * };
+ * Aigle.everySeries(collection, iterator)
+ *   .then(value => {
+ *     console.log(value); // true
+ *     console.log(order); // [1, 4, 2];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return true;
+ *     });
+ * };
+ * Aigle.everySeries(collection, iterator)
+ *   .then(value => {
+ *     console.log(value); // true
+ *     console.log(order); // [1, 4, 2];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return n % 2;
+ *     });
+ * };
+ * Aigle.everySeries(collection, iterator)
+ *   .then(value => {
+ *     console.log(value); // false
+ *     console.log(order); // [1, 4];
+ *   });
+ */
 function everySeries(collection, iterator) {
   return everyLimit(collection, 1, iterator);
 }
@@ -1601,6 +4124,42 @@ class FilterObject extends AigleEachObject {
 
 module.exports = filter;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = (num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.filter(collection, iterator)
+ *   .then(array => {
+ *     console.log(array); // [1];
+ *     console.log(order); // [1, 2, 4];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = (num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.filter(collection, iterator)
+ *   .then(array => {
+ *     console.log(array); // [1];
+ *     console.log(order); // [1, 2, 4];
+ *   });
+ */
 function filter(collection, iterator) {
   if (Array.isArray(collection)) {
     return new FilterArray(collection, iterator)._iterate();
@@ -1659,6 +4218,65 @@ class FilterLimitObject extends AigleLimitObject {
 
 module.exports = { filterLimit, FilterLimitArray, FilterLimitObject };
 
+/**
+ * @param {Array|Object} collection
+ * @param {integer} [limit=8]
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = (num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.filterLimit(collection, 2, iterator)
+ *   .then(array => {
+ *     console.log(array); // [1, 5, 3];
+ *     console.log(order); // [1, 3, 5, 2, 4];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = {
+ *   task1: 1,
+ *   task2: 5,
+ *   task3: 3,
+ *   task4: 4,
+ *   task5: 2
+ * };
+ * const iterator = (num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.filterLimit(collection, 2, iterator)
+ *   .then(array => {
+ *     console.log(array); // [1, 5, 3];
+ *     console.log(order); // [1, 3, 5, 2, 4];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.filterLimit(collection, iterator)
+ *   .then(array => {
+ *     console.log(array); // [1, 5, 3];
+ *     console.log(order); // [1, 2, 3, 4, 5];
+ *   });
+ */
 function filterLimit(collection, limit, iterator) {
   if (typeof limit === 'function') {
     iterator = limit;
@@ -1681,6 +4299,42 @@ const { FilterLimitArray, FilterLimitObject } = require('./filterLimit');
 
 module.exports = filterSeries;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = (num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.filterSeries(collection, iterator)
+ *   .then(array => {
+ *     console.log(array); // [1];
+ *     console.log(order); // [1, 4, 2];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = (num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.filterSeries(collection, iterator)
+ *   .then(array => {
+ *     console.log(array); // [1];
+ *     console.log(order); // [1, 4, 2];
+ *   });
+ */
 function filterSeries(collection, iterator) {
   if (Array.isArray(collection)) {
     return new FilterLimitArray(collection, iterator, 1)._iterate();
@@ -1735,6 +4389,58 @@ class FindObject extends AigleEachObject {
 
 module.exports = find;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2 === 0;
+ *     });
+ * };
+ * Aigle.find(collection, iterator)
+ *   .then(value => {
+ *     console.log(value); // 2
+ *     console.log(order); // [1, 2]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2 === 0;
+ *     });
+ * };
+ * Aigle.find(collection, iterator)
+ *   .then(value => {
+ *     console.log(value); // 2
+ *     console.log(order); // [1, 2]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return false;
+ *     });
+ * };
+ * Aigle.find(collection, iterator)
+ *   .then(value => {
+ *     console.log(value); // undefined
+ *     console.log(order); // [1, 2, 4]
+ *   });
+ */
 function find(collection, iterator) {
   if (Array.isArray(collection)) {
     return new FindArray(collection, iterator)._iterate();
@@ -1792,6 +4498,59 @@ class FindLimitObject extends AigleLimitObject {
 
 module.exports = { findLimit, FindLimitArray, FindLimitObject };
 
+/**
+ * @param {Array|Object} collection
+ * @param {integer} [limit=8]
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = (num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2 === 0;
+ *     });
+ * };
+ * Aigle.findLimit(collection, 2, iterator)
+ *   .then(value => {
+ *     console.log(value); // 2
+ *     console.log(order); // [1, 3, 5, 2];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 5, c: 3, d: 4, e: 2 };
+ * const iterator = (num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2 === 0;
+ *     });
+ * };
+ * Aigle.findLimit(collection, 2, iterator)
+ *   .then(value => {
+ *     console.log(value); // 2
+ *     console.log(order); // [1, 3, 5, 2];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2 === 0;
+ *     });
+ * };
+ * Aigle.findLimit(collection, iterator)
+ *   .then(value => {
+ *     console.log(value); // 2
+ *     console.log(order); // [1, 2];
+ *   });
+ */
 function findLimit(collection, limit, iterator) {
   if (typeof limit === 'function') {
     iterator = limit;
@@ -1814,6 +4573,58 @@ const { FindLimitArray, FindLimitObject } = require('./findLimit');
 
 module.exports = findSeries;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2 === 0;
+ *     });
+ * };
+ * Aigle.findSeries(collection, iterator)
+ *   .then(value => {
+ *     console.log(value); // 4
+ *     console.log(order); // [1, 4];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2 === 0;
+ *     });
+ * };
+ * Aigle.findSeries(collection, iterator)
+ *   .then(value => {
+ *     console.log(value); // 4
+ *     console.log(order); // [1, 4];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return false;
+ *     });
+ * };
+ * Aigle.findSeries(collection, iterator)
+ *   .then(value => {
+ *     console.log(value); // undefined
+ *     console.log(order); // [1, 4, 2];
+ *   });
+ */
 function findSeries(collection, iterator) {
   if (Array.isArray(collection)) {
     return new FindLimitArray(collection, iterator, 1)._iterate();
@@ -1870,6 +4681,42 @@ class GroupByObject extends AigleEachObject {
 
 module.exports = groupBy;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = (num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.groupBy(collection, iterator)
+ *   .then(object => {
+ *     console.log(object); // { '0': [2, 4], '1': [1] };
+ *     console.log(order); // [1, 2, 4];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = (num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.groupBy(collection, iterator)
+ *   .then(object => {
+ *     console.log(object); // { '0': [2, 4], '1': [1] };
+ *     console.log(order); // [1, 2, 4];
+ *   });
+ */
 function groupBy(collection, iterator) {
   if (Array.isArray(collection)) {
     return new GroupByArray(collection, iterator)._iterate();
@@ -1935,6 +4782,65 @@ class GroupByLimitObject extends AigleLimitObject {
 
 module.exports = groupByLimit;
 
+/**
+ * @param {Array|Object} collection
+ * @param {integer} [limit=8]
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = (num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.groupByLimit(collection, 2, iterator)
+ *   .then(object => {
+ *     console.log(object); // { '0': [2, 4], '1': [1, 3, 5] };
+ *     console.log(order); // [1, 3, 5, 2, 4];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = {
+ *   task1: 1,
+ *   task2: 5,
+ *   task3: 3,
+ *   task4: 4,
+ *   task5: 2
+ * };
+ * const iterator = (num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.groupByLimit(collection, 2, iterator)
+ *   .then(object => {
+ *     console.log(object); // { '0': [2, 4], '1': [1, 3, 5] };
+ *     console.log(order); // [1, 3, 5, 2, 4];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.groupByLimit(collection, iterator)
+ *   .then(object => {
+ *     console.log(object); // { '0': [2, 4], '1': [1, 3, 5] };
+ *     console.log(order); // [1, 2, 3, 4, 5];
+ *   });
+ */
 function groupByLimit(collection, limit, iterator) {
   if (typeof limit === 'function') {
     iterator = limit;
@@ -1956,6 +4862,42 @@ const groupByLimit = require('./groupByLimit');
 
 module.exports = groupBySeries;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = (num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.groupBySeries(collection, iterator)
+ *   .then(object => {
+ *     console.log(object); // { '0': [4, 2], '1': [1] };
+ *     console.log(order); // [1, 4, 2];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = (num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.groupBySeries(collection, iterator)
+ *   .then(object => {
+ *     console.log(object); // { '0': [4, 2], '1': [1] };
+ *     console.log(order); // [1, 4, 2];
+ *   });
+ */
 function groupBySeries(collection, iterator) {
   return groupByLimit(collection, 1, iterator);
 }
@@ -2451,8 +5393,6 @@ const {
   callProxyReciever
 } = require('./internal/util');
 
-const SPREAD = {};
-
 class Join extends AigleProxy {
 
   constructor(handler, size) {
@@ -2464,7 +5404,7 @@ class Join extends AigleProxy {
   }
 
   _callResolve(value, index) {
-    if (index === SPREAD) {
+    if (index === INTERNAL) {
       return this._promise._resolve(value);
     }
     this._result[index] = value;
@@ -2487,7 +5427,7 @@ class Spread extends AigleProxy {
   }
 
   _callResolve(value, index) {
-    if (index === SPREAD) {
+    if (index === INTERNAL) {
       return this._promise._resolve(value);
     }
     spread(this, value);
@@ -2500,6 +5440,14 @@ class Spread extends AigleProxy {
 
 module.exports = { join, Spread };
 
+/**
+ * @example
+ * const p1 = Aigle.delay(20).then(() => 1);
+ * const p2 = Aigle.delay(10).then(() => 2);
+ * Aigle.join(p1, p2, (v1, v2) => {
+ *   console.log(v1, v2); // 1 2
+ * });
+ */
 function join() {
   let l = arguments.length;
   const handler = typeof arguments[l - 1] === 'function' ? arguments[--l] : undefined;
@@ -2510,6 +5458,11 @@ function join() {
   return receiver._promise;
 }
 
+/**
+ * @private
+ * @param {AigleProxy} proxy
+ * @param {string|Array|Object} array
+ */
 function spread(proxy, array) {
   const { _handler } = proxy;
   if (_handler === undefined) {
@@ -2536,9 +5489,9 @@ function spread(proxy, array) {
   /* eslint no-fallthrough: 0 */
   default:
   /* eslint no-fallthrough: 1 */
-    return callProxyReciever(call1(_handler, array), proxy, SPREAD);
+    return callProxyReciever(call1(_handler, array), proxy, INTERNAL);
   }
-  callProxyReciever(apply(_handler, array), proxy, SPREAD);
+  callProxyReciever(apply(_handler, array), proxy, INTERNAL);
 }
 
 },{"./aigle":2,"./internal/util":30,"aigle-core":70}],32:[function(require,module,exports){
@@ -2579,6 +5532,42 @@ class MapObject extends AigleEachObject {
 
 module.exports = map;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num * 2;
+ *     });
+ * };
+ * Aigle.map(collection, iterator)
+ *   .then(array => {
+ *     console.log(array); // [2, 8, 4];
+ *     console.log(order); // [1, 2, 4];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num * 2;
+ *     });
+ * };
+ * Aigle.map(collection, iterator)
+ *   .then(array => {
+ *     console.log(array); // [2, 8, 4];
+ *     console.log(order); // [1, 2, 4];
+ *   });
+ */
 function map(collection, iterator) {
   if (Array.isArray(collection)) {
     return new MapArray(collection, iterator)._iterate();
@@ -2636,6 +5625,59 @@ class MapLimitObject extends AigleLimitObject {
 
 module.exports = { mapLimit, MapLimitArray, MapLimitObject };
 
+/**
+ * @param {Array|Object} collection
+ * @param {integer} [limit=8]
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = (num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num * 2;
+ *     });
+ * };
+ * Aigle.mapLimit(collection, 2, iterator)
+ *   .then(array => {
+ *     console.log(array); // [2, 10, 6, 8, 4];
+ *     console.log(order); // [1, 3, 5, 2, 4];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 5, c: 3, d: 4, e: 2 };
+ * const iterator = (num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num * 2;
+ *     });
+ * };
+ * Aigle.mapLimit(collection, 2, iterator)
+ *   .then(array => {
+ *     console.log(array); // [2, 10, 6, 8, 4];
+ *     console.log(order); // [1, 3, 5, 2, 4];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num * 2;
+ *     });
+ * };
+ * Aigle.mapLimit(collection, iterator)
+ *   .then(array => {
+ *     console.log(array); // [2, 10, 6, 8, 4];
+ *     console.log(order); // [1, 2, 3, 4, 5];
+ *   });
+ */
 function mapLimit(collection, limit, iterator) {
   if (typeof limit === 'function') {
     iterator = limit;
@@ -2659,6 +5701,42 @@ const { MapLimitArray, MapLimitObject } = require('./mapLimit');
 
 module.exports = mapSeries;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num * 2;
+ *     });
+ * };
+ * Aigle.mapSeries(collection, iterator)
+ *   .then(array => {
+ *     console.log(array); // [2, 8, 4];
+ *     console.log(order); // [1, 4, 2];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num * 2;
+ *     });
+ * };
+ * Aigle.mapSeries(collection, iterator)
+ *   .then(array => {
+ *     console.log(array); // [2, 8, 4];
+ *     console.log(order); // [1, 4, 2];
+ *   });
+ */
 function mapSeries(collection, iterator) {
   if (Array.isArray(collection)) {
     return new MapLimitArray(collection, iterator, 1)._iterate();
@@ -2707,6 +5785,42 @@ class MapValuesObject extends AigleEachObject {
 
 module.exports = mapValues;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num * 2;
+ *     });
+ * };
+ * Aigle.mapValues(collection, iterator)
+ *   .then(object => {
+ *     console.log(object); // { '0': 2, '1': 8, '2': 4 }
+ *     console.log(order); // [1, 2, 4]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num * 2;
+ *     });
+ * };
+ * Aigle.mapValues(collection, iterator)
+ *   .then(object => {
+ *     console.log(object); // { a: 2, b: 8, c: 4 }
+ *     console.log(order); // [1, 2, 4]
+ *   });
+ */
 function mapValues(collection, iterator) {
   if (Array.isArray(collection)) {
     return new MapValuesArray(collection, iterator)._iterate();
@@ -2764,6 +5878,59 @@ class MapValuesLimitObject extends AigleLimitObject {
 
 module.exports = { mapValuesLimit, MapValuesLimitArray, MapValuesLimitObject };
 
+/**
+ * @param {Array|Object} collection
+ * @param {integer} [limit=8]
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = (num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num * 2;
+ *     });
+ * };
+ * Aigle.mapValuesLimit(collection, 2, iterator)
+ *   .then(object => {
+ *     console.log(object); // { '0': 2, '1': 10, '2': 6, '3': 8, '4': 4 }
+ *     console.log(order); // [1, 3, 5, 2, 4]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 5, c: 3, d: 4, e: 2 };
+ * const iterator = (num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num * 2;
+ *     });
+ * };
+ * Aigle.mapValuesLimit(collection, 2, iterator)
+ *   .then(object => {
+ *     console.log(object); // { a: 2, b: 10, c: 6, d: 8, e: 4 }
+ *     console.log(order); // [1, 3, 5, 2, 4]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num * 2;
+ *     });
+ * };
+ * Aigle.mapValuesLimit(collection, iterator)
+ *   .then(object => {
+ *     console.log(object); // { '0': 2, '1': 10, '2': 6, '3': 8, '4': 4 }
+ *     console.log(order); // [1, 2, 3, 4, 5]
+ *   });
+ */
 function mapValuesLimit(collection, limit, iterator) {
   if (typeof limit === 'function') {
     iterator = limit;
@@ -2786,6 +5953,42 @@ const { MapValuesLimitArray, MapValuesLimitObject } = require('./mapValuesLimit'
 
 module.exports = mapValuesSeries;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num * 2;
+ *     });
+ * };
+ * Aigle.mapValuesSeries(collection, iterator)
+ *   .then(object => {
+ *     console.log(object); // { '0': 2, '1': 8, '2': 4 };
+ *     console.log(order); // [1, 4, 2];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num * 2;
+ *     });
+ * };
+ * Aigle.mapValuesSeries(collection, iterator)
+ *   .then(object => {
+ *     console.log(object); // { a: 2, b: 8, c: 4 }
+ *     console.log(order); // [1, 4, 2];
+ *   });
+ */
 function mapValuesSeries(collection, iterator) {
   if (Array.isArray(collection)) {
     return new MapValuesLimitArray(collection, iterator, 1)._iterate();
@@ -2839,6 +6042,42 @@ class OmitObject extends AigleEachObject {
 
 module.exports = omit;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.omit(collection, iterator)
+ *   .then(object => {
+ *     console.log(object); // { '1': 4, '2': 4 }
+ *     console.log(order); // [1, 2, 4]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num * 2;
+ *     });
+ * };
+ * Aigle.omit(collection, iterator)
+ *   .then(object => {
+ *     console.log(object); // { b: 4, c: 2 }
+ *     console.log(order); // [1, 2, 4]
+ *   });
+ */
 function omit(collection, iterator) {
   if (Array.isArray(collection)) {
     return new OmitArray(collection, iterator)._iterate();
@@ -2901,6 +6140,59 @@ class OmitLimitObject extends AigleLimitObject {
 
 module.exports = { omitLimit, OmitLimitArray, OmitLimitObject };
 
+/**
+ * @param {Array|Object} collection
+ * @param {integer} [limit=8]
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = (num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.omitLimit(collection, 2, iterator)
+ *   .then(object => {
+ *     console.log(object); // { '3': 4, '4': 2 }
+ *     console.log(order); // [1, 3, 5, 2, 4]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 5, c: 3, d: 4, e: 2 };
+ * const iterator = (num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.omitLimit(collection, 2, iterator)
+ *   .then(object => {
+ *     console.log(object); // { d: 4, e: 2 }
+ *     console.log(order); // [1, 3, 5, 2, 4]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.omitLimit(collection, iterator)
+ *   .then(object => {
+ *     console.log(object); // { '3': 4, '4': 2 }
+ *     console.log(order); // [1, 2, 3, 4, 5]
+ *   });
+ */
 function omitLimit(collection, limit, iterator) {
   if (typeof limit === 'function') {
     iterator = limit;
@@ -2923,6 +6215,42 @@ const { OmitLimitArray, OmitLimitObject } = require('./omitLimit');
 
 module.exports = omitSeries;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.omitSeries(collection, iterator)
+ *   .then(object => {
+ *     console.log(object); // { '1': 4, '2': 2 }
+ *     console.log(order); // [1, 4, 2]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.omitSeries(collection, iterator)
+ *   .then(object => {
+ *     console.log(object); // { b: 4, c: 2 }
+ *     console.log(order); // [1, 4, 2]
+ *   });
+ */
 function omitSeries(collection, iterator) {
   if (Array.isArray(collection)) {
     return new OmitLimitArray(collection, iterator, 1)._iterate();
@@ -2942,6 +6270,46 @@ const { AigleProps } = require('./props');
 
 module.exports = parallel;
 
+/**
+ * @param {Array|Object} collection - it should be an array/object of Promise instances
+ * @example
+ * const order = [];
+ * const makeDelay = (num, delay) => {
+ *   return Aigle.delay(delay)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num;
+ *     });
+ * };
+ * Aigle.parallel([
+ *   makeDelay(1, 30),
+ *   makeDelay(2, 20),
+ *   makeDelay(3, 10)
+ * ])
+ * .then(array => {
+ *   console.log(array); // [1, 2, 3]
+ *   console.log(order); // [3, 2, 1]
+ * });
+ *
+ * @example
+ * const order = [];
+ * const makeDelay = (num, delay) => {
+ *   return Aigle.delay(delay)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num;
+ *     });
+ * };
+ * Aigle.parallel({
+ *   a: makeDelay(1, 30),
+ *   b: makeDelay(2, 20),
+ *   c: makeDelay(3, 10)
+ * })
+ * .then(object => {
+ *   console.log(object); // { a: 1, b: 2, c: 3 }
+ *   console.log(order); // [3, 2, 1]
+ * });
+ */
 function parallel(collection) {
   if (Array.isArray(collection)) {
     return new AigleAll(collection)._promise;
@@ -2996,6 +6364,42 @@ class PickObject extends AigleEachObject {
 
 module.exports = pick;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.pick(collection, iterator)
+ *   .then(object => {
+ *     console.log(object); // { '0': 1 }
+ *     console.log(order); // [1, 2, 4]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num * 2;
+ *     });
+ * };
+ * Aigle.pick(collection, iterator)
+ *   .then(object => {
+ *     console.log(object); // { a: 1 }
+ *     console.log(order); // [1, 2, 4]
+ *   });
+ */
 function pick(collection, iterator) {
   if (Array.isArray(collection)) {
     return new PickArray(collection, iterator)._iterate();
@@ -3058,6 +6462,59 @@ class PickLimitObject extends AigleLimitObject {
 
 module.exports = { pickLimit, PickLimitArray, PickLimitObject };
 
+/**
+ * @param {Array|Object} collection
+ * @param {integer} [limit=8]
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = (num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.pickLimit(collection, 2, iterator)
+ *   .then(object => {
+ *     console.log(object); // { '0': 1, '1': 5, '2': 3 }
+ *     console.log(order); // [1, 3, 5, 2, 4]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 5, c: 3, d: 4, e: 2 };
+ * const iterator = (num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.pickLimit(collection, 2, iterator)
+ *   .then(object => {
+ *     console.log(object); // { a: 1, b: 5, c: 3 }
+ *     console.log(order); // [1, 3, 5, 2, 4]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.pickLimit(collection, iterator)
+ *   .then(object => {
+ *     console.log(object); // { '0': 1, '1': 5, '2': 3 }
+ *     console.log(order); // [1, 2, 3, 4, 5]
+ *   });
+ */
 function pickLimit(collection, limit, iterator) {
   if (typeof limit === 'function') {
     iterator = limit;
@@ -3080,6 +6537,42 @@ const { PickLimitArray, PickLimitObject } = require('./pickLimit');
 
 module.exports = pickSeries;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.pickSeries(collection, iterator)
+ *   .then(object => {
+ *     console.log(object); // { '0': 1 }
+ *     console.log(order); // [1, 4, 2]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num * 2;
+ *     });
+ * };
+ * Aigle.pickSeries(collection, iterator)
+ *   .then(object => {
+ *     console.log(object); // { a: 1 }
+ *     console.log(order); // [1, 4, 2]
+ *   });
+ */
 function pickSeries(collection, iterator) {
   if (Array.isArray(collection)) {
     return new PickLimitArray(collection, iterator, 1)._iterate();
@@ -3102,6 +6595,10 @@ module.exports = promisify;
  * @param {Object|Function} fn
  * @param {string|number|Object} [fn]
  * @param {Object} [fn.context]
+ * @example
+ * const func = (a, b, c, callback) => callback(null, a + b + c);
+ * Aigle.promisify(func)(1, 2, 3)
+ *   .then(value => console.log(value)); // 6
  */
 function promisify(fn, opts) {
   switch (typeof fn) {
@@ -3127,6 +6624,10 @@ function promisify(fn, opts) {
   }
 }
 
+/**
+ * @private
+ * @param {Aigle} promise
+ */
 function makeCallback(promise) {
   return (err, res) => {
     if (err) {
@@ -3137,6 +6638,11 @@ function makeCallback(promise) {
   };
 }
 
+/**
+ * @private
+ * @param {Object} obj
+ * @param {string} key
+ */
 function makeFunctionByKey(obj, key) {
 
   promisified.__isPromisified__ = true;
@@ -3166,6 +6672,11 @@ function makeFunctionByKey(obj, key) {
   }
 }
 
+/**
+ * @private
+ * @param {function} fn
+ * @param {*} [ctx]
+ */
 function makeFunction(fn, ctx) {
 
   promisified.__isPromisified__ = true;
@@ -3219,6 +6730,14 @@ module.exports = promisifyAll;
  * @param {String} [opts.suffix=Async]
  * @param {Function} [opts.filter]
  * @param {Function} [opts.depth=2]
+ * @example
+ * const redis = require('redis');
+ * Aigle.promisifyAll(redis);
+ *
+ * const key = 'test';
+ * redis.hsetAsync(key, 1)
+ *   .then(() => redis.hgetAsync(key))
+ *   .then(value => console.log(value)); // 1
  */
 function promisifyAll(target, opts) {
   const { suffix = 'Async', filter = defaultFilter, depth = 2 } = opts || {};
@@ -3317,6 +6836,27 @@ class AigleProps extends AigleProxy {
 
 module.exports = { props, AigleProps };
 
+/**
+ * @param {Object} object
+ * @example
+ * const order = [];
+ * const makeDelay = (num, delay) => {
+ *   return Aigle.delay(delay)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num;
+ *     });
+ * };
+ * Aigle.props({
+ *   a: makeDelay(1, 30),
+ *   b: makeDelay(2, 20),
+ *   c: makeDelay(3, 10)
+ * })
+ * .then(object => {
+ *   console.log(object); // { a: 1, b: 2, c: 3 }
+ *   console.log(order); // [3, 2, 1]
+ * });
+ */
 function props(object) {
   return new AigleProps(object)._promise;
 }
@@ -3382,6 +6922,21 @@ module.exports = race;
 
 /**
  * @param {Object|Array} collection
+ * @example
+ * Aigle.race([
+ *   new Aigle(resolve => setTimeout(() => resolve(1), 30)),
+ *   new Aigle(resolve => setTimeout(() => resolve(2), 20)),
+ *   new Aigle(resolve => setTimeout(() => resolve(3), 10))
+ * ])
+ * .then(value => console.log(value)); // 3
+ *
+ * @example
+ * Aigle.race({
+ *   a: new Aigle(resolve => setTimeout(() => resolve(1), 30)),
+ *   b: new Aigle(resolve => setTimeout(() => resolve(2), 20)),
+ *   c: new Aigle(resolve => setTimeout(() => resolve(3), 10))
+ * })
+ * .then(value => console.log(value)); // 3
  */
 function race(collection) {
   if (Array.isArray(collection)) {
@@ -3547,6 +7102,42 @@ class RejectObject extends AigleEachObject {
 
 module.exports = reject;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = (num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.reject(collection, iterator)
+ *   .then(array => {
+ *     console.log(array); // [4, 2];
+ *     console.log(order); // [1, 2, 4];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = (num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.reject(collection, iterator)
+ *   .then(array => {
+ *     console.log(array); // [4, 2];
+ *     console.log(order); // [1, 2, 4];
+ *   });
+ */
 function reject(collection, iterator) {
   if (Array.isArray(collection)) {
     return new RejectArray(collection, iterator)._iterate();
@@ -3605,6 +7196,59 @@ class RejectLimitObject extends AigleLimitObject {
 
 module.exports = { rejectLimit, RejectLimitArray, RejectLimitObject };
 
+/**
+ * @param {Array|Object} collection
+ * @param {integer} [limit=8]
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = (num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.rejectLimit(collection, 2, iterator)
+ *   .then(array => {
+ *     console.log(array); // [4, 2]
+ *     console.log(order); // [1, 3, 5, 2, 4]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 5, c: 3, d: 4, e: 2 };
+ * const iterator = (num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.rejectLimit(collection, 2, iterator)
+ *   .then(array => {
+ *     console.log(array); // [4, 2]
+ *     console.log(order); // [1, 3, 5, 2, 4]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.rejectLimit(collection, iterator)
+ *   .then(array => {
+ *     console.log(array); // [4, 2]
+ *     console.log(order); // [1, 2, 3, 4, 5]
+ *   });
+ */
 function rejectLimit(collection, limit, iterator) {
   if (typeof limit === 'function') {
     iterator = limit;
@@ -3627,6 +7271,42 @@ const { RejectLimitArray, RejectLimitObject } = require('./rejectLimit');
 
 module.exports = rejectSeries;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = (num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.rejectSeries(collection, iterator)
+ *   .then(array => {
+ *     console.log(array); // [4, 2];
+ *     console.log(order); // [1, 4, 2];
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = (num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.rejectSeries(collection, iterator)
+ *   .then(array => {
+ *     console.log(array); // [4, 2];
+ *     console.log(order); // [1, 4, 2];
+ *   });
+ */
 function rejectSeries(collection, iterator) {
   if (Array.isArray(collection)) {
     return new RejectLimitArray(collection, iterator, 1)._iterate();
@@ -3676,8 +7356,31 @@ class Retry extends AigleProxy {
 module.exports = retry;
 
 /**
- * @param {Integer} [times]
+ * @param {Integer} [times=5]
  * @param {Function} handler
+ * @example
+ * let called = 0;
+ * Aigle.retry(3, () => {
+ *   return new Aigle((resolve, reject) => {
+ *     setTimeout(() => reject(++called), 10);
+ *   });
+ * })
+ * .catch(error => {
+ *   console.log(error); // 3
+ *   console.log(called); // 3
+ * });
+ *
+ * @example
+ * let called = 0;
+ * Aigle.retry(() => {
+ *   return new Aigle((resolve, reject) => {
+ *     setTimeout(() => reject(++called), 10);
+ *   });
+ * })
+ * .catch(error => {
+ *   console.log(error); // 5
+ *   console.log(called); // 5
+ * });
  */
 function retry(times, handler) {
   if (typeof times === 'function') {
@@ -3733,6 +7436,58 @@ class SomeObject extends AigleEachObject {
 
 module.exports = some;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2 === 0;
+ *     });
+ * };
+ * Aigle.some(collection, iterator)
+ *   .then(bool => {
+ *     console.log(bool); // true
+ *     console.log(order); // [1, 2]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2 === 0;
+ *     });
+ * };
+ * Aigle.some(collection, iterator)
+ *   .then(bool => {
+ *     console.log(bool); // true
+ *     console.log(order); // [1, 2]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return false;
+ *     });
+ * };
+ * Aigle.some(collection, iterator)
+ *   .then(bool => {
+ *     console.log(bool); // false
+ *     console.log(order); // [1, 2, 4]
+ *   });
+ */
 function some(collection, iterator) {
   if (Array.isArray(collection)) {
     return new SomeArray(collection, iterator)._iterate();
@@ -3792,6 +7547,59 @@ class SomeLimitObject extends AigleLimitObject {
 
 module.exports = someLimit;
 
+/**
+ * @param {Array|Object} collection
+ * @param {integer} [limit=8]
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = (num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2 === 0;
+ *     });
+ * };
+ * Aigle.someLimit(collection, 2, iterator)
+ *   .then(bool => {
+ *     console.log(bool); // true
+ *     console.log(order); // [1, 3, 5, 2]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 5, c: 3, d: 4, e: 2 };
+ * const iterator = (num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2 === 0;
+ *     });
+ * };
+ * Aigle.someLimit(collection, 2, iterator)
+ *   .then(bool => {
+ *     console.log(bool); // true
+ *     console.log(order); // [1, 3, 5, 2]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2 === 0;
+ *     });
+ * };
+ * Aigle.someLimit(collection, iterator)
+ *   .then(bool => {
+ *     console.log(bool); // true
+ *     console.log(order); // [1, 2]
+ *   });
+ */
 function someLimit(collection, limit, iterator) {
   if (typeof limit === 'function') {
     iterator = limit;
@@ -3813,6 +7621,58 @@ const someLimit = require('./someLimit');
 
 module.exports = someSeries;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2 === 0;
+ *     });
+ * };
+ * Aigle.someSeries(collection, iterator)
+ *   .then(bool => {
+ *     console.log(bool); // true
+ *     console.log(order); // [1, 4]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2 === 0;
+ *     });
+ * };
+ * Aigle.someSeries(collection, iterator)
+ *   .then(bool => {
+ *     console.log(bool); // true
+ *     console.log(order); // [1, 4]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return false;
+ *     });
+ * };
+ * Aigle.someSeries(collection, iterator)
+ *   .then(bool => {
+ *     console.log(bool); // false
+ *     console.log(order); // [1, 4, 2]
+ *   });
+ */
 function someSeries(collection, iterator) {
   return someLimit(collection, 1, iterator);
 }
@@ -3856,6 +7716,42 @@ class SortByObject extends AigleEachObject {
 
 module.exports = sortBy;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num;
+ *     });
+ * };
+ * Aigle.sortBy(collection, iterator)
+ *   .then(array => {
+ *     console.log(array); // [1, 2, 4]
+ *     console.log(order); // [1, 2, 4]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num;
+ *     });
+ * };
+ * Aigle.sortBy(collection, iterator)
+ *   .then(array => {
+ *     console.log(array); // [1, 2, 4]
+ *     console.log(order); // [1, 2, 4]
+ *   });
+ */
 function sortBy(collection, iterator) {
   if (Array.isArray(collection)) {
     return new SortByArray(collection, iterator)._iterate();
@@ -3914,6 +7810,59 @@ class SortByLimitObject extends AigleLimitObject {
 
 module.exports = sortByLimit;
 
+/**
+ * @param {Array|Object} collection
+ * @param {integer} [limit=8]
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = (num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num;
+ *     });
+ * };
+ * Aigle.sortByLimit(collection, 2, iterator)
+ *   .then(array => {
+ *     console.log(array); // [1, 2, 3, 4, 5]
+ *     console.log(order); // [1, 3, 5, 2, 4]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 5, c: 3, d: 4, e: 2 };
+ * const iterator = (num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num;
+ *     });
+ * };
+ * Aigle.sortByLimit(collection, 2, iterator)
+ *   .then(array => {
+ *     console.log(array); // [1, 2, 3, 4, 5]
+ *     console.log(order); // [1, 3, 5, 2, 4]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num;
+ *     });
+ * };
+ * Aigle.sortByLimit(collection, iterator)
+ *   .then(array => {
+ *     console.log(array); // [1, 2, 3, 4, 5]
+ *     console.log(order); // [1, 2, 3, 4, 5]
+ *   });
+ */
 function sortByLimit(collection, limit, iterator) {
   if (typeof limit === 'function') {
     iterator = limit;
@@ -3935,6 +7884,42 @@ const sortByLimit = require('./sortByLimit');
 
 module.exports = sortBySeries;
 
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const collection = [1, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num;
+ *     });
+ * };
+ * Aigle.sortBySeries(collection, iterator)
+ *   .then(array => {
+ *     console.log(array); // [1, 2, 4]
+ *     console.log(order); // [1, 4, 2]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 4, c: 2 };
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num;
+ *     });
+ * };
+ * Aigle.sortBySeries(collection, iterator)
+ *   .then(array => {
+ *     console.log(array); // [1, 2, 4]
+ *     console.log(order); // [1, 4, 2]
+ *   });
+ */
 function sortBySeries(collection, iterator) {
   return sortByLimit(collection, 1, iterator);
 }
@@ -4015,6 +8000,22 @@ module.exports = times;
 /**
  * @param {integer} times
  * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const timer = [30, 20, 10];
+ * const iterator = n => {
+ *   return Aigle.delay(timer[n])
+ *     .then(() => {
+ *       order.push(n);
+ *       return n;
+ *     });
+ * };
+ * Aigle.times(3, iterator)
+ *   .then(array => {
+ *     console.log(array); // [0, 1, 2]
+ *     console.log(order); // [2, 1, 0]
+ *   });
  */
 function times(times, iterator) {
   return new Times(+times, iterator)._promise;
@@ -4053,7 +8054,6 @@ class TimesLimit extends AigleProxy {
   }
 
   _callResolve(value, index) {
-
     if (this._promise._resolved !== 0) {
       return;
     }
@@ -4074,8 +8074,40 @@ module.exports = timesLimit;
 
 /**
  * @param {integer} times
- * @param {integer} [limit]
+ * @param {integer} [limit=8]
  * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const timer = [30, 20, 10];
+ * const iterator = n => {
+ *   return Aigle.delay(timer[n])
+ *     .then(() => {
+ *       order.push(n);
+ *       return n;
+ *     });
+ * };
+ * Aigle.timesLimit(3, 2, iterator)
+ *   .then(array => {
+ *     console.log(array); // [0, 1, 2]
+ *     console.log(order); // [1, 0, 2]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const timer = [30, 20, 10];
+ * const iterator = n => {
+ *   return Aigle.delay(timer[n])
+ *     .then(() => {
+ *       order.push(n);
+ *       return n;
+ *     });
+ * };
+ * Aigle.timesLimit(3, iterator)
+ *   .then(array => {
+ *     console.log(array); // [0, 1, 2]
+ *     console.log(order); // [2, 1, 0]
+ *   });
  */
 function timesLimit(times, limit, iterator) {
   if (typeof limit === 'function') {
@@ -4095,6 +8127,22 @@ module.exports = timesSeries;
 /**
  * @param {integer} times
  * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const order = [];
+ * const timer = [30, 20, 10];
+ * const iterator = n => {
+ *   return Aigle.delay(timer[n])
+ *     .then(() => {
+ *       order.push(n);
+ *       return n;
+ *     });
+ * };
+ * Aigle.timesSeries(3, iterator)
+ *   .then(array => {
+ *     console.log(array); // [0, 1, 2]
+ *     console.log(order); // [0, 1, 2]
+ *   });
  */
 function timesSeries(times, iterator) {
   return timesLimit(times, 1, iterator);
@@ -4178,34 +8226,53 @@ module.exports = transform;
  * @param {Array|Object} [accumulator]
  * @return {Aigle} Returns an Aigle instance
  * @example
+ * const order = [];
  * const collection = [1, 4, 2];
  * const iterator = (result, num, index) => {
  *   return Aigle.delay(num * 10)
- *     .then(() => result[index] = num);
+ *     .then(() => {
+ *       order.push(num);
+ *       result[index] = num;
+ *     });
  * };
- * return Aigle.transform(collection, iterator, {})
- *   .then(value => console.log(value)); // { '0': 1, '1': 4, '2': 2 }
+ * Aigle.transform(collection, iterator, {})
+ *   .then(object => {
+ *     console.log(object); // { '0': 1, '1': 4, '2': 2 }
+ *     console.log(order); // [1, 2, 4]
+ *   });
  *
  * @example
+ * const order = [];
  * const collection = [1, 4, 2];
  * const iterator = (result, num, index) => {
  *   return Aigle.delay(num * 10)
- *     .then(() => result.push(num));
+ *     .then(() => {
+ *       order.push(num);
+ *       result.push(num);
+ *     });
  * };
- * return Aigle.transform(collection, iterator)
- *   .then(value => console.log(value)); // [1, 2, 4]
+ * Aigle.transform(collection, iterator, {})
+ *   .then(array => {
+ *     console.log(array); // [1, 2, 4]
+ *     console.log(order); // [1, 2, 4]
+ *   });
  *
  * @example
+ * const order = [];
  * const collection = { a: 1, b: 4, c: 2 };
  * const iterator = (result, num, key) => {
  *   return Aigle.delay(num * 10)
  *     .then(() => {
+ *       order.push(num);
  *       result.push(num);
  *       return num !== 2;
  *     });
  * };
- * return Aigle.transform(collection, iterator, [])
- *   .then(value => console.log(value)); // [1, 2]
+ * Aigle.transform(collection, iterator, [])
+ *   .then(array => {
+ *     console.log(array); // [1, 2]
+ *     console.log(order); // [1, 2]
+ *   });
  */
 function transform(collection, iterator, accumulator) {
   if (Array.isArray(collection)) {
@@ -4324,9 +8391,75 @@ module.exports = transformLimit;
  * @param {integer} [limit]
  * @param {Function} iterator
  * @param {Array|Object} [accumulator]
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = (result, num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       result[index] = num;
+ *     });
+ * };
+ * Aigle.transformLimit(collection, 2, iterator, {})
+ *   .then(object => {
+ *     console.log(object); // { '0': 1, '1': 5, '2': 3, '3': 4, '4': 2 }
+ *     console.log(order); // [1, 5, 3, 4, 2]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = (result, num, index) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       result.push(num);
+ *     });
+ * };
+ * Aigle.transformLimit(collection, 2, iterator, {})
+ *   .then(array => {
+ *     console.log(array); // [1, 5, 3, 4, 2]
+ *     console.log(order); // [1, 5, 3, 4, 2]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 5, c: 3, d: 4, e: 2 };
+ * const iterator = (result, num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       result.push(num);
+ *       return num !== 4;
+ *     });
+ * };
+ * Aigle.transformLimit(collection, 2, iterator, [])
+ *   .then(array => {
+ *     console.log(array); // [1, 5, 3, 4]
+ *     console.log(order); // [1, 5, 3, 4]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = { a: 1, b: 5, c: 3, d: 4, e: 2 };
+ * const iterator = (result, num, key) => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       result.push(num);
+ *       return num !== 4;
+ *     });
+ * };
+ * Aigle.transformLimit(collection, iterator, [])
+ *   .then(array => {
+ *     console.log(array); // [1, 2, 3, 4]
+ *     console.log(order); // [1, 2, 3, 4]
+ *   });
  */
 function transformLimit(collection, limit, iterator, accumulator) {
   if (typeof limit === 'function') {
+    accumulator = iterator;
     iterator = limit;
     limit = DEFAULT_LIMIT;
   }
@@ -4352,34 +8485,53 @@ module.exports = transformSeries;
  * @param {Array|Object} [accumulator]
  * @return {Aigle} Returns an Aigle instance
  * @example
+ * const order = [];
  * const collection = [1, 4, 2];
  * const iterator = (result, num, index) => {
  *   return Aigle.delay(num * 10)
- *     .then(() => result[index] = num);
+ *     .then(() => {
+ *       order.push(num);
+ *       result[index] = num;
+ *     });
  * };
- * return Aigle.transformSeries(collection, iterator, {})
- *   .then(value => console.log(value)); // { '0': 1, '1': 4, '2': 2 }
+ * Aigle.transformSeries(collection, iterator, {})
+ *   .then(object => {
+ *     console.log(object); // { '0': 1, '1': 4, '2': 2 }
+ *     console.log(order); // [1, 4, 2]
+ *   });
  *
  * @example
+ * const order = [];
  * const collection = [1, 4, 2];
  * const iterator = (result, num, index) => {
  *   return Aigle.delay(num * 10)
- *     .then(() => result.push(num));
+ *     .then(() => {
+ *       order.push(num);
+ *       result.push(num);
+ *     });
  * };
- * return Aigle.transformSeries(collection, iterator)
- *   .then(value => console.log(value)); // [1, 4, 2]
+ * Aigle.transformSeries(collection, iterator, {})
+ *   .then(array => {
+ *     console.log(array); // [1, 4, 2]
+ *     console.log(order); // [1, 4, 2]
+ *   });
  *
  * @example
+ * const order = [];
  * const collection = { a: 1, b: 4, c: 2 };
  * const iterator = (result, num, key) => {
  *   return Aigle.delay(num * 10)
  *     .then(() => {
+ *       order.push(num);
  *       result.push(num);
  *       return num !== 4;
  *     });
  * };
- * return Aigle.transformSeries(collection, iterator, [])
- *   .then(value => console.log(value)); // [1, 4]
+ * Aigle.transformSeries(collection, iterator, [])
+ *   .then(array => {
+ *     console.log(array); // [1, 4]
+ *     console.log(order); // [1, 4]
+ *   });
  */
 function transformSeries(collection, iterator, accumulator) {
   return transformLimit(collection, 1, iterator, accumulator);
@@ -5005,7 +9157,7 @@ process.umask = function() { return 0; };
 },{"_process":71}],73:[function(require,module,exports){
 module.exports={
   "name": "aigle",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "browser": "browser.js",
