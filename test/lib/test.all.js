@@ -150,28 +150,6 @@ parallel('#all', () => {
       });
   });
 
-  it('should catch an error', () => {
-
-    const order = [];
-    const delay = util.makeDelayTask(order);
-    const tasks = [
-      delay('test1', new Error('error1'), DELAY * 3),
-      delay('test2', new Error('error2'), DELAY * 2),
-      delay('test3', null, DELAY * 1)
-    ];
-    return Aigle.resolve(tasks)
-      .all()
-      .then(() => assert(false))
-      .catch(err => {
-        assert.ok(err);
-        assert.strictEqual(err.message, 'error2');
-        assert.deepEqual(order, [
-          'test3',
-          'test2'
-        ]);
-      });
-  });
-
   it('should execute with multiple receivers on synchronous', () => {
 
     const array = [1, 2, 3];
@@ -218,5 +196,43 @@ parallel('#all', () => {
         })
     ])
     .then(value => assert.deepEqual(value, [4, 5, 6]));
+  });
+
+  it('should catch an error', () => {
+
+    const order = [];
+    const delay = util.makeDelayTask(order);
+    const tasks = [
+      delay('test1', new Error('error1'), DELAY * 3),
+      delay('test2', new Error('error2'), DELAY * 2),
+      delay('test3', null, DELAY * 1)
+    ];
+    return Aigle.resolve(tasks)
+      .all()
+      .then(() => assert(false))
+      .catch(err => {
+        assert.ok(err);
+        assert.strictEqual(err.message, 'error2');
+        assert.deepEqual(order, [
+          'test3',
+          'test2'
+        ]);
+      });
+  });
+
+  it('should throw an error with a reject promise', done => {
+
+    process.on('unhandledRejection', done);
+    const error = new Error('error');
+    const promise = Aigle.reject(error);
+    promise.catch(error => assert(error));
+    const tasks = [promise, promise, promise];
+    return Aigle.delay(DELAY, tasks)
+      .all()
+      .then(() => assert(false))
+      .catch(err => {
+        assert.strictEqual(err, error);
+        done();
+      });
   });
 });

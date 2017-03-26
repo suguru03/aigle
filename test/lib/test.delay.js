@@ -69,4 +69,23 @@ parallel('#delay', () => {
         assert.strictEqual(value, str);
       });
   });
+
+  it('should not delay with a rejected promise', done => {
+
+    process.on('unhandledRejection', done);
+    const error = new Error('error');
+    const promise = Aigle.reject(error);
+    promise.catch(error => assert(error));
+    setTimeout(() => {
+      const start = Date.now();
+      promise.delay(DELAY)
+        .then(() => assert(false))
+        .catch(err => {
+          const diff = Date.now() - start;
+          assert.ok(diff < DELAY);
+          assert.strictEqual(err, error);
+          done();
+        });
+    }, DELAY);
+  });
 });

@@ -494,6 +494,24 @@ describe('#catch', () => {
       });
     }, DELAY * 2);
   });
+
+  it('should return an error with a rejected promise', done => {
+
+    process.on('unhandledRejection', done);
+    const error1 = new Error('error1');
+    const error2 = new Error('error2');
+    const promise = Aigle.reject(error1);
+    promise.catch(error => assert.strictEqual(error, error1));
+    Aigle.reject(error2)
+      .catch(error => {
+        assert.strictEqual(error, error2);
+        return promise;
+      })
+      .catch(error => {
+        assert.strictEqual(error, error1);
+        done();
+      });
+  });
 });
 
 parallel('#finally', () => {
