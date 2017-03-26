@@ -55,6 +55,16 @@ parallel('reject', () => {
       done();
     });
   });
+
+  it('should notify unhandledRejection', done => {
+
+    const error = new Error('error');
+    process.on('unhandledRejection', err => {
+      assert(err);
+      done();
+    });
+    Aigle.reject(error);
+  });
 });
 
 parallel('#then', () => {
