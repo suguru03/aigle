@@ -12,6 +12,13 @@
     "promise",
     "async"
   ],
+  "files": [
+    "README.md",
+    "index.js",
+    "lib/",
+    "browser.js",
+    "dist/"
+  ],
   "author": "Suguru Motegi",
   "license": "MIT",
   "devDependencies": {
