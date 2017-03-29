@@ -6,50 +6,50 @@ module.exports = ({ Aigle, Bluebird }) => {
     'join': {
       doc: true,
       setup: () => {
-        this._f0 = () => 0;
-        this._f1 = () => 1;
-        this._f2 = () => 2;
-        this._f3 = () => 3;
-        this._f4 = () => 4;
-        this._f5 = () => 5;
-        this._f6 = () => 6;
-        this._f7 = () => 7;
-        this._f8 = () => 8;
-        this._f9 = () => 9;
+        this._f0 = () => new Promise(resolve => setImmediate(resolve));
+        this._f1 = () => new Promise(resolve => setImmediate(resolve));
+        this._f2 = () => new Promise(resolve => setImmediate(resolve));
+        this._f3 = () => new Promise(resolve => setImmediate(resolve));
+        this._f4 = () => new Promise(resolve => setImmediate(resolve));
+        this._f5 = () => new Promise(resolve => setImmediate(resolve));
+        this._f6 = () => new Promise(resolve => setImmediate(resolve));
+        this._f7 = () => new Promise(resolve => setImmediate(resolve));
+        this._f8 = () => new Promise(resolve => setImmediate(resolve));
+        this._f9 = () => new Promise(resolve => setImmediate(resolve));
         this._fn = () => {};
       },
       aigle: () => {
         return Aigle.join(
-          this._f0,
-          this._f1,
-          this._f2,
-          this._f3,
-          this._f4,
-          this._f5,
-          this._f6,
-          this._f7,
-          this._f8,
-          this._f9,
+          this._f0(),
+          this._f1(),
+          this._f2(),
+          this._f3(),
+          this._f4(),
+          this._f5(),
+          this._f6(),
+          this._f7(),
+          this._f8(),
+          this._f9(),
           this._fn);
       },
       bluebird: () => {
         return Bluebird.join(
-          this._f0,
-          this._f1,
-          this._f2,
-          this._f3,
-          this._f4,
-          this._f5,
-          this._f6,
-          this._f7,
-          this._f8,
-          this._f9,
+          this._f0(),
+          this._f1(),
+          this._f2(),
+          this._f3(),
+          this._f4(),
+          this._f5(),
+          this._f6(),
+          this._f7(),
+          this._f8(),
+          this._f9(),
           this._fn);
       }
     },
     'join:1': {
       setup: () => {
-        this._f0 = () => 0;
+        this._f0 = () => new Promise(resolve => setImmediate(resolve));
         this._fn = () => {};
       },
       aigle: () => {
@@ -61,18 +61,30 @@ module.exports = ({ Aigle, Bluebird }) => {
     },
     'join:5': {
       setup: () => {
-        this._f0 = () => 0;
-        this._f1 = () => 1;
-        this._f2 = () => 2;
-        this._f3 = () => 3;
-        this._f4 = () => 4;
+        this._f0 = () => new Promise(resolve => setImmediate(resolve));
+        this._f1 = () => new Promise(resolve => setImmediate(resolve));
+        this._f2 = () => new Promise(resolve => setImmediate(resolve));
+        this._f3 = () => new Promise(resolve => setImmediate(resolve));
+        this._f4 = () => new Promise(resolve => setImmediate(resolve));
         this._fn = () => {};
       },
       aigle: () => {
-        return Aigle.join(this._f0, this._f1, this._f2, this._f3, this._f4, this._fn);
+        return Aigle.join(
+          this._f0(),
+          this._f1(),
+          this._f2(),
+          this._f3(),
+          this._f4(),
+          this._fn);
       },
       bluebird: () => {
-        return Bluebird.join(this._f0, this._f1, this._f2, this._f3, this._f4, this._fn);
+        return Bluebird.join(
+          this._f0(),
+          this._f1(),
+          this._f2(),
+          this._f3(),
+          this._f4(),
+          this._fn);
       }
     }
   };
