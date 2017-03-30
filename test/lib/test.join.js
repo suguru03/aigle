@@ -167,6 +167,14 @@ parallel('#spread', () => {
       });
   });
 
+  it('should not cause any errors', () => {
+
+    const array = [1, 2, 3];
+    return Aigle.resolve(array)
+      .spread()
+      .then(value => assert.strictEqual(value, array));
+  });
+
   it('should not execute if error is caused', () => {
 
     const array = [1, 2, 3];
