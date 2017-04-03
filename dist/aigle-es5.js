@@ -2638,11 +2638,11 @@ var Aigle = (function (AigleCore) {
     }
     this._resolved = 1;
     this._value = value;
-    if (this._receiver === undefined) {
-      return;
-    }
     var ref = this;
     var _receiver = ref._receiver;
+    if (_receiver === undefined) {
+      return;
+    }
     this._receiver = undefined;
     if (_receiver instanceof AigleProxy) {
       _receiver._callResolve(value, this._key);
@@ -3036,19 +3036,17 @@ function tick() {
     var task = queue.shift();
     var promise = task.promise;
     var receiver = task.receiver;
-    var _resolved = promise._resolved;
-    var _value = promise._value;
-    if (_resolved === 1) {
+    if (promise._resolved === 1) {
       if (receiver instanceof AigleProxy) {
-        receiver._callResolve(_value, promise._key);
+        receiver._callResolve(promise._value, promise._key);
       } else {
-        callResolve(receiver, task.onFulfilled, _value);
+        callResolve(receiver, task.onFulfilled, promise._value);
       }
     } else {
       if (receiver instanceof AigleProxy) {
-        receiver._callReject(_value, promise._key);
+        receiver._callReject(promise._value, promise._key);
       } else {
-        callReject(receiver, task.onRejected, _value);
+        callReject(receiver, task.onRejected, promise._value);
       }
     }
   }
@@ -5161,7 +5159,6 @@ var AigleEachArray = (function (AigleProxy) {
   AigleEachArray.prototype.constructor = AigleEachArray;
 
   AigleEachArray.prototype._iterate = function _iterate () {
-    var i = -1;
     var ref = this;
     var _rest = ref._rest;
     var _iterator = ref._iterator;
@@ -5169,15 +5166,14 @@ var AigleEachArray = (function (AigleProxy) {
     if (_rest === 0) {
       this._promise._resolve(this._result);
     } else {
+      var i = -1;
       while (++i < _rest && callProxyReciever(call2(_iterator, _array[i], i), this, i)) {}
     }
     return this._promise;
   };
 
   AigleEachArray.prototype._callResolve = function _callResolve (value) {
-    if (value === false) {
-      this._promise._resolved === 0 & this._promise._resolve();
-    } else if (--this._rest === 0) {
+    if (--this._rest === 0 || value === false) {
       this._promise._resolve();
     }
   };
@@ -5208,7 +5204,6 @@ var AigleEachObject = (function (AigleProxy) {
   AigleEachObject.prototype._iterate = function _iterate () {
     var this$1 = this;
 
-    var i = -1;
     var ref = this;
     var _rest = ref._rest;
     var _iterator = ref._iterator;
@@ -5217,6 +5212,7 @@ var AigleEachObject = (function (AigleProxy) {
     if (_rest === 0) {
       this._promise._resolve(this._result);
     } else {
+      var i = -1;
       while (++i < _rest) {
         var key = _keys[i];
         if (callProxyReciever(call2(_iterator, _object[key], key), this$1, i) === false) {
@@ -5228,9 +5224,7 @@ var AigleEachObject = (function (AigleProxy) {
   };
 
   AigleEachObject.prototype._callResolve = function _callResolve (value) {
-    if (value === false) {
-      this._promise._resolved === 0 & this._promise._resolve();
-    } else if (--this._rest === 0) {
+    if (--this._rest === 0 || value === false) {
       this._promise._resolve();
     }
   };
@@ -5294,9 +5288,7 @@ var AigleLimitArray = (function (AigleProxy) {
   };
 
   AigleLimitArray.prototype._callResolve = function _callResolve (value) {
-    if (value === false) {
-      this._promise._resolved === 0 && this._promise._resolve();
-    } else if (--this._rest === 0) {
+    if (--this._rest === 0 || value === false) {
       this._promise._resolve();
     } else if (this._index < this._size) {
       this._promise._resolved === 0 && this._next();
@@ -5350,9 +5342,7 @@ var AigleLimitObject = (function (AigleProxy) {
   };
 
   AigleLimitObject.prototype._callResolve = function _callResolve (value) {
-    if (value === false) {
-      this._promise._resolved === 0 && this._promise._resolve();
-    } else if (--this._rest === 0) {
+    if (--this._rest === 0 || value === false) {
       this._promise._resolve();
     } else if (this._index < this._size) {
       this._promise._resolved === 0 && this._next();
@@ -5523,10 +5513,6 @@ function callProxyThen(promise, receiver, key) {
 }
 
 function callProxyReciever(promise, receiver, index) {
-  if (promise === errorObj) {
-    receiver._callReject(errorObj.e);
-    return false;
-  }
   if (promise instanceof AigleCore) {
     switch (promise._resolved) {
     case 0:
@@ -5539,6 +5525,10 @@ function callProxyReciever(promise, receiver, index) {
       receiver._callReject(promise._value);
       return false;
     }
+  }
+  if (promise === errorObj) {
+    receiver._callReject(errorObj.e);
+    return false;
   }
   if (promise && promise.then) {
     callProxyThen(promise, receiver, index);
@@ -5686,8 +5676,16 @@ var Join = (function (AigleProxy) {
       return this._promise._resolve(value);
     }
     this._result[index] = value;
-    if (--this._rest === 0) {
-      spread(this, this._result);
+    if (--this._rest !== 0) {
+      return;
+    }
+    var ref = this;
+    var _handler = ref._handler;
+    var _result = ref._result;
+    if (_handler === undefined) {
+      this._promise._resolve(_result);
+    } else {
+      callProxyReciever(apply(_handler, _result), this, INTERNAL);
     }
   };
 
@@ -7576,9 +7574,21 @@ var RejectObject = (function (AigleEachObject) {
 module.exports = reject;
 
 /**
- * @param {Array|Object} collection
- * @param {Function} iterator
+ * Aigle reject has two features.
+ * One of them is basic [`Promise.reject`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise/reject) function, it returns a rejected Aigle instance.
+ * The other is a collection function, it requires an iterator function. It is the opposite of [`filter`](https://suguru03.github.io/aigle/docs/Aigle.html#filter).
+ * If the iterator function is not defined, the function works as a first one.
+ *
+ * @param {Function|Array|Object} collection
+ * @param {Function} [iterator]
  * @return {Aigle} Returns an Aigle instance
+ * @example
+ * const error = new Error('error');
+ * Aigle.reject(error)
+ *   .catch(error => {
+ *     console.log(error); // error
+ *   });
+ *
  * @example
  * const order = [];
  * const collection = [1, 4, 2];
@@ -9829,7 +9839,7 @@ process.umask = function() { return 0; };
 },{"_process":71}],73:[function(require,module,exports){
 module.exports={
   "name": "aigle",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "browser": "browser.js",
@@ -9841,15 +9851,22 @@ module.exports={
     "promise",
     "async"
   ],
+  "files": [
+    "README.md",
+    "index.js",
+    "lib/",
+    "browser.js",
+    "dist/"
+  ],
   "author": "Suguru Motegi",
   "license": "MIT",
   "devDependencies": {
-    "babili": "0.0.11",
+    "babili": "0.0.12",
     "benchmark": "^2.1.1",
     "bluebird": "^3.4.6",
     "browserify": "^14.1.0",
     "buble": "^0.15.2",
-    "codecov": "^1.0.1",
+    "codecov": "^2.1.0",
     "docdash": "^0.4.0",
     "gulp": "^3.9.1",
     "gulp-bump": "^2.7.0",
@@ -9859,8 +9876,8 @@ module.exports={
     "jsdoc": "^3.4.3",
     "lodash": "^4.15.0",
     "minimist": "^1.2.0",
-    "mocha": "^2.5.3",
-    "mocha.parallel": "^0.12.0",
+    "mocha": "^3.2.0",
+    "mocha.parallel": "^0.15.0",
     "neo-async": "^2.0.1",
     "require-dir": "^0.3.1",
     "run-sequence": "^1.2.2",
