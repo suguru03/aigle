@@ -9166,7 +9166,7 @@ process.umask = function() { return 0; };
 },{"_process":71}],73:[function(require,module,exports){
 module.exports={
   "name": "aigle",
-  "version": "0.6.1",
+  "version": "1.0.0",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "browser": "browser.js",
@@ -9212,7 +9212,7 @@ module.exports={
     "uglify-js": "^2.7.5"
   },
   "dependencies": {
-    "aigle-core": "^0.2.0"
+    "aigle-core": "^1.0.0"
   }
 }
 
