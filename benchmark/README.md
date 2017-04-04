@@ -1,4 +1,4 @@
-## Benchmark 
+## Benchmark
 
 (using [benchmark.js](https://github.com/bestiejs/benchmark.js))
 
@@ -18,3 +18,6 @@
 |props|**63.4μs**|77.3μs [0.820]|
 |race|**34.9μs**|44.8μs [0.779]|
 |using|**2.65μs**|9.66μs [0.274]|
+
+### Mixed different versions
+[benchmark](https://github.com/suguru03/aigle-benchmark)

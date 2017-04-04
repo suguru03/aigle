@@ -5,7 +5,7 @@
 [![Codecov branch](https://img.shields.io/codecov/c/github/suguru03/aigle/master.svg)](https://codecov.io/gh/suguru03/aigle)
 
 Aigle is an ideal Promise library, faster and more functional than other Promise libraries.
-Aigle is never slow down even if you mix different Aigle versions and other promise libraries. ([benchmark](https://github.com/suguru03/aigle-benchmark))
+Aigle is never slow down even if you mix different Aigle versions and other promise libraries. ([benchmark](https://github.com/suguru03/aigle/tree/master/benchmark#benchmark))
 
 Also Aigle has a lot of [async](https://github.com/caolan/async) functions, you can start using `Promise` easily.
 
