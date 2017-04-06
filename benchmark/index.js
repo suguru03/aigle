@@ -16,13 +16,8 @@ const defaults = { count: 100 };
 const count = argv.c || argv.count;
 const target = argv.t || argv.target; // -t <function name>
 const makeDoc = argv.d || argv.docs; // -d make documents
-let Promise = global.Promise;
-if (argv.p) {
-  const regExp = RegExp(argv.p);
-  Promise = regExp.test('aigle') ? Aigle : regExp.test('bluebird') ? Bluebird : global.Promise;
-}
 
-const Benchmark = require('./benchmark')(Promise);
+const Benchmark = require('./benchmark');
 const functions = {
   Aigle,
   Bluebird,
@@ -41,15 +36,15 @@ const versionMap = _.mapValues(functions, (obj, key) => {
 
 let tasks = require('./tasks')(functions);
 if (target) {
-  const reg = new RegExp(`(config|${target})`);
+  const re = new RegExp(`(config|${target})`);
   tasks = _.chain(tasks)
     .mapValues((obj, name) => {
-      if (reg.test(name)) {
+      if (re.test(name)) {
         return obj;
       }
-      return _.pickBy(obj, (obj, name) => reg.test(name) || reg.test(_.first(name.split(':'))));
+      return _.pickBy(obj, (obj, name) => re.test(name) || re.test(_.first(name.split(':'))));
     })
-    .omit(obj => _.isEmpty(obj))
+    .omit(_.isEmpty)
     .value();
 }
 const resultMap = {};
@@ -105,6 +100,7 @@ const benchmarkTasks = _.transform(tasks, (result, obj) => {
         .then(result => _.forEach(result, ({ name, mean }, index, array) => {
           const diff = (_.first(array).mean) / mean;
           const rate = mean / (_.first(array).mean);
+          mean *= Math.pow(10, 6);
           ++index;
           map[name] = { index, mean, diff, rate };
           console.log(`[${index}] "${name}" ${mean.toPrecision(3)}μs[${diff.toPrecision(3)}][${rate.toPrecision(3)}]`);

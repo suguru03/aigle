@@ -3,8 +3,6 @@
 const _ = require('lodash');
 const Suite = require('benchmark').Suite;
 
-let Promise;
-
 class Benchmark {
 
   constructor() {}
@@ -19,39 +17,18 @@ class Benchmark {
   }
 
   execute() {
-    const tasks = this._tasks;
+    const { _tasks } = this;
     const suite = new Suite();
-    const total = {};
-    _.forEach(tasks, (func, key) => {
-      total[key] = {
-        count: 0,
-        time: 0
-      };
+    _.forEach(_tasks, (func, key) => {
       if (key === 'neoAsync') {
         suite.add(key, {
           defer: true,
-          fn: deferred => {
-            const start = process.hrtime();
-            func(() => {
-              const diff = process.hrtime(start);
-              total[key].time += (diff[0] * 1e9 + diff[1]) / 1000;
-              total[key].count++;
-              deferred.resolve();
-            });
-          }
+          fn: deferred => func(() => deferred.resolve())
         });
       } else {
         suite.add(key, {
           defer: true,
-          fn: deferred => {
-            const start = process.hrtime();
-            func().then(() => {
-              const diff = process.hrtime(start);
-              total[key].time += (diff[0] * 1e9 + diff[1]) / 1000;
-              total[key].count++;
-              deferred.resolve();
-            });
-          }
+          fn: deferred => func().then(() => deferred.resolve())
         });
       }
     });
@@ -60,25 +37,17 @@ class Benchmark {
         .on('complete', function() {
           const result = _.chain(this)
             .map(data => {
-              const name = data.name;
-              const time = total[name];
-              return {
-                name: name,
-                mean: time.time / time.count
-              };
+              const { name, stats } = data;
+              const { mean } = stats;
+              return { name, mean };
             })
             .sortBy('mean')
             .value();
           resolve(result);
         })
-        .run({
-          async: true
-        });
+        .run({ async: true });
     });
   }
 }
 
-module.exports = _Promise => {
-  Promise = _Promise;
-  return Benchmark;
-};
+module.exports = Benchmark;
