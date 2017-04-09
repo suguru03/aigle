@@ -53,6 +53,8 @@ Functions
 
 - [`Promise.resolve`](https://suguru03.github.io/aigle/docs/global.html#resolve)
 - [`Promise.reject`](https://suguru03.github.io/aigle/docs/global.html#reject)
+- [`Promise.attempt`](https://suguru03.github.io/aigle/docs/global.html#attempt)
+- [`Promise.try`](https://suguru03.github.io/aigle/docs/global.html#try) -> - [`Promise.attempt`](https://suguru03.github.io/aigle/docs/global.html#try)
 - [`Promise.join`](https://suguru03.github.io/aigle/docs/global.html#join)
 
 ### Collections
