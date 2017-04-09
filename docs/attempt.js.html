@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>omitSeries.js - Documentation</title>
+    <title>attempt.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,7 +27,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">omitSeries.js</h1>
+    <h1 class="page-title">attempt.js</h1>
     
 
     
@@ -39,55 +39,45 @@
         <article>
             <pre class="prettyprint source linenums"><code>'use strict';
 
+const { AigleProxy } = require('aigle-core');
 const { Aigle } = require('./aigle');
-const { OmitLimitArray, OmitLimitObject } = require('./omitLimit');
+const {
+  INTERNAL,
+  call0,
+  callProxyReciever
+} = require('./internal/util');
 
-module.exports = omitSeries;
+class Attempt extends AigleProxy {
+
+  constructor() {
+    super();
+    this._promise = new Aigle(INTERNAL);
+  }
+
+  _callResolve(value) {
+    this._promise._resolve(value);
+  }
+
+  _callReject(reason) {
+    this._promise._reject(reason);
+  }
+}
+
+module.exports = attempt;
 
 /**
- * @param {Array|Object} collection
- * @param {Function} iterator
+ * @param {function} handler
  * @return {Aigle} Returns an Aigle instance
  * @example
- * const order = [];
- * const collection = [1, 4, 2];
- * const iterator = num => {
- *   return Aigle.delay(num * 10)
- *     .then(() => {
- *       order.push(num);
- *       return num % 2;
- *     });
- * };
- * Aigle.omitSeries(collection, iterator)
- *   .then(object => {
- *     console.log(object); // { '1': 4, '2': 2 }
- *     console.log(order); // [1, 4, 2]
- *   });
- *
- * @example
- * const order = [];
- * const collection = { a: 1, b: 4, c: 2 };
- * const iterator = num => {
- *   return Aigle.delay(num * 10)
- *     .then(() => {
- *       order.push(num);
- *       return num % 2;
- *     });
- * };
- * Aigle.omitSeries(collection, iterator)
- *   .then(object => {
- *     console.log(object); // { b: 4, c: 2 }
- *     console.log(order); // [1, 4, 2]
- *   });
+ * Aigle.attempt(() => {
+ *     throw Error('error');
+ *   })
+ *   .catch(error => console.log(error)); // error
  */
-function omitSeries(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new OmitLimitArray(collection, iterator, 1)._iterate();
-  }
-  if (collection &amp;&amp; typeof collection === 'object') {
-    return new OmitLimitObject(collection, iterator, 1)._iterate();
-  }
-  return Aigle.resolve({});
+function attempt(handler) {
+  const receiver = new Attempt();
+  callProxyReciever(call0(handler), receiver);
+  return receiver._promise;
 }
 </code></pre>
         </article>
