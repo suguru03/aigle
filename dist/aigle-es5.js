@@ -4,7 +4,7 @@
 require('setimmediate');
 module.exports = require('./lib/aigle');
 
-},{"./lib/aigle":2,"setimmediate":72}],2:[function(require,module,exports){
+},{"./lib/aigle":2,"setimmediate":73}],2:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -2732,6 +2732,7 @@ module.exports = { Aigle: Aigle };
 /* functions, classes */
 var ref$2 = require('./all');
 var all = ref$2.all;
+var attempt = require('./attempt');
 var race = require('./race');
 var ref$3 = require('./props');
 var props = ref$3.props;
@@ -2868,6 +2869,8 @@ Aigle.groupBy = groupBy;
 Aigle.groupBySeries = groupBySeries;
 Aigle.groupByLimit = groupByLimit;
 
+Aigle.attempt = attempt;
+Aigle.try = attempt;
 Aigle.join = join;
 Aigle.promisify = require('./promisify');
 Aigle.promisifyAll = require('./promisifyAll');
@@ -3078,7 +3081,7 @@ function addReceiver(promise, receiver) {
 }
 
 }).call(this,require('_process'))
-},{"./all":3,"./concat":4,"./concatLimit":5,"./concatSeries":6,"./delay":7,"./doUntil":8,"./doWhilst":9,"./each":10,"./eachLimit":11,"./eachSeries":12,"./error":13,"./every":14,"./everyLimit":15,"./everySeries":16,"./filter":17,"./filterLimit":18,"./filterSeries":19,"./find":20,"./findLimit":21,"./findSeries":22,"./groupBy":23,"./groupByLimit":24,"./groupBySeries":25,"./internal/queue":28,"./internal/task":29,"./internal/util":30,"./join":31,"./map":32,"./mapLimit":33,"./mapSeries":34,"./mapValues":35,"./mapValuesLimit":36,"./mapValuesSeries":37,"./omit":38,"./omitLimit":39,"./omitSeries":40,"./parallel":41,"./pick":42,"./pickLimit":43,"./pickSeries":44,"./promisify":45,"./promisifyAll":46,"./props":47,"./race":48,"./reduce":49,"./reject":50,"./rejectLimit":51,"./rejectSeries":52,"./retry":53,"./some":54,"./someLimit":55,"./someSeries":56,"./sortBy":57,"./sortByLimit":58,"./sortBySeries":59,"./timeout":60,"./times":61,"./timesLimit":62,"./timesSeries":63,"./transform":64,"./transformLimit":65,"./transformSeries":66,"./until":67,"./using":68,"./whilst":69,"_process":71,"aigle-core":70}],3:[function(require,module,exports){
+},{"./all":3,"./attempt":4,"./concat":5,"./concatLimit":6,"./concatSeries":7,"./delay":8,"./doUntil":9,"./doWhilst":10,"./each":11,"./eachLimit":12,"./eachSeries":13,"./error":14,"./every":15,"./everyLimit":16,"./everySeries":17,"./filter":18,"./filterLimit":19,"./filterSeries":20,"./find":21,"./findLimit":22,"./findSeries":23,"./groupBy":24,"./groupByLimit":25,"./groupBySeries":26,"./internal/queue":29,"./internal/task":30,"./internal/util":31,"./join":32,"./map":33,"./mapLimit":34,"./mapSeries":35,"./mapValues":36,"./mapValuesLimit":37,"./mapValuesSeries":38,"./omit":39,"./omitLimit":40,"./omitSeries":41,"./parallel":42,"./pick":43,"./pickLimit":44,"./pickSeries":45,"./promisify":46,"./promisifyAll":47,"./props":48,"./race":49,"./reduce":50,"./reject":51,"./rejectLimit":52,"./rejectSeries":53,"./retry":54,"./some":55,"./someLimit":56,"./someSeries":57,"./sortBy":58,"./sortByLimit":59,"./sortBySeries":60,"./timeout":61,"./times":62,"./timesLimit":63,"./timesSeries":64,"./transform":65,"./transformLimit":66,"./transformSeries":67,"./until":68,"./using":69,"./whilst":70,"_process":72,"aigle-core":71}],3:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -3151,7 +3154,57 @@ function all(array) {
 }
 
 
-},{"./aigle":2,"./internal/util":30,"aigle-core":70}],4:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"aigle-core":71}],4:[function(require,module,exports){
+'use strict';
+
+var ref = require('aigle-core');
+var AigleProxy = ref.AigleProxy;
+var ref$1 = require('./aigle');
+var Aigle = ref$1.Aigle;
+var ref$2 = require('./internal/util');
+var INTERNAL = ref$2.INTERNAL;
+var call0 = ref$2.call0;
+var callProxyReciever = ref$2.callProxyReciever;
+
+var Attempt = (function (AigleProxy) {
+  function Attempt() {
+    AigleProxy.call(this);
+    this._promise = new Aigle(INTERNAL);
+  }
+
+  if ( AigleProxy ) Attempt.__proto__ = AigleProxy;
+  Attempt.prototype = Object.create( AigleProxy && AigleProxy.prototype );
+  Attempt.prototype.constructor = Attempt;
+
+  Attempt.prototype._callResolve = function _callResolve (value) {
+    this._promise._resolve(value);
+  };
+
+  Attempt.prototype._callReject = function _callReject (reason) {
+    this._promise._reject(reason);
+  };
+
+  return Attempt;
+}(AigleProxy));
+
+module.exports = attempt;
+
+/**
+ * @param {function} handler
+ * @return {Aigle} Returns an Aigle instance
+ * @example
+ * Aigle.attempt(() => {
+ *     throw Error('error');
+ *   })
+ *   .catch(error => console.log(error)); // error
+ */
+function attempt(handler) {
+  var receiver = new Attempt();
+  callProxyReciever(call0(handler), receiver);
+  return receiver._promise;
+}
+
+},{"./aigle":2,"./internal/util":31,"aigle-core":71}],5:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -3258,7 +3311,7 @@ function concat(collection, iterator) {
   return Aigle.resolve([]);
 }
 
-},{"./aigle":2,"./internal/aigleEach":26}],5:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleEach":27}],6:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -3402,7 +3455,7 @@ function concatLimit(collection, limit, iterator) {
   return Aigle.resolve([]);
 }
 
-},{"./aigle":2,"./internal/aigleLimit":27}],6:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleLimit":28}],7:[function(require,module,exports){
 'use strict';
 
 var concatLimit = require('./concatLimit');
@@ -3449,7 +3502,7 @@ function concatSeries(collection, iterator) {
   return concatLimit(collection, 1, iterator);
 }
 
-},{"./concatLimit":5}],7:[function(require,module,exports){
+},{"./concatLimit":6}],8:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -3503,7 +3556,7 @@ function delay(ms, value) {
   return delay._promise;
 }
 
-},{"./aigle":2,"./internal/util":30,"aigle-core":70}],8:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"aigle-core":71}],9:[function(require,module,exports){
 'use strict';
 
 var ref = require('./doWhilst');
@@ -3567,7 +3620,7 @@ function doUntil(value, iterator, tester) {
   return new DoWhilst(new UntilTester(tester), iterator)._iterate(value);
 }
 
-},{"./doWhilst":9,"./until":67}],9:[function(require,module,exports){
+},{"./doWhilst":10,"./until":68}],10:[function(require,module,exports){
 'use strict';
 
 var ref = require('./whilst');
@@ -3647,7 +3700,7 @@ function doWhilst(value, iterator, tester) {
   return new DoWhilst(new WhilstTester(tester), iterator)._iterate(value);
 }
 
-},{"./whilst":69}],10:[function(require,module,exports){
+},{"./whilst":70}],11:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -3714,7 +3767,7 @@ function each(collection, iterator) {
   return Aigle.resolve();
 }
 
-},{"./aigle":2,"./internal/aigleEach":26}],11:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleEach":27}],12:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -3816,7 +3869,7 @@ function eachLimit(collection, limit, iterator) {
 }
 
 
-},{"./aigle":2,"./internal/aigleLimit":27}],12:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleLimit":28}],13:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -3884,7 +3937,7 @@ function eachSeries(collection, iterator) {
 }
 
 
-},{"./aigle":2,"./internal/aigleLimit":27}],13:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleLimit":28}],14:[function(require,module,exports){
 'use strict';
 
 var types = ['TimeoutError'];
@@ -3903,7 +3956,7 @@ while (l--) {
   }(Error));
 }
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -4024,7 +4077,7 @@ function every(collection, iterator) {
   return Aigle.resolve(true);
 }
 
-},{"./aigle":2,"./internal/aigleEach":26}],15:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleEach":27}],16:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -4160,7 +4213,7 @@ function everyLimit(collection, limit, iterator) {
   return Aigle.resolve(true);
 }
 
-},{"./aigle":2,"./internal/aigleLimit":27}],16:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleLimit":28}],17:[function(require,module,exports){
 'use strict';
 
 var everyLimit = require('./everyLimit');
@@ -4223,7 +4276,7 @@ function everySeries(collection, iterator) {
   return everyLimit(collection, 1, iterator);
 }
 
-},{"./everyLimit":15}],17:[function(require,module,exports){
+},{"./everyLimit":16}],18:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -4323,7 +4376,7 @@ function filter(collection, iterator) {
   return Aigle.resolve([]);
 }
 
-},{"./aigle":2,"./internal/aigleEach":26,"./internal/util":30}],18:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleEach":27,"./internal/util":31}],19:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -4460,7 +4513,7 @@ function filterLimit(collection, limit, iterator) {
   return Aigle.resolve([]);
 }
 
-},{"./aigle":2,"./internal/aigleLimit":27,"./internal/util":30}],19:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleLimit":28,"./internal/util":31}],20:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -4517,7 +4570,7 @@ function filterSeries(collection, iterator) {
   return Aigle.resolve([]);
 }
 
-},{"./aigle":2,"./filterLimit":18}],20:[function(require,module,exports){
+},{"./aigle":2,"./filterLimit":19}],21:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -4636,7 +4689,7 @@ function find(collection, iterator) {
   return Aigle.resolve();
 }
 
-},{"./aigle":2,"./internal/aigleEach":26}],21:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleEach":27}],22:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -4764,7 +4817,7 @@ function findLimit(collection, limit, iterator) {
   return Aigle.resolve();
 }
 
-},{"./aigle":2,"./internal/aigleLimit":27}],22:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleLimit":28}],23:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -4837,7 +4890,7 @@ function findSeries(collection, iterator) {
   return Aigle.resolve();
 }
 
-},{"./aigle":2,"./findLimit":21}],23:[function(require,module,exports){
+},{"./aigle":2,"./findLimit":22}],24:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -4942,7 +4995,7 @@ function groupBy(collection, iterator) {
   return Aigle.resolve({});
 }
 
-},{"./aigle":2,"./internal/aigleEach":26}],24:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleEach":27}],25:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -5084,7 +5137,7 @@ function groupByLimit(collection, limit, iterator) {
   return Aigle.resolve({});
 }
 
-},{"./aigle":2,"./internal/aigleLimit":27}],25:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleLimit":28}],26:[function(require,module,exports){
 'use strict';
 
 var groupByLimit = require('./groupByLimit');
@@ -5131,7 +5184,7 @@ function groupBySeries(collection, iterator) {
   return groupByLimit(collection, 1, iterator);
 }
 
-},{"./groupByLimit":24}],26:[function(require,module,exports){
+},{"./groupByLimit":25}],27:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -5238,7 +5291,7 @@ var AigleEachObject = (function (AigleProxy) {
 
 module.exports = { AigleEachArray: AigleEachArray, AigleEachObject: AigleEachObject };
 
-},{"../aigle":2,"./util":30,"aigle-core":70}],27:[function(require,module,exports){
+},{"../aigle":2,"./util":31,"aigle-core":71}],28:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -5358,7 +5411,7 @@ var AigleLimitObject = (function (AigleProxy) {
 
 module.exports = { DEFAULT_LIMIT: DEFAULT_LIMIT, AigleLimitArray: AigleLimitArray, AigleLimitObject: AigleLimitObject };
 
-},{"../aigle":2,"./util":30,"aigle-core":70}],28:[function(require,module,exports){
+},{"../aigle":2,"./util":31,"aigle-core":71}],29:[function(require,module,exports){
 'use strict';
 
 var Queue = function Queue() {
@@ -5387,7 +5440,7 @@ Queue.prototype.shift = function shift () {
 
 module.exports = Queue;
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
 var Task = function Task(promise, receiver, onFulfilled, onRejected) {
@@ -5401,7 +5454,7 @@ var Task = function Task(promise, receiver, onFulfilled, onRejected) {
 
 module.exports = Task;
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -5645,7 +5698,7 @@ function sort(array) {
   return array;
 }
 
-},{"../../package.json":73,"aigle-core":70}],31:[function(require,module,exports){
+},{"../../package.json":74,"aigle-core":71}],32:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -5779,7 +5832,7 @@ function spread(proxy, array) {
   callProxyReciever(apply(_handler, array), proxy, INTERNAL);
 }
 
-},{"./aigle":2,"./internal/util":30,"aigle-core":70}],32:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"aigle-core":71}],33:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -5876,7 +5929,7 @@ function map(collection, iterator) {
   return Aigle.resolve([]);
 }
 
-},{"./aigle":2,"./internal/aigleEach":26}],33:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleEach":27}],34:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -6005,7 +6058,7 @@ function mapLimit(collection, limit, iterator) {
 }
 
 
-},{"./aigle":2,"./internal/aigleLimit":27}],34:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleLimit":28}],35:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -6062,7 +6115,7 @@ function mapSeries(collection, iterator) {
   return Aigle.resolve([]);
 }
 
-},{"./aigle":2,"./mapLimit":33}],35:[function(require,module,exports){
+},{"./aigle":2,"./mapLimit":34}],36:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -6159,7 +6212,7 @@ function mapValues(collection, iterator) {
   return Aigle.resolve({});
 }
 
-},{"./aigle":2,"./internal/aigleEach":26}],36:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleEach":27}],37:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -6287,7 +6340,7 @@ function mapValuesLimit(collection, limit, iterator) {
   return Aigle.resolve({});
 }
 
-},{"./aigle":2,"./internal/aigleLimit":27}],37:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleLimit":28}],38:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -6344,7 +6397,7 @@ function mapValuesSeries(collection, iterator) {
   return Aigle.resolve({});
 }
 
-},{"./aigle":2,"./mapValuesLimit":36}],38:[function(require,module,exports){
+},{"./aigle":2,"./mapValuesLimit":37}],39:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -6446,7 +6499,7 @@ function omit(collection, iterator) {
   return Aigle.resolve({});
 }
 
-},{"./aigle":2,"./internal/aigleEach":26}],39:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleEach":27}],40:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -6579,7 +6632,7 @@ function omitLimit(collection, limit, iterator) {
   return Aigle.resolve({});
 }
 
-},{"./aigle":2,"./internal/aigleLimit":27}],40:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleLimit":28}],41:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -6636,7 +6689,7 @@ function omitSeries(collection, iterator) {
   return Aigle.resolve({});
 }
 
-},{"./aigle":2,"./omitLimit":39}],41:[function(require,module,exports){
+},{"./aigle":2,"./omitLimit":40}],42:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -6699,7 +6752,7 @@ function parallel(collection) {
 }
 
 
-},{"./aigle":2,"./all":3,"./props":47}],42:[function(require,module,exports){
+},{"./aigle":2,"./all":3,"./props":48}],43:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -6801,7 +6854,7 @@ function pick(collection, iterator) {
   return Aigle.resolve({});
 }
 
-},{"./aigle":2,"./internal/aigleEach":26}],43:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleEach":27}],44:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -6934,7 +6987,7 @@ function pickLimit(collection, limit, iterator) {
   return Aigle.resolve({});
 }
 
-},{"./aigle":2,"./internal/aigleLimit":27}],44:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleLimit":28}],45:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -6991,7 +7044,7 @@ function pickSeries(collection, iterator) {
   return Aigle.resolve({});
 }
 
-},{"./aigle":2,"./pickLimit":43}],45:[function(require,module,exports){
+},{"./aigle":2,"./pickLimit":44}],46:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -7120,7 +7173,7 @@ function makeFunction(fn, ctx) {
   }
 }
 
-},{"./aigle":2,"./internal/util":30}],46:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31}],47:[function(require,module,exports){
 'use strict';
 
 var promisify = require('./promisify');
@@ -7214,7 +7267,7 @@ function iterate(suffix, filter, obj, target, depth, memo) {
   }
 }
 
-},{"./promisify":45}],47:[function(require,module,exports){
+},{"./promisify":46}],48:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -7287,7 +7340,7 @@ function props(object) {
   return new AigleProps(object)._promise;
 }
 
-},{"./aigle":2,"./internal/util":30,"aigle-core":70}],48:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"aigle-core":71}],49:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -7389,7 +7442,7 @@ function race(collection) {
   return Aigle.resolve();
 }
 
-},{"./aigle":2,"./internal/util":30,"aigle-core":70}],49:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"aigle-core":71}],50:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -7519,7 +7572,7 @@ function reduce(collection, iterator, result) {
   return Aigle.resolve(result);
 }
 
-},{"./aigle":2,"./internal/util":30,"aigle-core":70}],50:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"aigle-core":71}],51:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -7631,7 +7684,7 @@ function reject(collection, iterator) {
   return Aigle.resolve([]);
 }
 
-},{"./aigle":2,"./internal/aigleEach":26,"./internal/util":30}],51:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleEach":27,"./internal/util":31}],52:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -7762,7 +7815,7 @@ function rejectLimit(collection, limit, iterator) {
   return Aigle.resolve([]);
 }
 
-},{"./aigle":2,"./internal/aigleLimit":27,"./internal/util":30}],52:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleLimit":28,"./internal/util":31}],53:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -7819,7 +7872,7 @@ function rejectSeries(collection, iterator) {
   return Aigle.resolve([]);
 }
 
-},{"./aigle":2,"./rejectLimit":51}],53:[function(require,module,exports){
+},{"./aigle":2,"./rejectLimit":52}],54:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -7901,7 +7954,7 @@ function retry(times, handler) {
   return new Retry(handler, times)._promise;
 }
 
-},{"./aigle":2,"./internal/util":30,"aigle-core":70}],54:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"aigle-core":71}],55:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -8022,7 +8075,7 @@ function some(collection, iterator) {
   return Aigle.resolve(false);
 }
 
-},{"./aigle":2,"./internal/aigleEach":26}],55:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleEach":27}],56:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -8152,7 +8205,7 @@ function someLimit(collection, limit, iterator) {
   return Aigle.resolve(false);
 }
 
-},{"./aigle":2,"./internal/aigleLimit":27}],56:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleLimit":28}],57:[function(require,module,exports){
 'use strict';
 
 var someLimit = require('./someLimit');
@@ -8215,7 +8268,7 @@ function someSeries(collection, iterator) {
   return someLimit(collection, 1, iterator);
 }
 
-},{"./someLimit":55}],57:[function(require,module,exports){
+},{"./someLimit":56}],58:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -8314,7 +8367,7 @@ function sortBy(collection, iterator) {
   return Aigle.resolve([]);
 }
 
-},{"./aigle":2,"./internal/aigleEach":26,"./internal/util":30}],58:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleEach":27,"./internal/util":31}],59:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -8444,7 +8497,7 @@ function sortByLimit(collection, limit, iterator) {
   return Aigle.resolve([]);
 }
 
-},{"./aigle":2,"./internal/aigleLimit":27,"./internal/util":30}],59:[function(require,module,exports){
+},{"./aigle":2,"./internal/aigleLimit":28,"./internal/util":31}],60:[function(require,module,exports){
 'use strict';
 
 var sortByLimit = require('./sortByLimit');
@@ -8491,7 +8544,7 @@ function sortBySeries(collection, iterator) {
   return sortByLimit(collection, 1, iterator);
 }
 
-},{"./sortByLimit":58}],60:[function(require,module,exports){
+},{"./sortByLimit":59}],61:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -8538,7 +8591,7 @@ var Timeout = (function (AigleProxy) {
 
 module.exports = Timeout;
 
-},{"./aigle":2,"./error":13,"./internal/util":30,"aigle-core":70}],61:[function(require,module,exports){
+},{"./aigle":2,"./error":14,"./internal/util":31,"aigle-core":71}],62:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -8609,7 +8662,7 @@ function times(times, iterator) {
   return new Times(+times, iterator)._promise;
 }
 
-},{"./aigle":2,"./internal/util":30,"aigle-core":70}],62:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"aigle-core":71}],63:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -8718,7 +8771,7 @@ function timesLimit(times, limit, iterator) {
   return new TimesLimit(+times, iterator, +limit)._promise;
 }
 
-},{"./aigle":2,"./internal/util":30,"aigle-core":70}],63:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"aigle-core":71}],64:[function(require,module,exports){
 'use strict';
 
 var timesLimit = require('./timesLimit');
@@ -8749,7 +8802,7 @@ function timesSeries(times, iterator) {
   return timesLimit(times, 1, iterator);
 }
 
-},{"./timesLimit":62}],64:[function(require,module,exports){
+},{"./timesLimit":63}],65:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -8906,7 +8959,7 @@ function transform(collection, iterator, accumulator) {
   return Aigle.resolve(accumulator || {});
 }
 
-},{"./aigle":2,"./internal/util":30,"aigle-core":70}],65:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"aigle-core":71}],66:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -9117,7 +9170,7 @@ function transformLimit(collection, limit, iterator, accumulator) {
   return Aigle.resolve(accumulator || {});
 }
 
-},{"./aigle":2,"./internal/util":30,"aigle-core":70}],66:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"aigle-core":71}],67:[function(require,module,exports){
 'use strict';
 
 var transformLimit = require('./transformLimit');
@@ -9182,7 +9235,7 @@ function transformSeries(collection, iterator, accumulator) {
   return transformLimit(collection, 1, iterator, accumulator);
 }
 
-},{"./transformLimit":65}],67:[function(require,module,exports){
+},{"./transformLimit":66}],68:[function(require,module,exports){
 'use strict';
 
 var ref = require('./whilst');
@@ -9225,7 +9278,7 @@ function until(value, tester, iterator) {
   return new AigleWhilst(new UntilTester(tester), iterator)._iterate(value);
 }
 
-},{"./whilst":69}],68:[function(require,module,exports){
+},{"./whilst":70}],69:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -9358,7 +9411,7 @@ function using() {
   return new Using(array, handler)._promise;
 }
 
-},{"./aigle":2,"./internal/util":30,"aigle-core":70}],69:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"aigle-core":71}],70:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -9451,7 +9504,7 @@ function whilst(value, tester, iterator) {
   return new AigleWhilst(new WhilstTester(tester), iterator)._iterate(value);
 }
 
-},{"./aigle":2,"./internal/util":30,"aigle-core":70}],70:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"aigle-core":71}],71:[function(require,module,exports){
 'use strict';
 
 var AigleCore = function AigleCore() {};
@@ -9460,7 +9513,7 @@ var AigleProxy = function AigleProxy() {};
 
 module.exports = { AigleCore: AigleCore, AigleProxy: AigleProxy };
 
-},{}],71:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -9644,7 +9697,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],72:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 (function (process,global){
 (function (global, undefined) {
     "use strict";
@@ -9836,10 +9889,10 @@ process.umask = function() { return 0; };
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":71}],73:[function(require,module,exports){
+},{"_process":72}],74:[function(require,module,exports){
 module.exports={
   "name": "aigle",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "browser": "browser.js",
