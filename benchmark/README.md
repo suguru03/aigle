@@ -3,18 +3,18 @@
 (using [benchmark.js](https://github.com/bestiejs/benchmark.js))
 
 ### Libraries
-- Aigle v1.0.0
+- Aigle v1.1.0
 - Bluebird v3.5.0
 
 ### Results
 |benchmark|aigle|bluebird|
 |---|---|---|
-|all|**31.4μs**|42.3μs [0.741]|
-|join|**23.7μs**|31.7μs [0.745]|
-|map|**36.0μs**|55.7μs [0.646]|
-|promise:then|**178μs**|341μs [0.521]|
-|promisify|**1.97μs**|28.2μs [0.0698]|
-|promisifyAll|**23.3μs**|119μs [0.195]|
-|props|**57.7μs**|72.5μs [0.796]|
-|race|**33.8μs**|46.0μs [0.735]|
-|using|**2.57μs**|9.28μs [0.277]|
+|all|**34.9μs**|45.6μs [0.764]|
+|join|**23.3μs**|30.5μs [0.762]|
+|map|**35.1μs**|54.9μs [0.639]|
+|promise:then|**175μs**|365μs [0.480]|
+|promisify|**2.04μs**|29.7μs [0.0686]|
+|promisifyAll|**24.8μs**|122μs [0.203]|
+|props|**60.3μs**|79.1μs [0.762]|
+|race|**34.2μs**|46.0μs [0.744]|
+|using|**2.47μs**|9.45μs [0.261]|

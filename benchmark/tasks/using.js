@@ -18,20 +18,19 @@ module.exports = ({ Aigle, Bluebird }) => {
     }
   }
 
+  function create(resolve) {
+    setImmediate(resolve, new Resource());
+  }
+  function dispose(resource) {
+    resource.close();
+  }
+
   return {
     'using': {
       doc: true,
       setup: () => {
-        this.getAigleResorce = () => {
-          return new Aigle(resolve => {
-            setImmediate(() => resolve(new Resource()));
-          }).disposer(resource => resource.close());
-        };
-        this.getBluebirdResorce = () => {
-          return new Bluebird(resolve => {
-            setImmediate(() => resolve(new Resource()));
-          }).disposer(resource => resource.close());
-        };
+        this.getAigleResorce = () => new Aigle(create).disposer(dispose);
+        this.getBluebirdResorce = () => new Bluebird(create).disposer(dispose);
         this.iterator = () => {};
       },
       aigle: () => {

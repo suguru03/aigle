@@ -21,8 +21,11 @@ module.exports = ({ Aigle, neoAsync }) => {
     'eachSeries:array:async': {
       setup: config => {
         this.array = _.times(config.count);
-        this.aigleIterator = () => new Aigle(resolve => setImmediate(resolve));
+        this.aigleIterator = () => new Aigle(next);
         this.neoAsyncIterator = (n, cb) => setImmediate(cb);
+        function next(resolve) {
+          setImmediate(resolve);
+        }
       },
       aigle: () => {
         return Aigle.eachSeries(this.array, this.aigleIterator);

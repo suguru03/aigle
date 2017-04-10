@@ -2,20 +2,23 @@
 
 module.exports = ({ Aigle, Bluebird }) => {
 
+  function callResolve(resolve) {
+    setImmediate(resolve);
+  }
   return {
     'join': {
       doc: true,
       setup: () => {
-        this._f0 = () => new Promise(resolve => setImmediate(resolve));
-        this._f1 = () => new Promise(resolve => setImmediate(resolve));
-        this._f2 = () => new Promise(resolve => setImmediate(resolve));
-        this._f3 = () => new Promise(resolve => setImmediate(resolve));
-        this._f4 = () => new Promise(resolve => setImmediate(resolve));
-        this._f5 = () => new Promise(resolve => setImmediate(resolve));
-        this._f6 = () => new Promise(resolve => setImmediate(resolve));
-        this._f7 = () => new Promise(resolve => setImmediate(resolve));
-        this._f8 = () => new Promise(resolve => setImmediate(resolve));
-        this._f9 = () => new Promise(resolve => setImmediate(resolve));
+        this._f0 = () => new Promise(callResolve);
+        this._f1 = () => new Promise(callResolve);
+        this._f2 = () => new Promise(callResolve);
+        this._f3 = () => new Promise(callResolve);
+        this._f4 = () => new Promise(callResolve);
+        this._f5 = () => new Promise(callResolve);
+        this._f6 = () => new Promise(callResolve);
+        this._f7 = () => new Promise(callResolve);
+        this._f8 = () => new Promise(callResolve);
+        this._f9 = () => new Promise(callResolve);
         this._fn = () => {};
       },
       aigle: () => {
@@ -49,7 +52,7 @@ module.exports = ({ Aigle, Bluebird }) => {
     },
     'join:1': {
       setup: () => {
-        this._f0 = () => new Promise(resolve => setImmediate(resolve));
+        this._f0 = () => new Promise(callResolve);
         this._fn = () => {};
       },
       aigle: () => {
@@ -61,11 +64,11 @@ module.exports = ({ Aigle, Bluebird }) => {
     },
     'join:5': {
       setup: () => {
-        this._f0 = () => new Promise(resolve => setImmediate(resolve));
-        this._f1 = () => new Promise(resolve => setImmediate(resolve));
-        this._f2 = () => new Promise(resolve => setImmediate(resolve));
-        this._f3 = () => new Promise(resolve => setImmediate(resolve));
-        this._f4 = () => new Promise(resolve => setImmediate(resolve));
+        this._f0 = () => new Promise(callResolve);
+        this._f1 = () => new Promise(callResolve);
+        this._f2 = () => new Promise(callResolve);
+        this._f3 = () => new Promise(callResolve);
+        this._f4 = () => new Promise(callResolve);
         this._fn = () => {};
       },
       aigle: () => {

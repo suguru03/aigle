@@ -13,24 +13,16 @@ module.exports = ({ Aigle, Bluebird }) => {
         count = config.count;
       },
       aigle: () => {
-        let p = new Aigle(resolve => setImmediate(() => resolve(0)));
+        let p = new Aigle(resolve => setImmediate(resolve, 0));
         _.times(count, () => {
-          p = p.then(value => {
-            return new Aigle(resolve => {
-              setImmediate(() => resolve(value));
-            });
-          });
+          p = p.then(value => new Aigle(resolve => setImmediate(resolve, value)));
         });
         return p;
       },
       bluebird: () => {
-        let p = new Bluebird(resolve => setImmediate(() => resolve(0)));
+        let p = new Bluebird(resolve => setImmediate(resolve, 0));
         _.times(count, () => {
-          p = p.then(value => {
-            return new Bluebird(resolve => {
-              setImmediate(() => resolve(value));
-            });
-          });
+          p = p.then(value => new Bluebird(resolve => setImmediate(resolve, value)));
         });
         return p;
       }
@@ -45,10 +37,10 @@ module.exports = ({ Aigle, Bluebird }) => {
     },
     'promise:single:async': {
       aigle: () => {
-        return new Aigle(resolve => setImmediate(() => resolve(0)));
+        return new Aigle(resolve => setImmediate(resolve, 0));
       },
       bluebird: () => {
-        return new Bluebird(resolve => setImmediate(() => resolve(0)));
+        return new Bluebird(resolve => setImmediate(resolve, 0));
       }
     },
     'promise:multiple': {
@@ -71,24 +63,16 @@ module.exports = ({ Aigle, Bluebird }) => {
         count = config.count;
       },
       aigle: () => {
-        let p = new Aigle(resolve => setImmediate(() => resolve(0)));
+        let p = new Aigle(resolve => setImmediate(resolve, 0));
         _.times(count, () => {
-          p = p.then(value => {
-            return new Aigle(resolve => {
-              setImmediate(() => resolve(value));
-            });
-          });
+          p = p.then(value => new Aigle(resolve => setImmediate(resolve, value)));
         });
         return p;
       },
       bluebird: () => {
-        let p = new Bluebird(resolve => setImmediate(() => resolve(0)));
+        let p = new Bluebird(resolve => setImmediate(resolve, 0));
         _.times(count, () => {
-          p = p.then(value => {
-            return new Bluebird(resolve => {
-              setImmediate(() => resolve(value));
-            });
-          });
+          p = p.then(value => new Bluebird(resolve => setImmediate(resolve, value)));
         });
         return p;
       }
