@@ -118,6 +118,19 @@ parallel('eachSeries', () => {
       .then(res => assert.strictEqual(res, undefined));
   });
 
+  it('should catch a Error', () => {
+
+    const collection = {
+      task1: 1,
+      task2: 4,
+      task3: 2
+    };
+    const error = new Error('error');
+    const iterator = value => value === 2 ? Aigle.reject(error) :value;
+    return Aigle.eachSeries(collection, iterator)
+      .then(() => assert(false))
+      .catch(err => assert.strictEqual(err, error));
+  });
 });
 
 parallel('forEachSeries', () => {
