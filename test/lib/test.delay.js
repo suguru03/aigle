@@ -4,7 +4,8 @@ const assert = require('assert');
 
 const parallel = require('mocha.parallel');
 const Aigle = require('../../');
-const DELAY = require('../config').DELAY;
+const DELAY = require('../config').DELAY * 5;
+
 parallel('delay', () => {
 
   it('should be delay', () => {
@@ -13,7 +14,7 @@ parallel('delay', () => {
     return Aigle.delay(DELAY)
       .then(() => {
         const diff = Date.now() - start;
-        assert.ok(diff >= DELAY);
+        assert.ok(diff >= DELAY, `diff: ${diff}ms, DELAY: ${DELAY}ms`);
       });
   });
 
@@ -24,7 +25,7 @@ parallel('delay', () => {
     return Aigle.delay(DELAY, str)
       .then(value => {
         const diff = Date.now() - start;
-        assert.ok(diff >= DELAY);
+        assert.ok(diff >= DELAY, `diff: ${diff}ms, DELAY: ${DELAY}ms`);
         assert.strictEqual(value, str);
       });
   });
@@ -40,7 +41,7 @@ parallel('#delay', () => {
       .delay(DELAY)
       .then(() => {
         const diff = Date.now() - start;
-        assert.ok(diff >= DELAY);
+        assert.ok(diff >= DELAY, `diff: ${diff}ms, DELAY: ${DELAY}ms`);
       });
   });
 
@@ -52,7 +53,7 @@ parallel('#delay', () => {
       .delay(DELAY)
       .then(value => {
         const diff = Date.now() - start;
-        assert.ok(diff >= DELAY);
+        assert.ok(diff >= DELAY, `diff: ${diff}ms, DELAY: ${DELAY}ms`);
         assert.strictEqual(value, str);
       });
   });
@@ -65,7 +66,7 @@ parallel('#delay', () => {
       .delay(DELAY)
       .catch(value => {
         const diff = Date.now() - start;
-        assert.ok(diff < DELAY);
+        assert.ok(diff < DELAY, `diff: ${diff}ms, DELAY: ${DELAY}ms`);
         assert.strictEqual(value, str);
       });
   });
@@ -82,7 +83,7 @@ parallel('#delay', () => {
         .then(() => assert(false))
         .catch(err => {
           const diff = Date.now() - start;
-          assert.ok(diff < DELAY);
+          assert.ok(diff < DELAY, `diff: ${diff}, DELAY: ${DELAY}`);
           assert.strictEqual(err, error);
           done();
         });
