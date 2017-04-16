@@ -637,6 +637,16 @@ parallel('#finally', () => {
         done();
       });
   });
+
+  it('should return an rejected promise', done => {
+
+    const error = new TypeError('error');
+    const promise = Aigle.reject(error);
+    Aigle.resolve()
+      .finally(() => promise)
+      .catch(TypeError, err => assert(err, error))
+      .finally(done);
+  });
 });
 
 parallel('#toString', () => {
