@@ -53,16 +53,19 @@ parallel('reject', () => {
     p.catch(err => {
       assert.strictEqual(err, error);
       done();
-    });
+    })
+    .finally(() => process.removeListener('unhandledRejection', done));
   });
 
   it('should notify unhandledRejection', done => {
 
     const error = new Error('error');
-    process.on('unhandledRejection', err => {
+    const callback = err => {
       assert(err);
+      process.removeListener('unhandledRejection', callback);
       done();
-    });
+    };
+    process.on('unhandledRejection', callback);
     Aigle.reject(error);
   });
 });
@@ -329,10 +332,11 @@ describe('#catch', () => {
   it('should catch unhandled rejection error', done => {
 
     let called = false;
-    process.on('unhandledRejection', err => {
+    const callback = err => {
       assert.ok(err);
       called = true;
-    });
+    };
+    process.on('unhandledRejection', callback);
     const p = Aigle.resolve()
       .then(() => {
         test;
@@ -344,7 +348,7 @@ describe('#catch', () => {
         done();
       })
       .catch(done)
-      .finally(() => process.removeAllListeners('unhandledRejection'));
+      .finally(() => process.removeListener('unhandledRejection', callback));
     }, DELAY);
   });
 
@@ -510,11 +514,12 @@ describe('#catch', () => {
       .catch(error => {
         assert.strictEqual(error, error1);
         done();
-      });
+      })
+      .finally(() => process.removeListener('unhandledRejection', done));
   });
 });
 
-parallel('#finally', () => {
+describe('#finally', () => {
 
   it('should ignore empty arugment calls', done => {
 
