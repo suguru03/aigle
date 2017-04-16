@@ -27,6 +27,18 @@ module.exports = ({ Aigle, Bluebird }) => {
         return p;
       }
     },
+    'promise:resolve': {
+      aigle: () => Aigle.resolve(),
+      bluebird: () => Bluebird.resolve()
+    },
+    'promise:resume': {
+      setup: () => {
+        this.aigle = Aigle.resolve();
+        this.bluebird = Bluebird.resolve();
+      },
+      aigle: () => this.aigle,
+      bluebird: () => this.bluebird
+    },
     'promise:single': {
       aigle: () => {
         return new Aigle(resolve => resolve(0));
