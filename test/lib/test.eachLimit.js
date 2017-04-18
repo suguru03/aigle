@@ -4,6 +4,7 @@ const assert = require('assert');
 
 const _ = require('lodash');
 const parallel = require('mocha.parallel');
+
 const Aigle = require('../../');
 const { DELAY } = require('../config');
 const { TimeoutError } = Aigle;
@@ -245,6 +246,25 @@ parallel('#eachLimit', () => {
           [1, 5],
           [4, 2],
           [3, 4]
+        ]);
+      });
+  });
+
+  it('should execute on synchronous', () => {
+
+    const order = [];
+    const collection = [1, 5, 3, 4, 2];
+    const iterator = (value, key) => order.push([key, value]);
+    return Aigle.resolve(collection)
+      .eachLimit(2, iterator)
+      .then(res => {
+        assert.deepEqual(res, undefined);
+        assert.deepEqual(order, [
+          [0, 1],
+          [1, 5],
+          [2, 3],
+          [3, 4],
+          [4, 2]
         ]);
       });
   });

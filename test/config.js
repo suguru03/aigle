@@ -1,5 +1,5 @@
 'use strict';
 
-const DELAY = process.env.DELAY || 20;
+const DELAY = process.env.DELAY || 30;
 
 exports.DELAY = DELAY;
