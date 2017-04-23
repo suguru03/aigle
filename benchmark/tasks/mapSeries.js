@@ -9,13 +9,30 @@ module.exports = ({ Aigle, Bluebird, neoAsync }) => {
       doc: true,
       setup: config => {
         this.array = _.times(config.count);
-        this.promiseIterator = value => new Aigle(resolve => setImmediate(resolve, value * 2));
+        this.aigleIterator = value => new Aigle(resolve => setImmediate(resolve, value * 2));
+        this.bluebirdIterator = value => new Bluebird(resolve => setImmediate(resolve, value * 2));
       },
       aigle: () => {
-        return Aigle.mapSeries(this.array, this.promiseIterator);
+        return Aigle.mapSeries(this.array, this.aigleIterator);
       },
       bluebird: () => {
-        return Bluebird.mapSeries(this.array, this.promiseIterator);
+        return Bluebird.mapSeries(this.array, this.bluebirdIterator);
+      }
+    },
+    'mapSeries:class': {
+      doc: true,
+      setup: config => {
+        this.array = _.times(config.count);
+        this.aigle = Aigle.resolve(this.array);
+        this.bluebird = Bluebird.resolve(this.array);
+        this.aigleIterator = value => new Aigle(resolve => setImmediate(resolve, value * 2));
+        this.bluebirdIterator = value => new Bluebird(resolve => setImmediate(resolve, value * 2));
+      },
+      aigle: () => {
+        return this.aigle.mapSeries(this.aigleIterator);
+      },
+      bluebird: () => {
+        return this.bluebird.mapSeries(this.bluebirdIterator);
       }
     },
     'mapSeries:array': {
