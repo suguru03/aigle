@@ -2,9 +2,22 @@
 
 const _ = require('lodash');
 
-module.exports = ({ Aigle, neoAsync }) => {
+module.exports = ({ Aigle, Bluebird, neoAsync }) => {
 
   return {
+    'mapSeries': {
+      doc: true,
+      setup: config => {
+        this.array = _.times(config.count);
+        this.promiseIterator = value => new Aigle(resolve => setImmediate(resolve, value * 2));
+      },
+      aigle: () => {
+        return Aigle.mapSeries(this.array, this.promiseIterator);
+      },
+      bluebird: () => {
+        return Bluebird.mapSeries(this.array, this.promiseIterator);
+      }
+    },
     'mapSeries:array': {
       setup: config => {
         this.array = _.times(config.count);
@@ -13,6 +26,9 @@ module.exports = ({ Aigle, neoAsync }) => {
       },
       aigle: () => {
         return Aigle.mapSeries(this.array, this.promiseIterator);
+      },
+      bluebird: () => {
+        return Bluebird.mapSeries(this.array, this.promiseIterator);
       },
       neoAsync: callback => {
         neoAsync.mapSeries(this.array, this.neoAsyncIterator, callback);
@@ -26,6 +42,9 @@ module.exports = ({ Aigle, neoAsync }) => {
       },
       aigle: () => {
         return Aigle.mapSeries(this.array, this.promiseIterator);
+      },
+      bluebird: () => {
+        return Bluebird.mapSeries(this.array, this.promiseIterator);
       },
       neoAsync: callback => {
         neoAsync.mapSeries(this.array, this.neoAsyncIterator, callback);

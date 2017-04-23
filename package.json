@@ -24,7 +24,7 @@
   "devDependencies": {
     "babili": "0.0.12",
     "benchmark": "^2.1.1",
-    "bluebird": "^3.4.6",
+    "bluebird": "^3.5.0",
     "browserify": "^14.1.0",
     "buble": "^0.15.2",
     "codecov": "^2.1.0",
