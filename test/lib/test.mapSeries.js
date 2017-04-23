@@ -172,7 +172,28 @@ parallel('#mapSeries', () => {
       });
   });
 
-  it('should throw TypeError', () => {
+  it('should execute on asynchronous', () => {
+    const order = [];
+    const collection = [1, 4, 2];
+    const iterator = (value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        resolve(value * 2);
+      }, DELAY * value));
+    };
+    return new Aigle(resolve => setTimeout(resolve, DELAY, collection))
+      .mapSeries(iterator)
+      .then(res => {
+        assert.deepEqual(res, [2, 8, 4]);
+        assert.deepEqual(order, [
+          [0, 1],
+          [1, 4],
+          [2, 2]
+        ]);
+      });
+  });
+
+  it('should catch a TypeError', () => {
 
     const collection = [1, 4, 2];
     const iterator = value => {
