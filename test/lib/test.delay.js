@@ -4,7 +4,7 @@ const assert = require('assert');
 
 const parallel = require('mocha.parallel');
 const Aigle = require('../../');
-const DELAY = require('../config').DELAY * 5;
+const { DELAY } = require('../config');
 
 parallel('delay', () => {
 
@@ -13,7 +13,7 @@ parallel('delay', () => {
     const start = Date.now();
     return Aigle.delay(DELAY)
       .then(() => {
-        const diff = Date.now() - start;
+        const diff = Date.now() - start + 1;
         assert.ok(diff >= DELAY, `diff: ${diff}ms, DELAY: ${DELAY}ms`);
       });
   });
@@ -24,7 +24,7 @@ parallel('delay', () => {
     const str = 'test';
     return Aigle.delay(DELAY, str)
       .then(value => {
-        const diff = Date.now() - start;
+        const diff = Date.now() - start + 1;
         assert.ok(diff >= DELAY, `diff: ${diff}ms, DELAY: ${DELAY}ms`);
         assert.strictEqual(value, str);
       });
@@ -40,7 +40,7 @@ parallel('#delay', () => {
     return new Aigle(resolve => resolve())
       .delay(DELAY)
       .then(() => {
-        const diff = Date.now() - start;
+        const diff = Date.now() - start + 1;
         assert.ok(diff >= DELAY, `diff: ${diff}ms, DELAY: ${DELAY}ms`);
       });
   });
@@ -52,7 +52,7 @@ parallel('#delay', () => {
     return Aigle.resolve(str)
       .delay(DELAY)
       .then(value => {
-        const diff = Date.now() - start;
+        const diff = Date.now() - start + 1;
         assert.ok(diff >= DELAY, `diff: ${diff}ms, DELAY: ${DELAY}ms`);
         assert.strictEqual(value, str);
       });
@@ -65,7 +65,7 @@ parallel('#delay', () => {
     return Aigle.reject(str)
       .delay(DELAY)
       .catch(value => {
-        const diff = Date.now() - start;
+        const diff = Date.now() - start + 1;
         assert.ok(diff < DELAY, `diff: ${diff}ms, DELAY: ${DELAY}ms`);
         assert.strictEqual(value, str);
       });
@@ -82,7 +82,7 @@ parallel('#delay', () => {
       promise.delay(DELAY)
         .then(() => assert(false))
         .catch(err => {
-          const diff = Date.now() - start;
+          const diff = Date.now() - start + 1;
           assert.ok(diff < DELAY, `diff: ${diff}, DELAY: ${DELAY}`);
           assert.strictEqual(err, error);
           done();
