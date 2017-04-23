@@ -103,7 +103,7 @@ parallel('mapSeries', () => {
       });
   });
 
-  it('should throw TypeError', () => {
+  it('should catch a TypeError', () => {
 
     const collection = [1, 4, 2];
     const iterator = value => {
@@ -115,6 +115,11 @@ parallel('mapSeries', () => {
         assert.ok(error);
         assert.ok(error instanceof TypeError);
       });
+  });
+
+  it('should execute even if arguments are not exists', () => {
+
+    return Aigle.mapSeries();
   });
 });
 
