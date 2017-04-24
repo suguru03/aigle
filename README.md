@@ -9,7 +9,7 @@ It is never slow down even if you mix different Aigle versions.
 
 Also it has a lot of [async](https://github.com/caolan/async) functions, you can start using `Promise` easily.
 
-- [benchmark](https://github.com/suguru03/aigle/tree/master/benchmark#benchmark)
+- [benchmark](https://github.com/suguru03/bluebird/tree/aigle/benchmark)
 - [What makes Aigle fast](https://hackernoon.com/how-to-make-the-fastest-promise-library-f632fd69f3cb)
 
 Usage
