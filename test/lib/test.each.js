@@ -281,7 +281,7 @@ parallel('#forEach', () => {
       });
   });
 
-  it('should throw an error with a reject promise', done => {
+  it('should catch an error with a reject promise', done => {
 
     process.on('unhandledRejection', done);
     const error = new Error('error');
