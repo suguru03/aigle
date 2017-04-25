@@ -205,6 +205,23 @@ parallel('#eachSeries', () => {
         ]);
       });
   });
+
+  it('should catch an error with a reject promise', done => {
+
+    process.on('unhandledRejection', done);
+    const error = new Error('error');
+    const promise = Aigle.reject(error);
+    promise.catch(error => assert(error));
+    const collection = [1, 4, 2];
+    const iterator = () => promise;
+    return Aigle.delay(DELAY, collection)
+      .eachSeries(iterator)
+      .then(() => assert(false))
+      .catch(err => {
+        assert.strictEqual(err, error);
+        done();
+      });
+  });
 });
 
 parallel('#forEachSeries', () => {
