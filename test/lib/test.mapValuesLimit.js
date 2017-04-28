@@ -4,6 +4,7 @@ const assert = require('assert');
 
 const _ = require('lodash');
 const parallel = require('mocha.parallel');
+
 const Aigle = require('../../');
 const { DELAY } = require('../config');
 const { TimeoutError } = Aigle;
@@ -244,6 +245,37 @@ parallel('#mapValuesLimit', () => {
           ['task2', 5],
           ['task5', 2],
           ['task4', 4]
+        ]);
+      });
+  });
+
+  it('should execute with delay', () => {
+
+    const order = [];
+    const collection = [1, 5, 3, 4, 2];
+    const iterator = (value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        resolve(value * 2);
+      }, DELAY * value));
+    };
+    return Aigle.delay(DELAY, collection)
+      .mapValuesLimit(2, iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
+        assert.deepEqual(res, {
+          '0': 2,
+          '1': 10,
+          '2': 6,
+          '3': 8,
+          '4': 4
+        });
+        assert.deepEqual(order, [
+          [0, 1],
+          [2, 3],
+          [1, 5],
+          [4, 2],
+          [3, 4]
         ]);
       });
   });

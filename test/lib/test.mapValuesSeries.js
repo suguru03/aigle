@@ -3,8 +3,9 @@
 const assert = require('assert');
 
 const parallel = require('mocha.parallel');
+
 const Aigle = require('../../');
-const DELAY = require('../config').DELAY;
+const { DELAY } = require('../config');
 
 parallel('mapValuesSeries', () => {
 
@@ -167,6 +168,32 @@ parallel('#mapValuesSeries', () => {
           ['task1', 1],
           ['task2', 4],
           ['task3', 2]
+        ]);
+      });
+  });
+
+  it('should execute with delay', () => {
+
+    const order = [];
+    const collection = [1, 4, 2];
+    const iterator = (value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        resolve(value * 2);
+      }, DELAY * value));
+    };
+    return Aigle.delay(DELAY, collection)
+      .mapValuesSeries(iterator)
+      .then(res => {
+        assert.deepEqual(res, {
+          '0': 2,
+          '1': 8,
+          '2': 4
+        });
+        assert.deepEqual(order, [
+          [0, 1],
+          [1, 4],
+          [2, 2]
         ]);
       });
   });
