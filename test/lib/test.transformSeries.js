@@ -223,6 +223,29 @@ parallel('#transformSeries', () => {
       });
   });
 
+  it('should execute with delay', () => {
+
+    const order = [];
+    const collection = [1, 4, 2];
+    const iterator = (result, value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        result.push(value);
+        resolve();
+      }, DELAY * value));
+    };
+    return Aigle.delay(DELAY, collection)
+      .transformSeries(iterator)
+      .then(res => {
+        assert.deepEqual(res, [1, 4, 2]);
+        assert.deepEqual(order, [
+          [0, 1],
+          [1, 4],
+          [2, 2]
+        ]);
+      });
+  });
+
   it('should catch TypeError', () => {
 
     const collection = [1, 4, 2];

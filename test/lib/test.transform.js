@@ -282,6 +282,30 @@ parallel('#transform', () => {
       });
   });
 
+  it('should execute with delay', () => {
+
+    const order = [];
+    const collection = [1, 4, 2];
+    const iterator = (result, value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        result.push(value);
+        resolve();
+      }, DELAY * value));
+    };
+    return Aigle.delay(DELAY, collection)
+      .transform(iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
+        assert.deepEqual(res, [1, 2, 4]);
+        assert.deepEqual(order, [
+          [0, 1],
+          [2, 2],
+          [1, 4]
+        ]);
+      });
+  });
+
   it('should throw TypeError', () => {
 
     const collection = [1, 4, 2];
