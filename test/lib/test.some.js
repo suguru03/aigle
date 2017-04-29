@@ -183,6 +183,26 @@ parallel('#some', () => {
       });
   });
 
+  it('should execute with delay', () => {
+
+    const order = [];
+    const collection = [1, 4, 2];
+    const iterator = (value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        resolve(value % 2);
+      }, DELAY * value));
+    };
+    return Aigle.delay(DELAY, collection)
+      .some(iterator)
+      .then(res => {
+        assert.strictEqual(res, true);
+        assert.deepEqual(order, [
+          [0, 1]
+        ]);
+      });
+  });
+
   it('should throw TypeError', () => {
 
     const collection = [1, 4, 2];
