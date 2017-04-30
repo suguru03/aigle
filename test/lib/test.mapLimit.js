@@ -224,6 +224,31 @@ parallel('#mapLimit', () => {
       });
   });
 
+  it('should execute with delay', () => {
+
+    const order = [];
+    const collection = [1, 5, 3, 4, 2];
+    const iterator = (value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        resolve(value * 2);
+      }, DELAY * value));
+    };
+    return Aigle.delay(DELAY, collection)
+      .mapLimit(2, iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
+        assert.deepEqual(res, [2, 10, 6, 8, 4]);
+        assert.deepEqual(order, [
+          [0, 1],
+          [2, 3],
+          [1, 5],
+          [4, 2],
+          [3, 4]
+        ]);
+      });
+  });
+
   it('should execute with default concurrency which is 8', () => {
 
     const collection = _.times(10);

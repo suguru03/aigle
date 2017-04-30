@@ -172,7 +172,8 @@ parallel('#mapSeries', () => {
       });
   });
 
-  it('should execute on asynchronous', () => {
+  it('should execute with delay', () => {
+
     const order = [];
     const collection = [1, 4, 2];
     const iterator = (value, key) => {
@@ -181,7 +182,7 @@ parallel('#mapSeries', () => {
         resolve(value * 2);
       }, DELAY * value));
     };
-    return new Aigle(resolve => setTimeout(resolve, DELAY, collection))
+    return Aigle.delay(DELAY, collection)
       .mapSeries(iterator)
       .then(res => {
         assert.deepEqual(res, [2, 8, 4]);
