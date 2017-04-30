@@ -288,5 +288,22 @@ parallel('#transformSeries', () => {
         assert.ok(error instanceof TypeError);
       });
   });
+
+  it('should not call each function if the parent promise is rejected', done => {
+
+    process.on('unhandledRejection', done);
+    const error = new Error('error');
+    const promise = Aigle.reject(error);
+    promise.catch(error => assert(error));
+    const iterator = () => promise;
+    setTimeout(() => {
+      promise.transformSeries(iterator)
+        .then(() => assert(false))
+        .catch(err => {
+          assert.strictEqual(err, error);
+          done();
+        });
+    });
+  });
 });
 
