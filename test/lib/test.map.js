@@ -92,7 +92,43 @@ parallel('map', () => {
       });
   });
 
-  it('should throw TypeError', () => {
+  it('should execute using shorthand with array', () => {
+
+    const collection = [{
+      uid: 1, name: 'test1'
+    }, {
+      uid: 4, name: 'test4'
+    }, {
+      uid: 2, name: 'test2'
+    }];
+    let sync = true;
+    const promise = Aigle.map(collection, 'uid')
+      .then(array => {
+        assert.deepEqual(array, [1, 4, 2]);
+        assert.strictEqual(sync, false);
+      });
+    sync = false;
+    return promise;
+  });
+
+  it('should execute using shorthand with object', () => {
+
+    const collection = {
+      task1: { uid: 1, name: 'test1' },
+      task2: { uid: 4, name: 'test4' },
+      task3: { uid: 2, name: 'test2' }
+    };
+    let sync = true;
+    const promise = Aigle.map(collection, 'uid')
+      .then(array => {
+        assert.deepEqual(array, [1, 4, 2]);
+        assert.strictEqual(sync, false);
+      });
+    sync = false;
+    return promise;
+  });
+
+  it('should catch a TypeError', () => {
 
     const collection = [1, 4, 2];
     const iterator = value => {
@@ -178,7 +214,45 @@ parallel('#map', () => {
       });
   });
 
-  it('should throw TypeError', () => {
+  it('should execute using shorthand with array', () => {
+
+    const collection = [{
+      uid: 1, name: 'test1'
+    }, {
+      uid: 4, name: 'test4'
+    }, {
+      uid: 2, name: 'test2'
+    }];
+    let sync = true;
+    const promise = Aigle.resolve(collection)
+      .map('uid')
+      .then(array => {
+        assert.deepEqual(array, [1, 4, 2]);
+        assert.strictEqual(sync, false);
+      });
+    sync = false;
+    return promise;
+  });
+
+  it('should execute using shorthand with object', () => {
+
+    const collection = {
+      task1: { uid: 1, name: 'test1' },
+      task2: { uid: 4, name: 'test4' },
+      task3: { uid: 2, name: 'test2' }
+    };
+    let sync = true;
+    const promise = Aigle.resolve(collection)
+      .map('uid')
+      .then(array => {
+        assert.deepEqual(array, [1, 4, 2]);
+        assert.strictEqual(sync, false);
+      });
+    sync = false;
+    return promise;
+  });
+
+  it('should catch a TypeError', () => {
 
     const collection = [1, 4, 2];
     const iterator = value => {
