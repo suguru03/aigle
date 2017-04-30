@@ -222,6 +222,19 @@ parallel('#eachSeries', () => {
         done();
       });
   });
+
+  it('should catch a TypeError with delay', () => {
+
+    const error = new TypeError('error');
+    const iterator = () => {};
+    return new Aigle((resolve, reject) => setTimeout(reject, DELAY, error))
+      .eachSeries(iterator)
+      .then(() => assert.ok(false))
+      .catch(TypeError, error => {
+        assert.ok(error);
+        assert.ok(error instanceof TypeError);
+      });
+  });
 });
 
 parallel('#forEachSeries', () => {

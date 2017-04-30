@@ -315,6 +315,19 @@ parallel('#eachLimit', () => {
         assert.deepEqual(order, _.times(8));
       });
   });
+
+  it('should catch a TypeError with delay', () => {
+
+    const error = new TypeError('error');
+    const iterator = () => {};
+    return new Aigle((resolve, reject) => setTimeout(reject, DELAY, error))
+      .eachLimit(iterator)
+      .then(() => assert.ok(false))
+      .catch(TypeError, error => {
+        assert.ok(error);
+        assert.ok(error instanceof TypeError);
+      });
+  });
 });
 
 parallel('#forEachLimit', () => {

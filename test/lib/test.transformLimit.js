@@ -371,8 +371,7 @@ parallel('#transformLimit', () => {
 
     const collection = _.times(10);
     const order = [];
-    const iterator = (result, value) => {
-      order.push(value);
+    const iterator = (result, value) => { order.push(value);
       return new Aigle(_.noop);
     };
     return Aigle.resolve(collection)
@@ -382,6 +381,19 @@ parallel('#transformLimit', () => {
       .then(error => {
         assert.ok(error instanceof TimeoutError);
         assert.deepEqual(order, _.times(8));
+      });
+  });
+
+  it('should catch a TypeError with delay', () => {
+
+    const error = new TypeError('error');
+    const iterator = () => {};
+    return new Aigle((resolve, reject) => setTimeout(reject, DELAY, error))
+      .transformLimit(iterator)
+      .then(() => assert.ok(false))
+      .catch(TypeError, error => {
+        assert.ok(error);
+        assert.ok(error instanceof TypeError);
       });
   });
 });

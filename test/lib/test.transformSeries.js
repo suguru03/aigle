@@ -259,7 +259,7 @@ parallel('#transformSeries', () => {
       });
   });
 
-  it('should catch error with object collection', () => {
+  it('should catch an error with object collection', () => {
 
     const collection = {
       task1: 1,
@@ -268,6 +268,19 @@ parallel('#transformSeries', () => {
     };
     const iterator = value => value.test();
     return Aigle.resolve(collection)
+      .transformSeries(iterator)
+      .then(() => assert.ok(false))
+      .catch(TypeError, error => {
+        assert.ok(error);
+        assert.ok(error instanceof TypeError);
+      });
+  });
+
+  it('should catch a TypeError with delay', () => {
+
+    const error = new TypeError('error');
+    const iterator = () => {};
+    return new Aigle((resolve, reject) => setTimeout(reject, DELAY, error))
       .transformSeries(iterator)
       .then(() => assert.ok(false))
       .catch(TypeError, error => {
