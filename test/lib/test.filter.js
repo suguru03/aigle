@@ -56,6 +56,29 @@ parallel('filter', () => {
       });
   });
 
+  it('should execute using shorthand with array', () => {
+
+    const collection = [{
+      uid: 1, bool: 0
+    }, {
+      uid: 4, bool: 1
+    }, {
+      uid: 2, bool: 1
+    }];
+    let sync = true;
+    const promise = Aigle.filter(collection, 'bool')
+      .then(array => {
+        assert.deepEqual(array, [{
+          uid: 4, bool: 1
+        }, {
+          uid: 2, bool: 1
+        }]);
+        assert.strictEqual(sync, false);
+      });
+    sync = false;
+    return promise;
+  });
+
   it('should return an empty array if collection is an empty array', () => {
 
     const iterator = value => {
@@ -176,6 +199,52 @@ parallel('#filter', () => {
           [1, 4]
         ]);
       });
+  });
+
+  it('should execute using shorthand with array', () => {
+
+    const collection = [{
+      uid: 1, bool: 0
+    }, {
+      uid: 4, bool: 1
+    }, {
+      uid: 2, bool: 1
+    }];
+    let sync = true;
+    const promise = Aigle.resolve(collection)
+      .filter('bool')
+      .then(array => {
+        assert.deepEqual(array, [{
+          uid: 4, bool: 1
+        }, {
+          uid: 2, bool: 1
+        }]);
+        assert.strictEqual(sync, false);
+      });
+    sync = false;
+    return promise;
+  });
+
+  it('should execute using shorthand with object', () => {
+
+    const collection = {
+      task1: { uid: 1, bool: 0 },
+      task2: { uid: 4, bool: 1 },
+      task3: { uid: 2, bool: 1 }
+    };
+    let sync = true;
+    const promise = Aigle.resolve(collection)
+      .filter('bool')
+      .then(array => {
+        assert.deepEqual(array, [{
+          uid: 4, bool: 1
+        }, {
+          uid: 2, bool: 1
+        }]);
+        assert.strictEqual(sync, false);
+      });
+    sync = false;
+    return promise;
   });
 
   it('should throw TypeError', () => {
