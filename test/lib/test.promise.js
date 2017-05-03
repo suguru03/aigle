@@ -223,7 +223,7 @@ parallel('#then', () => {
 
   it('should execute with native Promise', done => {
 
-    new Aigle.resolve(1)
+    Aigle.resolve(1)
       .then(value => new Promise(resolve => {
         setImmediate(() => resolve(++value));
       }))
@@ -277,7 +277,7 @@ describe('#catch', () => {
     });
   });
 
-  it('should catch TypeError from error type', done => {
+  it('should catch a TypeError from error type', done => {
 
     const str = 'test';
     let called = 0;
@@ -304,7 +304,7 @@ describe('#catch', () => {
     });
   });
 
-  it('should catch ReferenceError', done => {
+  it('should catch a ReferenceError', done => {
 
     Aigle.resolve()
       .then(() => {
@@ -316,7 +316,7 @@ describe('#catch', () => {
       });
   });
 
-  it('should catch TypeError', done => {
+  it('should catch a TypeError', done => {
 
     Aigle.resolve()
       .then(() => {
@@ -329,7 +329,7 @@ describe('#catch', () => {
       });
   });
 
-  it('should catch unhandled rejection error', done => {
+  it('should catch an unhandled rejection error', done => {
 
     let called = false;
     const callback = err => {
@@ -352,7 +352,18 @@ describe('#catch', () => {
     }, DELAY);
   });
 
-  it('should caatch error with multiple receivers on synchronous', done => {
+  it('should just ignore if onRejected is not a function', done => {
+
+    const error = new TypeError('error');
+    Aigle.reject(error)
+      .catch(TypeError, 'test')
+      .catch(err => {
+        assert.strictEqual(err, error);
+        done();
+      });
+  });
+
+  it('should caatch an error with multiple receivers on synchronous', done => {
 
     let called = 0;
     const error = new Error('error');
