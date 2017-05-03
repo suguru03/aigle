@@ -98,6 +98,42 @@ parallel('every', () => {
       });
   });
 
+  it('should execute using shorthand with an array', () => {
+
+    const collection = [{
+      uid: 1, name: 'test1'
+    }, {
+      uid: 4, name: 'test4'
+    }, {
+      uid: 2, name: 'test2'
+    }];
+    let sync = true;
+    const promise = Aigle.every(collection, 'test')
+      .then(bool => {
+        assert.strictEqual(bool, false);
+        assert.strictEqual(sync, false);
+      });
+    sync = false;
+    return promise;
+  });
+
+  it('should execute using shorthand with an object', () => {
+
+    const collection = {
+      task1: { uid: 1, name: 'test1' },
+      task2: { uid: 4, name: 'test4' },
+      task3: { uid: 2, name: 'test2' }
+    };
+    let sync = true;
+    const promise = Aigle.every(collection, 'test')
+      .then(bool => {
+        assert.strictEqual(bool, false);
+        assert.strictEqual(sync, false);
+      });
+    sync = false;
+    return promise;
+  });
+
   it('should return true if collection is an empty array', () => {
 
     const iterator = value => {
@@ -185,6 +221,44 @@ parallel('#every', () => {
           ['task3', 2]
         ]);
       });
+  });
+
+  it('should execute using shorthand with an array', () => {
+
+    const collection = [{
+      uid: 1, name: 'test1'
+    }, {
+      uid: 4, name: 'test4'
+    }, {
+      uid: 2, name: 'test2'
+    }];
+    let sync = true;
+    const promise = Aigle.resolve(collection)
+      .every('test')
+      .then(bool => {
+        assert.strictEqual(bool, false);
+        assert.strictEqual(sync, false);
+      });
+    sync = false;
+    return promise;
+  });
+
+  it('should execute using shorthand with an object', () => {
+
+    const collection = {
+      task1: { uid: 1, name: 'test1' },
+      task2: { uid: 4, name: 'test4' },
+      task3: { uid: 2, name: 'test2' }
+    };
+    let sync = true;
+    const promise = Aigle.resolve(collection)
+      .every('test')
+      .then(bool => {
+        assert.strictEqual(bool, false);
+        assert.strictEqual(sync, false);
+      });
+    sync = false;
+    return promise;
   });
 
   it('should throw TypeError', () => {
