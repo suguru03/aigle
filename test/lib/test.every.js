@@ -226,15 +226,15 @@ parallel('#every', () => {
   it('should execute using shorthand with an array', () => {
 
     const collection = [{
-      uid: 1, name: 'test1'
+      uid: 1, bool: 0
     }, {
-      uid: 4, name: 'test4'
+      uid: 4, bool: 1
     }, {
-      uid: 2, name: 'test2'
+      uid: 2, bool: 1
     }];
     let sync = true;
     const promise = Aigle.resolve(collection)
-      .every('test')
+      .every('bool')
       .then(bool => {
         assert.strictEqual(bool, false);
         assert.strictEqual(sync, false);
@@ -246,13 +246,13 @@ parallel('#every', () => {
   it('should execute using shorthand with an object', () => {
 
     const collection = {
-      task1: { uid: 1, name: 'test1' },
-      task2: { uid: 4, name: 'test4' },
-      task3: { uid: 2, name: 'test2' }
+      task1: { uid: 1, bool: 0 },
+      task2: { uid: 4, bool: 1 },
+      task3: { uid: 2, bool: 1 }
     };
     let sync = true;
     const promise = Aigle.resolve(collection)
-      .every('test')
+      .every('bool')
       .then(bool => {
         assert.strictEqual(bool, false);
         assert.strictEqual(sync, false);

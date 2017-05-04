@@ -178,6 +178,56 @@ parallel('#sortBy', () => {
       });
   });
 
+  it('should execute using shorthand with an array', () => {
+
+    const collection = [{
+      uid: 1, name: 'test1'
+    }, {
+      uid: 4, name: 'test4'
+    }, {
+      uid: 2, name: 'test2'
+    }];
+    let sync = true;
+    const promise = Aigle.resolve(collection)
+      .sortBy('uid')
+      .then(array => {
+        assert.deepEqual(array, [{
+          uid: 1, name: 'test1'
+        }, {
+          uid: 2, name: 'test2'
+        }, {
+          uid: 4, name: 'test4'
+        }]);
+        assert.strictEqual(sync, false);
+      });
+    sync = false;
+    return promise;
+  });
+
+  it('should execute using shorthand with an object', () => {
+
+    const collection = {
+      task1: { uid: 1, name: 'test1' },
+      task2: { uid: 4, name: 'test4' },
+      task3: { uid: 2, name: 'test2' }
+    };
+    let sync = true;
+    const promise = Aigle.resolve(collection)
+      .sortBy('uid')
+      .then(array => {
+        assert.deepEqual(array, [{
+          uid: 1, name: 'test1'
+        }, {
+          uid: 2, name: 'test2'
+        }, {
+          uid: 4, name: 'test4'
+        }]);
+        assert.strictEqual(sync, false);
+      });
+    sync = false;
+    return promise;
+  });
+
   it('should throw TypeError', () => {
 
     const collection = [1, 4, 2];
