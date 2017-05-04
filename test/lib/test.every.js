@@ -223,6 +223,27 @@ parallel('#every', () => {
       });
   });
 
+  it('should execute in parallel with delay', () => {
+
+    const order = [];
+    const collection = [1, 4, 2];
+    const iterator = (value, key) => {
+      return new Aigle(resolve => setTimeout(() => {
+        order.push([key, value]);
+        resolve(value % 2);
+      }, DELAY * value));
+    };
+    return Aigle.delay(DELAY, collection)
+      .every(iterator)
+      .then(res => {
+        assert.strictEqual(res, false);
+        assert.deepEqual(order, [
+          [0, 1],
+          [2, 2]
+        ]);
+      });
+  });
+
   it('should execute using shorthand with an array', () => {
 
     const collection = [{
