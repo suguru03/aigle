@@ -98,7 +98,7 @@ parallel('every', () => {
       });
   });
 
-  it('should execute using shorthand with an array', () => {
+  it('should execute using string shorthand with an array', () => {
 
     const collection = [{
       uid: 1, name: 'test1'
@@ -117,7 +117,7 @@ parallel('every', () => {
     return promise;
   });
 
-  it('should execute using shorthand with an object', () => {
+  it('should execute using string shorthand with an object', () => {
 
     const collection = {
       task1: { uid: 1, name: 'test1' },
@@ -244,7 +244,7 @@ parallel('#every', () => {
       });
   });
 
-  it('should execute using shorthand with an array', () => {
+  it('should execute using string shorthand with an array', () => {
 
     const collection = [{
       uid: 1, bool: 0
@@ -264,7 +264,7 @@ parallel('#every', () => {
     return promise;
   });
 
-  it('should execute using shorthand with an object', () => {
+  it('should execute using string shorthand with an object', () => {
 
     const collection = {
       task1: { uid: 1, bool: 0 },
@@ -280,6 +280,58 @@ parallel('#every', () => {
       });
     sync = false;
     return promise;
+  });
+
+  it('should execute using array shorthand with array', () => {
+
+    const collection = [{
+      uid: 1, bool: 0
+    }, {
+      uid: 4, bool: 1
+    }, {
+      uid: 2, bool: 1
+    }];
+    return Aigle.resolve(collection)
+      .every(['bool', 0])
+      .then(bool => assert.strictEqual(bool, false));
+  });
+
+  it('should execute using array shorthand with object', () => {
+
+    const collection = {
+      task1: { uid: 1, bool: 1 },
+      task2: { uid: 4, bool: 1 },
+      task3: { uid: 2, bool: 1 }
+    };
+    return Aigle.resolve(collection)
+      .every(['bool', 1])
+      .then(bool => assert.strictEqual(bool, true));
+  });
+
+  it('should execute using object shorthand with array', () => {
+
+    const collection = [{
+      uid: 1, bool: 1
+    }, {
+      uid: 4, bool: 1
+    }, {
+      uid: 2, bool: 1
+    }];
+    return Aigle.resolve(collection)
+      .every({ bool: 1 })
+      .then(bool => assert.strictEqual(bool, true));
+  });
+
+  it('should execute using object shorthand with object', () => {
+
+    const collection = {
+      task1: { uid: 1, bool: 0 },
+      task2: { uid: 4, bool: 1 },
+      task3: { uid: 2, bool: 1 }
+    };
+    return Aigle.resolve(collection)
+      .every({ bool: 1 })
+      .then(bool => assert.strictEqual(bool, false));
   });
 
   it('should throw TypeError', () => {
