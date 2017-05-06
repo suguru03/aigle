@@ -43,7 +43,7 @@
     "require-dir": "^0.3.1",
     "run-sequence": "^1.2.2",
     "setimmediate": "^1.0.5",
-    "uglify-js": "^2.7.5"
+    "uglify-js": "^3.0.0"
   },
   "dependencies": {
     "aigle-core": "^1.0.0"
