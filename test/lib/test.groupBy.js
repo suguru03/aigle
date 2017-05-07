@@ -191,7 +191,7 @@ parallel('#groupBy', () => {
       });
   });
 
-  it('should execute using shorthand with array', () => {
+  it('should execute using string shorthand with array', () => {
 
     const collection = [{
       uid: 1, bool: 0
@@ -220,7 +220,7 @@ parallel('#groupBy', () => {
     return promise;
   });
 
-  it('should execute using shorthand with object', () => {
+  it('should execute using string shorthand with object', () => {
 
     const collection = {
       task1: { uid: 1, bool: 0 },
@@ -245,6 +245,94 @@ parallel('#groupBy', () => {
       });
     sync = false;
     return promise;
+  });
+
+  it('should execute using array shorthand with array', () => {
+
+    const collection = [{
+      uid: 1, bool: 0
+    }, {
+      uid: 4, bool: 1
+    }, {
+      uid: 2, bool: 1
+    }];
+    return Aigle.resolve(collection)
+      .groupBy(['bool', 1])
+      .then(object => assert.deepEqual(object, {
+        'true': [{
+          uid: 4, bool: 1
+        }, {
+          uid: 2, bool: 1
+        }],
+        'false': [{
+          uid: 1, bool: 0
+        }]
+      }));
+  });
+
+  it('should execute using array shorthand with object', () => {
+
+    const collection = {
+      task1: { uid: 1, bool: 0 },
+      task2: { uid: 4, bool: 1 },
+      task3: { uid: 2, bool: 1 }
+    };
+    return Aigle.resolve(collection)
+      .groupBy(['bool', 1])
+      .then(object => assert.deepEqual(object, {
+        'true': [{
+          uid: 4, bool: 1
+        }, {
+          uid: 2, bool: 1
+        }],
+        'false': [{
+          uid: 1, bool: 0
+        }]
+      }));
+  });
+
+  it('should execute using object shorthand with array', () => {
+
+    const collection = [{
+      uid: 1, bool: 0
+    }, {
+      uid: 4, bool: 1
+    }, {
+      uid: 2, bool: 1
+    }];
+    return Aigle.resolve(collection)
+      .groupBy({ bool: 0 })
+      .then(object => assert.deepEqual(object, {
+        'true': [{
+          uid: 1, bool: 0
+        }],
+        'false': [{
+          uid: 4, bool: 1
+        }, {
+          uid: 2, bool: 1
+        }]
+      }));
+  });
+
+  it('should execute using object shorthand with object', () => {
+
+    const collection = {
+      task1: { uid: 1, bool: 0 },
+      task2: { uid: 4, bool: 1 },
+      task3: { uid: 2, bool: 1 }
+    };
+    return Aigle.resolve(collection)
+      .groupBy({ bool: 0 })
+      .then(object => assert.deepEqual(object, {
+        'true': [{
+          uid: 1, bool: 0
+        }],
+        'false': [{
+          uid: 4, bool: 1
+        }, {
+          uid: 2, bool: 1
+        }]
+      }));
   });
 
   it('should throw TypeError', () => {
