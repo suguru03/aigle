@@ -228,6 +228,68 @@ parallel('#sortBy', () => {
     return promise;
   });
 
+  it('should execute using array shorthand with array', () => {
+
+    const collection = [{
+      uid: 1, bool: 0
+    }, {
+      uid: 4, bool: 1
+    }, {
+      uid: 2, bool: 1
+    }, null];
+    return Aigle.resolve(collection)
+      .filter(['uid', 4])
+      .then(array => assert.deepEqual(array, [{
+        uid: 4, bool: 1
+      }]));
+  });
+
+  it('should execute using array shorthand with object', () => {
+
+    const collection = {
+      task1: { uid: 1, bool: 0 },
+      task2: { uid: 4, bool: 1 },
+      task3: { uid: 2, bool: 1 },
+      task4: null
+    };
+    return Aigle.resolve(collection)
+      .filter(['uid', 4])
+      .then(array => assert.deepEqual(array, [{
+        uid: 4, bool: 1
+      }]));
+  });
+
+  it('should execute using object shorthand with array', () => {
+
+    const collection = [{
+      uid: 1, bool: 0
+    }, {
+      uid: 4, bool: 1
+    }, {
+      uid: 2, bool: 1
+    }, null];
+    return Aigle.resolve(collection)
+      .filter({ uid: 4 })
+      .then(array => assert.deepEqual(array, [{
+        uid: 4, bool: 1
+      }]));
+  });
+
+  it('should execute using object shorthand with object', () => {
+
+    const collection = {
+      task1: { uid: 1, bool: 0 },
+      task2: { uid: 4, bool: 1 },
+      task3: { uid: 2, bool: 1 },
+      task4: null
+    };
+    return Aigle.resolve(collection)
+      .filter({ uid: 4 })
+      .then(array => assert.deepEqual(array, [{
+        uid: 4, bool: 1
+      }]));
+  });
+
   it('should throw TypeError', () => {
 
     const collection = [1, 4, 2];

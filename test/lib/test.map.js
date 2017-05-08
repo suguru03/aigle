@@ -252,18 +252,34 @@ parallel('#map', () => {
     return promise;
   });
 
+  it('should execute using array shorthand with object', () => {
+
+    const collection = {
+      task1: { uid: 1, bool: 0 },
+      task2: { uid: 4, bool: 1 },
+      task3: { uid: 2, bool: 1 }
+    };
+    return Aigle.resolve(collection)
+      .groupBy(['bool', 1])
+      .then(object => assert.deepEqual(object, {
+        'true': [{
+          uid: 4, bool: 1
+        }, {
+          uid: 2, bool: 1
+        }],
+        'false': [{
+          uid: 1, bool: 0
+        }]
+      }));
+  });
+
+
   it('should execute using shorthand with an array of random parameters', () => {
 
     const collection = [{ uid: 1, name: 'test1'}, null, undefined, NaN];
-    let sync = true;
-    const promise = Aigle.resolve(collection)
+    return Aigle.resolve(collection)
       .map('uid')
-      .then(array => {
-        assert.deepEqual(array, [1, undefined, undefined, undefined]);
-        assert.strictEqual(sync, false);
-      });
-    sync = false;
-    return promise;
+      .then(array => assert.deepEqual(array, [1, undefined, undefined, undefined]));
   });
 
   it('should execute using shorthand with an object of random parameters', () => {
@@ -273,15 +289,9 @@ parallel('#map', () => {
       task2: null,
       task3: undefined
     };
-    let sync = true;
-    const promise = Aigle.resolve(collection)
+    return Aigle.resolve(collection)
       .map('uid')
-      .then(array => {
-        assert.deepEqual(array, [1, undefined, undefined]);
-        assert.strictEqual(sync, false);
-      });
-    sync = false;
-    return promise;
+      .then(array => assert.deepEqual(array, [1, undefined, undefined]));
   });
 
   it('should catch a TypeError', () => {
