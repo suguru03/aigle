@@ -4,17 +4,18 @@
 require('setimmediate');
 module.exports = require('./lib/aigle');
 
-},{"./lib/aigle":2,"setimmediate":75}],2:[function(require,module,exports){
+},{"./lib/aigle":2,"setimmediate":73}],2:[function(require,module,exports){
 (function (process){
 'use strict';
 
 const { AigleCore, AigleProxy } = require('aigle-core');
 
-const invokeAsync = require('./internal/async');
 const Queue = require('./internal/queue');
+const invokeAsync = require('./internal/async');
 const {
   VERSION,
   INTERNAL,
+  PENDING,
   errorObj,
   call0,
   callResolve,
@@ -69,11 +70,13 @@ class Aigle extends AigleCore {
     if (arguments.length > 1) {
       let l = arguments.length;
       onRejected = arguments[--l];
-      const errorTypes = Array(l);
-      while (l--) {
-        errorTypes[l] = arguments[l];
+      if (typeof onRejected === 'function') {
+        const errorTypes = Array(l);
+        while (l--) {
+          errorTypes[l] = arguments[l];
+        }
+        onRejected = createOnRejected(errorTypes, onRejected);
       }
-      onRejected = createOnRejected(errorTypes, onRejected);
     }
     return addAigle(this, new Aigle(INTERNAL), undefined, onRejected);
   }
@@ -269,7 +272,7 @@ class Aigle extends AigleCore {
    *   });
    */
   each(iterator) {
-    return this.then(value => each(value, iterator));
+    return addProxy(this, Each, iterator);
   }
 
   /**
@@ -277,7 +280,7 @@ class Aigle extends AigleCore {
    * @param {Function} iterator
    */
   forEach(iterator) {
-    return this.each(iterator);
+    return addProxy(this, Each, iterator);
   }
 
   /**
@@ -328,7 +331,7 @@ class Aigle extends AigleCore {
    *   });
    */
   eachSeries(iterator) {
-    return this.then(value => eachSeries(value, iterator));
+    return addProxy(this, EachSeries, iterator);
   }
 
   /**
@@ -336,7 +339,7 @@ class Aigle extends AigleCore {
    * @param {Function} iterator
    */
   forEachSeries(iterator) {
-    return this.eachSeries(iterator);
+    return addProxy(this, EachSeries, iterator);
   }
 
   /**
@@ -364,7 +367,7 @@ class Aigle extends AigleCore {
    *   });
    */
   eachLimit(limit, iterator) {
-    return this.then(value => eachLimit(value, limit, iterator));
+    return addProxy2(this, EachLimit, limit, iterator);
   }
 
   /**
@@ -373,11 +376,11 @@ class Aigle extends AigleCore {
    * @param {Function} iterator
    */
   forEachLimit(limit, iterator) {
-    return this.eachLimit(limit, iterator);
+    return addProxy2(this, EachLimit, limit, iterator);
   }
 
   /**
-   * @param {Function} iterator
+   * @param {Function|string} iterator - if you define string, you can use shorthand which is similar to lodash
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -412,9 +415,31 @@ class Aigle extends AigleCore {
    *     console.log(array); // [2, 8, 4]
    *     console.log(order); // [1, 2, 4]
    *   });
+   *
+   * @example
+   * const collection = [{
+   *  uid: 1, name: 'test1'
+   * }, {
+   *  uid: 4, name: 'test4'
+   * }, {
+   *  uid: 2, name: 'test2'
+   * }];
+   * Aigle.resolve(collection)
+   *   .map('uid')
+   *   .then(uids => console.log(uids)); // [1, 4, 2]
+   *
+   * @example
+   * const collection = {
+   *   task1: { uid: 1, name: 'test1' },
+   *   task2: { uid: 4, name: 'test4' },
+   *   task3: { uid: 2, name: 'test2' }
+   * }];
+   * Aigle.resolve(collection)
+   *   .map('uid')
+   *   .then(uids => console.log(uids)); // [1, 4, 2]
    */
   map(iterator) {
-    return this.then(value => map(value, iterator));
+    return addProxy(this, Map, iterator);
   }
 
   /**
@@ -456,7 +481,7 @@ class Aigle extends AigleCore {
    *   });
    */
   mapSeries(iterator) {
-    return this.then(value => mapSeries(value, iterator));
+    return addProxy(this, MapSeries, iterator);
   }
 
   /**
@@ -522,11 +547,11 @@ class Aigle extends AigleCore {
    *   });
    */
   mapLimit(limit, iterator) {
-    return this.then(value => mapLimit(value, limit, iterator));
+    return addProxy2(this, MapLimit, limit, iterator);
   }
 
   /**
-   * @param {Function} iterator
+   * @param {Function|string} iterator - if you define string, you can use shorthand which is similar to lodash
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -561,9 +586,31 @@ class Aigle extends AigleCore {
    *     console.log(object); // { a: 2, b: 8, c: 4 }
    *     console.log(order); // [1, 2, 4]
    *   });
+   *
+   * @example
+   * const collection = [{
+   *  uid: 1, name: 'test1'
+   * }, {
+   *  uid: 4, name: 'test4'
+   * }, {
+   *  uid: 2, name: 'test2'
+   * }];
+   * Aigle.resolve(collection)
+   *   .mapValues('uid')
+   *   .then(uids => console.log(uids)); // { '0': 1, '1': 4, '2': 2 }
+   *
+   * @example
+   * const collection = {
+   *   task1: { uid: 1, name: 'test1' },
+   *   task2: { uid: 4, name: 'test4' },
+   *   task3: { uid: 2, name: 'test2' }
+   * }];
+   * Aigle.resolve(collection)
+   *   .mapValues('uid')
+   *   .then(uids => console.log(uids)); // { task1: 1, task2: 4, task3: 2 }
    */
   mapValues(iterator) {
-    return this.then(value => mapValues(value, iterator));
+    return addProxy(this, MapValues, iterator);
   }
 
   /**
@@ -604,7 +651,7 @@ class Aigle extends AigleCore {
    *   });
    */
   mapValuesSeries(iterator) {
-    return this.then(value => mapValuesSeries(value, iterator));
+    return addProxy(this, MapValuesSeries, iterator);
   }
 
   /**
@@ -663,11 +710,11 @@ class Aigle extends AigleCore {
    *   });
    */
   mapValuesLimit(limit, iterator) {
-    return this.then(value => mapValuesLimit(value, limit, iterator));
+    return addProxy2(this, MapValuesLimit, limit, iterator);
   }
 
   /**
-   * @param {Function} iterator
+   * @param {Function|Array|Object|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -702,9 +749,48 @@ class Aigle extends AigleCore {
    *     console.log(array); // [1];
    *     console.log(order); // [1, 2, 4];
    *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .filter('active')
+   *   .then(array => {
+   *     console.log(array); // [{ name: 'fread', active: true }]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .filter(['name', 'fread'])
+   *   .then(array => {
+   *     console.log(array); // [{ name: 'fread', active: true }]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .filter({ name: 'fread', active: true })
+   *   .then(array => {
+   *     console.log(array); // [{ name: 'fread', active: true }]
+   *   });
    */
   filter(iterator) {
-    return this.then(value => filter(value, iterator));
+    return addProxy(this, Filter, iterator);
   }
 
   /**
@@ -745,7 +831,7 @@ class Aigle extends AigleCore {
    *   });
    */
   filterSeries(iterator) {
-    return this.then(value => filterSeries(value, iterator));
+    return addProxy(this, FilterSeries, iterator);
   }
 
   /**
@@ -811,11 +897,11 @@ class Aigle extends AigleCore {
    *   });
    */
   filterLimit(limit, iterator) {
-    return this.then(value => filterLimit(value, limit, iterator));
+    return addProxy2(this, FilterLimit, limit, iterator);
   }
 
   /**
-   * @param {Function} iterator
+   * @param {Function|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -850,9 +936,48 @@ class Aigle extends AigleCore {
    *     console.log(array); // [4, 2];
    *     console.log(order); // [1, 2, 4];
    *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.collection(collection)
+   *   .reject('active')
+   *   .then(array => {
+   *     console.log(array); // [{ name: 'fread', active: false }]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.collection(collection)
+   *   .reject(['name', 'bargey'])
+   *   .then(array => {
+   *     console.log(array); // [{ name: 'fread', active: false }]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.collection(collection)
+   *   .reject({ name: 'bargey', active: false })
+   *   .then(array => {
+   *     console.log(array); // [{ name: 'fread', active: false }]
+   *   });
    */
   reject(iterator) {
-    return this.then(value => reject(value, iterator));
+    return addProxy(this, Reject, iterator);
   }
 
   /**
@@ -893,7 +1018,7 @@ class Aigle extends AigleCore {
    *   });
    */
   rejectSeries(iterator) {
-    return this.then(value => rejectSeries(value, iterator));
+    return addProxy(this, RejectSeries, iterator);
   }
 
   /**
@@ -952,11 +1077,11 @@ class Aigle extends AigleCore {
    *   });
    */
   rejectLimit(limit, iterator) {
-    return this.then(value => rejectLimit(value, limit, iterator));
+    return addProxy2(this, RejectLimit, limit, iterator);
   }
 
   /**
-   * @param {Function} iterator
+   * @param {Function|Array|Object|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -1008,9 +1133,45 @@ class Aigle extends AigleCore {
    *     console.log(value); // undefined
    *     console.log(order); // [1, 2, 4];
    *   });
+   *
+   * @example
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .find('active')
+   *   .then(object => {
+   *     console.log(object); // { name: 'fread', active: true }
+   *   });
+   *
+   * @example
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .find(['name', 'fread])
+   *   .then(object => {
+   *     console.log(object); // { name: 'fread', active: true }
+   *   });
+   *
+   * @example
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .find({ name: 'fread', active: true })
+   *   .then(object => {
+   *     console.log(object); // { name: 'fread', active: true }
+   *   });
    */
   find(iterator) {
-    return this.then(value => find(value, iterator));
+    return addProxy(this, Find, iterator);
   }
 
   /**
@@ -1068,7 +1229,7 @@ class Aigle extends AigleCore {
    *   });
    */
   findSeries(iterator) {
-    return this.then(value => findSeries(value, iterator));
+    return addProxy(this, FindSeries, iterator);
   }
 
   /**
@@ -1133,11 +1294,11 @@ class Aigle extends AigleCore {
    *   });
    */
   findLimit(limit, iterator) {
-    return this.then(value => findLimit(value, limit, iterator));
+    return addProxy2(this, FindLimit, limit, iterator);
   }
 
   /**
-   * @param {Function} iterator
+   * @param {Function|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -1172,9 +1333,48 @@ class Aigle extends AigleCore {
    *     console.log(object); // { a: 1 }
    *     console.log(order); // [1, 2, 4]
    *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .pick('active')
+   *   .then(object => {
+   *     console.log(object); // { '1': { name: 'fread', active: true } }
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .pick(['name', 'fread'])
+   *   .then(object => {
+   *     console.log(object); // { '1': { name: 'fread', active: true } }
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .pick({ name: 'fread', active: true })
+   *   .then(object => {
+   *     console.log(object); // { '1': { name: 'fread', active: true } }
+   *   });
    */
   pick(iterator) {
-    return this.then(value => pick(value, iterator));
+    return addProxy(this, Pick, iterator);
   }
 
   /**
@@ -1215,7 +1415,7 @@ class Aigle extends AigleCore {
    *   });
    */
   pickSeries(iterator) {
-    return this.then(value => pickSeries(value, iterator));
+    return addProxy(this, PickSeries, iterator);
   }
 
   /**
@@ -1274,11 +1474,11 @@ class Aigle extends AigleCore {
    *   });
    */
   pickLimit(limit, iterator) {
-    return this.then(value => pickLimit(value, limit, iterator));
+    return addProxy2(this, PickLimit, limit, iterator);
   }
 
   /**
-   * @param {Function} iterator
+   * @param {Function|Array|Object|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -1290,7 +1490,8 @@ class Aigle extends AigleCore {
    *       return num % 2;
    *     });
    * };
-   * Aigle.omit(collection, iterator)
+   * Aigle.resolve(collection)
+   *   .omit(iterator)
    *   .then(object => {
    *     console.log(object); // { '1': 4, '2': 4 }
    *     console.log(order); // [1, 2, 4]
@@ -1306,14 +1507,54 @@ class Aigle extends AigleCore {
    *       return num % 2;
    *     });
    * };
-   * Aigle.omit(collection, iterator)
+   * Aigle.resolve(collection)
+   *   .omit(iterator)
    *   .then(object => {
    *     console.log(object); // { b: 4, c: 2 }
    *     console.log(order); // [1, 2, 4]
    *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .omit('active')
+   *   .then(object => {
+   *     console.log(object); // { '0': { name: 'bargey', active: false } }
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .omit(['name', 'fread'])
+   *   .then(object => {
+   *     console.log(object); // { '0': { name: 'bargey', active: false } }
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .omit({ name: 'fread', active: true })
+   *   .then(object => {
+   *     console.log(object); // { '0': { name: 'bargey', active: false } }
+   *   });
    */
   omit(iterator) {
-    return this.then(value => omit(value, iterator));
+    return addProxy(this, Omit, iterator);
   }
 
   /**
@@ -1354,7 +1595,7 @@ class Aigle extends AigleCore {
    *   });
    */
   omitSeries(iterator) {
-    return this.then(value => omitSeries(value, iterator));
+    return addProxy(this, OmitSeries, iterator);
   }
 
   /**
@@ -1413,7 +1654,7 @@ class Aigle extends AigleCore {
    *   });
    */
   omitLimit(limit, iterator) {
-    return this.then(value => omitLimit(value, limit, iterator));
+    return addProxy2(this, OmitLimit, limit, iterator);
   }
 
   /**
@@ -1441,7 +1682,7 @@ class Aigle extends AigleCore {
    *   .then(value => console.log(value)); // '142'
    */
   reduce(iterator, result) {
-    return this.then(value => reduce(value, iterator, result));
+    return addProxy2(this, Reduce, iterator, result);
   }
 
   /**
@@ -1501,7 +1742,7 @@ class Aigle extends AigleCore {
    *   });
    */
   transform(iterator, accumulator) {
-    return this.then(value => transform(value, iterator, accumulator));
+    return addProxy2(this, Transform, iterator, accumulator);
   }
 
   /**
@@ -1561,7 +1802,7 @@ class Aigle extends AigleCore {
    *   });
    */
   transformSeries(iterator, accumulator) {
-    return this.then(value => transformSeries(value, iterator, accumulator));
+    return addProxy2(this, TransformSeries, iterator, accumulator);
   }
 
   /**
@@ -1639,11 +1880,11 @@ class Aigle extends AigleCore {
    *   });
    */
   transformLimit(limit, iterator, accumulator) {
-    return this.then(value => transformLimit(value, limit, iterator, accumulator));
+    return addProxy3(this, TransformLimit, limit, iterator, accumulator);
   }
 
   /**
-   * @param {Function} iterator
+   * @param {Function|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -1678,9 +1919,22 @@ class Aigle extends AigleCore {
    *     console.log(array); // [1, 2, 4]
    *     console.log(order); // [1, 2, 4]
    *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   uid: 2, name: 'bargey', uid: 2
+   * }, {
+   *   uid: 1, name: 'fread'
+   * }];
+   * Aigle.resolve(collection)
+   *   .sortBy('uid')
+   *   .then(array => {
+   *     console.log(array); // [{ uid: 1, name: 'fread' }, { uid: 2, name: 'bargey' ]
+   *   });
    */
   sortBy(iterator) {
-    return this.then(value => sortBy(value, iterator));
+    return addProxy(this, SortBy, iterator);
   }
 
   /**
@@ -1721,7 +1975,7 @@ class Aigle extends AigleCore {
    *   });
    */
   sortBySeries(iterator) {
-    return this.then(value => sortBySeries(value, iterator));
+    return addProxy(this, SortBySeries, iterator);
   }
 
   /**
@@ -1780,11 +2034,11 @@ class Aigle extends AigleCore {
    *   });
    */
   sortByLimit(limit, iterator) {
-    return this.then(value => sortByLimit(value, limit, iterator));
+    return addProxy2(this, SortByLimit, limit, iterator);
   }
 
   /**
-   * @param {Function} iterator
+   * @param {Function|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -1836,9 +2090,45 @@ class Aigle extends AigleCore {
    *     console.log(bool); // false
    *     console.log(order); // [1, 2, 4]
    *   });
+   *
+   * @example
+   * const collection = [{
+   *  uid: 1, active: false
+   * }, {
+   *  uid: 4, active: true
+   * }, {
+   *  uid: 2, active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .some('active')
+   *   .then(value => console.log(value)); // true
+   *
+   * @example
+   * const collection = [{
+   *  uid: 1, active: false
+   * }, {
+   *  uid: 4, active: true
+   * }, {
+   *  uid: 2, active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .some(['uid', 4])
+   *   .then(value => console.log(value)); // true
+   *
+   * @example
+   * const collection = [{
+   *  uid: 1, active: false
+   * }, {
+   *  uid: 4, active: true
+   * }, {
+   *  uid: 2, active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .some({ uid: 4 })
+   *   .then(value => console.log(value)); // true
    */
   some(iterator) {
-    return this.then(value => some(value, iterator));
+    return addProxy(this, Some, iterator);
   }
 
   /**
@@ -1896,7 +2186,7 @@ class Aigle extends AigleCore {
    *   });
    */
   someSeries(iterator) {
-    return this.then(value => someSeries(value, iterator));
+    return addProxy(this, SomeSeries, iterator);
   }
 
   /**
@@ -1955,11 +2245,11 @@ class Aigle extends AigleCore {
    *   });
    */
   someLimit(limit, iterator) {
-    return this.then(value => someLimit(value, limit, iterator));
+    return addProxy2(this, SomeLimit, limit, iterator);
   }
 
   /**
-   * @param {Function} iterator
+   * @param {Function|Array|Object|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -2011,9 +2301,57 @@ class Aigle extends AigleCore {
    *     console.log(value); // false
    *     console.log(order); // [1, 2];
    *   });
+   *
+   * @example
+   * const collection = [{
+   *  uid: 1, active: false
+   * }, {
+   *  uid: 4, active: true
+   * }, {
+   *  uid: 2, active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .every('active')
+   *   .then(value => console.log(value)); // false
+   *
+   * @example
+   * const collection = [{
+   *  uid: 1, active: false
+   * }, {
+   *  uid: 4, active: true
+   * }, {
+   *  uid: 2, active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .every('active')
+   *   .then(value => console.log(value)); // false
+   *
+   * @example
+   * const collection = [{
+   *  uid: 1, active: false
+   * }, {
+   *  uid: 4, active: true
+   * }, {
+   *  uid: 2, active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .every(['active', true])
+   *   .then(value => console.log(value)); // false
+   *
+   * @example
+   * const collection = [{
+   *  uid: 1, active: true
+   * }, {
+   *  uid: 4, active: true
+   * }, {
+   *  uid: 2, active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .every({ active: true })
+   *   .then(value => console.log(value)); // true
    */
   every(iterator) {
-    return this.then(value => every(value, iterator));
+    return addProxy(this, Every, iterator);
   }
 
   /**
@@ -2071,7 +2409,7 @@ class Aigle extends AigleCore {
    *   });
    */
   everySeries(iterator) {
-    return this.then(value => everySeries(value, iterator));
+    return addProxy(this, EverySeries, iterator);
   }
 
   /**
@@ -2136,7 +2474,7 @@ class Aigle extends AigleCore {
    *   });
    */
   everyLimit(limit, iterator) {
-    return this.then(value => everyLimit(value, limit, iterator));
+    return addProxy2(this, EveryLimit, limit, iterator);
   }
 
   /**
@@ -2176,7 +2514,7 @@ class Aigle extends AigleCore {
    *   });
    */
   concat(iterator) {
-    return this.then(value => concat(value, iterator));
+    return addProxy(this, Concat, iterator);
   }
 
   /**
@@ -2216,7 +2554,7 @@ class Aigle extends AigleCore {
    *   });
    */
   concatSeries(iterator) {
-    return this.then(value => concatSeries(value, iterator));
+    return addProxy(this, ConcatSeries, iterator);
   }
 
   /**
@@ -2280,11 +2618,11 @@ class Aigle extends AigleCore {
    *   });
    */
   concatLimit(limit, iterator) {
-    return this.then(value => concatLimit(value, limit, iterator));
+    return addProxy2(this, ConcatLimit, limit, iterator);
   }
 
   /**
-   * @param {Function} iterator
+   * @param {Function|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -2319,9 +2657,18 @@ class Aigle extends AigleCore {
    *     console.log(object); // { '0': [2, 4], '1': [1] };
    *     console.log(order); // [1, 2, 4];
    *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = ['one', 'two', 'three'];
+   * Aigle.resolve(collection)
+   *   .groupBy('length')
+   *   .then(object => {
+   *     console.log(object); // { '3': ['one', 'two'], '5': ['three'] };
+   *   });
    */
   groupBy(iterator) {
-    return this.then(value => groupBy(value, iterator));
+    return addProxy(this, GroupBy, iterator);
   }
 
   /**
@@ -2362,7 +2709,7 @@ class Aigle extends AigleCore {
    *   });
    */
   groupBySeries(iterator) {
-    return this.then(value => groupBySeries(value, iterator));
+    return addProxy(this, GroupBySeries, iterator);
   }
 
   /**
@@ -2427,7 +2774,7 @@ class Aigle extends AigleCore {
    *   });
    */
   groupByLimit(limit, iterator) {
-    return this.then(value => groupByLimit(value, limit, iterator));
+    return addProxy2(this, GroupByLimit, limit, iterator);
   }
 
   /**
@@ -2716,49 +3063,49 @@ const attempt = require('./attempt');
 const race = require('./race');
 const { props } = require('./props');
 const parallel = require('./parallel');
-const each = require('./each');
-const eachSeries = require('./eachSeries');
-const eachLimit = require('./eachLimit');
-const map = require('./map');
-const mapSeries = require('./mapSeries');
-const mapLimit = require('./mapLimit');
-const mapValues = require('./mapValues');
-const mapValuesSeries = require('./mapValuesSeries');
-const mapValuesLimit = require('./mapValuesLimit');
-const filter = require('./filter');
-const filterSeries = require('./filterSeries');
-const filterLimit = require('./filterLimit');
-const reject = require('./reject');
-const rejectSeries = require('./rejectSeries');
-const rejectLimit = require('./rejectLimit');
-const find = require('./find');
-const findSeries = require('./findSeries');
-const findLimit = require('./findLimit');
-const pick = require('./pick');
-const pickSeries = require('./pickSeries');
-const pickLimit = require('./pickLimit');
-const omit = require('./omit');
-const omitSeries = require('./omitSeries');
-const omitLimit = require('./omitLimit');
-const reduce = require('./reduce');
-const transform = require('./transform');
-const transformSeries = require('./transformSeries');
-const transformLimit = require('./transformLimit');
-const sortBy = require('./sortBy');
-const sortBySeries = require('./sortBySeries');
-const sortByLimit = require('./sortByLimit');
-const some = require('./some');
-const someSeries = require('./someSeries');
-const someLimit = require('./someLimit');
-const every = require('./every');
-const everySeries = require('./everySeries');
-const everyLimit = require('./everyLimit');
-const concat = require('./concat');
-const concatSeries = require('./concatSeries');
-const concatLimit = require('./concatLimit');
-const groupBy = require('./groupBy');
-const groupBySeries = require('./groupBySeries');
-const groupByLimit = require('./groupByLimit');
+const { each, Each } = require('./each');
+const { eachSeries, EachSeries } = require('./eachSeries');
+const { eachLimit, EachLimit } = require('./eachLimit');
+const { map, Map } = require('./map');
+const { mapSeries, MapSeries } = require('./mapSeries');
+const { mapLimit, MapLimit } = require('./mapLimit');
+const { mapValues, MapValues } = require('./mapValues');
+const { mapValuesSeries, MapValuesSeries } = require('./mapValuesSeries');
+const { mapValuesLimit, MapValuesLimit } = require('./mapValuesLimit');
+const { filter, Filter } = require('./filter');
+const { filterSeries, FilterSeries } = require('./filterSeries');
+const { filterLimit, FilterLimit } = require('./filterLimit');
+const { reject, Reject } = require('./reject');
+const { rejectSeries, RejectSeries } = require('./rejectSeries');
+const { rejectLimit, RejectLimit } = require('./rejectLimit');
+const { find, Find } = require('./find');
+const { findSeries, FindSeries } = require('./findSeries');
+const { findLimit, FindLimit } = require('./findLimit');
+const { pick, Pick } = require('./pick');
+const { pickSeries, PickSeries } = require('./pickSeries');
+const { pickLimit, PickLimit } = require('./pickLimit');
+const { omit, Omit } = require('./omit');
+const { omitSeries, OmitSeries } = require('./omitSeries');
+const { omitLimit, OmitLimit } = require('./omitLimit');
+const { reduce, Reduce } = require('./reduce');
+const { transform, Transform } = require('./transform');
+const { transformSeries, TransformSeries } = require('./transformSeries');
+const { transformLimit, TransformLimit } = require('./transformLimit');
+const { sortBy, SortBy } = require('./sortBy');
+const { sortBySeries, SortBySeries } = require('./sortBySeries');
+const { sortByLimit, SortByLimit } = require('./sortByLimit');
+const { some, Some } = require('./some');
+const { someSeries, SomeSeries } = require('./someSeries');
+const { someLimit, SomeLimit } = require('./someLimit');
+const { every, Every } = require('./every');
+const { everySeries, EverySeries } = require('./everySeries');
+const { everyLimit, EveryLimit } = require('./everyLimit');
+const { concat,  Concat } = require('./concat');
+const { concatSeries, ConcatSeries } = require('./concatSeries');
+const { concatLimit, ConcatLimit } = require('./concatLimit');
+const { groupBy, GroupBy } = require('./groupBy');
+const { groupBySeries, GroupBySeries } = require('./groupBySeries');
+const { groupByLimit, GroupByLimit } = require('./groupByLimit');
 const { join, Spread } = require('./join');
 const { delay, Delay } = require('./delay');
 const Timeout = require('./timeout');
@@ -2908,7 +3255,8 @@ function createOnRejected(errorTypes, onRejected) {
         return onRejected(reason);
       }
     }
-    return Aigle.reject(reason);
+    errorObj.e = reason;
+    return errorObj;
   };
 }
 
@@ -2964,6 +3312,45 @@ function addReceiver(promise, receiver) {
   return receiver._promise;
 }
 
+function addProxy(promise, Proxy, iterator) {
+  switch (promise._resolved) {
+  case 0:
+    const proxy = new Proxy(iterator, PENDING);
+    promise._receiver = proxy;
+    return proxy._promise;
+  case 1:
+    return new Proxy(iterator, promise._value)._execute();
+  case 2:
+    return Aigle.reject(promise._value);
+  }
+}
+
+function addProxy2(promise, Proxy, arg1, arg2) {
+  switch (promise._resolved) {
+  case 0:
+    const proxy = new Proxy(arg1, arg2, PENDING);
+    promise._receiver = proxy;
+    return proxy._promise;
+  case 1:
+    return new Proxy(arg1, arg2, promise._value)._execute();
+  case 2:
+    return Aigle.reject(promise._value);
+  }
+}
+
+function addProxy3(promise, Proxy, arg1, arg2, arg3) {
+  switch (promise._resolved) {
+  case 0:
+    const proxy = new Proxy(arg1, arg2, arg3, PENDING);
+    promise._receiver = proxy;
+    return proxy._promise;
+  case 1:
+    return new Proxy(arg1, arg2, arg3, promise._value)._execute();
+  case 2:
+    return Aigle.reject(promise._value);
+  }
+}
+
 /**
  * @param {Object} opts
  * @param {boolean} [opts.longStackTraces]
@@ -2977,7 +3364,7 @@ function longStackTraces() {
 }
 
 }).call(this,require('_process'))
-},{"./all":3,"./attempt":4,"./concat":5,"./concatLimit":6,"./concatSeries":7,"./debug":8,"./delay":9,"./doUntil":10,"./doWhilst":11,"./each":12,"./eachLimit":13,"./eachSeries":14,"./error":15,"./every":16,"./everyLimit":17,"./everySeries":18,"./filter":19,"./filterLimit":20,"./filterSeries":21,"./find":22,"./findLimit":23,"./findSeries":24,"./groupBy":25,"./groupByLimit":26,"./groupBySeries":27,"./internal/async":31,"./internal/queue":32,"./internal/util":33,"./join":34,"./map":35,"./mapLimit":36,"./mapSeries":37,"./mapValues":38,"./mapValuesLimit":39,"./mapValuesSeries":40,"./omit":41,"./omitLimit":42,"./omitSeries":43,"./parallel":44,"./pick":45,"./pickLimit":46,"./pickSeries":47,"./promisify":48,"./promisifyAll":49,"./props":50,"./race":51,"./reduce":52,"./reject":53,"./rejectLimit":54,"./rejectSeries":55,"./retry":56,"./some":57,"./someLimit":58,"./someSeries":59,"./sortBy":60,"./sortByLimit":61,"./sortBySeries":62,"./timeout":63,"./times":64,"./timesLimit":65,"./timesSeries":66,"./transform":67,"./transformLimit":68,"./transformSeries":69,"./until":70,"./using":71,"./whilst":72,"_process":74,"aigle-core":73}],3:[function(require,module,exports){
+},{"./all":3,"./attempt":4,"./concat":5,"./concatLimit":6,"./concatSeries":7,"./debug":8,"./delay":9,"./doUntil":10,"./doWhilst":11,"./each":12,"./eachLimit":13,"./eachSeries":14,"./error":15,"./every":16,"./everyLimit":17,"./everySeries":18,"./filter":19,"./filterLimit":20,"./filterSeries":21,"./find":22,"./findLimit":23,"./findSeries":24,"./groupBy":25,"./groupByLimit":26,"./groupBySeries":27,"./internal/async":28,"./internal/queue":30,"./internal/util":31,"./join":32,"./map":33,"./mapLimit":34,"./mapSeries":35,"./mapValues":36,"./mapValuesLimit":37,"./mapValuesSeries":38,"./omit":39,"./omitLimit":40,"./omitSeries":41,"./parallel":42,"./pick":43,"./pickLimit":44,"./pickSeries":45,"./promisify":46,"./promisifyAll":47,"./props":48,"./race":49,"./reduce":50,"./reject":51,"./rejectLimit":52,"./rejectSeries":53,"./retry":54,"./some":55,"./someLimit":56,"./someSeries":57,"./sortBy":58,"./sortByLimit":59,"./sortBySeries":60,"./timeout":61,"./times":62,"./timesLimit":63,"./timesSeries":64,"./transform":65,"./transformLimit":66,"./transformSeries":67,"./until":68,"./using":69,"./whilst":70,"_process":72,"aigle-core":71}],3:[function(require,module,exports){
 'use strict';
 
 const { AigleProxy } = require('aigle-core');
@@ -3041,7 +3428,7 @@ function all(array) {
 }
 
 
-},{"./aigle":2,"./internal/util":33,"aigle-core":73}],4:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"aigle-core":71}],4:[function(require,module,exports){
 'use strict';
 
 const { Aigle } = require('./aigle');
@@ -3064,36 +3451,31 @@ function attempt(handler) {
   return receiver;
 }
 
-},{"./aigle":2,"./internal/util":33}],5:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31}],5:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleEachArray, AigleEachObject } = require('./internal/aigleEach');
-const { map } = require('./internal/util');
+const { Each } = require('./each');
 
-const [ConcatArray, ConcatObject] = map([AigleEachArray, AigleEachObject], Class => {
+class Concat extends Each {
 
-  return class extends Class {
+  constructor(iterator, collection) {
+    super(iterator, collection);
+    this._result = [];
+  }
 
-    constructor(array, iterator) {
-      super(array, iterator);
-      this._result = [];
+  _callResolve(value) {
+    if (Array.isArray(value)) {
+      this._result.push(...value);
+    } else {
+      this._result.push(value);
     }
-
-    _callResolve(value) {
-      if (Array.isArray(value)) {
-        this._result.push(...value);
-      } else {
-        this._result.push(value);
-      }
-      if (--this._rest === 0) {
-        this._promise._resolve(this._result);
-      }
+    if (--this._rest === 0) {
+      this._promise._resolve(this._result);
     }
-  };
-});
+  }
+}
 
-module.exports = concat;
+module.exports = { concat, Concat };
 
 /**
  * @param {Array|Object} collection
@@ -3132,47 +3514,37 @@ module.exports = concat;
  *   });
  */
 function concat(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new ConcatArray(collection, iterator)._iterate();
-  }
-  if (collection && typeof collection === 'object') {
-    return new ConcatObject(collection, iterator)._iterate();
-  }
-  return Aigle.resolve([]);
+  return new Concat(iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleEach":28,"./internal/util":33}],6:[function(require,module,exports){
+},{"./each":12}],6:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { map } = require('./internal/util');
-const { AigleLimitArray, AigleLimitObject } = require('./internal/aigleLimit');
+const { EachLimit } = require('./eachLimit');
 
-const [ConcatLimitArray, ConcatLimitObject] = map([AigleLimitArray, AigleLimitObject], Class => {
+class ConcatLimit extends EachLimit {
 
-  return class extends Class {
+  constructor(limit, iterator, collection) {
+    super(limit, iterator, collection);
+    this._result = [];
+  }
 
-    constructor(object, iterator, limit) {
-      super(object, iterator, limit);
-      this._result = [];
+  _callResolve(value) {
+    if (Array.isArray(value)) {
+      this._result.push(...value);
+    } else {
+      this._result.push(value);
     }
-
-    _callResolve(value) {
-      if (Array.isArray(value)) {
-        this._result.push(...value);
-      } else {
-        this._result.push(value);
-      }
-      if (--this._rest === 0) {
-        this._promise._resolve(this._result);
-      } else if (this._callRest-- > 0) {
-        this._iterate();
-      }
+    if (--this._rest === 0) {
+      this._promise._resolve(this._result);
+    } else if (this._callRest-- > 0) {
+      this._iterate();
     }
-  };
-});
+  }
+}
 
-module.exports = concatLimit;
+module.exports = { concatLimit, ConcatLimit };
+
 
 /**
  * @param {Array|Object} collection
@@ -3234,48 +3606,36 @@ module.exports = concatLimit;
  *   });
  */
 function concatLimit(collection, limit, iterator) {
-  if (Array.isArray(collection)) {
-    return new ConcatLimitArray(collection, iterator, limit)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new ConcatLimitObject(collection, iterator, limit)._execute();
-  }
-  return Aigle.resolve([]);
+  return new ConcatLimit(limit, iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleLimit":29,"./internal/util":33}],7:[function(require,module,exports){
+},{"./eachLimit":13}],7:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleSeriesArray, AigleSeriesObject } = require('./internal/aigleSeries');
-const { map } = require('./internal/util');
+const { EachSeries } = require('./eachSeries');
 
-module.exports = concatSeries;
+class ConcatSeries extends EachSeries {
 
-const [ConcatSeriesArray, ConcatSeriesObject] = map([AigleSeriesArray, AigleSeriesObject], Class => {
+  constructor(iterator, collection) {
+    super(iterator, collection);
+    this._result = [];
+  }
 
-  return class extends Class {
-
-    constructor(array, iterator) {
-      super(array, iterator);
-      this._result = [];
+  _callResolve(value) {
+    if (Array.isArray(value)) {
+      this._result.push(...value);
+    } else {
+      this._result.push(value);
     }
-
-    _callResolve(value) {
-      if (Array.isArray(value)) {
-        this._result.push(...value);
-      } else {
-        this._result.push(value);
-      }
-      if (--this._rest === 0) {
-        this._promise._resolve(this._result);
-      } else {
-        this._iterate();
-      }
+    if (--this._rest === 0) {
+      this._promise._resolve(this._result);
+    } else {
+      this._iterate();
     }
-  };
-});
+  }
+}
 
+module.exports = { concatSeries, ConcatSeries };
 
 /**
  * @param {Array|Object} collection
@@ -3314,16 +3674,10 @@ const [ConcatSeriesArray, ConcatSeriesObject] = map([AigleSeriesArray, AigleSeri
  *   });
  */
 function concatSeries(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new ConcatSeriesArray(collection, iterator)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new ConcatSeriesObject(collection, iterator)._execute();
-  }
-  return Aigle.resolve([]);
+  return new ConcatSeries(iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleSeries":30,"./internal/util":33}],8:[function(require,module,exports){
+},{"./eachSeries":14}],8:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -3400,7 +3754,7 @@ function delay(ms, value) {
   return delay._promise;
 }
 
-},{"./aigle":2,"./internal/util":33,"aigle-core":73}],10:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"aigle-core":71}],10:[function(require,module,exports){
 'use strict';
 
 const { DoWhilst } = require('./doWhilst');
@@ -3462,7 +3816,7 @@ function doUntil(value, iterator, tester) {
   return new DoWhilst(new UntilTester(tester), iterator)._iterate(value);
 }
 
-},{"./doWhilst":11,"./until":70}],11:[function(require,module,exports){
+},{"./doWhilst":11,"./until":68}],11:[function(require,module,exports){
 'use strict';
 
 const { AigleWhilst, WhilstTester } = require('./whilst');
@@ -3535,13 +3889,56 @@ function doWhilst(value, iterator, tester) {
   return new DoWhilst(new WhilstTester(tester), iterator)._iterate(value);
 }
 
-},{"./whilst":72}],12:[function(require,module,exports){
+},{"./whilst":70}],12:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleEachArray, AigleEachObject } = require('./internal/aigleEach');
+const { AigleProxy } = require('aigle-core');
 
-module.exports = each;
+const { Aigle } = require('./aigle');
+const { INTERNAL, PENDING } = require('./internal/util');
+const { execute, setParallel } = require('./internal/collection');
+
+class Each extends AigleProxy {
+
+  constructor(iterator, collection) {
+    super();
+    this._iterator = iterator;
+    this._promise = new Aigle(INTERNAL);
+    this._coll = undefined;
+    this._rest = undefined;
+    this._keys = undefined;
+    this._result = undefined;
+    this._iterate = undefined;
+    if (collection === PENDING) {
+      this._set = setParallel;
+      this._iterate = this._callResolve;
+      this._callResolve = execute;
+    } else {
+      setParallel.call(this, collection);
+    }
+  }
+
+  _execute() {
+    if (this._rest === 0) {
+      this._promise._resolve(this._result);
+    } else {
+      this._iterate();
+    }
+    return this._promise;
+  }
+
+  _callResolve(value) {
+    if (--this._rest === 0 || value === false) {
+      this._promise._resolve();
+    }
+  }
+
+  _callReject(reason) {
+    this._promise._reject(reason);
+  }
+}
+
+module.exports = { each, Each };
 
 /**
  * @param {Array|Object} collection
@@ -3590,22 +3987,82 @@ module.exports = each;
  *   });
  */
 function each(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new AigleEachArray(collection, iterator)._iterate();
-  }
-  if (collection && typeof collection === 'object') {
-    return new AigleEachObject(collection, iterator)._iterate();
-  }
-  return Aigle.resolve();
+  return new Each(iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleEach":28}],13:[function(require,module,exports){
+},{"./aigle":2,"./internal/collection":29,"./internal/util":31,"aigle-core":71}],13:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleLimitArray, AigleLimitObject } = require('./internal/aigleLimit');
+const { AigleProxy } = require('aigle-core');
 
-module.exports = eachLimit;
+const { Aigle } = require('./aigle');
+const {
+  DEFAULT_LIMIT,
+  INTERNAL,
+  PENDING
+} = require('./internal/util');
+const {
+  execute,
+  setLimit
+} = require('./internal/collection');
+
+class EachLimit extends AigleProxy {
+
+  constructor(limit, iterator, collection) {
+    super();
+    if (typeof limit === 'function') {
+      iterator = limit;
+      limit = DEFAULT_LIMIT;
+    }
+    this._iterator = iterator;
+    this._promise = new Aigle(INTERNAL);
+    this._index = 0;
+    this._limit = limit;
+    this._coll = undefined;
+    this._rest = undefined;
+    this._size = undefined;
+    this._keys = undefined;
+    this._result = undefined;
+    this._iterate = undefined;
+    this._callRest = undefined;
+    if (collection === PENDING) {
+      this._set = setLimit;
+      this._iterate = this._callResolve;
+      this._callResolve = execute;
+    } else {
+      setLimit.call(this, collection);
+    }
+  }
+
+  _execute() {
+    if (this._rest === 0) {
+      this._promise._resolve(this._result);
+    } else {
+      while (this._limit--) {
+        this._iterate();
+      }
+    }
+    return this._promise;
+  }
+
+  _callResolve(value) {
+    if (value === false) {
+      this._callRest = 0;
+      this._promise._resolve();
+    } else if (--this._rest === 0) {
+      this._promise._resolve();
+    } else if (this._callRest-- > 0) {
+      this._iterate();
+    }
+  }
+
+  _callReject(reason) {
+    this._callRest = 0;
+    this._promise._reject(reason);
+  }
+}
+
+module.exports = { eachLimit, EachLimit };
 
 /**
  * @param {Array|Object} collection
@@ -3683,23 +4140,64 @@ module.exports = eachLimit;
  *   });
  */
 function eachLimit(collection, limit, iterator) {
-  if (Array.isArray(collection)) {
-    return new AigleLimitArray(collection, iterator, limit)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new AigleLimitObject(collection, iterator, limit)._execute();
-  }
-  return Aigle.resolve();
+  return new EachLimit(limit, iterator, collection)._execute();
 }
 
 
-},{"./aigle":2,"./internal/aigleLimit":29}],14:[function(require,module,exports){
+},{"./aigle":2,"./internal/collection":29,"./internal/util":31,"aigle-core":71}],14:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleSeriesArray, AigleSeriesObject } = require('./internal/aigleSeries');
+const { AigleProxy } = require('aigle-core');
 
-module.exports = eachSeries;
+const { Aigle } = require('./aigle');
+const { INTERNAL, PENDING } = require('./internal/util');
+const { execute, setSeries } = require('./internal/collection');
+
+class EachSeries extends AigleProxy {
+
+  constructor(iterator, collection) {
+    super();
+    this._iterator = iterator;
+    this._promise = new Aigle(INTERNAL);
+    this._index = 0;
+    this._coll = undefined;
+    this._rest = undefined;
+    this._size = undefined;
+    this._keys = undefined;
+    this._result = undefined;
+    this._iterate = undefined;
+    if (collection === PENDING) {
+      this._set = setSeries;
+      this._iterate = this._callResolve;
+      this._callResolve = execute;
+    } else {
+      setSeries.call(this, collection);
+    }
+  }
+
+  _execute() {
+    if (this._rest === 0) {
+      this._promise._resolve(this._result);
+    } else {
+      this._iterate();
+    }
+    return this._promise;
+  }
+
+  _callResolve(value) {
+    if (--this._rest === 0 || value === false) {
+      this._promise._resolve();
+    } else {
+      this._iterate();
+    }
+  }
+
+  _callReject(reason) {
+    this._promise._reject(reason);
+  }
+}
+
+module.exports = { eachSeries, EachSeries };
 
 /**
  * @param {Array|Object} collection
@@ -3748,17 +4246,10 @@ module.exports = eachSeries;
  *   });
  */
 function eachSeries(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new AigleSeriesArray(collection, iterator)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new AigleSeriesObject(collection, iterator)._execute();
-  }
-  return Aigle.resolve();
+  return new EachSeries(iterator, collection)._execute();
 }
 
-
-},{"./aigle":2,"./internal/aigleSeries":30}],15:[function(require,module,exports){
+},{"./aigle":2,"./internal/collection":29,"./internal/util":31,"aigle-core":71}],15:[function(require,module,exports){
 'use strict';
 
 const types = ['TimeoutError'];
@@ -3774,37 +4265,36 @@ while (l--) {
 },{}],16:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleEachArray, AigleEachObject } = require('./internal/aigleEach');
-const { map } = require('./internal/util');
+const { Each } = require('./each');
+const { PENDING } = require('./internal/util');
+const { setShorthand } = require('./internal/collection');
 
-const [EveryArray, EveryObject] = map([AigleEachArray, AigleEachObject], Class => {
+class Every extends Each {
 
-  return class extends Class {
-
-    constructor(array, iterator) {
-      super(array, iterator);
-      this._result = true;
+  constructor(iterator, collection) {
+    super(iterator, collection);
+    this._result = true;
+    if (collection === PENDING) {
+      this._set = setShorthand;
+    } else {
+      setShorthand.call(this, collection);
     }
+  }
 
-    _callResolve(value) {
-      if (this._promise._resolved !== 0) {
-        return;
-      }
-      if (!value) {
-        this._promise._resolve(false);
-      } else if (--this._rest === 0) {
-        this._promise._resolve(true);
-      }
+  _callResolve(value) {
+    if (!value) {
+      this._promise._resolve(false);
+    } else if (--this._rest === 0) {
+      this._promise._resolve(true);
     }
-  };
-});
+  }
+}
 
-module.exports = every;
+module.exports = { every, Every };
 
 /**
  * @param {Array|Object} collection
- * @param {Function} iterator
+ * @param {Function|Array|Object|string} iterator
  * @return {Aigle} Returns an Aigle instance
  * @example
  * const order = [];
@@ -3853,47 +4343,68 @@ module.exports = every;
  *     console.log(value); // false
  *     console.log(order); // [1, 2];
  *   });
+ *
+ * @example
+ * const collection = [{
+ *  uid: 1, active: false
+ * }, {
+ *  uid: 4, active: true
+ * }, {
+ *  uid: 2, active: true
+ * }];
+ * Aigle.every(collection, 'active')
+ *   .then(value => console.log(value)); // false
+ *
+ * @example
+ * const collection = [{
+ *  uid: 1, active: false
+ * }, {
+ *  uid: 4, active: true
+ * }, {
+ *  uid: 2, active: true
+ * }];
+ * Aigle.every(collection, ['active', true])
+ *   .then(value => console.log(value)); // false
+ *
+ * @example
+ * const collection = [{
+ *  uid: 1, active: true
+ * }, {
+ *  uid: 4, active: true
+ * }, {
+ *  uid: 2, active: true
+ * }];
+ * Aigle.every(collection, { active: true })
+ *   .then(value => console.log(value)); // true
  */
 function every(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new EveryArray(collection, iterator)._iterate();
-  }
-  if (collection && typeof collection === 'object') {
-    return new EveryObject(collection, iterator)._iterate();
-  }
-  return Aigle.resolve(true);
+  return new Every(iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleEach":28,"./internal/util":33}],17:[function(require,module,exports){
+},{"./each":12,"./internal/collection":29,"./internal/util":31}],17:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { map } = require('./internal/util');
-const { AigleLimitArray, AigleLimitObject } = require('./internal/aigleLimit');
+const { EachLimit } = require('./eachLimit');
 
-module.exports = everyLimit;
+class EveryLimit extends EachLimit {
 
-const [EveryLimitArray, EveryLimitObject] = map([AigleLimitArray, AigleLimitObject], Class => {
+  constructor(limit, iterator, collection) {
+    super(limit, iterator, collection);
+    this._result = true;
+  }
 
-  return class extends Class {
-
-    constructor(array, iterator, limit) {
-      super(array, iterator, limit);
-      this._result = true;
+  _callResolve(value) {
+    if (!value) {
+      this._promise._resolve(false);
+    } else if (--this._rest === 0) {
+      this._promise._resolve(true);
+    } else if (this._callRest-- > 0) {
+      this._iterate();
     }
+  }
+}
 
-    _callResolve(value) {
-      if (!value) {
-        this._callRest = 0;
-        this._promise._resolve(false);
-      } else if (--this._rest === 0) {
-        this._promise._resolve(true);
-      } else if (this._callRest-- > 0) {
-        this._iterate();
-      }
-    }
-  };
-});
+module.exports = { everyLimit, EveryLimit };
 
 /**
  * @param {Array|Object} collection
@@ -3955,46 +4466,33 @@ const [EveryLimitArray, EveryLimitObject] = map([AigleLimitArray, AigleLimitObje
  *   });
  */
 function everyLimit(collection, limit, iterator) {
-  if (Array.isArray(collection)) {
-    return new EveryLimitArray(collection, iterator, limit)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new EveryLimitObject(collection, iterator, limit)._execute();
-  }
-  return Aigle.resolve(true);
+  return new EveryLimit(limit, iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleLimit":29,"./internal/util":33}],18:[function(require,module,exports){
+},{"./eachLimit":13}],18:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleSeriesArray, AigleSeriesObject } = require('./internal/aigleSeries');
-const { map } = require('./internal/util');
+const { EachSeries } = require('./eachSeries.js');
 
-module.exports = everySeries;
+class EverySeries extends EachSeries {
 
-const [EverySeriesArray, EverySeriesObject] = map([AigleSeriesArray, AigleSeriesObject], Class => {
+  constructor(iterator, collection) {
+    super(iterator, collection);
+    this._result = true;
+  }
 
-  return class extends Class {
-
-    constructor(array, iterator) {
-      super(array, iterator);
-      this._result = true;
+  _callResolve(value) {
+    if (!value) {
+      this._promise._resolve(false);
+    } else if (--this._rest === 0) {
+      this._promise._resolve(true);
+    } else {
+      this._iterate();
     }
+  }
+}
 
-    _callResolve(value) {
-      if (!value) {
-        this._promise._resolve(false);
-      } else if (--this._rest === 0) {
-        this._promise._resolve(true);
-      } else {
-        this._iterate();
-      }
-    }
-  };
-});
-
-module.exports = everySeries;
+module.exports = { everySeries, EverySeries };
 
 /**
  * @param {Array|Object} collection
@@ -4049,57 +4547,56 @@ module.exports = everySeries;
  *   });
  */
 function everySeries(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new EverySeriesArray(collection, iterator)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new EverySeriesObject(collection, iterator)._execute();
-  }
-  return Aigle.resolve(true);
+  return new EverySeries(iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleSeries":30,"./internal/util":33}],19:[function(require,module,exports){
+},{"./eachSeries.js":14}],19:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { INTERNAL, compactArray } = require('./internal/util');
-const { AigleEachArray, AigleEachObject } = require('./internal/aigleEach');
+const { Each } = require('./each');
+const { setShorthand } = require('./internal/collection');
+const { INTERNAL, PENDING, compactArray } = require('./internal/util');
 
-module.exports = filter;
+class Filter extends Each {
 
-class FilterArray extends AigleEachArray {
-
-  constructor(array, iterator) {
-    super(array, iterator);
-    this._result = Array(this._rest);
-  }
-
-  _callResolve(value, index) {
-    this._result[index] = value ? this._array[index] : INTERNAL;
-    if (--this._rest === 0) {
-      this._promise._resolve(compactArray(this._result));
+  constructor(iterator, collection) {
+    super(iterator, collection);
+    if (collection === PENDING) {
+      this._set = set;
+    } else {
+      set.call(this, collection);
     }
   }
 }
 
-class FilterObject extends AigleEachObject {
+Filter.prototype._set = set;
 
-  constructor(object, iterator) {
-    super(object, iterator);
-    this._result = Array(this._rest);
+module.exports = { filter, Filter };
+
+function set(collection) {
+  setShorthand.call(this, collection);
+  this._result = Array(this._rest);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(value, index) {
+  this._result[index] = value ? this._coll[index] : INTERNAL;
+  if (--this._rest === 0) {
+    this._promise._resolve(compactArray(this._result));
   }
+}
 
-  _callResolve(value, index) {
-    this._result[index] = value ? this._object[this._keys[index]] : INTERNAL;
-    if (--this._rest === 0) {
-      this._promise._resolve(compactArray(this._result));
-    }
+function callResolveObject(value, index) {
+  this._result[index] = value ? this._coll[this._keys[index]] : INTERNAL;
+  if (--this._rest === 0) {
+    this._promise._resolve(compactArray(this._result));
   }
 }
 
 /**
  * @param {Array|Object} collection
- * @param {Function} iterator
+ * @param {Function|Array|Object|string} iterator
  * @return {Aigle} Returns an Aigle instance
  * @example
  * const order = [];
@@ -4132,56 +4629,91 @@ class FilterObject extends AigleEachObject {
  *     console.log(array); // [1];
  *     console.log(order); // [1, 2, 4];
  *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [{
+ *   name: 'bargey', active: false
+ * }, {
+ *   name: 'fread', active: true
+ * }];
+ * Aigle.filter(collection, 'active')
+ *   .then(array => {
+ *     console.log(array); // [{ name: 'fread', active: true }]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [{
+ *   name: 'bargey', active: false
+ * }, {
+ *   name: 'fread', active: true
+ * }];
+ * Aigle.filter(collection, ['name', 'fread'])
+ *   .then(array => {
+ *     console.log(array); // [{ name: 'fread', active: true }]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [{
+ *   name: 'bargey', active: false
+ * }, {
+ *   name: 'fread', active: true
+ * }];
+ * Aigle.filter(collection, { name: 'fread', active: true })
+ *   .then(array => {
+ *     console.log(array); // [{ name: 'fread', active: true }]
+ *   });
  */
 function filter(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new FilterArray(collection, iterator)._iterate();
-  }
-  if (collection && typeof collection === 'object') {
-    return new FilterObject(collection, iterator)._iterate();
-  }
-  return Aigle.resolve([]);
+  return new Filter(iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleEach":28,"./internal/util":33}],20:[function(require,module,exports){
+},{"./each":12,"./internal/collection":29,"./internal/util":31}],20:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { INTERNAL, compactArray } = require('./internal/util');
-const { AigleLimitArray, AigleLimitObject } = require('./internal/aigleLimit');
+const { EachLimit } = require('./eachLimit');
+const { setLimit } = require('./internal/collection');
+const { INTERNAL, PENDING, compactArray } = require('./internal/util');
 
-module.exports = filterLimit;
+class FilterLimit extends EachLimit {
 
-class FilterLimitArray extends AigleLimitArray {
-
-  constructor(array, iterator, limit) {
-    super(array, iterator, limit);
-    this._result = Array(this._rest);
-  }
-
-  _callResolve(value, index) {
-    this._result[index] = value ? this._array[index] : INTERNAL;
-    if (--this._rest === 0) {
-      this._promise._resolve(compactArray(this._result));
-    } else if (this._callRest-- > 0) {
-      this._iterate();
+  constructor(limit, iterator, collection) {
+    super(limit, iterator, collection);
+    if (collection === PENDING) {
+      this._set = set;
+    } else {
+      this._result = Array(this._rest);
+      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
     }
   }
 }
-class FilterLimitObject extends AigleLimitObject {
 
-  constructor(object, iterator, limit) {
-    super(object, iterator, limit);
-    this._result = Array(this._rest);
+module.exports = { filterLimit, FilterLimit };
+
+function set(collection) {
+  setLimit.call(this, collection);
+  this._result = Array(this._rest);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(value, index) {
+  this._result[index] = value ? this._coll[index] : INTERNAL;
+  if (--this._rest === 0) {
+    this._promise._resolve(compactArray(this._result));
+  } else if (this._callRest-- > 0) {
+    this._iterate();
   }
+}
 
-  _callResolve(value, index) {
-    this._result[index] = value ? this._object[this._keys[index]] : INTERNAL;
-    if (--this._rest === 0) {
-      this._promise._resolve(compactArray(this._result));
-    } else if (this._callRest-- > 0) {
-      this._iterate();
-    }
+function callResolveObject(value, index) {
+  this._result[index] = value ? this._coll[this._keys[index]] : INTERNAL;
+  if (--this._rest === 0) {
+    this._promise._resolve(compactArray(this._result));
+  } else if (this._callRest-- > 0) {
+    this._iterate();
   }
 }
 
@@ -4245,54 +4777,53 @@ class FilterLimitObject extends AigleLimitObject {
  *   });
  */
 function filterLimit(collection, limit, iterator) {
-  if (Array.isArray(collection)) {
-    return new FilterLimitArray(collection, iterator, limit)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new FilterLimitObject(collection, iterator, limit)._execute();
-  }
-  return Aigle.resolve([]);
+  return new FilterLimit(limit, iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleLimit":29,"./internal/util":33}],21:[function(require,module,exports){
+},{"./eachLimit":13,"./internal/collection":29,"./internal/util":31}],21:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleSeriesArray, AigleSeriesObject } = require('./internal/aigleSeries');
+const { EachSeries } = require('./eachSeries');
+const { setSeries } = require('./internal/collection');
+const { INTERNAL, PENDING, compactArray } = require('./internal/util');
 
-module.exports = filterSeries;
+class FilterSeries extends EachSeries {
 
-class FilterSeriesArray extends AigleSeriesArray {
-
-  constructor(array, iterator) {
-    super(array, iterator);
-    this._result = [];
-  }
-
-  _callResolve(value, index) {
-    value && this._result.push(this._array[index]);
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
+  constructor(iterator, collection) {
+    super(iterator, collection);
+    if (collection === PENDING) {
+      this._set = set;
     } else {
-      this._iterate();
+      this._result = Array(this._rest);
+      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
     }
   }
 }
 
-class FilterSeriesObject extends AigleSeriesObject {
+module.exports = { filterSeries, FilterSeries };
 
-  constructor(object, iterator) {
-    super(object, iterator);
-    this._result = [];
+function set(collection) {
+  setSeries.call(this, collection);
+  this._result = Array(this._rest);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(value, index) {
+  this._result[index] = value ? this._coll[index] : INTERNAL;
+  if (--this._rest === 0) {
+    this._promise._resolve(compactArray(this._result));
+  } else {
+    this._iterate();
   }
+}
 
-  _callResolve(value, index) {
-    value && this._result.push(this._object[this._keys[index]]);
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
-    } else {
-      this._iterate();
-    }
+function callResolveObject(value, index) {
+  this._result[index] = value ? this._coll[this._keys[index]] : INTERNAL;
+  if (--this._rest === 0) {
+    this._promise._resolve(compactArray(this._result));
+  } else {
+    this._iterate();
   }
 }
 
@@ -4333,56 +4864,57 @@ class FilterSeriesObject extends AigleSeriesObject {
  *   });
  */
 function filterSeries(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new FilterSeriesArray(collection, iterator)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new FilterSeriesObject(collection, iterator)._execute();
-  }
-  return Aigle.resolve([]);
+  return new FilterSeries(iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleSeries":30}],22:[function(require,module,exports){
+},{"./eachSeries":14,"./internal/collection":29,"./internal/util":31}],22:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleEachArray, AigleEachObject } = require('./internal/aigleEach');
+const { Each } = require('./each');
+const { PENDING } = require('./internal/util');
+const { setShorthand } = require('./internal/collection');
 
-class FindArray extends AigleEachArray {
+class Find extends Each {
 
-  constructor(array, iterator) {
-    super(array, iterator);
-  }
-
-  _callResolve(value, index) {
-    if (value) {
-      this._promise._resolve(this._array[index]);
-    } else if (--this._rest === 0) {
-      this._promise._resolve();
+  constructor(iterator, collection) {
+    super(iterator, collection);
+    if (collection === PENDING) {
+      this._set = set;
+    } else {
+      set.call(this, collection);
     }
   }
 }
 
-class FindObject extends AigleEachObject {
+module.exports = { find, Find };
 
-  constructor(object, iterator) {
-    super(object, iterator);
-  }
+function set(collection) {
+  setShorthand.call(this, collection);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
 
-  _callResolve(value, index) {
-    if (value) {
-      this._promise._resolve(this._object[this._keys[index]]);
-    } else if (--this._rest === 0) {
-      this._promise._resolve();
-    }
+function callResolveArray(value, index) {
+  if (value) {
+    this._size = 0;
+    this._promise._resolve(this._coll[index]);
+  } else if (--this._rest === 0) {
+    this._promise._resolve();
   }
 }
 
-module.exports = find;
+function callResolveObject(value, index) {
+  if (value) {
+    this._size = 0;
+    this._promise._resolve(this._coll[this._keys[index]]);
+  } else if (--this._rest === 0) {
+    this._promise._resolve();
+  }
+}
 
 /**
  * @param {Array|Object} collection
- * @param {Function} iterator
+ * @param {Function|Array|Object|string} iterator
  * @return {Aigle} Returns an Aigle instance
  * @example
  * const order = [];
@@ -4431,59 +4963,93 @@ module.exports = find;
  *     console.log(value); // undefined
  *     console.log(order); // [1, 2, 4]
  *   });
+ *
+ * @example
+ * const collection = [{
+ *   name: 'bargey', active: false
+ * }, {
+ *   name: 'fread', active: true
+ * }];
+ * Aigle.find(collection, 'active')
+ *   .then(object => {
+ *     console.log(object); // { name: 'fread', active: true }
+ *   });
+ *
+ * @example
+ * const collection = [{
+ *   name: 'bargey', active: false
+ * }, {
+ *   name: 'fread', active: true
+ * }];
+ * Aigle.find(collection, ['name', 'fread])
+ *   .then(object => {
+ *     console.log(object); // { name: 'fread', active: true }
+ *   });
+ *
+ * @example
+ * const collection = [{
+ *   name: 'bargey', active: false
+ * }, {
+ *   name: 'fread', active: true
+ * }];
+ * Aigle.find(collection, { name: 'fread', active: true })
+ *   .then(object => {
+ *     console.log(object); // { name: 'fread', active: true }
+ *   });
  */
 function find(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new FindArray(collection, iterator)._iterate();
-  }
-  if (collection && typeof collection === 'object') {
-    return new FindObject(collection, iterator)._iterate();
-  }
-  return Aigle.resolve();
+  return new Find(iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleEach":28}],23:[function(require,module,exports){
+},{"./each":12,"./internal/collection":29,"./internal/util":31}],23:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleLimitArray, AigleLimitObject } = require('./internal/aigleLimit');
+const { EachLimit } = require('./eachLimit');
+const { PENDING } = require('./internal/util');
+const { setLimit } = require('./internal/collection');
 
-module.exports = findLimit;
+class FindLimit extends EachLimit {
 
-class FindLimitArray extends AigleLimitArray {
-
-  constructor(array, iterator, limit) {
-    super(array, iterator, limit);
-  }
-
-  _callResolve(value, index) {
-    if (value) {
-      this._callRest = 0;
-      this._promise._resolve(this._array[index]);
-    } else if (--this._rest === 0) {
-      this._promise._resolve();
-    } else if (this._callRest-- > 0) {
-      this._iterate();
+  constructor(limit, iterator, collection) {
+    super(limit, iterator, collection);
+    if (collection === PENDING) {
+      this._set = set;
+    } else {
+      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
     }
   }
 }
-class FindLimitObject extends AigleLimitObject {
 
-  constructor(object, iterator, limit) {
-    super(object, iterator, limit);
-  }
+module.exports = { findLimit, FindLimit };
 
-  _callResolve(value, index) {
-    if (value) {
-      this._callRest = 0;
-      this._promise._resolve(this._object[this._keys[index]]);
-    } else if (--this._rest === 0) {
-      this._promise._resolve();
-    } else if (this._callRest-- > 0) {
-      this._iterate();
-    }
+function set(collection) {
+  setLimit.call(this, collection);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(value, index) {
+  if (value) {
+    this._callRest = 0;
+    this._promise._resolve(this._coll[index]);
+  } else if (--this._rest === 0) {
+    this._promise._resolve();
+  } else if (this._callRest-- > 0) {
+    this._iterate();
   }
 }
+
+function callResolveObject(value, index) {
+  if (value) {
+    this._callRest = 0;
+    this._promise._resolve(this._coll[this._keys[index]]);
+  } else if (--this._rest === 0) {
+    this._promise._resolve();
+  } else if (this._callRest-- > 0) {
+    this._iterate();
+  }
+}
+
 
 /**
  * @param {Array|Object} collection
@@ -4539,54 +5105,53 @@ class FindLimitObject extends AigleLimitObject {
  *   });
  */
 function findLimit(collection, limit, iterator) {
-  if (Array.isArray(collection)) {
-    return new FindLimitArray(collection, iterator, limit)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new FindLimitObject(collection, iterator, limit)._execute();
-  }
-  return Aigle.resolve();
+  return new FindLimit(limit, iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleLimit":29}],24:[function(require,module,exports){
+},{"./eachLimit":13,"./internal/collection":29,"./internal/util":31}],24:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleSeriesArray, AigleSeriesObject } = require('./internal/aigleSeries');
+const { EachSeries } = require('./eachSeries');
+const { PENDING } = require('./internal/util');
+const { setSeries } = require('./internal/collection');
 
-module.exports = findSeries;
+class FindSeries extends EachSeries {
 
-class FindSeriesArray extends AigleSeriesArray {
-
-  constructor(array, iterator) {
-    super(array, iterator);
-  }
-
-  _callResolve(value, index) {
-    if (value) {
-      this._promise._resolve(this._array[index]);
-    } else if (--this._rest === 0) {
-      this._promise._resolve();
+  constructor(iterator, collection) {
+    super(iterator, collection);
+    if (collection === PENDING) {
+      this._set = set;
     } else {
-      this._iterate();
+      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
     }
   }
 }
 
-class FindSeriesObject extends AigleSeriesObject {
+module.exports = { findSeries, FindSeries };
 
-  constructor(object, iterator) {
-    super(object, iterator);
+function set(collection) {
+  setSeries.call(this, collection);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(value, index) {
+  if (value) {
+    this._promise._resolve(this._coll[index]);
+  } else if (--this._rest === 0) {
+    this._promise._resolve();
+  } else {
+    this._iterate();
   }
+}
 
-  _callResolve(value, index) {
-    if (value) {
-      this._promise._resolve(this._object[this._keys[index]]);
-    } else if (--this._rest === 0) {
-      this._promise._resolve();
-    } else {
-      this._iterate();
-    }
+function callResolveObject(value, index) {
+  if (value) {
+    this._promise._resolve(this._coll[this._keys[index]]);
+  } else if (--this._rest === 0) {
+    this._promise._resolve();
+  } else {
+    this._iterate();
   }
 }
 
@@ -4643,64 +5208,62 @@ class FindSeriesObject extends AigleSeriesObject {
  *   });
  */
 function findSeries(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new FindSeriesArray(collection, iterator)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new FindSeriesObject(collection, iterator)._execute();
-  }
-  return Aigle.resolve();
+  return new FindSeries(iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleSeries":30}],25:[function(require,module,exports){
+},{"./eachSeries":14,"./internal/collection":29,"./internal/util":31}],25:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleEachArray, AigleEachObject } = require('./internal/aigleEach');
+const { Each } = require('./each');
+const { PENDING } = require('./internal/util');
+const { setShorthand } = require('./internal/collection');
 
-class GroupByArray extends AigleEachArray {
+class GroupBy extends Each {
 
-  constructor(array, iterator) {
-    super(array, iterator);
+  constructor(iterator, collection) {
+    super(iterator, collection);
     this._result = {};
-  }
-
-  _callResolve(key, index) {
-    if (this._result[key]) {
-      this._result[key].push(this._array[index]);
+    if (collection === PENDING) {
+      this._set = set;
     } else {
-      this._result[key] = [this._array[index]];
-    }
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
+      set.call(this, collection);
     }
   }
 }
 
-class GroupByObject extends AigleEachObject {
+module.exports = { groupBy, GroupBy };
 
-  constructor(object, iterator) {
-    super(object, iterator);
-    this._result = {};
+function set(collection) {
+  setShorthand.call(this, collection);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(key, index) {
+  if (this._result[key]) {
+    this._result[key].push(this._coll[index]);
+  } else {
+    this._result[key] = [this._coll[index]];
   }
-
-  _callResolve(key, index) {
-    if (this._result[key]) {
-      this._result[key].push(this._object[this._keys[index]]);
-    } else {
-      this._result[key] = [this._object[this._keys[index]]];
-    }
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
-    }
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
   }
 }
 
-module.exports = groupBy;
+function callResolveObject(key, index) {
+  if (this._result[key]) {
+    this._result[key].push(this._coll[this._keys[index]]);
+  } else {
+    this._result[key] = [this._coll[this._keys[index]]];
+  }
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
+  }
+}
 
 /**
  * @param {Array|Object} collection
- * @param {Function} iterator
+ * @param {Function|string} iterator
  * @return {Aigle} Returns an Aigle instance
  * @example
  * const order = [];
@@ -4733,65 +5296,96 @@ module.exports = groupBy;
  *     console.log(object); // { '0': [2, 4], '1': [1] };
  *     console.log(order); // [1, 2, 4];
  *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = ['one', 'two', 'three'];
+ * Aigle.groupBy(collection, 'length')
+ *   .then(object => {
+ *     console.log(object); // { '3': ['one', 'two'], '5': ['three'] };
+ *   });
+ *
+ * @example
+ * const collection = [{
+ *   name: 'bargey', active: false
+ * }, {
+ *   name: 'fread', active: true
+ * }];
+ * Aigle.groupBy(collection, ['active', true])
+ *   .then(object => {
+ *     console.log(object);
+ *     // { 'true': [{ name: 'fread', active: true }], 'false': [{ name: 'bargey', active: false }];
+ *   });
+ *
+ * @example
+ * const collection = [{
+ *   name: 'bargey', active: false
+ * }, {
+ *   name: 'fread', active: true
+ * }];
+ * Aigle.groupBy(collection, { active: true })
+ *   .then(object => {
+ *     console.log(object);
+ *     // { 'true': [{ name: 'fread', active: true }], 'false': [{ name: 'bargey', active: false }];
+ *   });
  */
 function groupBy(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new GroupByArray(collection, iterator)._iterate();
-  }
-  if (collection && typeof collection === 'object') {
-    return new GroupByObject(collection, iterator)._iterate();
-  }
-  return Aigle.resolve({});
+  return  new GroupBy(iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleEach":28}],26:[function(require,module,exports){
+},{"./each":12,"./internal/collection":29,"./internal/util":31}],26:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleLimitArray, AigleLimitObject } = require('./internal/aigleLimit');
+const { EachLimit } = require('./eachLimit');
+const { PENDING } = require('./internal/util');
+const { setLimit } = require('./internal/collection');
 
-class GroupByLimitArray extends AigleLimitArray {
+class GroupByLimit extends EachLimit {
 
-  constructor(array, iterator, limit) {
-    super(array, iterator, limit);
+  constructor(limit, iterator, collection) {
+    super(limit, iterator, collection);
     this._result = {};
-  }
-
-  _callResolve(key, index) {
-    if (this._result[key]) {
-      this._result[key].push(this._array[index]);
+    if (collection === PENDING) {
+      this._set = set;
     } else {
-      this._result[key] = [this._array[index]];
-    }
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
-    } else if (this._callRest-- > 0) {
-      this._iterate();
-    }
-  }
-}
-class GroupByLimitObject extends AigleLimitObject {
-
-  constructor(object, iterator, limit) {
-    super(object, iterator, limit);
-    this._result = {};
-  }
-
-  _callResolve(key, index) {
-    if (this._result[key]) {
-      this._result[key].push(this._object[this._keys[index]]);
-    } else {
-      this._result[key] = [this._object[this._keys[index]]];
-    }
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
-    } else if (this._callRest-- > 0) {
-      this._iterate();
+      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
     }
   }
 }
 
-module.exports = groupByLimit;
+module.exports = { groupByLimit, GroupByLimit };
+
+function set(collection) {
+  setLimit.call(this, collection);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(key, index) {
+  if (this._result[key]) {
+    this._result[key].push(this._coll[index]);
+  } else {
+    this._result[key] = [this._coll[index]];
+  }
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
+  } else if (this._callRest-- > 0) {
+    this._iterate();
+  }
+}
+
+function callResolveObject(key, index) {
+  if (this._result[key]) {
+    this._result[key].push(this._coll[this._keys[index]]);
+  } else {
+    this._result[key] = [this._coll[this._keys[index]]];
+  }
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
+  } else if (this._callRest-- > 0) {
+    this._iterate();
+  }
+}
 
 /**
  * @param {Array|Object} collection
@@ -4853,62 +5447,60 @@ module.exports = groupByLimit;
  *   });
  */
 function groupByLimit(collection, limit, iterator) {
-  if (Array.isArray(collection)) {
-    return new GroupByLimitArray(collection, iterator, limit)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new GroupByLimitObject(collection, iterator, limit)._execute();
-  }
-  return Aigle.resolve({});
+  return new GroupByLimit(limit, iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleLimit":29}],27:[function(require,module,exports){
+},{"./eachLimit":13,"./internal/collection":29,"./internal/util":31}],27:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleSeriesArray, AigleSeriesObject } = require('./internal/aigleSeries');
+const { EachSeries } = require('./eachSeries');
+const { PENDING } = require('./internal/util');
+const { setSeries } = require('./internal/collection');
 
-module.exports = groupBySeries;
+class GroupBySeries extends EachSeries {
 
-class GroupBySeriesArray extends AigleSeriesArray {
-
-  constructor(array, iterator) {
-    super(array, iterator);
+  constructor(iterator, collection) {
+    super(iterator, collection);
     this._result = {};
-  }
-
-  _callResolve(key, index) {
-    if (this._result[key]) {
-      this._result[key].push(this._array[index]);
+    if (collection === PENDING) {
+      this._set = set;
     } else {
-      this._result[key] = [this._array[index]];
-    }
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
-    } else {
-      this._iterate();
+      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
     }
   }
 }
 
-class GroupBySeriesObject extends AigleSeriesObject {
+module.exports = { groupBySeries, GroupBySeries };
 
-  constructor(object, iterator) {
-    super(object, iterator);
-    this._result = {};
+function set(collection) {
+  setSeries.call(this, collection);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(key, index) {
+  if (this._result[key]) {
+    this._result[key].push(this._coll[index]);
+  } else {
+    this._result[key] = [this._coll[index]];
   }
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
+  } else {
+    this._iterate();
+  }
+}
 
-  _callResolve(key, index) {
-    if (this._result[key]) {
-      this._result[key].push(this._object[this._keys[index]]);
-    } else {
-      this._result[key] = [this._object[this._keys[index]]];
-    }
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
-    } else {
-      this._iterate();
-    }
+function callResolveObject(key, index) {
+  if (this._result[key]) {
+    this._result[key].push(this._coll[this._keys[index]]);
+  } else {
+    this._result[key] = [this._coll[this._keys[index]]];
+  }
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
+  } else {
+    this._iterate();
   }
 }
 
@@ -4949,309 +5541,10 @@ class GroupBySeriesObject extends AigleSeriesObject {
  *   });
  */
 function groupBySeries(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new GroupBySeriesArray(collection, iterator)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new GroupBySeriesObject(collection, iterator)._execute();
-  }
-  return Aigle.resolve({});
+  return new GroupBySeries(iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleSeries":30}],28:[function(require,module,exports){
-'use strict';
-
-const { AigleProxy } = require('aigle-core');
-const { Aigle } = require('../aigle');
-const { INTERNAL, call2, callProxyReciever } = require('./util');
-
-class AigleEachArray extends AigleProxy {
-
-  constructor(array, iterator) {
-    super();
-    const size = array.length;
-    this._promise = new Aigle(INTERNAL);
-    this._rest = size;
-    this._array = array;
-    this._result = undefined;
-    this._iterator = iterator;
-  }
-
-  _iterate() {
-    const { _rest, _iterator, _array } = this;
-    if (_rest === 0) {
-      this._promise._resolve(this._result);
-    } else {
-      let i = -1;
-      while (++i < _rest && callProxyReciever(call2(_iterator, _array[i], i), this, i)) {}
-    }
-    return this._promise;
-  }
-
-  _callResolve(value) {
-    if (--this._rest === 0 || value === false) {
-      this._promise._resolve();
-    }
-  }
-
-  _callReject(reason) {
-    this._promise._reject(reason);
-  }
-}
-
-class AigleEachObject extends AigleProxy {
-
-  constructor(object, iterator) {
-    super();
-    const keys = Object.keys(object);
-    const size = keys.length;
-    this._promise = new Aigle(INTERNAL);
-    this._rest = size;
-    this._keys = keys;
-    this._object = object;
-    this._iterator = iterator;
-  }
-
-  _iterate() {
-    const { _rest, _iterator, _keys, _object } = this;
-    if (_rest === 0) {
-      this._promise._resolve(this._result);
-    } else {
-      let i = -1;
-      while (++i < _rest) {
-        const key = _keys[i];
-        if (callProxyReciever(call2(_iterator, _object[key], key), this, i) === false) {
-          break;
-        }
-      }
-    }
-    return this._promise;
-  }
-
-  _callResolve(value) {
-    if (--this._rest === 0 || value === false) {
-      this._promise._resolve();
-    }
-  }
-
-  _callReject(reason) {
-    this._promise._reject(reason);
-  }
-}
-
-module.exports = { AigleEachArray, AigleEachObject };
-
-},{"../aigle":2,"./util":33,"aigle-core":73}],29:[function(require,module,exports){
-'use strict';
-
-const { AigleProxy } = require('aigle-core');
-
-const { Aigle } = require('../aigle');
-const { DEFAULT_LIMIT, INTERNAL, call2, callProxyReciever } = require('./util');
-
-class AigleLimitArray extends AigleProxy {
-
-  constructor(array, iterator, limit) {
-    super();
-    if (typeof limit === 'function') {
-      iterator = limit;
-      limit = DEFAULT_LIMIT;
-    }
-    const size = array.length;
-    limit = limit > size ? size : limit;
-    this._promise = new Aigle(INTERNAL);
-    this._limit = limit;
-    this._index = 0;
-    this._rest = size;
-    this._callRest = size - limit;
-    this._array = array;
-    this._result = undefined;
-    this._iterator = iterator;
-  }
-
-  _execute() {
-    if (this._rest === 0) {
-      this._promise._resolve(this._result);
-    } else {
-      while (this._limit--) {
-        this._iterate();
-      }
-    }
-    return this._promise;
-  }
-
-  _iterate() {
-    const i = this._index++;
-    callProxyReciever(call2(this._iterator, this._array[i], i), this, i);
-  }
-
-  _callResolve(value) {
-    if (value === false) {
-      this._callRest = 0;
-      this._promise._resolve();
-    } else if (--this._rest === 0) {
-      this._promise._resolve();
-    } else if (this._callRest-- > 0) {
-      this._iterate();
-    }
-  }
-
-  _callReject(reason) {
-    this._callRest = 0;
-    this._promise._reject(reason);
-  }
-}
-
-class AigleLimitObject extends AigleProxy {
-
-  constructor(object, iterator, limit) {
-    super();
-    const keys = Object.keys(object);
-    const size = keys.length;
-    limit = limit > size ? size : limit;
-    this._promise = new Aigle(INTERNAL);
-    this._limit = limit;
-    this._index = 0;
-    this._keys = keys;
-    this._rest = size;
-    this._callRest = size - limit;
-    this._object = object;
-    this._result = undefined;
-    this._iterator = iterator;
-  }
-
-  _execute() {
-    if (this._rest === 0) {
-      this._promise._resolve(this._result);
-    } else {
-      while (this._limit--) {
-        this._iterate();
-      }
-    }
-    return this._promise;
-  }
-
-  _iterate() {
-    const i = this._index++;
-    const key = this._keys[i];
-    callProxyReciever(call2(this._iterator, this._object[key], key), this, i);
-  }
-
-  _callResolve(value) {
-    if (value === false) {
-      this._callRest = 0;
-      this._promise._resolve();
-    } else if (--this._rest === 0) {
-      this._promise._resolve();
-    } else if (this._callRest-- > 0) {
-      this._iterate();
-    }
-  }
-
-  _callReject(reason) {
-    this._callRest = 0;
-    this._promise._reject(reason);
-  }
-}
-
-module.exports = { AigleLimitArray, AigleLimitObject };
-
-},{"../aigle":2,"./util":33,"aigle-core":73}],30:[function(require,module,exports){
-'use strict';
-
-const { AigleProxy } = require('aigle-core');
-const { Aigle } = require('../aigle');
-const { INTERNAL, call2, callProxyReciever } = require('./util');
-
-class AigleSeriesArray extends AigleProxy {
-
-  constructor(array, iterator) {
-    super();
-    const size = array.length;
-    this._promise = new Aigle(INTERNAL);
-    this._index = 0;
-    this._rest = size;
-    this._size = size;
-    this._array = array;
-    this._result = undefined;
-    this._iterator = iterator;
-  }
-
-  _execute() {
-    if (this._rest === 0) {
-      this._promise._resolve(this._result);
-    } else {
-      this._iterate();
-    }
-    return this._promise;
-  }
-
-
-  _iterate() {
-    const i = this._index++;
-    callProxyReciever(call2(this._iterator, this._array[i], i), this, i);
-  }
-
-  _callResolve(value) {
-    if (--this._rest === 0 || value === false) {
-      this._promise._resolve();
-    } else {
-      this._iterate();
-    }
-  }
-
-  _callReject(reason) {
-    this._promise._reject(reason);
-  }
-}
-
-class AigleSeriesObject extends AigleProxy {
-
-  constructor(object, iterator) {
-    super();
-    const keys = Object.keys(object);
-    const size = keys.length;
-    this._promise = new Aigle(INTERNAL);
-    this._index = 0;
-    this._keys = keys;
-    this._rest = size;
-    this._size = size;
-    this._object = object;
-    this._result = undefined;
-    this._iterator = iterator;
-  }
-
-  _execute() {
-    if (this._rest === 0) {
-      this._promise._resolve(this._result);
-    } else {
-      this._iterate();
-    }
-    return this._promise;
-  }
-
-  _iterate() {
-    const i = this._index++;
-    const key = this._keys[i];
-    callProxyReciever(call2(this._iterator, this._object[key], key), this, i);
-  }
-
-  _callResolve(value) {
-    if (--this._rest === 0 || value === false) {
-      this._promise._resolve();
-    } else {
-      this._iterate();
-    }
-  }
-
-  _callReject(reason) {
-    this._promise._reject(reason);
-  }
-}
-
-module.exports = { AigleSeriesArray, AigleSeriesObject };
-
-},{"../aigle":2,"./util":33,"aigle-core":73}],31:[function(require,module,exports){
+},{"./eachSeries":14,"./internal/collection":29,"./internal/util":31}],28:[function(require,module,exports){
 'use strict';
 
 let ticked = false;
@@ -5277,7 +5570,224 @@ function invoke(promise) {
 
 module.exports = invoke;
 
-},{}],32:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
+'use strict';
+
+const { call2, callProxyReciever } = require('./util');
+
+const [setParallel, setSeries] = [
+  [iterateArrayParallel, iterateObjectParallel],
+  [iterateArraySeries, iterateObjectSeries]
+].map(createSet);
+
+module.exports = {
+  execute,
+  setParallel,
+  setShorthand,
+  setSeries,
+  setLimit
+};
+
+function execute(collection) {
+  this._callResolve = this._iterate;
+  this._set(collection);
+  this._execute();
+}
+
+function createSet([iterateArray, iterateObject]) {
+
+  return function set(collection) {
+    if (Array.isArray(collection)) {
+      this._coll = collection;
+      this._size = collection.length;
+      this._iterate = iterateArray;
+    } else if (collection && typeof collection === 'object') {
+      const keys = Object.keys(collection);
+      this._coll = collection;
+      this._size = keys.length;
+      this._keys = keys;
+      this._iterate = iterateObject;
+    } else {
+      this._size = 0;
+    }
+    this._rest = this._size;
+    return this;
+  };
+}
+
+function setShorthand(collection) {
+  if (Array.isArray(collection)) {
+    this._coll = collection;
+    this._size = collection.length;
+    switch (typeof this._iterator) {
+    case 'function':
+      this._iterate = iterateArrayParallel;
+      break;
+    case 'string':
+      this._iterate = iterateArrayWithString;
+      break;
+    case 'object':
+      this._iterate = Array.isArray(this._iterator) ? iterateArrayWithArray : iterateArrayWithObject;
+      break;
+    }
+  } else if (collection && typeof collection === 'object') {
+    const keys = Object.keys(collection);
+    this._coll = collection;
+    this._size = keys.length;
+    this._keys = keys;
+    switch (typeof this._iterator) {
+    case 'function':
+      this._iterate = iterateObjectParallel;
+      break;
+    case 'string':
+      this._iterate = iterateObjectWithString;
+      break;
+    case 'object':
+      this._iterate = Array.isArray(this._iterator) ? iterateObjectWithArray : iterateObjectWithObject;
+      break;
+    }
+  } else {
+    this._size = 0;
+  }
+  this._rest = this._size;
+  return this;
+}
+
+function setLimit(collection) {
+  setSeries.call(this, collection);
+  const { _limit, _size } = this;
+  this._limit = _limit < _size ? _limit : _size;
+  this._callRest = _size - this._limit;
+  return this;
+}
+
+function iterateArrayParallel() {
+  const { _rest, _iterator, _coll } = this;
+  let i = -1;
+  while (++i < _rest && callProxyReciever(call2(_iterator, _coll[i], i), this, i)) {}
+}
+
+function iterateObjectParallel() {
+  const { _rest, _iterator, _coll, _keys } = this;
+  let i = -1;
+  while (++i < _rest) {
+    const key = _keys[i];
+    if (callProxyReciever(call2(_iterator, _coll[key], key), this, i) === false) {
+      break;
+    }
+  }
+}
+
+function iterateArraySeries() {
+  const i = this._index++;
+  callProxyReciever(call2(this._iterator, this._coll[i], i), this, i);
+}
+
+function iterateObjectSeries() {
+  const i = this._index++;
+  const key = this._keys[i];
+  callProxyReciever(call2(this._iterator, this._coll[key], key), this, i);
+}
+
+function iterateArrayWithString() {
+  const { _iterator, _coll } = this;
+  let i = -1;
+  while (++i < this._size) {
+    const obj = _coll[i];
+    if (obj) {
+      this._callResolve(obj[_iterator], i);
+    } else {
+      this._callResolve(undefined, i);
+    }
+  }
+}
+
+function iterateObjectWithString() {
+  const {  _iterator, _coll, _keys } = this;
+  let i = -1;
+  while (++i < this._size) {
+    const obj = _coll[_keys[i]];
+    if (obj) {
+      this._callResolve(obj[_iterator], i);
+    } else {
+      this._callResolve(undefined, i);
+    }
+  }
+}
+
+function iterateArrayWithArray() {
+  const { _coll } = this;
+  const [key, value] = this._iterator;
+  let i = -1;
+  while (++i < this._size) {
+    const obj = _coll[i];
+    if (obj) {
+      this._callResolve(obj[key] === value, i);
+    } else {
+      this._callResolve(undefined, i);
+    }
+  }
+}
+
+function iterateObjectWithArray() {
+  const {  _coll, _keys } = this;
+  const [key, value] = this._iterator;
+  let i = -1;
+  while (++i < this._size) {
+    const obj = _coll[_keys[i]];
+    if (obj) {
+      this._callResolve(obj[key] === value, i);
+    } else {
+      this._callResolve(undefined, i);
+    }
+  }
+}
+
+function iterateArrayWithObject() {
+  const { _iterator: object, _coll } = this;
+  const keys = Object.keys(object);
+  let i = -1;
+  first: while (++i < this._size) {
+    const obj = _coll[i];
+    if (!obj) {
+      this._callResolve(undefined, i);
+      continue;
+    }
+    let l = keys.length;
+    while (l--) {
+      const key = keys[l];
+      if (obj[key] !== object[key]) {
+        this._callResolve(false, i);
+        continue first;
+      }
+    }
+    this._callResolve(true, i);
+  }
+}
+
+function iterateObjectWithObject() {
+  const {  _iterator: object, _coll, _keys } = this;
+  const keys = Object.keys(object);
+  let i = -1;
+  first: while (++i < this._size) {
+    const obj = _coll[_keys[i]];
+    if (!obj) {
+      this._callResolve(undefined, i);
+      continue;
+    }
+    let l = keys.length;
+    while (l--) {
+      const key = keys[l];
+      if (obj[key] !== object[key]) {
+        this._callResolve(false, i);
+        continue first;
+      }
+    }
+    this._callResolve(true, i);
+  }
+}
+
+},{"./util":31}],30:[function(require,module,exports){
 'use strict';
 
 class Queue {
@@ -5301,7 +5811,7 @@ class Queue {
 
 module.exports = Queue;
 
-},{}],33:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict';
 
 const { AigleCore } = require('aigle-core');
@@ -5313,6 +5823,7 @@ module.exports = {
   VERSION,
   DEFAULT_LIMIT,
   INTERNAL,
+  PENDING,
   errorObj,
   call0,
   call1,
@@ -5325,13 +5836,14 @@ module.exports = {
   callProxyReciever,
   promiseArrayEach,
   promiseObjectEach,
-  map,
   compactArray,
   clone,
   sort
 };
 
 function INTERNAL() {}
+
+function PENDING() {}
 
 function call0(handler) {
   try {
@@ -5552,15 +6064,6 @@ function promiseObjectEach(receiver) {
   }
 }
 
-function map(array, iterator) {
-  let l = array.length;
-  const result = Array(l);
-  while (l--) {
-    result[l] = iterator(array[l]);
-  }
-  return result;
-}
-
 function compactArray(array) {
   let i = -1;
   const l = array.length;
@@ -5598,7 +6101,6 @@ function cloneObject(object) {
   return result;
 }
 
-
 function sortIterator(a, b) {
   return a.criteria - b.criteria;
 }
@@ -5612,7 +6114,7 @@ function sort(array) {
   return array;
 }
 
-},{"../../package.json":76,"aigle-core":73}],34:[function(require,module,exports){
+},{"../../package.json":74,"aigle-core":71}],32:[function(require,module,exports){
 'use strict';
 
 const { AigleProxy } = require('aigle-core');
@@ -5731,36 +6233,43 @@ function spread(proxy, array) {
   callProxyReciever(apply(_handler, array), proxy, INTERNAL);
 }
 
-},{"./aigle":2,"./internal/util":33,"aigle-core":73}],35:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"aigle-core":71}],33:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleEachArray, AigleEachObject } = require('./internal/aigleEach');
-const { map: _map } = require('./internal/util');
+const { Each } = require('./each');
+const { PENDING } = require('./internal/util');
+const { setShorthand } = require('./internal/collection');
 
-const [MapArray, MapObject] = _map([AigleEachArray, AigleEachObject], Class => {
+class Map extends Each {
 
-  return class extends Class {
-
-    constructor(array, iterator) {
-      super(array, iterator);
-      this._result = Array(this._rest);
+  constructor(iterator, collection) {
+    super(iterator, collection);
+    if (collection === PENDING) {
+      this._set = set;
+    } else {
+      set.call(this, collection);
     }
+  }
 
-    _callResolve(value, index) {
-      this._result[index] = value;
-      if (--this._rest === 0) {
-        this._promise._resolve(this._result);
-      }
+  _callResolve(value, index) {
+    this._result[index] = value;
+    if (--this._rest === 0) {
+      this._promise._resolve(this._result);
     }
-  };
-});
+  }
+}
 
-module.exports = map;
+module.exports = { map, Map };
+
+function set(collection) {
+  setShorthand.call(this, collection);
+  this._result = Array(this._rest);
+  return this;
+}
 
 /**
  * @param {Array|Object} collection
- * @param {Function} iterator
+ * @param {Function|string} iterator
  * @return {Aigle} Returns an Aigle instance
  * @example
  * const order = [];
@@ -5793,45 +6302,58 @@ module.exports = map;
  *     console.log(array); // [2, 8, 4];
  *     console.log(order); // [1, 2, 4];
  *   });
+ *
+ * @example
+ * const collection = [{
+ *  uid: 1, name: 'test1'
+ * }, {
+ *  uid: 4, name: 'test4'
+ * }, {
+ *  uid: 2, name: 'test2'
+ * }];
+ * Aigle.map(collection, 'uid')
+ *   .then(uids => console.log(uids)); // [1, 4, 2]
  */
 function map(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new MapArray(collection, iterator)._iterate();
-  }
-  if (collection && typeof collection === 'object') {
-    return new MapObject(collection, iterator)._iterate();
-  }
-  return Aigle.resolve([]);
+  return new Map(iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleEach":28,"./internal/util":33}],36:[function(require,module,exports){
+},{"./each":12,"./internal/collection":29,"./internal/util":31}],34:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { map } = require('./internal/util');
-const { AigleLimitArray, AigleLimitObject } = require('./internal/aigleLimit');
+const { EachLimit } = require('./eachLimit');
+const { PENDING } = require('./internal/util');
+const { setLimit } = require('./internal/collection');
 
-module.exports = mapLimit;
+class MapLimit extends EachLimit {
 
-const [MapLimitArray, MapLimitObject] = map([AigleLimitArray, AigleLimitObject], Class => {
-
-  return class extends Class {
-
-    constructor(object, iterator, limit) {
-      super(object, iterator, limit);
+  constructor(limit, iterator, collection) {
+    super(limit, iterator, collection);
+    if (collection === PENDING) {
+      this._set = set;
+    } else {
       this._result = Array(this._rest);
     }
+  }
 
-    _callResolve(value, index) {
-      this._result[index] = value;
-      if (--this._rest === 0) {
-        this._promise._resolve(this._result);
-      } else if (this._callRest-- > 0) {
-        this._iterate();
-      }
+  _callResolve(value, index) {
+    this._result[index] = value;
+    if (--this._rest === 0) {
+      this._promise._resolve(this._result);
+    } else if (this._callRest-- > 0) {
+      this._iterate();
     }
-  };
-});
+  }
+}
+
+module.exports = { mapLimit, MapLimit };
+
+function set(collection) {
+  setLimit.call(this, collection);
+  this._result = Array(this._rest);
+  return this;
+}
+
 
 /**
  * @param {Array|Object} collection
@@ -5887,44 +6409,45 @@ const [MapLimitArray, MapLimitObject] = map([AigleLimitArray, AigleLimitObject],
  *   });
  */
 function mapLimit(collection, limit, iterator) {
-  if (Array.isArray(collection)) {
-    return new MapLimitArray(collection, iterator, limit)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new MapLimitObject(collection, iterator, limit)._execute();
-  }
-  return Aigle.resolve([]);
+  return new MapLimit(limit, iterator, collection)._execute();
 }
 
 
-},{"./aigle":2,"./internal/aigleLimit":29,"./internal/util":33}],37:[function(require,module,exports){
+},{"./eachLimit":13,"./internal/collection":29,"./internal/util":31}],35:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleSeriesArray, AigleSeriesObject } = require('./internal/aigleSeries');
-const { map } = require('./internal/util');
+const { EachSeries } = require('./eachSeries');
+const { PENDING } = require('./internal/util');
+const { setSeries } = require('./internal/collection');
 
-module.exports = mapSeries;
+class MapSeries extends EachSeries {
 
-const [MapSeriesArray, MapSeriesObject] = map([AigleSeriesArray, AigleSeriesObject], Class => {
-
-  return class extends Class {
-
-    constructor(array, iterator) {
-      super(array, iterator);
+  constructor(iterator, collection) {
+    super(iterator, collection);
+    if (collection === PENDING) {
+      this._set = set;
+    } else {
       this._result = Array(this._rest);
     }
+  }
 
-    _callResolve(value, index) {
-      this._result[index] = value;
-      if (--this._rest === 0) {
-        this._promise._resolve(this._result);
-      } else {
-        this._iterate();
-      }
+  _callResolve(value, index) {
+    this._result[index] = value;
+    if (--this._rest === 0) {
+      this._promise._resolve(this._result);
+    } else {
+      this._iterate();
     }
-  };
-});
+  }
+}
+
+module.exports = { mapSeries, MapSeries };
+
+function set(collection) {
+  setSeries.call(this, collection);
+  this._result = Array(this._rest);
+  return this;
+}
 
 /**
  * @param {Array|Object} collection
@@ -5963,56 +6486,54 @@ const [MapSeriesArray, MapSeriesObject] = map([AigleSeriesArray, AigleSeriesObje
  *   });
  */
 function mapSeries(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new MapSeriesArray(collection, iterator)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new MapSeriesObject(collection, iterator)._execute();
-  }
-  return Aigle.resolve([]);
+  return new MapSeries(iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleSeries":30,"./internal/util":33}],38:[function(require,module,exports){
+},{"./eachSeries":14,"./internal/collection":29,"./internal/util":31}],36:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleEachArray, AigleEachObject } = require('./internal/aigleEach');
+const { Each } = require('./each');
+const { PENDING } = require('./internal/util');
+const { setShorthand } = require('./internal/collection');
 
-module.exports = mapValues;
+class MapValues extends Each {
 
-class MapValuesArray extends AigleEachArray {
-
-  constructor(array, iterator) {
-    super(array, iterator);
+  constructor(iterator, collection) {
+    super(iterator, collection);
     this._result = {};
-  }
-
-  _callResolve(value, index) {
-    this._result[index] = value;
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
+    if (collection === PENDING) {
+      this._set = set;
+    } else {
+      set.call(this, collection);
     }
   }
 }
 
-class MapValuesObject extends AigleEachObject {
+module.exports = { mapValues, MapValues };
 
-  constructor(object, iterator) {
-    super(object, iterator);
-    this._result = {};
+function set(collection) {
+  setShorthand.call(this, collection);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(value, index) {
+  this._result[index] = value;
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
   }
+}
 
-  _callResolve(value, index) {
-    this._result[this._keys[index]] = value;
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
-    }
+function callResolveObject(value, index) {
+  this._result[this._keys[index]] = value;
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
   }
 }
 
 /**
  * @param {Array|Object} collection
- * @param {Function} iterator
+ * @param {Function|string} iterator
  * @return {Aigle} Returns an Aigle instance
  * @example
  * const order = [];
@@ -6045,57 +6566,65 @@ class MapValuesObject extends AigleEachObject {
  *     console.log(object); // { a: 2, b: 8, c: 4 }
  *     console.log(order); // [1, 2, 4]
  *   });
+ *
+ * @example
+ * const collection = {
+ *   task1: { uid: 1, name: 'test1' },
+ *   task2: { uid: 4, name: 'test4' },
+ *   task3: { uid: 2, name: 'test2' }
+ * }];
+ * Aigle.mapValues(collection, 'uid')
+ *   .then(uids => console.log(uids)); // { task1: 1, task2: 4, task3: 2 }
  */
 function mapValues(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new MapValuesArray(collection, iterator)._iterate();
-  }
-  if (collection && typeof collection === 'object') {
-    return new MapValuesObject(collection, iterator)._iterate();
-  }
-  return Aigle.resolve({});
+  return new MapValues(iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleEach":28}],39:[function(require,module,exports){
+},{"./each":12,"./internal/collection":29,"./internal/util":31}],37:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleLimitArray, AigleLimitObject } = require('./internal/aigleLimit');
+const { EachLimit } = require('./eachLimit');
+const { PENDING } = require('./internal/util');
+const { setLimit } = require('./internal/collection');
 
-class MapValuesLimitArray extends AigleLimitArray {
+class MapValuesLimit extends EachLimit {
 
-  constructor(array, iterator, limit) {
-    super(array, iterator, limit);
+  constructor(limit, iterator, collection) {
+    super(limit, iterator, collection);
     this._result = {};
-  }
-
-  _callResolve(value, index) {
-    this._result[index] = value;
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
-    } else if (this._callRest-- > 0) {
-      this._iterate();
-    }
-  }
-}
-class MapValuesLimitObject extends AigleLimitObject {
-
-  constructor(object, iterator, limit) {
-    super(object, iterator, limit);
-    this._result = {};
-  }
-
-  _callResolve(value, index) {
-    this._result[this._keys[index]] = value;
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
-    } else if (this._callRest-- > 0) {
-      this._iterate();
+    if (collection === PENDING) {
+      this._set = set;
+    } else {
+      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
     }
   }
 }
 
-module.exports = mapValuesLimit;
+module.exports = { mapValuesLimit, MapValuesLimit };
+
+function set(collection) {
+  setLimit.call(this, collection);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(value, index) {
+  this._result[index] = value;
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
+  } else if (this._callRest-- > 0) {
+    this._iterate();
+  }
+}
+
+function callResolveObject(value, index) {
+  this._result[this._keys[index]] = value;
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
+  } else if (this._callRest-- > 0) {
+    this._iterate();
+  }
+}
 
 /**
  * @param {Array|Object} collection
@@ -6151,54 +6680,52 @@ module.exports = mapValuesLimit;
  *   });
  */
 function mapValuesLimit(collection, limit, iterator) {
-  if (Array.isArray(collection)) {
-    return new MapValuesLimitArray(collection, iterator, limit)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new MapValuesLimitObject(collection, iterator, limit)._execute();
-  }
-  return Aigle.resolve({});
+  return new MapValuesLimit(limit, iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleLimit":29}],40:[function(require,module,exports){
+},{"./eachLimit":13,"./internal/collection":29,"./internal/util":31}],38:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleSeriesArray, AigleSeriesObject } = require('./internal/aigleSeries');
+const { EachSeries } = require('./eachSeries');
+const { PENDING } = require('./internal/util');
+const { setSeries } = require('./internal/collection');
 
-module.exports = mapValuesSeries;
+class MapValuesSeries extends EachSeries {
 
-class MapValuesSeriesArray extends AigleSeriesArray {
-
-  constructor(array, iterator) {
-    super(array, iterator);
+  constructor(iterator, collection) {
+    super(iterator, collection);
     this._result = {};
-  }
-
-  _callResolve(value, index) {
-    this._result[index] = value;
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
+    if (collection === PENDING) {
+      this._set = set;
     } else {
-      this._iterate();
+      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
     }
   }
 }
 
-class MapValuesSeriesObject extends AigleSeriesObject {
+module.exports = { mapValuesSeries, MapValuesSeries };
 
-  constructor(object, iterator) {
-    super(object, iterator);
-    this._result = {};
+function set(collection) {
+  setSeries.call(this, collection);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(value, index) {
+  this._result[index] = value;
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
+  } else {
+    this._iterate();
   }
+}
 
-  _callResolve(value, index) {
-    this._result[this._keys[index]] = value;
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
-    } else {
-      this._iterate();
-    }
+function callResolveObject(value, index) {
+  this._result[this._keys[index]] = value;
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
+  } else {
+    this._iterate();
   }
 }
 
@@ -6239,61 +6766,59 @@ class MapValuesSeriesObject extends AigleSeriesObject {
  *   });
  */
 function mapValuesSeries(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new MapValuesSeriesArray(collection, iterator)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new MapValuesSeriesObject(collection, iterator)._execute();
-  }
-  return Aigle.resolve({});
+  return new MapValuesSeries(iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleSeries":30}],41:[function(require,module,exports){
+},{"./eachSeries":14,"./internal/collection":29,"./internal/util":31}],39:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleEachArray, AigleEachObject } = require('./internal/aigleEach');
+const { Each } = require('./each');
+const { PENDING } = require('./internal/util');
+const { setShorthand } = require('./internal/collection');
 
-module.exports = omit;
+class Omit extends Each {
 
-class OmitArray extends AigleEachArray {
-
-  constructor(array, iterator) {
-    super(array, iterator);
+  constructor(iterator, collection) {
+    super(iterator, collection);
     this._result = {};
-  }
-
-  _callResolve(value, index) {
-    if (!value) {
-      this._result[index] = this._array[index];
-    }
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
+    if (collection === PENDING) {
+      this._set = set;
+    } else {
+      set.call(this, collection);
     }
   }
 }
 
-class OmitObject extends AigleEachObject {
+module.exports = { omit, Omit };
 
-  constructor(object, iterator) {
-    super(object, iterator);
-    this._result = {};
+function set(collection) {
+  setShorthand.call(this, collection);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(value, index) {
+  if (!value) {
+    this._result[index] = this._coll[index];
   }
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
+  }
+}
 
-  _callResolve(value, index) {
-    if (!value) {
-      const key = this._keys[index];
-      this._result[key] = this._object[key];
-    }
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
-    }
+function callResolveObject(value, index) {
+  if (!value) {
+    const key = this._keys[index];
+    this._result[key] = this._coll[key];
+  }
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
   }
 }
 
 /**
  * @param {Array|Object} collection
- * @param {Function} iterator
+ * @param {Function|Array|Object|string} iterator
  * @return {Aigle} Returns an Aigle instance
  * @example
  * const order = [];
@@ -6326,62 +6851,97 @@ class OmitObject extends AigleEachObject {
  *     console.log(object); // { b: 4, c: 2 }
  *     console.log(order); // [1, 2, 4]
  *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [{
+ *   name: 'bargey', active: false
+ * }, {
+ *   name: 'fread', active: true
+ * }];
+ * Aigle.omit(collection, 'active')
+ *   .then(object => {
+ *     console.log(object); // { '0': { name: 'bargey', active: false } }
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [{
+ *   name: 'bargey', active: false
+ * }, {
+ *   name: 'fread', active: true
+ * }];
+ * Aigle.omit(collection, ['name', 'fread'])
+ *   .then(object => {
+ *     console.log(object); // { '0': { name: 'bargey', active: false } }
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [{
+ *   name: 'bargey', active: false
+ * }, {
+ *   name: 'fread', active: true
+ * }];
+ * Aigle.omit(collection, { name: 'fread', active: true })
+ *   .then(object => {
+ *     console.log(object); // { '0': { name: 'bargey', active: false } }
+ *   });
  */
 function omit(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new OmitArray(collection, iterator)._iterate();
-  }
-  if (collection && typeof collection === 'object') {
-    return new OmitObject(collection, iterator)._iterate();
-  }
-  return Aigle.resolve({});
+  return new Omit(iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleEach":28}],42:[function(require,module,exports){
+},{"./each":12,"./internal/collection":29,"./internal/util":31}],40:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleLimitArray, AigleLimitObject } = require('./internal/aigleLimit');
+const { EachLimit } = require('./eachLimit');
+const { PENDING } = require('./internal/util');
+const { setLimit } = require('./internal/collection');
 
-class OmitLimitArray extends AigleLimitArray {
+class OmitLimit extends EachLimit {
 
-  constructor(array, iterator, limit) {
-    super(array, iterator, limit);
+  constructor(limit, iterator, collection) {
+    super(limit, iterator, collection);
     this._result = {};
-  }
-
-  _callResolve(value, index) {
-    if (!value) {
-      this._result[index] = this._array[index];
-    }
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
-    } else if (this._callRest-- > 0) {
-      this._iterate();
-    }
-  }
-}
-class OmitLimitObject extends AigleLimitObject {
-
-  constructor(object, iterator, limit) {
-    super(object, iterator, limit);
-    this._result = {};
-  }
-
-  _callResolve(value, index) {
-    if (!value) {
-      const key = this._keys[index];
-      this._result[key] = this._object[key];
-    }
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
-    } else if (this._callRest-- > 0) {
-      this._iterate();
+    if (collection === PENDING) {
+      this._set = set;
+    } else {
+      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
     }
   }
 }
 
-module.exports = omitLimit;
+module.exports = { omitLimit, OmitLimit };
+
+function set(collection) {
+  setLimit.call(this, collection);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(value, index) {
+  if (!value) {
+    this._result[index] = this._coll[index];
+  }
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
+  } else if (this._callRest-- > 0) {
+    this._iterate();
+  }
+}
+
+function callResolveObject(value, index) {
+  if (!value) {
+    const key = this._keys[index];
+    this._result[key] = this._coll[key];
+  }
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
+  } else if (this._callRest-- > 0) {
+    this._iterate();
+  }
+}
 
 /**
  * @param {Array|Object} collection
@@ -6437,59 +6997,57 @@ module.exports = omitLimit;
  *   });
  */
 function omitLimit(collection, limit, iterator) {
-  if (Array.isArray(collection)) {
-    return new OmitLimitArray(collection, iterator, limit)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new OmitLimitObject(collection, iterator, limit)._execute();
-  }
-  return Aigle.resolve({});
+  return new OmitLimit(limit, iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleLimit":29}],43:[function(require,module,exports){
+},{"./eachLimit":13,"./internal/collection":29,"./internal/util":31}],41:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleSeriesArray, AigleSeriesObject } = require('./internal/aigleSeries');
+const { EachSeries } = require('./eachSeries');
+const { PENDING } = require('./internal/util');
+const { setSeries } = require('./internal/collection');
 
-module.exports = omitSeries;
+class OmitSeries extends EachSeries {
 
-class OmitSeriesArray extends AigleSeriesArray {
-
-  constructor(array, iterator) {
-    super(array, iterator);
+  constructor(iterator, collection) {
+    super(iterator, collection);
     this._result = {};
-  }
-
-  _callResolve(value, index) {
-    if (!value) {
-      this._result[index] = this._array[index];
-    }
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
+    if (collection === PENDING) {
+      this._set = set;
     } else {
-      this._iterate();
+      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
     }
   }
 }
 
-class OmitSeriesObject extends AigleSeriesObject {
+module.exports = { omitSeries, OmitSeries };
 
-  constructor(object, iterator) {
-    super(object, iterator);
-    this._result = {};
+function set(collection) {
+  setSeries.call(this, collection);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(value, index) {
+  if (!value) {
+    this._result[index] = this._coll[index];
   }
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
+  } else {
+    this._iterate();
+  }
+}
 
-  _callResolve(value, index) {
-    if (!value) {
-      const key = this._keys[index];
-      this._result[key] = this._object[key];
-    }
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
-    } else {
-      this._iterate();
-    }
+function callResolveObject(value, index) {
+  if (!value) {
+    const key = this._keys[index];
+    this._result[key] = this._coll[key];
+  }
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
+  } else {
+    this._iterate();
   }
 }
 
@@ -6507,7 +7065,7 @@ class OmitSeriesObject extends AigleSeriesObject {
  *       return num % 2;
  *     });
  * };
- * Aigle.omitSeries(collection, iterator)
+ * Aigle.OmitSeriesSeries(collection, iterator)
  *   .then(object => {
  *     console.log(object); // { '1': 4, '2': 2 }
  *     console.log(order); // [1, 4, 2]
@@ -6523,23 +7081,17 @@ class OmitSeriesObject extends AigleSeriesObject {
  *       return num % 2;
  *     });
  * };
- * Aigle.omitSeries(collection, iterator)
+ * Aigle.OmitSeriesSeries(collection, iterator)
  *   .then(object => {
  *     console.log(object); // { b: 4, c: 2 }
  *     console.log(order); // [1, 4, 2]
  *   });
  */
 function omitSeries(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new OmitSeriesArray(collection, iterator)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new OmitSeriesObject(collection, iterator)._execute();
-  }
-  return Aigle.resolve({});
+  return new OmitSeries(iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleSeries":30}],44:[function(require,module,exports){
+},{"./eachSeries":14,"./internal/collection":29,"./internal/util":31}],42:[function(require,module,exports){
 'use strict';
 
 const { Aigle } = require('./aigle');
@@ -6599,52 +7151,56 @@ function parallel(collection) {
 }
 
 
-},{"./aigle":2,"./all":3,"./props":50}],45:[function(require,module,exports){
+},{"./aigle":2,"./all":3,"./props":48}],43:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleEachArray, AigleEachObject } = require('./internal/aigleEach');
+const { Each } = require('./each');
+const { PENDING } = require('./internal/util');
+const { setShorthand } = require('./internal/collection');
 
-class PickArray extends AigleEachArray {
+class Pick extends Each {
 
-  constructor(array, iterator) {
-    super(array, iterator);
+  constructor(iterator, collection) {
+    super(iterator, collection);
     this._result = {};
-  }
-
-  _callResolve(value, index) {
-    if (value) {
-      this._result[index] = this._array[index];
-    }
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
+    if (collection === PENDING) {
+      this._set = set;
+    } else {
+      set.call(this, collection);
     }
   }
 }
 
-class PickObject extends AigleEachObject {
+module.exports = { pick, Pick };
 
-  constructor(object, iterator) {
-    super(object, iterator);
-    this._result = {};
+function set(collection) {
+  setShorthand.call(this, collection);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(value, index) {
+  if (value) {
+    this._result[index] = this._coll[index];
   }
-
-  _callResolve(value, index) {
-    if (value) {
-      const key = this._keys[index];
-      this._result[key] = this._object[key];
-    }
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
-    }
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
   }
 }
 
-module.exports = pick;
+function callResolveObject(value, index) {
+  if (value) {
+    const key = this._keys[index];
+    this._result[key] = this._coll[key];
+  }
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
+  }
+}
 
 /**
  * @param {Array|Object} collection
- * @param {Function} iterator
+ * @param {Function|Array|Object|string} iterator
  * @return {Aigle} Returns an Aigle instance
  * @example
  * const order = [];
@@ -6677,60 +7233,95 @@ module.exports = pick;
  *     console.log(object); // { a: 1 }
  *     console.log(order); // [1, 2, 4]
  *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [{
+ *   name: 'bargey', active: false
+ * }, {
+ *   name: 'fread', active: true
+ * }];
+ * Aigle.pick(collection, 'active')
+ *   .then(object => {
+ *     console.log(object); // { '1': { name: 'fread', active: true } }
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [{
+ *   name: 'bargey', active: false
+ * }, {
+ *   name: 'fread', active: true
+ * }];
+ * Aigle.pick(collection, ['name', 'fread'])
+ *   .then(object => {
+ *     console.log(object); // { '1': { name: 'fread', active: true } }
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [{
+ *   name: 'bargey', active: false
+ * }, {
+ *   name: 'fread', active: true
+ * }];
+ * Aigle.pick(collection, { name: 'fread', active: true })
+ *   .then(object => {
+ *     console.log(object); // { '1': { name: 'fread', active: true } }
+ *   });
  */
 function pick(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new PickArray(collection, iterator)._iterate();
-  }
-  if (collection && typeof collection === 'object') {
-    return new PickObject(collection, iterator)._iterate();
-  }
-  return Aigle.resolve({});
+  return new Pick(iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleEach":28}],46:[function(require,module,exports){
+},{"./each":12,"./internal/collection":29,"./internal/util":31}],44:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleLimitArray, AigleLimitObject } = require('./internal/aigleLimit');
+const { EachLimit } = require('./eachLimit');
+const { PENDING } = require('./internal/util');
+const { setLimit } = require('./internal/collection');
 
-module.exports = pickLimit;
+class PickLimit extends EachLimit {
 
-class PickLimitArray extends AigleLimitArray {
-
-  constructor(array, iterator, limit) {
-    super(array, iterator, limit);
+  constructor(limit, iterator, collection) {
+    super(limit, iterator, collection);
     this._result = {};
-  }
-
-  _callResolve(value, index) {
-    if (value) {
-      this._result[index] = this._array[index];
-    }
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
-    } else if (this._callRest-- > 0) {
-      this._iterate();
+    if (collection === PENDING) {
+      this._set = set;
+    } else {
+      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
     }
   }
 }
-class PickLimitObject extends AigleLimitObject {
 
-  constructor(object, iterator, limit) {
-    super(object, iterator, limit);
-    this._result = {};
+module.exports = { pickLimit, PickLimit };
+
+function set(collection) {
+  setLimit.call(this, collection);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(value, index) {
+  if (value) {
+    this._result[index] = this._coll[index];
   }
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
+  } else if (this._callRest-- > 0) {
+    this._iterate();
+  }
+}
 
-  _callResolve(value, index) {
-    if (value) {
-      const key = this._keys[index];
-      this._result[key] = this._object[key];
-    }
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
-    } else if (this._callRest-- > 0) {
-      this._iterate();
-    }
+function callResolveObject(value, index) {
+  if (value) {
+    const key = this._keys[index];
+    this._result[key] = this._coll[key];
+  }
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
+  } else if (this._callRest-- > 0) {
+    this._iterate();
   }
 }
 
@@ -6788,59 +7379,57 @@ class PickLimitObject extends AigleLimitObject {
  *   });
  */
 function pickLimit(collection, limit, iterator) {
-  if (Array.isArray(collection)) {
-    return new PickLimitArray(collection, iterator, limit)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new PickLimitObject(collection, iterator, limit)._execute();
-  }
-  return Aigle.resolve({});
+  return new PickLimit(limit, iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleLimit":29}],47:[function(require,module,exports){
+},{"./eachLimit":13,"./internal/collection":29,"./internal/util":31}],45:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleSeriesArray, AigleSeriesObject } = require('./internal/aigleSeries');
+const { EachSeries } = require('./eachSeries');
+const { PENDING } = require('./internal/util');
+const { setSeries } = require('./internal/collection');
 
-module.exports = pickSeries;
+class PickSeries extends EachSeries {
 
-class PickSeriesArray extends AigleSeriesArray {
-
-  constructor(array, iterator) {
-    super(array, iterator);
+  constructor(iterator, collection) {
+    super(iterator, collection);
     this._result = {};
-  }
-
-  _callResolve(value, index) {
-    if (value) {
-      this._result[index] = this._array[index];
-    }
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
+    if (collection === PENDING) {
+      this._set = set;
     } else {
-      this._iterate();
+      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
     }
   }
 }
 
-class PickSeriesObject extends AigleSeriesObject {
+module.exports = { pickSeries, PickSeries };
 
-  constructor(object, iterator) {
-    super(object, iterator);
-    this._result = {};
+function set(collection) {
+  setSeries.call(this, collection);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(value, index) {
+  if (value) {
+    this._result[index] = this._coll[index];
   }
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
+  } else {
+    this._iterate();
+  }
+}
 
-  _callResolve(value, index) {
-    if (value) {
-      const key = this._keys[index];
-      this._result[key] = this._object[key];
-    }
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
-    } else {
-      this._iterate();
-    }
+function callResolveObject(value, index) {
+  if (value) {
+    const key = this._keys[index];
+    this._result[key] = this._coll[key];
+  }
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
+  } else {
+    this._iterate();
   }
 }
 
@@ -6881,16 +7470,10 @@ class PickSeriesObject extends AigleSeriesObject {
  *   });
  */
 function pickSeries(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new PickSeriesArray(collection, iterator)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new PickSeriesObject(collection, iterator)._execute();
-  }
-  return Aigle.resolve({});
+  return new PickSeries(iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleSeries":30}],48:[function(require,module,exports){
+},{"./eachSeries":14,"./internal/collection":29,"./internal/util":31}],46:[function(require,module,exports){
 'use strict';
 
 const { Aigle } = require('./aigle');
@@ -7013,7 +7596,7 @@ function makeFunction(fn, ctx) {
   }
 }
 
-},{"./aigle":2,"./internal/util":33}],49:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31}],47:[function(require,module,exports){
 'use strict';
 
 const promisify = require('./promisify');
@@ -7104,7 +7687,7 @@ function iterate(suffix, filter, obj, target, depth, memo) {
   }
 }
 
-},{"./promisify":48}],50:[function(require,module,exports){
+},{"./promisify":46}],48:[function(require,module,exports){
 'use strict';
 
 const { AigleProxy } = require('aigle-core');
@@ -7168,7 +7751,7 @@ function props(object) {
   return new AigleProps(object)._promise;
 }
 
-},{"./aigle":2,"./internal/util":33,"aigle-core":73}],51:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"aigle-core":71}],49:[function(require,module,exports){
 'use strict';
 
 const { AigleProxy } = require('aigle-core');
@@ -7255,40 +7838,41 @@ function race(collection) {
   return Aigle.resolve();
 }
 
-},{"./aigle":2,"./internal/util":33,"aigle-core":73}],52:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"aigle-core":71}],50:[function(require,module,exports){
 'use strict';
 
 const { AigleProxy } = require('aigle-core');
+
 const { Aigle } = require('./aigle');
-const { INTERNAL, call3, callProxyReciever } = require('./internal/util');
+const { execute, setSeries } = require('./internal/collection');
+const { INTERNAL, PENDING, call3, callProxyReciever } = require('./internal/util');
 
-class ReduceArray extends AigleProxy {
+class Reduce extends AigleProxy {
 
-  constructor(array, iterator, result) {
+  constructor(iterator, result, collection) {
     super();
-    const size = array.length;
-    this._promise = new Aigle(INTERNAL);
-    this._rest = size;
-    this._array = array;
+    this._result = result;
     this._iterator = iterator;
-    if (size === 0) {
-      this._promise._resolve(result);
-    } else if (result === undefined) {
-      this._callResolve(array[0], 0);
+    this._promise = new Aigle(INTERNAL);
+    this._coll = undefined;
+    this._rest = undefined;
+    this._size = undefined;
+    this._keys = undefined;
+    this._iterate = undefined;
+    if (collection === PENDING) {
+      this._set = set;
+      this._iterate = this._callResolve;
+      this._callResolve = execute;
     } else {
-      this._next(0, result);
+      set.call(this, collection);
     }
-  }
-
-  _next(index, result) {
-    callProxyReciever(call3(this._iterator, result, this._array[index], index), this, index);
   }
 
   _callResolve(result, index) {
     if (--this._rest === 0) {
       this._promise._resolve(result);
     } else {
-      this._next(++index, result);
+      this._iterate(++index, result);
     }
   }
 
@@ -7297,45 +7881,50 @@ class ReduceArray extends AigleProxy {
   }
 }
 
-class ReduceObject extends AigleProxy {
+module.exports = { reduce, Reduce };
 
-  constructor(object, iterator, result) {
-    super();
-    const keys = Object.keys(object);
-    const size = keys.length;
-    this._promise = new Aigle(INTERNAL);
-    this._rest = size;
-    this._keys = keys;
-    this._object = object;
-    this._iterator = iterator;
-    if (size === 0) {
-      this._promise._resolve(result);
-    } else if (result === undefined) {
-      this._callResolve(object[keys[0]], 0);
-    } else {
-      this._next(0, result);
-    }
+function set(collection) {
+  setSeries.call(this, collection);
+  if (this._keys === undefined) {
+    this._iterate = iterateArray;
+    this._execute = executeArray;
+  } else {
+    this._iterate = iterateObject;
+    this._execute = executeObject;
   }
-
-  _next(index, result) {
-    const key = this._keys[index];
-    callProxyReciever(call3(this._iterator, result, this._object[key], key), this, index);
-  }
-
-  _callResolve(result, index) {
-    if (--this._rest === 0) {
-      this._promise._resolve(result);
-    } else {
-      this._next(++index, result);
-    }
-  }
-
-  _callReject(reason) {
-    this._promise._reject(reason);
-  }
+  return this;
 }
 
-module.exports = reduce;
+function iterateArray(index, result) {
+  callProxyReciever(call3(this._iterator, result, this._coll[index], index), this, index);
+}
+
+function iterateObject(index, result) {
+  const key = this._keys[index];
+  callProxyReciever(call3(this._iterator, result, this._coll[key], key), this, index);
+}
+
+function executeArray() {
+  if (this._rest === 0) {
+    this._promise._resolve(this._result);
+  } else if (this._result === undefined) {
+    this._callResolve(this._coll[0], 0);
+  } else {
+    this._iterate(0, this._result);
+  }
+  return this._promise;
+}
+
+function executeObject() {
+  if (this._rest === 0) {
+    this._promise._resolve(this._result);
+  } else if (this._result === undefined) {
+    this._callResolve(this._coll[this._keys[0]], 0);
+  } else {
+    this._iterate(0, this._result);
+  }
+  return this._promise;
+}
 
 /**
  * @param {Array|Object} collection
@@ -7361,51 +7950,48 @@ module.exports = reduce;
  *   .then(value => console.log(value)); // '142'
  */
 function reduce(collection, iterator, result) {
-  if (Array.isArray(collection)) {
-    return new ReduceArray(collection, iterator, result)._promise;
-  }
-  if (collection && typeof collection === 'object') {
-    return new ReduceObject(collection, iterator, result)._promise;
-  }
-  return Aigle.resolve(result);
+  return new Reduce(iterator, result, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/util":33,"aigle-core":73}],53:[function(require,module,exports){
+},{"./aigle":2,"./internal/collection":29,"./internal/util":31,"aigle-core":71}],51:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { INTERNAL, compactArray } = require('./internal/util');
-const { AigleEachArray, AigleEachObject } = require('./internal/aigleEach');
+const { Each } = require('./each');
+const { setShorthand } = require('./internal/collection');
+const { INTERNAL, PENDING, compactArray } = require('./internal/util');
 
-module.exports = reject;
+class Reject extends Each {
 
-class RejectArray extends AigleEachArray {
-
-  constructor(array, iterator) {
-    super(array, iterator);
-    this._result = Array(this._rest);
-  }
-
-  _callResolve(value, index) {
-    this._result[index] = value ? INTERNAL : this._array[index];
-    if (--this._rest === 0) {
-      this._promise._resolve(compactArray(this._result));
+  constructor(iterator, collection) {
+    super(iterator, collection);
+    if (collection === PENDING) {
+      this._set = set;
+    } else {
+      set.call(this, collection);
     }
   }
 }
 
-class RejectObject extends AigleEachObject {
+module.exports = { reject, Reject };
 
-  constructor(object, iterator) {
-    super(object, iterator);
-    this._result = Array(this._rest);
+function set(collection) {
+  setShorthand.call(this, collection);
+  this._result = Array(this._rest);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(value, index) {
+  this._result[index] = value ? INTERNAL : this._coll[index];
+  if (--this._rest === 0) {
+    this._promise._resolve(compactArray(this._result));
   }
+}
 
-  _callResolve(value, index) {
-    this._result[index] = value ? INTERNAL : this._object[this._keys[index]];
-    if (--this._rest === 0) {
-      this._promise._resolve(compactArray(this._result));
-    }
+function callResolveObject(value, index) {
+  this._result[index] = value ? INTERNAL : this._coll[this._keys[index]];
+  if (--this._rest === 0) {
+    this._promise._resolve(compactArray(this._result));
   }
 }
 
@@ -7416,7 +8002,7 @@ class RejectObject extends AigleEachObject {
  * If the iterator function is not defined, the function works as a first one.
  *
  * @param {Function|Array|Object} collection
- * @param {Function} [iterator]
+ * @param {Function|Array|Object|string} [iterator]
  * @return {Aigle} Returns an Aigle instance
  * @example
  * const error = new Error('error');
@@ -7456,59 +8042,91 @@ class RejectObject extends AigleEachObject {
  *     console.log(array); // [4, 2];
  *     console.log(order); // [1, 2, 4];
  *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [{
+ *   name: 'bargey', active: false
+ * }, {
+ *   name: 'fread', active: true
+ * }];
+ * Aigle.reject(collection, 'active')
+ *   .then(array => {
+ *     console.log(array); // [{ name: 'fread', active: false }]
+ *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [{
+ *   name: 'bargey', active: false
+ * }, {
+ *   name: 'fread', active: true
+ * }];
+ * Aigle.reject(collection, ['name', 'bargey'])
+ *   .then(array => {
+ *     console.log(array); // [{ name: 'fread', active: false }]
+ *   });
+*
+ * @example
+ * const order = [];
+ * const collection = [{
+ *   name: 'bargey', active: false
+ * }, {
+ *   name: 'fread', active: true
+ * }];
+ * Aigle.reject(collection, { name: 'bargey', active: false })
+ *   .then(array => {
+ *     console.log(array); // [{ name: 'fread', active: false }]
+ *   });
  */
 function reject(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new RejectArray(collection, iterator)._iterate();
-  }
-  if (collection && typeof collection === 'object') {
-    return new RejectObject(collection, iterator)._iterate();
-  }
-  return Aigle.resolve([]);
+  return new Reject(iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleEach":28,"./internal/util":33}],54:[function(require,module,exports){
+},{"./each":12,"./internal/collection":29,"./internal/util":31}],52:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { INTERNAL, compactArray } = require('./internal/util');
-const { AigleLimitArray, AigleLimitObject } = require('./internal/aigleLimit');
+const { EachLimit } = require('./eachLimit');
+const { setLimit } = require('./internal/collection');
+const { INTERNAL, PENDING, compactArray } = require('./internal/util');
 
-module.exports = rejectLimit;
+class RejectLimit extends EachLimit {
 
-class RejectLimitArray extends AigleLimitArray {
-
-  constructor(array, iterator, limit) {
-    super(array, iterator, limit);
-    this._result = Array(this._rest);
-  }
-
-  _callResolve(value, index) {
-    this._result[index] = value ? INTERNAL : this._array[index];
-    if (--this._rest === 0) {
-      this._promise._resolve(compactArray(this._result));
-    } else if (this._callRest-- > 0) {
-      this._iterate();
+  constructor(limit, iterator, collection) {
+    super(limit, iterator, collection);
+    if (collection === PENDING) {
+      this._set = set;
+    } else {
+      this._result = Array(this._rest);
+      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
     }
   }
 }
-class RejectLimitObject extends AigleLimitObject {
 
-  constructor(object, iterator, limit) {
-    super(object, iterator, limit);
-    this._result = Array(this._rest);
+module.exports = { rejectLimit, RejectLimit };
+
+function set(collection) {
+  setLimit.call(this, collection);
+  this._result = Array(this._rest);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(value, index) {
+  this._result[index] = value ? INTERNAL : this._coll[index];
+  if (--this._rest === 0) {
+    this._promise._resolve(compactArray(this._result));
+  } else if (this._callRest-- > 0) {
+    this._iterate();
   }
+}
 
-  _callResolve(value, index) {
-    if (this._promise._resolved !== 0) {
-      return;
-    }
-    this._result[index] = value ? INTERNAL : this._object[this._keys[index]];
-    if (--this._rest === 0) {
-      this._promise._resolve(compactArray(this._result));
-    } else if (this._callRest-- > 0) {
-      this._iterate();
-    }
+function callResolveObject(value, index) {
+  this._result[index] = value ? INTERNAL : this._coll[this._keys[index]];
+  if (--this._rest === 0) {
+    this._promise._resolve(compactArray(this._result));
+  } else if (this._callRest-- > 0) {
+    this._iterate();
   }
 }
 
@@ -7566,54 +8184,53 @@ class RejectLimitObject extends AigleLimitObject {
  *   });
  */
 function rejectLimit(collection, limit, iterator) {
-  if (Array.isArray(collection)) {
-    return new RejectLimitArray(collection, iterator, limit)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new RejectLimitObject(collection, iterator, limit)._execute();
-  }
-  return Aigle.resolve([]);
+  return new RejectLimit(limit, iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleLimit":29,"./internal/util":33}],55:[function(require,module,exports){
+},{"./eachLimit":13,"./internal/collection":29,"./internal/util":31}],53:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleSeriesArray, AigleSeriesObject } = require('./internal/aigleSeries');
+const { EachSeries } = require('./eachSeries');
+const { setSeries } = require('./internal/collection');
+const { INTERNAL, PENDING, compactArray } = require('./internal/util');
 
-module.exports = rejectSeries;
+class RejectSeries extends EachSeries {
 
-class RejectSeriesArray extends AigleSeriesArray {
-
-  constructor(array, iterator) {
-    super(array, iterator);
-    this._result = [];
-  }
-
-  _callResolve(value, index) {
-    !value && this._result.push(this._array[index]);
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
+  constructor(iterator, collection) {
+    super(iterator, collection);
+    if (collection === PENDING) {
+      this._set = set;
     } else {
-      this._iterate();
+      this._result = Array(this._rest);
+      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
     }
   }
 }
 
-class RejectSeriesObject extends AigleSeriesObject {
+module.exports = { rejectSeries, RejectSeries };
 
-  constructor(object, iterator) {
-    super(object, iterator);
-    this._result = [];
+function set(collection) {
+  setSeries.call(this, collection);
+  this._result = Array(this._rest);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(value, index) {
+  this._result[index] = value ? INTERNAL : this._coll[index];
+  if (--this._rest === 0) {
+    this._promise._resolve(compactArray(this._result));
+  } else {
+    this._iterate();
   }
+}
 
-  _callResolve(value, index) {
-    !value && this._result.push(this._object[this._keys[index]]);
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
-    } else {
-      this._iterate();
-    }
+function callResolveObject(value, index) {
+  this._result[index] = value ? INTERNAL : this._coll[this._keys[index]];
+  if (--this._rest === 0) {
+    this._promise._resolve(compactArray(this._result));
+  } else {
+    this._iterate();
   }
 }
 
@@ -7654,16 +8271,10 @@ class RejectSeriesObject extends AigleSeriesObject {
  *   });
  */
 function rejectSeries(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new RejectSeriesArray(collection, iterator)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new RejectSeriesObject(collection, iterator)._execute();
-  }
-  return Aigle.resolve([]);
+  return new RejectSeries(iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleSeries":30}],56:[function(require,module,exports){
+},{"./eachSeries":14,"./internal/collection":29,"./internal/util":31}],54:[function(require,module,exports){
 'use strict';
 
 const { AigleProxy } = require('aigle-core');
@@ -7678,10 +8289,10 @@ class Retry extends AigleProxy {
     this._promise = new Aigle(INTERNAL);
     this._rest = times;
     this._handler = handler;
-    this._next();
+    this._iterate();
   }
 
-  _next() {
+  _iterate() {
     callProxyReciever(call0(this._handler), this, undefined);
   }
 
@@ -7693,7 +8304,7 @@ class Retry extends AigleProxy {
     if (--this._rest === 0) {
       this._promise._reject(reason);
     } else {
-      this._next();
+      this._iterate();
     }
   }
 
@@ -7736,40 +8347,39 @@ function retry(times, handler) {
   return new Retry(handler, times)._promise;
 }
 
-},{"./aigle":2,"./internal/util":33,"aigle-core":73}],57:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"aigle-core":71}],55:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleEachArray, AigleEachObject } = require('./internal/aigleEach');
-const { map } = require('./internal/util');
+const { Each } = require('./each');
+const { PENDING } = require('./internal/util');
+const { setShorthand } = require('./internal/collection');
 
-module.exports = some;
+class Some extends Each {
 
-const [SomeArray, SomeObject] = map([AigleEachArray, AigleEachObject], Class => {
-
-  return class extends Class {
-
-    constructor(collection, iterator) {
-      super(collection, iterator);
-      this._result = false;
+  constructor(iterator, collection) {
+    super(iterator, collection);
+    this._result = false;
+    if (collection === PENDING) {
+      this._set = setShorthand;
+    } else {
+      setShorthand.call(this, collection);
     }
+  }
 
-    _callResolve(value) {
-      if (this._promise._resolved !== 0) {
-        return;
-      }
-      if (value) {
-        this._promise._resolve(true);
-      } else if (--this._rest === 0) {
-        this._promise._resolve(false);
-      }
+  _callResolve(value) {
+    if (value) {
+      this._promise._resolve(true);
+    } else if (--this._rest === 0) {
+      this._promise._resolve(false);
     }
-  };
-});
+  }
+}
+
+module.exports = { some, Some };
 
 /**
  * @param {Array|Object} collection
- * @param {Function} iterator
+ * @param {Function|Array|Object|string} iterator
  * @return {Aigle} Returns an Aigle instance
  * @example
  * const order = [];
@@ -7818,47 +8428,68 @@ const [SomeArray, SomeObject] = map([AigleEachArray, AigleEachObject], Class => 
  *     console.log(bool); // false
  *     console.log(order); // [1, 2, 4]
  *   });
+ *
+ * @example
+ * const collection = [{
+ *  uid: 1, active: false
+ * }, {
+ *  uid: 4, active: true
+ * }, {
+ *  uid: 2, active: true
+ * }];
+ * Aigle.some(collection, 'active')
+ *   .then(value => console.log(value)); // true
+ *
+ * @example
+ * const collection = [{
+ *  uid: 1, active: false
+ * }, {
+ *  uid: 4, active: true
+ * }, {
+ *  uid: 2, active: true
+ * }];
+ * Aigle.some(collection, ['uid', 4])
+ *   .then(value => console.log(value)); // true
+ *
+ * @example
+ * const collection = [{
+ *  uid: 1, active: false
+ * }, {
+ *  uid: 4, active: true
+ * }, {
+ *  uid: 2, active: true
+ * }];
+ * Aigle.some(collection, { uid: 4 })
+ *   .then(value => console.log(value)); // true
  */
 function some(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new SomeArray(collection, iterator)._iterate();
-  }
-  if (collection && typeof collection === 'object') {
-    return new SomeObject(collection, iterator)._iterate();
-  }
-  return Aigle.resolve(false);
+  return new Some(iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleEach":28,"./internal/util":33}],58:[function(require,module,exports){
+},{"./each":12,"./internal/collection":29,"./internal/util":31}],56:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { map } = require('./internal/util');
-const { AigleLimitArray, AigleLimitObject } = require('./internal/aigleLimit');
+const { EachLimit } = require('./eachLimit');
 
-module.exports = someLimit;
+class SomeLimit extends EachLimit {
 
-const [SomeLimitArray, SomeLimitObject] = map([AigleLimitArray, AigleLimitObject], Class => {
+  constructor(limit, iterator, collection) {
+    super(limit, iterator, collection);
+    this._result = false;
+  }
 
-  return class extends Class {
-
-    constructor(array, iterator, limit) {
-      super(array, iterator, limit);
-      this._result = false;
+  _callResolve(value) {
+    if (value) {
+      this._promise._resolve(true);
+    } else if (--this._rest === 0) {
+      this._promise._resolve(false);
+    } else if (this._callRest-- > 0) {
+      this._iterate();
     }
+  }
+}
 
-    _callResolve(value) {
-      if (value) {
-        this._callRest = 0;
-        this._promise._resolve(true);
-      } else if (--this._rest === 0) {
-        this._promise._resolve(false);
-      } else if (this._callRest-- > 0) {
-        this._iterate();
-      }
-    }
-  };
-});
+module.exports = { someLimit, SomeLimit };
 
 /**
  * @param {Array|Object} collection
@@ -7914,44 +8545,33 @@ const [SomeLimitArray, SomeLimitObject] = map([AigleLimitArray, AigleLimitObject
  *   });
  */
 function someLimit(collection, limit, iterator) {
-  if (Array.isArray(collection)) {
-    return new SomeLimitArray(collection, iterator, limit)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new SomeLimitObject(collection, iterator, limit)._execute();
-  }
-  return Aigle.resolve(false);
+  return new SomeLimit(limit, iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleLimit":29,"./internal/util":33}],59:[function(require,module,exports){
+},{"./eachLimit":13}],57:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { AigleSeriesArray, AigleSeriesObject } = require('./internal/aigleSeries');
-const { map } = require('./internal/util');
+const { EachSeries } = require('./eachSeries.js');
 
-module.exports = someSeries;
+class SomeSeries extends EachSeries {
 
-const [SomeSeriesArray, SomeSeriesObject] = map([AigleSeriesArray, AigleSeriesObject], Class => {
+  constructor(iterator, collection) {
+    super(iterator, collection);
+    this._result = false;
+  }
 
-  return class extends Class {
-
-    constructor(collection, iterator) {
-      super(collection, iterator);
-      this._result = false;
+  _callResolve(value) {
+    if (value) {
+      this._promise._resolve(true);
+    } else if (--this._rest === 0) {
+      this._promise._resolve(false);
+    } else {
+      this._iterate();
     }
+  }
+}
 
-    _callResolve(value) {
-      if (value) {
-        this._promise._resolve(true);
-      } else if (--this._rest === 0) {
-        this._promise._resolve(false);
-      } else {
-        this._iterate();
-      }
-    }
-  };
-});
+module.exports = { someSeries, SomeSeries };
 
 /**
  * @param {Array|Object} collection
@@ -8006,57 +8626,54 @@ const [SomeSeriesArray, SomeSeriesObject] = map([AigleSeriesArray, AigleSeriesOb
  *   });
  */
 function someSeries(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new SomeSeriesArray(collection, iterator)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new SomeSeriesObject(collection, iterator)._execute();
-  }
-  return Aigle.resolve(false);
+  return new SomeSeries(iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleSeries":30,"./internal/util":33}],60:[function(require,module,exports){
+},{"./eachSeries.js":14}],58:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { sort } = require('./internal/util');
-const { AigleEachArray, AigleEachObject } = require('./internal/aigleEach');
+const { Each } = require('./each');
+const { PENDING, sort } = require('./internal/util');
+const { setShorthand } = require('./internal/collection');
 
-module.exports = sortBy;
+class SortBy extends Each {
 
-class SortByArray extends AigleEachArray {
-
-  constructor(array, iterator) {
-    super(array, iterator);
-    this._result = Array(this._rest);
-  }
-
-  _callResolve(criteria, index) {
-    this._result[index] = { criteria, value: this._array[index] };
-    if (--this._rest === 0) {
-      this._promise._resolve(sort(this._result));
+  constructor(iterator, collection) {
+    super(iterator, collection);
+    if (collection === PENDING) {
+      this._set = set;
+    } else {
+      set.call(this, collection);
     }
   }
 }
 
-class SortByObject extends AigleEachObject {
+module.exports = { sortBy, SortBy };
 
-  constructor(object, iterator) {
-    super(object, iterator);
-    this._result = Array(this._rest);
+function set(collection) {
+  setShorthand.call(this, collection);
+  this._result = Array(this._rest);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(criteria, index) {
+  this._result[index] = { criteria, value: this._coll[index] };
+  if (--this._rest === 0) {
+    this._promise._resolve(sort(this._result));
   }
+}
 
-  _callResolve(criteria, index) {
-    this._result[index] = { criteria, value: this._object[this._keys[index]] };
-    if (--this._rest === 0) {
-      this._promise._resolve(sort(this._result));
-    }
+function callResolveObject(criteria, index) {
+  this._result[index] = { criteria, value: this._coll[this._keys[index]] };
+  if (--this._rest === 0) {
+    this._promise._resolve(sort(this._result));
   }
 }
 
 /**
  * @param {Array|Object} collection
- * @param {Function} iterator
+ * @param {Function|string} iterator
  * @return {Aigle} Returns an Aigle instance
  * @example
  * const order = [];
@@ -8089,58 +8706,69 @@ class SortByObject extends AigleEachObject {
  *     console.log(array); // [1, 2, 4]
  *     console.log(order); // [1, 2, 4]
  *   });
+ *
+ * @example
+ * const order = [];
+ * const collection = [{
+ *   uid: 2, name: 'bargey', uid: 2
+ * }, {
+ *   uid: 1, name: 'fread'
+ * }];
+ * Aigle.sortBy(collection, 'uid')
+ *   .then(array => {
+ *     console.log(array); // [{ uid: 1, name: 'fread' }, { uid: 2, name: 'bargey' ]
+ *   });
  */
 function sortBy(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new SortByArray(collection, iterator)._iterate();
-  }
-  if (collection && typeof collection === 'object') {
-    return new SortByObject(collection, iterator)._iterate();
-  }
-  return Aigle.resolve([]);
+  return new SortBy(iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleEach":28,"./internal/util":33}],61:[function(require,module,exports){
+},{"./each":12,"./internal/collection":29,"./internal/util":31}],59:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { sort } = require('./internal/util');
-const { AigleLimitArray, AigleLimitObject } = require('./internal/aigleLimit');
+const { EachLimit } = require('./eachLimit');
+const { PENDING, sort } = require('./internal/util');
+const { setLimit } = require('./internal/collection');
 
-class SortByLimitArray extends AigleLimitArray {
+class SortByLimit extends EachLimit {
 
-  constructor(object, iterator, limit) {
-    super(object, iterator, limit);
-    this._result = Array(this._rest);
-  }
-
-  _callResolve(criteria, index) {
-    this._result[index] = { criteria, value: this._array[index] };
-    if (--this._rest === 0) {
-      this._promise._resolve(sort(this._result));
-    } else if (this._callRest-- > 0) {
-      this._iterate();
-    }
-  }
-}
-class SortByLimitObject extends AigleLimitObject {
-
-  constructor(object, iterator, limit) {
-    super(object, iterator, limit);
-    this._result = Array(this._rest);
-  }
-
-  _callResolve(criteria, index) {
-    this._result[index] = { criteria, value: this._object[this._keys[index]] };
-    if (--this._rest === 0) {
-      this._promise._resolve(sort(this._result));
-    } else if (this._callRest-- > 0) {
-      this._iterate();
+  constructor(limit, iterator, collection) {
+    super(limit, iterator, collection);
+    if (collection === PENDING) {
+      this._set = set;
+    } else {
+      this._result = Array(this._rest);
+      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
     }
   }
 }
 
-module.exports = sortByLimit;
+module.exports = { sortByLimit, SortByLimit };
+
+function set(collection) {
+  setLimit.call(this, collection);
+  this._result = Array(this._rest);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(criteria, index) {
+  this._result[index] = { criteria, value: this._coll[index] };
+  if (--this._rest === 0) {
+    this._promise._resolve(sort(this._result));
+  } else if (this._callRest-- > 0) {
+    this._iterate();
+  }
+}
+
+function callResolveObject(criteria, index) {
+  this._result[index] = { criteria, value: this._coll[this._keys[index]] };
+  if (--this._rest === 0) {
+    this._promise._resolve(sort(this._result));
+  } else if (this._callRest-- > 0) {
+    this._iterate();
+  }
+}
 
 /**
  * @param {Array|Object} collection
@@ -8196,58 +8824,55 @@ module.exports = sortByLimit;
  *   });
  */
 function sortByLimit(collection, limit, iterator) {
-  if (Array.isArray(collection)) {
-    return new SortByLimitArray(collection, iterator, limit)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new SortByLimitObject(collection, iterator, limit)._execute();
-  }
-  return Aigle.resolve([]);
+  return new SortByLimit(limit, iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleLimit":29,"./internal/util":33}],62:[function(require,module,exports){
+},{"./eachLimit":13,"./internal/collection":29,"./internal/util":31}],60:[function(require,module,exports){
 'use strict';
 
-const { Aigle } = require('./aigle');
-const { sort } = require('./internal/util');
-const { AigleSeriesArray, AigleSeriesObject } = require('./internal/aigleSeries');
+const { EachSeries } = require('./eachSeries');
+const { PENDING, sort } = require('./internal/util');
+const { setSeries } = require('./internal/collection');
 
-module.exports = sortBySeries;
+class SortBySeries extends EachSeries {
 
-class SortBySeriesArray extends AigleSeriesArray {
-
-  constructor(array, iterator) {
-    super(array, iterator);
-    this._result = Array(this._rest);
-  }
-
-  _callResolve(criteria, index) {
-    this._result[index] = { criteria, value: this._array[index] };
-    if (--this._rest === 0) {
-      this._promise._resolve(sort(this._result));
+  constructor(iterator, collection) {
+    super(iterator, collection);
+    if (collection === PENDING) {
+      this._set = set;
     } else {
-      this._iterate();
+      this._result = Array(this._rest);
+      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
     }
   }
 }
 
-class SortBySeriesObject extends AigleSeriesObject {
+module.exports = { sortBySeries, SortBySeries };
 
-  constructor(object, iterator) {
-    super(object, iterator);
-    this._result = Array(this._rest);
-  }
+function set(collection) {
+  setSeries.call(this, collection);
+  this._result = Array(this._rest);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
 
-  _callResolve(criteria, index) {
-    this._result[index] = { criteria, value: this._object[this._keys[index]] };
-    if (--this._rest === 0) {
-      this._promise._resolve(sort(this._result));
-    } else {
-      this._iterate();
-    }
+function callResolveArray(criteria, index) {
+  this._result[index] = { criteria, value: this._coll[index] };
+  if (--this._rest === 0) {
+    this._promise._resolve(sort(this._result));
+  } else {
+    this._iterate();
   }
 }
 
+function callResolveObject(criteria, index) {
+  this._result[index] = { criteria, value: this._coll[this._keys[index]] };
+  if (--this._rest === 0) {
+    this._promise._resolve(sort(this._result));
+  } else {
+    this._iterate();
+  }
+}
 
 /**
  * @param {Array|Object} collection
@@ -8286,16 +8911,10 @@ class SortBySeriesObject extends AigleSeriesObject {
  *   });
  */
 function sortBySeries(collection, iterator) {
-  if (Array.isArray(collection)) {
-    return new SortBySeriesArray(collection, iterator)._execute();
-  }
-  if (collection && typeof collection === 'object') {
-    return new SortBySeriesObject(collection, iterator)._execute();
-  }
-  return Aigle.resolve([]);
+  return new SortBySeries(iterator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/aigleSeries":30,"./internal/util":33}],63:[function(require,module,exports){
+},{"./eachSeries":14,"./internal/collection":29,"./internal/util":31}],61:[function(require,module,exports){
 'use strict';
 
 const { AigleProxy } = require('aigle-core');
@@ -8331,7 +8950,7 @@ class Timeout extends AigleProxy {
 
 module.exports = Timeout;
 
-},{"./aigle":2,"./error":15,"./internal/util":33,"aigle-core":73}],64:[function(require,module,exports){
+},{"./aigle":2,"./error":15,"./internal/util":31,"aigle-core":71}],62:[function(require,module,exports){
 'use strict';
 
 const { AigleProxy } = require('aigle-core');
@@ -8392,7 +9011,7 @@ function times(times, iterator) {
   return Aigle.resolve([]);
 }
 
-},{"./aigle":2,"./internal/util":33,"aigle-core":73}],65:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"aigle-core":71}],63:[function(require,module,exports){
 'use strict';
 
 const { AigleProxy } = require('aigle-core');
@@ -8488,7 +9107,7 @@ function timesLimit(times, limit, iterator) {
   return Aigle.resolve([]);
 }
 
-},{"./aigle":2,"./internal/util":33,"aigle-core":73}],66:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"aigle-core":71}],64:[function(require,module,exports){
 'use strict';
 
 const { AigleProxy } = require('aigle-core');
@@ -8554,28 +9173,25 @@ function timesSeries(times, iterator) {
   return Aigle.resolve([]);
 }
 
-},{"./aigle":2,"./internal/util":33,"aigle-core":73}],67:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"aigle-core":71}],65:[function(require,module,exports){
 'use strict';
 
-const { AigleProxy } = require('aigle-core');
-const { Aigle } = require('./aigle');
-const { INTERNAL, call3, callProxyReciever, clone } = require('./internal/util');
+const { Each } = require('./each');
+const { setParallel } = require('./internal/collection');
+const { PENDING, call3, callProxyReciever, clone } = require('./internal/util');
 
-module.exports = transform;
+class Transform extends Each {
 
-class TransformArray extends AigleProxy {
-
-  constructor(array, iterator, result = []) {
-    super();
-    const size = array.length;
-    this._promise = new Aigle(INTERNAL);
-    this._rest = size;
-    this._result = result;
-    if (size === 0) {
-      return this._promise._resolve(result);
+  constructor(iterator, accumulator, collection) {
+    super(iterator, collection);
+    if (accumulator !== undefined) {
+      this._result = accumulator;
     }
-    let i = -1;
-    while (++i < size && callProxyReciever(call3(iterator, result, array[i], i), this, i)) {}
+    if (collection === PENDING) {
+      this._set = set;
+    } else {
+      set.call(this, collection);
+    }
   }
 
   _callResolve(bool) {
@@ -8584,44 +9200,41 @@ class TransformArray extends AigleProxy {
     } else if (--this._rest === 0) {
       this._promise._resolve(this._result);
     }
-  }
-
-  _callReject(reason) {
-    this._promise._reject(reason);
   }
 }
 
-class TransformObject extends AigleProxy {
+module.exports = { transform, Transform };
 
-  constructor(object, iterator, result = {}) {
-    super();
-    const keys = Object.keys(object);
-    const size = keys.length;
-    this._promise = new Aigle(INTERNAL);
-    this._rest = size;
-    this._result = result;
-    if (size === 0) {
-      return this._promise._resolve(result);
+function set(collection) {
+  setParallel.call(this, collection);
+  if (this._keys !== undefined || this._coll === undefined) {
+    if (this._result === undefined) {
+      this._result = {};
     }
-    let i = -1;
-    while (++i < size) {
-      const key = keys[i];
-      if (callProxyReciever(call3(iterator, result, object[key], key), this, i) === false) {
-        break;
-      }
+    this._iterate = iterateObject;
+  } else {
+    if (this._result === undefined) {
+      this._result = [];
     }
+    this._iterate = iterateArray;
   }
+  return this;
+}
 
-  _callResolve(bool) {
-    if (bool === false) {
-      this._promise._resolve(clone(this._result));
-    } else if (--this._rest === 0) {
-      this._promise._resolve(this._result);
+function iterateArray() {
+  const { _rest, _result, _iterator, _coll } = this;
+  let i = -1;
+  while (++i < _rest && callProxyReciever(call3(_iterator, _result, _coll[i], i), this, i)) {}
+}
+
+function iterateObject() {
+  const { _rest, _result, _iterator, _coll, _keys } = this;
+  let i = -1;
+  while (++i < _rest) {
+    const key = _keys[i];
+    if (callProxyReciever(call3(_iterator, _result, _coll[key], key), this, i) === false) {
+      break;
     }
-  }
-
-  _callReject(reason) {
-    this._promise._reject(reason);
   }
 }
 
@@ -8680,113 +9293,73 @@ class TransformObject extends AigleProxy {
  *   });
  */
 function transform(collection, iterator, accumulator) {
-  if (Array.isArray(collection)) {
-    return new TransformArray(collection, iterator, accumulator)._promise;
-  }
-  if (collection && typeof collection === 'object') {
-    return new TransformObject(collection, iterator, accumulator)._promise;
-  }
-  return Aigle.resolve(accumulator || {});
+  return new Transform(iterator, accumulator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/util":33,"aigle-core":73}],68:[function(require,module,exports){
+},{"./each":12,"./internal/collection":29,"./internal/util":31}],66:[function(require,module,exports){
 'use strict';
 
-const { AigleProxy } = require('aigle-core');
-const { Aigle } = require('./aigle');
-const { INTERNAL, DEFAULT_LIMIT, call3, callProxyReciever, clone } = require('./internal/util');
+const { EachLimit } = require('./eachLimit');
+const { setLimit } = require('./internal/collection');
+const { DEFAULT_LIMIT, PENDING, call3, callProxyReciever, clone } = require('./internal/util');
 
-module.exports = transformLimit;
+class TransformLimit extends EachLimit {
 
-class TransformLimitArray extends AigleProxy {
-
-  constructor(array, iterator, result = [], limit) {
-    super();
-    const size = array.length;
-    this._promise = new Aigle(INTERNAL);
-    if (size === 0 || isNaN(limit) || limit < 1) {
-      this._promise._resolve(result);
-      return;
+  constructor(limit, iterator, accumulator, collection) {
+    if (typeof limit === 'function') {
+      accumulator = iterator;
+      iterator = limit;
+      limit = DEFAULT_LIMIT;
     }
-    limit = limit > size ? size : limit;
-    this._index = 0;
-    this._rest = size;
-    this._callRest = size - limit;
-    this._array = array;
-    this._iterator = iterator;
-    this._result = result;
-    while (limit--) {
-      this._iterate();
+    super(limit, iterator, collection);
+    if (accumulator !== undefined) {
+      this._result = accumulator;
     }
-  }
-
-  _iterate() {
-    const i = this._index++;
-    callProxyReciever(call3(this._iterator, this._result, this._array[i], i), this, i);
+    if (collection === PENDING) {
+      this._set = set;
+    } else {
+      set.call(this, collection);
+    }
   }
 
   _callResolve(bool) {
     if (bool === false) {
-      this._callRest = 0;
       this._promise._resolve(clone(this._result));
     } else if (--this._rest === 0) {
       this._promise._resolve(this._result);
     } else if (this._callRest-- > 0) {
       this._iterate();
     }
-  }
-
-  _callReject(reason) {
-    this._callRest = 0;
-    this._promise._reject(reason);
   }
 }
 
-class TransformLimitObject extends AigleProxy {
+module.exports = { transformLimit, TransformLimit };
 
-  constructor(object, iterator, result = {}, limit) {
-    super();
-    const keys = Object.keys(object);
-    const size = keys.length;
-    this._promise = new Aigle(INTERNAL);
-    if (size === 0 || isNaN(limit) || limit < 1) {
-      this._promise._resolve(result);
-      return;
+function set(collection) {
+  setLimit.call(this, collection);
+  if (this._keys !== undefined || this._coll === undefined) {
+    if (this._result === undefined) {
+      this._result = {};
     }
-    limit = limit > size ? size : limit;
-    this._index = 0;
-    this._rest = size;
-    this._callRest = size - limit;
-    this._keys = keys;
-    this._object = object;
-    this._iterator = iterator;
-    this._result = result;
-    while (limit--) {
-      this._iterate();
+    this._iterate = iterateObject;
+  } else {
+    if (this._result === undefined) {
+      this._result = [];
     }
+    this._iterate = iterateArray;
   }
+  return this;
+}
 
-  _iterate() {
-    const i = this._index++;
-    const key = this._keys[i];
-    callProxyReciever(call3(this._iterator, this._result, this._object[key], key), this, i);
-  }
+function iterateArray() {
+  const index = this._index++;
+  callProxyReciever(call3(this._iterator, this._result, this._coll[index], index), this, index);
+}
 
-  _callResolve(bool) {
-    if (bool === false) {
-      this._callRest = 0;
-      this._promise._resolve(clone(this._result));
-    } else if (--this._rest === 0) {
-      this._promise._resolve(this._result);
-    } else if (this._callRest-- > 0) {
-      this._iterate();
-    }
-  }
-
-  _callReject(reason) {
-    this._callRest = 0;
-    this._promise._reject(reason);
-  }
+function iterateObject() {
+  const index = this._index++;
+  const key = this._keys[index];
+  callProxyReciever(call3(this._iterator, this._result, this._coll[key], key), this, index);
 }
 
 /**
@@ -8861,50 +9434,28 @@ class TransformLimitObject extends AigleProxy {
  *   });
  */
 function transformLimit(collection, limit, iterator, accumulator) {
-  if (typeof limit === 'function') {
-    accumulator = iterator;
-    iterator = limit;
-    limit = DEFAULT_LIMIT;
-  }
-  if (Array.isArray(collection)) {
-    return new TransformLimitArray(collection, iterator, accumulator, limit)._promise;
-  }
-  if (collection && typeof collection === 'object') {
-    return new TransformLimitObject(collection, iterator, accumulator, limit)._promise;
-  }
-  return Aigle.resolve(accumulator || {});
+  return new TransformLimit(limit, iterator, accumulator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/util":33,"aigle-core":73}],69:[function(require,module,exports){
+},{"./eachLimit":13,"./internal/collection":29,"./internal/util":31}],67:[function(require,module,exports){
 'use strict';
 
-const { AigleProxy } = require('aigle-core');
-const { Aigle } = require('./aigle');
-const { INTERNAL, call3, callProxyReciever, clone } = require('./internal/util');
+const { EachSeries } = require('./eachSeries');
+const { setSeries } = require('./internal/collection');
+const { PENDING, call3, callProxyReciever, clone } = require('./internal/util');
 
-module.exports = transformSeries;
+class TransformSeries extends EachSeries {
 
-class TransformSeriesArray extends AigleProxy {
-
-  constructor(array, iterator, result = []) {
-    super();
-    const size = array.length;
-    this._promise = new Aigle(INTERNAL);
-    this._result = result;
-    if (size === 0) {
-      return this._promise._resolve(result);
+  constructor(iterator, accumulator, collection) {
+    super(iterator, collection);
+    if (accumulator !== undefined) {
+      this._result = accumulator;
     }
-    this._index = 0;
-    this._rest = size;
-    this._array = array;
-    this._iterator = iterator;
-    this._result = result;
-    this._iterate();
-  }
-
-  _iterate()  {
-    const i = this._index++;
-    callProxyReciever(call3(this._iterator, this._result, this._array[i], i), this, i);
+    if (collection === PENDING) {
+      this._set = set;
+    } else {
+      set.call(this, collection);
+    }
   }
 
   _callResolve(bool) {
@@ -8915,52 +9466,36 @@ class TransformSeriesArray extends AigleProxy {
     } else {
       this._iterate();
     }
-  }
-
-  _callReject(reason) {
-    this._promise._reject(reason);
   }
 }
 
-class TransformSeriesObject extends AigleProxy {
+module.exports = { transformSeries, TransformSeries };
 
-  constructor(object, iterator, result = {}) {
-    super();
-    const keys = Object.keys(object);
-    const size = keys.length;
-    this._promise = new Aigle(INTERNAL);
-    this._rest = size;
-    if (size === 0) {
-      return this._promise._resolve(result);
+function set(collection) {
+  setSeries.call(this, collection);
+  if (this._keys !== undefined || this._coll === undefined) {
+    if (this._result === undefined) {
+      this._result = {};
     }
-    this._index = 0;
-    this._object = object;
-    this._keys = keys;
-    this._iterator = iterator;
-    this._result = result;
-    this._iterate();
-  }
-
-  _iterate()  {
-    const i = this._index++;
-    const key = this._keys[i];
-    callProxyReciever(call3(this._iterator, this._result, this._object[key], key), this, i);
-  }
-
-
-  _callResolve(bool) {
-    if (bool === false) {
-      this._promise._resolve(clone(this._result));
-    } else if (--this._rest === 0) {
-      this._promise._resolve(this._result);
-    } else {
-      this._iterate();
+    this._iterate = iterateObject;
+  } else {
+    if (this._result === undefined) {
+      this._result = [];
     }
+    this._iterate = iterateArray;
   }
+  return this;
+}
 
-  _callReject(reason) {
-    this._promise._reject(reason);
-  }
+function iterateArray() {
+  const index = this._index++;
+  callProxyReciever(call3(this._iterator, this._result, this._coll[index], index), this, index);
+}
+
+function iterateObject() {
+  const index = this._index++;
+  const key = this._keys[index];
+  callProxyReciever(call3(this._iterator, this._result, this._coll[key], key), this, index);
 }
 
 /**
@@ -9018,16 +9553,10 @@ class TransformSeriesObject extends AigleProxy {
  *   });
  */
 function transformSeries(collection, iterator, accumulator) {
-  if (Array.isArray(collection)) {
-    return new TransformSeriesArray(collection, iterator, accumulator)._promise;
-  }
-  if (collection && typeof collection === 'object') {
-    return new TransformSeriesObject(collection, iterator, accumulator)._promise;
-  }
-  return Aigle.resolve(accumulator || {});
+  return new TransformSeries(iterator, accumulator, collection)._execute();
 }
 
-},{"./aigle":2,"./internal/util":33,"aigle-core":73}],70:[function(require,module,exports){
+},{"./eachSeries":14,"./internal/collection":29,"./internal/util":31}],68:[function(require,module,exports){
 'use strict';
 
 const { AigleWhilst, WhilstTester } = require('./whilst');
@@ -9063,7 +9592,7 @@ function until(value, tester, iterator) {
   return new AigleWhilst(new UntilTester(tester), iterator)._iterate(value);
 }
 
-},{"./whilst":72}],71:[function(require,module,exports){
+},{"./whilst":70}],69:[function(require,module,exports){
 'use strict';
 
 const { AigleProxy } = require('aigle-core');
@@ -9181,7 +9710,7 @@ function using() {
   return new Using(array, handler)._promise;
 }
 
-},{"./aigle":2,"./internal/util":33,"aigle-core":73}],72:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"aigle-core":71}],70:[function(require,module,exports){
 'use strict';
 
 const { AigleProxy } = require('aigle-core');
@@ -9259,7 +9788,7 @@ function whilst(value, tester, iterator) {
   return new AigleWhilst(new WhilstTester(tester), iterator)._iterate(value);
 }
 
-},{"./aigle":2,"./internal/util":33,"aigle-core":73}],73:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"aigle-core":71}],71:[function(require,module,exports){
 'use strict';
 
 class AigleCore {
@@ -9272,7 +9801,7 @@ class AigleProxy {
 
 module.exports = { AigleCore, AigleProxy };
 
-},{}],74:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -9443,6 +9972,10 @@ process.off = noop;
 process.removeListener = noop;
 process.removeAllListeners = noop;
 process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
 
 process.binding = function (name) {
     throw new Error('process.binding is not supported');
@@ -9454,7 +9987,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],75:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 (function (process,global){
 (function (global, undefined) {
     "use strict";
@@ -9644,10 +10177,10 @@ process.umask = function() { return 0; };
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":74}],76:[function(require,module,exports){
+},{"_process":72}],74:[function(require,module,exports){
 module.exports={
   "name": "aigle",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "browser": "browser.js",
@@ -9671,7 +10204,7 @@ module.exports={
   "devDependencies": {
     "babili": "0.0.12",
     "benchmark": "^2.1.1",
-    "bluebird": "^3.4.6",
+    "bluebird": "^3.5.0",
     "browserify": "^14.1.0",
     "buble": "^0.15.2",
     "codecov": "^2.1.0",
@@ -9690,7 +10223,7 @@ module.exports={
     "require-dir": "^0.3.1",
     "run-sequence": "^1.2.2",
     "setimmediate": "^1.0.5",
-    "uglify-js": "^2.7.5"
+    "uglify-js": "^3.0.0"
   },
   "dependencies": {
     "aigle-core": "^1.0.0"
