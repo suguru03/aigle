@@ -41,11 +41,12 @@
 
 const { AigleCore, AigleProxy } = require('aigle-core');
 
-const invokeAsync = require('./internal/async');
 const Queue = require('./internal/queue');
+const invokeAsync = require('./internal/async');
 const {
   VERSION,
   INTERNAL,
+  PENDING,
   errorObj,
   call0,
   callResolve,
@@ -100,11 +101,13 @@ class Aigle extends AigleCore {
     if (arguments.length > 1) {
       let l = arguments.length;
       onRejected = arguments[--l];
-      const errorTypes = Array(l);
-      while (l--) {
-        errorTypes[l] = arguments[l];
+      if (typeof onRejected === 'function') {
+        const errorTypes = Array(l);
+        while (l--) {
+          errorTypes[l] = arguments[l];
+        }
+        onRejected = createOnRejected(errorTypes, onRejected);
       }
-      onRejected = createOnRejected(errorTypes, onRejected);
     }
     return addAigle(this, new Aigle(INTERNAL), undefined, onRejected);
   }
@@ -300,7 +303,7 @@ class Aigle extends AigleCore {
    *   });
    */
   each(iterator) {
-    return this.then(value => each(value, iterator));
+    return addProxy(this, Each, iterator);
   }
 
   /**
@@ -308,7 +311,7 @@ class Aigle extends AigleCore {
    * @param {Function} iterator
    */
   forEach(iterator) {
-    return this.each(iterator);
+    return addProxy(this, Each, iterator);
   }
 
   /**
@@ -359,7 +362,7 @@ class Aigle extends AigleCore {
    *   });
    */
   eachSeries(iterator) {
-    return this.then(value => eachSeries(value, iterator));
+    return addProxy(this, EachSeries, iterator);
   }
 
   /**
@@ -367,7 +370,7 @@ class Aigle extends AigleCore {
    * @param {Function} iterator
    */
   forEachSeries(iterator) {
-    return this.eachSeries(iterator);
+    return addProxy(this, EachSeries, iterator);
   }
 
   /**
@@ -395,7 +398,7 @@ class Aigle extends AigleCore {
    *   });
    */
   eachLimit(limit, iterator) {
-    return this.then(value => eachLimit(value, limit, iterator));
+    return addProxy2(this, EachLimit, limit, iterator);
   }
 
   /**
@@ -404,11 +407,11 @@ class Aigle extends AigleCore {
    * @param {Function} iterator
    */
   forEachLimit(limit, iterator) {
-    return this.eachLimit(limit, iterator);
+    return addProxy2(this, EachLimit, limit, iterator);
   }
 
   /**
-   * @param {Function} iterator
+   * @param {Function|string} iterator - if you define string, you can use shorthand which is similar to lodash
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -443,9 +446,31 @@ class Aigle extends AigleCore {
    *     console.log(array); // [2, 8, 4]
    *     console.log(order); // [1, 2, 4]
    *   });
+   *
+   * @example
+   * const collection = [{
+   *  uid: 1, name: 'test1'
+   * }, {
+   *  uid: 4, name: 'test4'
+   * }, {
+   *  uid: 2, name: 'test2'
+   * }];
+   * Aigle.resolve(collection)
+   *   .map('uid')
+   *   .then(uids => console.log(uids)); // [1, 4, 2]
+   *
+   * @example
+   * const collection = {
+   *   task1: { uid: 1, name: 'test1' },
+   *   task2: { uid: 4, name: 'test4' },
+   *   task3: { uid: 2, name: 'test2' }
+   * }];
+   * Aigle.resolve(collection)
+   *   .map('uid')
+   *   .then(uids => console.log(uids)); // [1, 4, 2]
    */
   map(iterator) {
-    return this.then(value => map(value, iterator));
+    return addProxy(this, Map, iterator);
   }
 
   /**
@@ -487,7 +512,7 @@ class Aigle extends AigleCore {
    *   });
    */
   mapSeries(iterator) {
-    return this.then(value => mapSeries(value, iterator));
+    return addProxy(this, MapSeries, iterator);
   }
 
   /**
@@ -553,11 +578,11 @@ class Aigle extends AigleCore {
    *   });
    */
   mapLimit(limit, iterator) {
-    return this.then(value => mapLimit(value, limit, iterator));
+    return addProxy2(this, MapLimit, limit, iterator);
   }
 
   /**
-   * @param {Function} iterator
+   * @param {Function|string} iterator - if you define string, you can use shorthand which is similar to lodash
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -592,9 +617,31 @@ class Aigle extends AigleCore {
    *     console.log(object); // { a: 2, b: 8, c: 4 }
    *     console.log(order); // [1, 2, 4]
    *   });
+   *
+   * @example
+   * const collection = [{
+   *  uid: 1, name: 'test1'
+   * }, {
+   *  uid: 4, name: 'test4'
+   * }, {
+   *  uid: 2, name: 'test2'
+   * }];
+   * Aigle.resolve(collection)
+   *   .mapValues('uid')
+   *   .then(uids => console.log(uids)); // { '0': 1, '1': 4, '2': 2 }
+   *
+   * @example
+   * const collection = {
+   *   task1: { uid: 1, name: 'test1' },
+   *   task2: { uid: 4, name: 'test4' },
+   *   task3: { uid: 2, name: 'test2' }
+   * }];
+   * Aigle.resolve(collection)
+   *   .mapValues('uid')
+   *   .then(uids => console.log(uids)); // { task1: 1, task2: 4, task3: 2 }
    */
   mapValues(iterator) {
-    return this.then(value => mapValues(value, iterator));
+    return addProxy(this, MapValues, iterator);
   }
 
   /**
@@ -635,7 +682,7 @@ class Aigle extends AigleCore {
    *   });
    */
   mapValuesSeries(iterator) {
-    return this.then(value => mapValuesSeries(value, iterator));
+    return addProxy(this, MapValuesSeries, iterator);
   }
 
   /**
@@ -694,11 +741,11 @@ class Aigle extends AigleCore {
    *   });
    */
   mapValuesLimit(limit, iterator) {
-    return this.then(value => mapValuesLimit(value, limit, iterator));
+    return addProxy2(this, MapValuesLimit, limit, iterator);
   }
 
   /**
-   * @param {Function} iterator
+   * @param {Function|Array|Object|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -733,9 +780,48 @@ class Aigle extends AigleCore {
    *     console.log(array); // [1];
    *     console.log(order); // [1, 2, 4];
    *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .filter('active')
+   *   .then(array => {
+   *     console.log(array); // [{ name: 'fread', active: true }]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .filter(['name', 'fread'])
+   *   .then(array => {
+   *     console.log(array); // [{ name: 'fread', active: true }]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .filter({ name: 'fread', active: true })
+   *   .then(array => {
+   *     console.log(array); // [{ name: 'fread', active: true }]
+   *   });
    */
   filter(iterator) {
-    return this.then(value => filter(value, iterator));
+    return addProxy(this, Filter, iterator);
   }
 
   /**
@@ -776,7 +862,7 @@ class Aigle extends AigleCore {
    *   });
    */
   filterSeries(iterator) {
-    return this.then(value => filterSeries(value, iterator));
+    return addProxy(this, FilterSeries, iterator);
   }
 
   /**
@@ -842,11 +928,11 @@ class Aigle extends AigleCore {
    *   });
    */
   filterLimit(limit, iterator) {
-    return this.then(value => filterLimit(value, limit, iterator));
+    return addProxy2(this, FilterLimit, limit, iterator);
   }
 
   /**
-   * @param {Function} iterator
+   * @param {Function|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -881,9 +967,48 @@ class Aigle extends AigleCore {
    *     console.log(array); // [4, 2];
    *     console.log(order); // [1, 2, 4];
    *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.collection(collection)
+   *   .reject('active')
+   *   .then(array => {
+   *     console.log(array); // [{ name: 'fread', active: false }]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.collection(collection)
+   *   .reject(['name', 'bargey'])
+   *   .then(array => {
+   *     console.log(array); // [{ name: 'fread', active: false }]
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.collection(collection)
+   *   .reject({ name: 'bargey', active: false })
+   *   .then(array => {
+   *     console.log(array); // [{ name: 'fread', active: false }]
+   *   });
    */
   reject(iterator) {
-    return this.then(value => reject(value, iterator));
+    return addProxy(this, Reject, iterator);
   }
 
   /**
@@ -924,7 +1049,7 @@ class Aigle extends AigleCore {
    *   });
    */
   rejectSeries(iterator) {
-    return this.then(value => rejectSeries(value, iterator));
+    return addProxy(this, RejectSeries, iterator);
   }
 
   /**
@@ -983,11 +1108,11 @@ class Aigle extends AigleCore {
    *   });
    */
   rejectLimit(limit, iterator) {
-    return this.then(value => rejectLimit(value, limit, iterator));
+    return addProxy2(this, RejectLimit, limit, iterator);
   }
 
   /**
-   * @param {Function} iterator
+   * @param {Function|Array|Object|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -1039,9 +1164,45 @@ class Aigle extends AigleCore {
    *     console.log(value); // undefined
    *     console.log(order); // [1, 2, 4];
    *   });
+   *
+   * @example
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .find('active')
+   *   .then(object => {
+   *     console.log(object); // { name: 'fread', active: true }
+   *   });
+   *
+   * @example
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .find(['name', 'fread])
+   *   .then(object => {
+   *     console.log(object); // { name: 'fread', active: true }
+   *   });
+   *
+   * @example
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .find({ name: 'fread', active: true })
+   *   .then(object => {
+   *     console.log(object); // { name: 'fread', active: true }
+   *   });
    */
   find(iterator) {
-    return this.then(value => find(value, iterator));
+    return addProxy(this, Find, iterator);
   }
 
   /**
@@ -1099,7 +1260,7 @@ class Aigle extends AigleCore {
    *   });
    */
   findSeries(iterator) {
-    return this.then(value => findSeries(value, iterator));
+    return addProxy(this, FindSeries, iterator);
   }
 
   /**
@@ -1164,11 +1325,11 @@ class Aigle extends AigleCore {
    *   });
    */
   findLimit(limit, iterator) {
-    return this.then(value => findLimit(value, limit, iterator));
+    return addProxy2(this, FindLimit, limit, iterator);
   }
 
   /**
-   * @param {Function} iterator
+   * @param {Function|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -1203,9 +1364,48 @@ class Aigle extends AigleCore {
    *     console.log(object); // { a: 1 }
    *     console.log(order); // [1, 2, 4]
    *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .pick('active')
+   *   .then(object => {
+   *     console.log(object); // { '1': { name: 'fread', active: true } }
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .pick(['name', 'fread'])
+   *   .then(object => {
+   *     console.log(object); // { '1': { name: 'fread', active: true } }
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .pick({ name: 'fread', active: true })
+   *   .then(object => {
+   *     console.log(object); // { '1': { name: 'fread', active: true } }
+   *   });
    */
   pick(iterator) {
-    return this.then(value => pick(value, iterator));
+    return addProxy(this, Pick, iterator);
   }
 
   /**
@@ -1246,7 +1446,7 @@ class Aigle extends AigleCore {
    *   });
    */
   pickSeries(iterator) {
-    return this.then(value => pickSeries(value, iterator));
+    return addProxy(this, PickSeries, iterator);
   }
 
   /**
@@ -1305,11 +1505,11 @@ class Aigle extends AigleCore {
    *   });
    */
   pickLimit(limit, iterator) {
-    return this.then(value => pickLimit(value, limit, iterator));
+    return addProxy2(this, PickLimit, limit, iterator);
   }
 
   /**
-   * @param {Function} iterator
+   * @param {Function|Array|Object|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -1321,7 +1521,8 @@ class Aigle extends AigleCore {
    *       return num % 2;
    *     });
    * };
-   * Aigle.omit(collection, iterator)
+   * Aigle.resolve(collection)
+   *   .omit(iterator)
    *   .then(object => {
    *     console.log(object); // { '1': 4, '2': 4 }
    *     console.log(order); // [1, 2, 4]
@@ -1337,14 +1538,54 @@ class Aigle extends AigleCore {
    *       return num % 2;
    *     });
    * };
-   * Aigle.omit(collection, iterator)
+   * Aigle.resolve(collection)
+   *   .omit(iterator)
    *   .then(object => {
    *     console.log(object); // { b: 4, c: 2 }
    *     console.log(order); // [1, 2, 4]
    *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .omit('active')
+   *   .then(object => {
+   *     console.log(object); // { '0': { name: 'bargey', active: false } }
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .omit(['name', 'fread'])
+   *   .then(object => {
+   *     console.log(object); // { '0': { name: 'bargey', active: false } }
+   *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   name: 'bargey', active: false
+   * }, {
+   *   name: 'fread', active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .omit({ name: 'fread', active: true })
+   *   .then(object => {
+   *     console.log(object); // { '0': { name: 'bargey', active: false } }
+   *   });
    */
   omit(iterator) {
-    return this.then(value => omit(value, iterator));
+    return addProxy(this, Omit, iterator);
   }
 
   /**
@@ -1385,7 +1626,7 @@ class Aigle extends AigleCore {
    *   });
    */
   omitSeries(iterator) {
-    return this.then(value => omitSeries(value, iterator));
+    return addProxy(this, OmitSeries, iterator);
   }
 
   /**
@@ -1444,7 +1685,7 @@ class Aigle extends AigleCore {
    *   });
    */
   omitLimit(limit, iterator) {
-    return this.then(value => omitLimit(value, limit, iterator));
+    return addProxy2(this, OmitLimit, limit, iterator);
   }
 
   /**
@@ -1472,7 +1713,7 @@ class Aigle extends AigleCore {
    *   .then(value => console.log(value)); // '142'
    */
   reduce(iterator, result) {
-    return this.then(value => reduce(value, iterator, result));
+    return addProxy2(this, Reduce, iterator, result);
   }
 
   /**
@@ -1532,7 +1773,7 @@ class Aigle extends AigleCore {
    *   });
    */
   transform(iterator, accumulator) {
-    return this.then(value => transform(value, iterator, accumulator));
+    return addProxy2(this, Transform, iterator, accumulator);
   }
 
   /**
@@ -1592,7 +1833,7 @@ class Aigle extends AigleCore {
    *   });
    */
   transformSeries(iterator, accumulator) {
-    return this.then(value => transformSeries(value, iterator, accumulator));
+    return addProxy2(this, TransformSeries, iterator, accumulator);
   }
 
   /**
@@ -1670,11 +1911,11 @@ class Aigle extends AigleCore {
    *   });
    */
   transformLimit(limit, iterator, accumulator) {
-    return this.then(value => transformLimit(value, limit, iterator, accumulator));
+    return addProxy3(this, TransformLimit, limit, iterator, accumulator);
   }
 
   /**
-   * @param {Function} iterator
+   * @param {Function|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -1709,9 +1950,22 @@ class Aigle extends AigleCore {
    *     console.log(array); // [1, 2, 4]
    *     console.log(order); // [1, 2, 4]
    *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = [{
+   *   uid: 2, name: 'bargey', uid: 2
+   * }, {
+   *   uid: 1, name: 'fread'
+   * }];
+   * Aigle.resolve(collection)
+   *   .sortBy('uid')
+   *   .then(array => {
+   *     console.log(array); // [{ uid: 1, name: 'fread' }, { uid: 2, name: 'bargey' ]
+   *   });
    */
   sortBy(iterator) {
-    return this.then(value => sortBy(value, iterator));
+    return addProxy(this, SortBy, iterator);
   }
 
   /**
@@ -1752,7 +2006,7 @@ class Aigle extends AigleCore {
    *   });
    */
   sortBySeries(iterator) {
-    return this.then(value => sortBySeries(value, iterator));
+    return addProxy(this, SortBySeries, iterator);
   }
 
   /**
@@ -1811,11 +2065,11 @@ class Aigle extends AigleCore {
    *   });
    */
   sortByLimit(limit, iterator) {
-    return this.then(value => sortByLimit(value, limit, iterator));
+    return addProxy2(this, SortByLimit, limit, iterator);
   }
 
   /**
-   * @param {Function} iterator
+   * @param {Function|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -1867,9 +2121,45 @@ class Aigle extends AigleCore {
    *     console.log(bool); // false
    *     console.log(order); // [1, 2, 4]
    *   });
+   *
+   * @example
+   * const collection = [{
+   *  uid: 1, active: false
+   * }, {
+   *  uid: 4, active: true
+   * }, {
+   *  uid: 2, active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .some('active')
+   *   .then(value => console.log(value)); // true
+   *
+   * @example
+   * const collection = [{
+   *  uid: 1, active: false
+   * }, {
+   *  uid: 4, active: true
+   * }, {
+   *  uid: 2, active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .some(['uid', 4])
+   *   .then(value => console.log(value)); // true
+   *
+   * @example
+   * const collection = [{
+   *  uid: 1, active: false
+   * }, {
+   *  uid: 4, active: true
+   * }, {
+   *  uid: 2, active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .some({ uid: 4 })
+   *   .then(value => console.log(value)); // true
    */
   some(iterator) {
-    return this.then(value => some(value, iterator));
+    return addProxy(this, Some, iterator);
   }
 
   /**
@@ -1927,7 +2217,7 @@ class Aigle extends AigleCore {
    *   });
    */
   someSeries(iterator) {
-    return this.then(value => someSeries(value, iterator));
+    return addProxy(this, SomeSeries, iterator);
   }
 
   /**
@@ -1986,11 +2276,11 @@ class Aigle extends AigleCore {
    *   });
    */
   someLimit(limit, iterator) {
-    return this.then(value => someLimit(value, limit, iterator));
+    return addProxy2(this, SomeLimit, limit, iterator);
   }
 
   /**
-   * @param {Function} iterator
+   * @param {Function|Array|Object|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -2042,9 +2332,57 @@ class Aigle extends AigleCore {
    *     console.log(value); // false
    *     console.log(order); // [1, 2];
    *   });
+   *
+   * @example
+   * const collection = [{
+   *  uid: 1, active: false
+   * }, {
+   *  uid: 4, active: true
+   * }, {
+   *  uid: 2, active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .every('active')
+   *   .then(value => console.log(value)); // false
+   *
+   * @example
+   * const collection = [{
+   *  uid: 1, active: false
+   * }, {
+   *  uid: 4, active: true
+   * }, {
+   *  uid: 2, active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .every('active')
+   *   .then(value => console.log(value)); // false
+   *
+   * @example
+   * const collection = [{
+   *  uid: 1, active: false
+   * }, {
+   *  uid: 4, active: true
+   * }, {
+   *  uid: 2, active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .every(['active', true])
+   *   .then(value => console.log(value)); // false
+   *
+   * @example
+   * const collection = [{
+   *  uid: 1, active: true
+   * }, {
+   *  uid: 4, active: true
+   * }, {
+   *  uid: 2, active: true
+   * }];
+   * Aigle.resolve(collection)
+   *   .every({ active: true })
+   *   .then(value => console.log(value)); // true
    */
   every(iterator) {
-    return this.then(value => every(value, iterator));
+    return addProxy(this, Every, iterator);
   }
 
   /**
@@ -2102,7 +2440,7 @@ class Aigle extends AigleCore {
    *   });
    */
   everySeries(iterator) {
-    return this.then(value => everySeries(value, iterator));
+    return addProxy(this, EverySeries, iterator);
   }
 
   /**
@@ -2167,7 +2505,7 @@ class Aigle extends AigleCore {
    *   });
    */
   everyLimit(limit, iterator) {
-    return this.then(value => everyLimit(value, limit, iterator));
+    return addProxy2(this, EveryLimit, limit, iterator);
   }
 
   /**
@@ -2207,7 +2545,7 @@ class Aigle extends AigleCore {
    *   });
    */
   concat(iterator) {
-    return this.then(value => concat(value, iterator));
+    return addProxy(this, Concat, iterator);
   }
 
   /**
@@ -2247,7 +2585,7 @@ class Aigle extends AigleCore {
    *   });
    */
   concatSeries(iterator) {
-    return this.then(value => concatSeries(value, iterator));
+    return addProxy(this, ConcatSeries, iterator);
   }
 
   /**
@@ -2311,11 +2649,11 @@ class Aigle extends AigleCore {
    *   });
    */
   concatLimit(limit, iterator) {
-    return this.then(value => concatLimit(value, limit, iterator));
+    return addProxy2(this, ConcatLimit, limit, iterator);
   }
 
   /**
-   * @param {Function} iterator
+   * @param {Function|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -2350,9 +2688,18 @@ class Aigle extends AigleCore {
    *     console.log(object); // { '0': [2, 4], '1': [1] };
    *     console.log(order); // [1, 2, 4];
    *   });
+   *
+   * @example
+   * const order = [];
+   * const collection = ['one', 'two', 'three'];
+   * Aigle.resolve(collection)
+   *   .groupBy('length')
+   *   .then(object => {
+   *     console.log(object); // { '3': ['one', 'two'], '5': ['three'] };
+   *   });
    */
   groupBy(iterator) {
-    return this.then(value => groupBy(value, iterator));
+    return addProxy(this, GroupBy, iterator);
   }
 
   /**
@@ -2393,7 +2740,7 @@ class Aigle extends AigleCore {
    *   });
    */
   groupBySeries(iterator) {
-    return this.then(value => groupBySeries(value, iterator));
+    return addProxy(this, GroupBySeries, iterator);
   }
 
   /**
@@ -2458,7 +2805,7 @@ class Aigle extends AigleCore {
    *   });
    */
   groupByLimit(limit, iterator) {
-    return this.then(value => groupByLimit(value, limit, iterator));
+    return addProxy2(this, GroupByLimit, limit, iterator);
   }
 
   /**
@@ -2747,49 +3094,49 @@ const attempt = require('./attempt');
 const race = require('./race');
 const { props } = require('./props');
 const parallel = require('./parallel');
-const each = require('./each');
-const eachSeries = require('./eachSeries');
-const eachLimit = require('./eachLimit');
-const map = require('./map');
-const mapSeries = require('./mapSeries');
-const mapLimit = require('./mapLimit');
-const mapValues = require('./mapValues');
-const mapValuesSeries = require('./mapValuesSeries');
-const mapValuesLimit = require('./mapValuesLimit');
-const filter = require('./filter');
-const filterSeries = require('./filterSeries');
-const filterLimit = require('./filterLimit');
-const reject = require('./reject');
-const rejectSeries = require('./rejectSeries');
-const rejectLimit = require('./rejectLimit');
-const find = require('./find');
-const findSeries = require('./findSeries');
-const findLimit = require('./findLimit');
-const pick = require('./pick');
-const pickSeries = require('./pickSeries');
-const pickLimit = require('./pickLimit');
-const omit = require('./omit');
-const omitSeries = require('./omitSeries');
-const omitLimit = require('./omitLimit');
-const reduce = require('./reduce');
-const transform = require('./transform');
-const transformSeries = require('./transformSeries');
-const transformLimit = require('./transformLimit');
-const sortBy = require('./sortBy');
-const sortBySeries = require('./sortBySeries');
-const sortByLimit = require('./sortByLimit');
-const some = require('./some');
-const someSeries = require('./someSeries');
-const someLimit = require('./someLimit');
-const every = require('./every');
-const everySeries = require('./everySeries');
-const everyLimit = require('./everyLimit');
-const concat = require('./concat');
-const concatSeries = require('./concatSeries');
-const concatLimit = require('./concatLimit');
-const groupBy = require('./groupBy');
-const groupBySeries = require('./groupBySeries');
-const groupByLimit = require('./groupByLimit');
+const { each, Each } = require('./each');
+const { eachSeries, EachSeries } = require('./eachSeries');
+const { eachLimit, EachLimit } = require('./eachLimit');
+const { map, Map } = require('./map');
+const { mapSeries, MapSeries } = require('./mapSeries');
+const { mapLimit, MapLimit } = require('./mapLimit');
+const { mapValues, MapValues } = require('./mapValues');
+const { mapValuesSeries, MapValuesSeries } = require('./mapValuesSeries');
+const { mapValuesLimit, MapValuesLimit } = require('./mapValuesLimit');
+const { filter, Filter } = require('./filter');
+const { filterSeries, FilterSeries } = require('./filterSeries');
+const { filterLimit, FilterLimit } = require('./filterLimit');
+const { reject, Reject } = require('./reject');
+const { rejectSeries, RejectSeries } = require('./rejectSeries');
+const { rejectLimit, RejectLimit } = require('./rejectLimit');
+const { find, Find } = require('./find');
+const { findSeries, FindSeries } = require('./findSeries');
+const { findLimit, FindLimit } = require('./findLimit');
+const { pick, Pick } = require('./pick');
+const { pickSeries, PickSeries } = require('./pickSeries');
+const { pickLimit, PickLimit } = require('./pickLimit');
+const { omit, Omit } = require('./omit');
+const { omitSeries, OmitSeries } = require('./omitSeries');
+const { omitLimit, OmitLimit } = require('./omitLimit');
+const { reduce, Reduce } = require('./reduce');
+const { transform, Transform } = require('./transform');
+const { transformSeries, TransformSeries } = require('./transformSeries');
+const { transformLimit, TransformLimit } = require('./transformLimit');
+const { sortBy, SortBy } = require('./sortBy');
+const { sortBySeries, SortBySeries } = require('./sortBySeries');
+const { sortByLimit, SortByLimit } = require('./sortByLimit');
+const { some, Some } = require('./some');
+const { someSeries, SomeSeries } = require('./someSeries');
+const { someLimit, SomeLimit } = require('./someLimit');
+const { every, Every } = require('./every');
+const { everySeries, EverySeries } = require('./everySeries');
+const { everyLimit, EveryLimit } = require('./everyLimit');
+const { concat,  Concat } = require('./concat');
+const { concatSeries, ConcatSeries } = require('./concatSeries');
+const { concatLimit, ConcatLimit } = require('./concatLimit');
+const { groupBy, GroupBy } = require('./groupBy');
+const { groupBySeries, GroupBySeries } = require('./groupBySeries');
+const { groupByLimit, GroupByLimit } = require('./groupByLimit');
 const { join, Spread } = require('./join');
 const { delay, Delay } = require('./delay');
 const Timeout = require('./timeout');
@@ -2939,7 +3286,8 @@ function createOnRejected(errorTypes, onRejected) {
         return onRejected(reason);
       }
     }
-    return Aigle.reject(reason);
+    errorObj.e = reason;
+    return errorObj;
   };
 }
 
@@ -2995,6 +3343,45 @@ function addReceiver(promise, receiver) {
   return receiver._promise;
 }
 
+function addProxy(promise, Proxy, iterator) {
+  switch (promise._resolved) {
+  case 0:
+    const proxy = new Proxy(iterator, PENDING);
+    promise._receiver = proxy;
+    return proxy._promise;
+  case 1:
+    return new Proxy(iterator, promise._value)._execute();
+  case 2:
+    return Aigle.reject(promise._value);
+  }
+}
+
+function addProxy2(promise, Proxy, arg1, arg2) {
+  switch (promise._resolved) {
+  case 0:
+    const proxy = new Proxy(arg1, arg2, PENDING);
+    promise._receiver = proxy;
+    return proxy._promise;
+  case 1:
+    return new Proxy(arg1, arg2, promise._value)._execute();
+  case 2:
+    return Aigle.reject(promise._value);
+  }
+}
+
+function addProxy3(promise, Proxy, arg1, arg2, arg3) {
+  switch (promise._resolved) {
+  case 0:
+    const proxy = new Proxy(arg1, arg2, arg3, PENDING);
+    promise._receiver = proxy;
+    return proxy._promise;
+  case 1:
+    return new Proxy(arg1, arg2, arg3, promise._value)._execute();
+  case 2:
+    return Aigle.reject(promise._value);
+  }
+}
+
 /**
  * @param {Object} opts
  * @param {boolean} [opts.longStackTraces]
@@ -3018,7 +3405,7 @@ function longStackTraces() {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Apr 18 2017 20:54:23 GMT-0700 (PDT) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun May 07 2017 20:52:30 GMT-0700 (PDT) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
