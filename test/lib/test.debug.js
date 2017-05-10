@@ -21,7 +21,7 @@ parallel('longStackTracesTrace', () => {
     });
   });
 
-  it('should get long trace using config', () => {
+  it.skip('should get long trace using config', () => {
 
     Aigle.config({ longStackTraces: true });
     return new Aigle(resolve => setImmediate(resolve))
