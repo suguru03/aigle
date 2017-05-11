@@ -198,6 +198,19 @@ parallel('#all', () => {
     .then(value => assert.deepEqual(value, [4, 5, 6]));
   });
 
+  it('should catch error with multiple receivers on asynchronous', () => {
+
+    const error = new TypeError('error');
+    const promise = new Aigle((resolve, reject) => setImmediate(() => reject(error)));
+    return Aigle.all([
+      promise.all(),
+      promise.all(),
+      promise.all()
+    ])
+    .then(() => assert(false))
+    .catch(TypeError, err => assert.strictEqual(err, error));
+  });
+
   it('should catch an error', () => {
 
     const order = [];
