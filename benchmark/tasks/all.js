@@ -41,6 +41,23 @@ module.exports = ({ Aigle, Bluebird }) => {
         });
         return Bluebird.all(tasks);
       }
+    },
+    'all:class': {
+      setup: config => {
+        count = config.count;
+      },
+      aigle: () => {
+        const tasks = _.times(count, n => {
+          return new Aigle(resolve => setImmediate(resolve, n));
+        });
+        return Aigle.resolve(tasks).all();
+      },
+      bluebird: () => {
+        const tasks = _.times(count, n => {
+          return new Bluebird(resolve => setImmediate(resolve, n));
+        });
+        return Bluebird.resolve(tasks).all();
+      }
     }
   };
 };
