@@ -75,6 +75,7 @@ parallel('race', () => {
         assert.deepEqual(order, ['test3']);
       });
   });
+
   it('should return undefined if tasks is an empty array', () => {
 
     return Aigle.race([])
