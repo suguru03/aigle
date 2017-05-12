@@ -128,6 +128,23 @@ parallel('map', () => {
     return promise;
   });
 
+  it('should execute with multiple receivers on asynchronous', () => {
+
+    const array = [1, 2, 3];
+    const promise = new Aigle(resolve => setImmediate(() => resolve(array)));
+    const iterator = value => Aigle.delay(value * DELAY, value * 2);
+    return Aigle.all([
+      promise.map(iterator),
+      promise.map(iterator),
+      promise.map(iterator)
+    ])
+    .then(value => assert.deepEqual(value, [
+      [2, 4, 6],
+      [2, 4, 6],
+      [2, 4, 6]
+    ]));
+  });
+
   it('should catch a TypeError', () => {
 
     const collection = [1, 4, 2];
