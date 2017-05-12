@@ -4,10 +4,10 @@
 [![CircleCI branch](https://img.shields.io/circleci/project/github/suguru03/aigle/master.svg)](https://circleci.com/gh/suguru03/aigle/tree/master)
 [![Codecov branch](https://img.shields.io/codecov/c/github/suguru03/aigle/master.svg)](https://codecov.io/gh/suguru03/aigle)
 
-Aigle is an ideal Promise library, faster and more functional than other Promise libraries.
-It is never slow down even if you mix different Aigle versions.
+Aigle is an ideal promise library which is faster and more efficient than other libraries.
+On top of being an impressive benchmark exercise, it is a production-ready library that implements the Promise A+ standard.
 
-Also it has a lot of [async](https://github.com/caolan/async) functions, you can start using `Promise` easily.
+Also it has a lot of [async](https://github.com/caolan/async) style functions, you can start using `Promise` easily.
 
 - [benchmark](https://github.com/suguru03/bluebird/tree/aigle/benchmark)
 - [What makes Aigle fast](https://hackernoon.com/how-to-make-the-fastest-promise-library-f632fd69f3cb)
