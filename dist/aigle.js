@@ -5575,7 +5575,7 @@ function tick() {
   let i = -1;
   while (++i < len) {
     const promise = queue[i];
-    queue[len] = undefined;
+    queue[i] = undefined;
     promise._resolved === 1 ? promise._callResolve() : promise._callReject();
   }
   ticked = false;
@@ -10223,7 +10223,7 @@ process.umask = function() { return 0; };
 },{"_process":72}],74:[function(require,module,exports){
 module.exports={
   "name": "aigle",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "browser": "browser.js",
