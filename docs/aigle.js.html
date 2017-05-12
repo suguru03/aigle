@@ -165,7 +165,7 @@ class Aigle extends AigleCore {
    * });
    */
   all() {
-    return this.then(all);
+    return addProxy(this, AigleAll);
   }
 
   /**
@@ -252,7 +252,7 @@ class Aigle extends AigleCore {
    * });
    */
   parallel() {
-    return this.then(parallel);
+    return addProxy(this, AigleParallel);
   }
 
   /**
@@ -398,7 +398,7 @@ class Aigle extends AigleCore {
    *   });
    */
   eachLimit(limit, iterator) {
-    return addProxy2(this, EachLimit, limit, iterator);
+    return addProxy(this, EachLimit, limit, iterator);
   }
 
   /**
@@ -407,7 +407,7 @@ class Aigle extends AigleCore {
    * @param {Function} iterator
    */
   forEachLimit(limit, iterator) {
-    return addProxy2(this, EachLimit, limit, iterator);
+    return addProxy(this, EachLimit, limit, iterator);
   }
 
   /**
@@ -578,7 +578,7 @@ class Aigle extends AigleCore {
    *   });
    */
   mapLimit(limit, iterator) {
-    return addProxy2(this, MapLimit, limit, iterator);
+    return addProxy(this, MapLimit, limit, iterator);
   }
 
   /**
@@ -741,7 +741,7 @@ class Aigle extends AigleCore {
    *   });
    */
   mapValuesLimit(limit, iterator) {
-    return addProxy2(this, MapValuesLimit, limit, iterator);
+    return addProxy(this, MapValuesLimit, limit, iterator);
   }
 
   /**
@@ -928,7 +928,7 @@ class Aigle extends AigleCore {
    *   });
    */
   filterLimit(limit, iterator) {
-    return addProxy2(this, FilterLimit, limit, iterator);
+    return addProxy(this, FilterLimit, limit, iterator);
   }
 
   /**
@@ -1108,7 +1108,7 @@ class Aigle extends AigleCore {
    *   });
    */
   rejectLimit(limit, iterator) {
-    return addProxy2(this, RejectLimit, limit, iterator);
+    return addProxy(this, RejectLimit, limit, iterator);
   }
 
   /**
@@ -1325,7 +1325,7 @@ class Aigle extends AigleCore {
    *   });
    */
   findLimit(limit, iterator) {
-    return addProxy2(this, FindLimit, limit, iterator);
+    return addProxy(this, FindLimit, limit, iterator);
   }
 
   /**
@@ -1505,7 +1505,7 @@ class Aigle extends AigleCore {
    *   });
    */
   pickLimit(limit, iterator) {
-    return addProxy2(this, PickLimit, limit, iterator);
+    return addProxy(this, PickLimit, limit, iterator);
   }
 
   /**
@@ -1685,7 +1685,7 @@ class Aigle extends AigleCore {
    *   });
    */
   omitLimit(limit, iterator) {
-    return addProxy2(this, OmitLimit, limit, iterator);
+    return addProxy(this, OmitLimit, limit, iterator);
   }
 
   /**
@@ -1713,7 +1713,7 @@ class Aigle extends AigleCore {
    *   .then(value => console.log(value)); // '142'
    */
   reduce(iterator, result) {
-    return addProxy2(this, Reduce, iterator, result);
+    return addProxy(this, Reduce, iterator, result);
   }
 
   /**
@@ -1773,7 +1773,7 @@ class Aigle extends AigleCore {
    *   });
    */
   transform(iterator, accumulator) {
-    return addProxy2(this, Transform, iterator, accumulator);
+    return addProxy(this, Transform, iterator, accumulator);
   }
 
   /**
@@ -1833,7 +1833,7 @@ class Aigle extends AigleCore {
    *   });
    */
   transformSeries(iterator, accumulator) {
-    return addProxy2(this, TransformSeries, iterator, accumulator);
+    return addProxy(this, TransformSeries, iterator, accumulator);
   }
 
   /**
@@ -1911,7 +1911,7 @@ class Aigle extends AigleCore {
    *   });
    */
   transformLimit(limit, iterator, accumulator) {
-    return addProxy3(this, TransformLimit, limit, iterator, accumulator);
+    return addProxy(this, TransformLimit, limit, iterator, accumulator);
   }
 
   /**
@@ -2065,7 +2065,7 @@ class Aigle extends AigleCore {
    *   });
    */
   sortByLimit(limit, iterator) {
-    return addProxy2(this, SortByLimit, limit, iterator);
+    return addProxy(this, SortByLimit, limit, iterator);
   }
 
   /**
@@ -2276,7 +2276,7 @@ class Aigle extends AigleCore {
    *   });
    */
   someLimit(limit, iterator) {
-    return addProxy2(this, SomeLimit, limit, iterator);
+    return addProxy(this, SomeLimit, limit, iterator);
   }
 
   /**
@@ -2505,7 +2505,7 @@ class Aigle extends AigleCore {
    *   });
    */
   everyLimit(limit, iterator) {
-    return addProxy2(this, EveryLimit, limit, iterator);
+    return addProxy(this, EveryLimit, limit, iterator);
   }
 
   /**
@@ -2649,7 +2649,7 @@ class Aigle extends AigleCore {
    *   });
    */
   concatLimit(limit, iterator) {
-    return addProxy2(this, ConcatLimit, limit, iterator);
+    return addProxy(this, ConcatLimit, limit, iterator);
   }
 
   /**
@@ -2805,7 +2805,7 @@ class Aigle extends AigleCore {
    *   });
    */
   groupByLimit(limit, iterator) {
-    return addProxy2(this, GroupByLimit, limit, iterator);
+    return addProxy(this, GroupByLimit, limit, iterator);
   }
 
   /**
@@ -3033,11 +3033,15 @@ class Aigle extends AigleCore {
     if (!this._receivers) {
       return;
     }
-    const { _value, _receivers } = this;
+    const { _value, _key, _receivers } = this;
     this._receivers = undefined;
     while (_receivers.length !== 0) {
-      const task = _receivers.shift();
-      callResolve(task.receiver, task.onFulfilled, _value);
+      const { receiver, onFulfilled } = _receivers.shift();
+      if (receiver instanceof AigleProxy) {
+        receiver._callResolve(_value, _key);
+      } else {
+        callResolve(receiver, onFulfilled, _value);
+      }
     }
   }
 
@@ -3075,8 +3079,12 @@ class Aigle extends AigleCore {
     const { _value, _receivers } = this;
     this._receivers = undefined;
     while (_receivers.length !== 0) {
-      const task = _receivers.shift();
-      callReject(task.receiver, task.onRejected, _value);
+      const { receiver, onRejected } = _receivers.shift();
+      if (receiver instanceof AigleProxy) {
+        receiver._callReject(_value);
+      } else {
+        callReject(receiver, onRejected, _value);
+      }
     }
   }
 
@@ -3089,11 +3097,11 @@ class Aigle extends AigleCore {
 module.exports = { Aigle };
 
 /* functions, classes */
-const { all } = require('./all');
+const { all, AigleAll } = require('./all');
 const attempt = require('./attempt');
 const race = require('./race');
 const { props } = require('./props');
-const parallel = require('./parallel');
+const { parallel, AigleParallel } = require('./parallel');
 const { each, Each } = require('./each');
 const { eachSeries, EachSeries } = require('./eachSeries');
 const { eachLimit, EachLimit } = require('./eachLimit');
@@ -3343,40 +3351,28 @@ function addReceiver(promise, receiver) {
   return receiver._promise;
 }
 
-function addProxy(promise, Proxy, iterator) {
-  switch (promise._resolved) {
-  case 0:
-    const proxy = new Proxy(iterator, PENDING);
-    promise._receiver = proxy;
-    return proxy._promise;
-  case 1:
-    return new Proxy(iterator, promise._value)._execute();
-  case 2:
-    return Aigle.reject(promise._value);
+function addProxy(promise, Proxy, arg1, arg2, arg3) {
+  if (stackTraces) {
+    stackTraces = false;
+    const receiver = addProxy(promise, Proxy, arg1, arg2, arg3);
+    stackTraces = true;
+    resolveStack(receiver, promise);
+    return receiver;
   }
-}
-
-function addProxy2(promise, Proxy, arg1, arg2) {
   switch (promise._resolved) {
   case 0:
-    const proxy = new Proxy(arg1, arg2, PENDING);
-    promise._receiver = proxy;
-    return proxy._promise;
+    const receiver = new Proxy(PENDING, arg1, arg2, arg3);
+    if (promise._receiver === undefined) {
+      promise._receiver = receiver;
+    } else {
+      if (!promise._receivers) {
+        promise._receivers = new Queue();
+      }
+      promise._receivers.push({ receiver });
+    }
+    return receiver._promise;
   case 1:
-    return new Proxy(arg1, arg2, promise._value)._execute();
-  case 2:
-    return Aigle.reject(promise._value);
-  }
-}
-
-function addProxy3(promise, Proxy, arg1, arg2, arg3) {
-  switch (promise._resolved) {
-  case 0:
-    const proxy = new Proxy(arg1, arg2, arg3, PENDING);
-    promise._receiver = proxy;
-    return proxy._promise;
-  case 1:
-    return new Proxy(arg1, arg2, arg3, promise._value)._execute();
+    return new Proxy(promise._value, arg1, arg2, arg3)._execute();
   case 2:
     return Aigle.reject(promise._value);
   }
@@ -3405,7 +3401,7 @@ function longStackTraces() {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun May 07 2017 20:52:30 GMT-0700 (PDT) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu May 11 2017 23:11:23 GMT-0700 (PDT) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
