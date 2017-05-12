@@ -18,6 +18,19 @@ parallel('resolve', () => {
     });
   });
 
+  it('should ensure order', () => {
+
+    let count = 0;
+    return Aigle.all([
+      Aigle.resolve()
+        .then(() => assert.strictEqual(++count, 1)),
+      Aigle.resolve()
+        .then(() => assert.strictEqual(++count, 2)),
+      Aigle.resolve()
+        .then(() => assert.strictEqual(++count, 3))
+    ])
+    .then(() => assert.strictEqual(count, 3));
+  });
 });
 
 parallel('reject', () => {
