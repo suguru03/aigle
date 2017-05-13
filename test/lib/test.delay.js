@@ -29,7 +29,6 @@ parallel('delay', () => {
         assert.strictEqual(value, str);
       });
   });
-
 });
 
 parallel('#delay', () => {
@@ -42,6 +41,19 @@ parallel('#delay', () => {
       .then(() => {
         const diff = Date.now() - start + 1;
         assert.ok(diff >= DELAY, `diff: ${diff}ms, DELAY: ${DELAY}ms`);
+      });
+  });
+
+  it('should be delay multiple times', () => {
+
+    const start = Date.now();
+    return new Aigle(resolve => resolve())
+      .delay(DELAY)
+      .delay(DELAY)
+      .delay(DELAY)
+      .then(() => {
+        const diff = Date.now() - start + 1;
+        assert.ok(diff >= 3 * DELAY, `diff: ${diff}ms, DELAY: ${DELAY}ms`);
       });
   });
 
