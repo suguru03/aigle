@@ -198,22 +198,22 @@ parallel('#then', () => {
     let called = 0;
     const p = new Aigle(resolve => setImmediate(() => resolve(0)));
     p.then(value => {
-      called++;
       assert.strictEqual(value, 0);
+      assert.strictEqual(called++, 0);
       return new Aigle(resolve => {
         setImmediate(() => resolve(++value));
       });
     });
     p.then(value => {
-      called++;
       assert.strictEqual(value, 0);
+      assert.strictEqual(called++, 1);
       return new Aigle(resolve => {
         setImmediate(() => resolve(++value));
       });
     });
     p.then(value => {
-      called++;
       assert.strictEqual(value, 0);
+      assert.strictEqual(called++, 2);
       return new Aigle(resolve => {
         setImmediate(() => resolve(++value));
       });
@@ -222,8 +222,8 @@ parallel('#then', () => {
       assert.strictEqual(value, 1);
     });
     p.then(value => {
-      called++;
       assert.strictEqual(value, 0);
+      assert.strictEqual(called++, 3);
       return new Aigle(resolve => {
         setImmediate(() => resolve(++value));
       });
