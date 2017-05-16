@@ -1,0 +1,3 @@
+rules:
+  # Best Practices
+  no-return-assign: "off"

@@ -6,7 +6,7 @@ const _ = require('lodash');
 const parallel = require('mocha.parallel');
 const Aigle = require('../../');
 const util = require('../util');
-const DELAY = require('../config').DELAY;
+const { DELAY } = require('../config');
 
 parallel('all', () => {
 
