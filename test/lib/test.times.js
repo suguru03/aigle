@@ -52,12 +52,12 @@ parallel('times', () => {
       });
   });
 
-  it('should throw TypeError', () => {
+  it('should catch a TypeError', () => {
 
     const iterator = n => n();
     return Aigle.times(10, iterator)
-      .then(() => assert(false))
-      .catch(TypeError, error => assert.ok(error));
+      .then(assert.fail)
+      .catch(TypeError, assert.ok);
   });
 });
 

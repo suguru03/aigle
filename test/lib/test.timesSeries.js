@@ -49,6 +49,15 @@ parallel('timesSeries', () => {
         assert.strictEqual(res.length, 0);
       });
   });
+
+  it('should catch a TypeError', () => {
+
+    const count = 5;
+    const iterator = n => n.test();
+    return Aigle.timesSeries(count, iterator)
+      .then(assert.fail)
+      .catch(TypeError, assert.ok);
+  });
 });
 
 parallel('#timesSeries', () => {
