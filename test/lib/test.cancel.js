@@ -82,6 +82,46 @@ describe('#cancel', () => {
         assert.ok(error instanceof CancellationError);
       });
   });
+
+  it('should catch an error', () => {
+
+    let called = 0;
+    const error = new Error('error');
+    return new Aigle((resolve, reject, onCancel) => {
+      setTimeout(reject, DELAY, error);
+      onCancel(() => called++);
+    })
+    .then(assert.fail)
+    .catch(err => {
+      assert.strictEqual(called, 0);
+      assert.strictEqual(err, error);
+    });
+  });
+
+  it('should throw an TypeError if canceling function is not function', () => {
+
+    return new Aigle((resolve, reject, onCancel) => {
+      onCancel(1);
+    })
+    .then(assert.fail)
+    .catch(TypeError, assert.ok);
+  });
+
+  it('should work only once if resolve and reject are called multiple times', () => {
+
+    let called = 0;
+    return new Aigle((resolve, reject, onCancel) => {
+      setImmediate(resolve, 1);
+      setImmediate(resolve, 2);
+      setImmediate(reject, 3);
+      setImmediate(reject, 4);
+      onCancel(() => called++);
+    })
+    .then(value => {
+      assert.strictEqual(called, 0);
+      assert.strictEqual(value, 1);
+    });
+  });
 });
 
 parallel('#cancel:false', () => {
@@ -100,5 +140,14 @@ parallel('#cancel:false', () => {
       assert.ok(error);
       assert.ok(error instanceof TypeError);
     });
+  });
+
+  it('should not work a canceling function', () => {
+
+    const promise = new Aigle(resolve => {
+      setTimeout(resolve, DELAY, 1);
+    });
+    promise.cancel();
+    return promise.then(value => assert.strictEqual(value, 1));
   });
 });
