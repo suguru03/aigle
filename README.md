@@ -48,6 +48,7 @@ Functions
 - [`spread`](https://suguru03.github.io/aigle/docs/Aigle.html#spread)
 - [`catch`](https://suguru03.github.io/aigle/docs/Aigle.html#catch)
 - [`finally`](https://suguru03.github.io/aigle/docs/Aigle.html#finally)
+- [`cancel`](https://suguru03.github.io/aigle/docs/Aigle.html#cancel)
 - [`toString`](https://suguru03.github.io/aigle/docs/Aigle.html#toString)
 
 #### class functions
