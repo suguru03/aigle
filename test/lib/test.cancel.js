@@ -122,6 +122,14 @@ describe('#cancel', () => {
       assert.strictEqual(value, 1);
     });
   });
+
+  it('should cancel a delayed promise', () => {
+
+    const promise = Aigle.delay(DELAY);
+    promise.cancel();
+    return promise.then(assert.fail)
+      .catch(error => assert.ok(error instanceof CancellationError));
+  });
 });
 
 parallel('#cancel:false', () => {
