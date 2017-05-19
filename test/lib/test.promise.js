@@ -247,6 +247,28 @@ parallel('#then', () => {
       });
   });
 
+  it('should execute a resolve function with promise object', done => {
+
+    const promise = new Aigle(resolve => resolve(1));
+    new Aigle(resolve => resolve(promise))
+      .then(value => {
+        assert.strictEqual(value, 1);
+        done();
+      });
+  });
+
+  it('should execute a reject function with promise object', done => {
+
+    const error = new Error('error');
+    const promise = new Aigle((resolve, reject) => reject(error));
+    new Aigle(resolve => resolve(promise))
+      .then(assert.fail)
+      .catch(err => {
+        assert.strictEqual(err, error);
+        done();
+      });
+  });
+
   it('should not change status', done => {
 
     const str = 'success';

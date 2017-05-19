@@ -130,6 +130,26 @@ describe('#cancel', () => {
     return promise.then(assert.fail)
       .catch(error => assert.ok(error instanceof CancellationError));
   });
+
+  it('should not notify unhandled rejection error', done => {
+
+    process.on('unhandledRejection', done);
+    let called = 0;
+    const promise = new Aigle((resolve, reject, onCancel) => {
+      setTimeout(resolve, DELAY);
+      onCancel(() => called++);
+    });
+    promise.cancel();
+    new Aigle((resolve, reject, onCancel) => {
+      resolve(promise);
+      onCancel(() => called++);
+    }).suppressUnhandledRejections();
+    setTimeout(() => {
+      assert.strictEqual(called, 1);
+      process.removeListener('unhandledRejection', done);
+      done();
+    }, DELAY);
+  });
 });
 
 parallel('#cancel:false', () => {
