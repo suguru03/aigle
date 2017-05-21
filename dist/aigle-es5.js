@@ -22,7 +22,9 @@ var errorObj = ref$1.errorObj;
 var call0 = ref$1.call0;
 var callResolve = ref$1.callResolve;
 var callReject = ref$1.callReject;
+var callReceiver = ref$1.callReceiver;
 var stackTraces = false;
+var _execute = execute;
 
 var Aigle = (function (AigleCore) {
   function Aigle(executor) {
@@ -37,7 +39,7 @@ var Aigle = (function (AigleCore) {
     if (executor === INTERNAL) {
       return;
     }
-    execute(this, executor);
+    _execute(this, executor);
   }
 
   if ( AigleCore ) Aigle.__proto__ = AigleCore;
@@ -94,6 +96,41 @@ var Aigle = (function (AigleCore) {
   };
 
   /**
+   * @example
+   * const { CancellationError } = Aigle;
+   * let cancelled = false;
+   * const promise = new Aigle((resolve, reject, onCancel) => {
+   *   setTimeout(resolve, 30, 'resolved');
+   *   onCancel(() => cancelled = true);
+   * });
+   * promise.cancel();
+   * promise.catch(error => {
+   *   console.log(error instanceof CancellationError); // true
+   *   console.log(cancelled); // true
+   * });
+   */
+  Aigle.prototype.cancel = function cancel () {
+    if (_execute === execute) {
+      return;
+    }
+    var ref = this;
+    var _onCancelQueue = ref._onCancelQueue;
+    if (_onCancelQueue) {
+      var i = -1;
+      var array = _onCancelQueue.array;
+      this._onCancelQueue = undefined;
+      while (++i < _onCancelQueue.length) {
+        array[i]();
+      }
+    }
+    this._reject(new CancellationError('late cancellation observer'));
+  };
+
+  Aigle.prototype.suppressUnhandledRejections = function suppressUnhandledRejections () {
+    this._receiver = INTERNAL;
+  };
+
+  /**
    * @param {Function} handler
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -137,7 +174,7 @@ var Aigle = (function (AigleCore) {
    * });
    */
   Aigle.prototype.all = function all () {
-    return addProxy(this, AigleAll);
+    return addProxy(this, All);
   };
 
   /**
@@ -151,8 +188,8 @@ var Aigle = (function (AigleCore) {
    * .race()
    * .then(value => console.log(value)); // 3
    */
-  Aigle.prototype.race = function race$1 () {
-    return this.then(race);
+  Aigle.prototype.race = function race () {
+    return addProxy(this, Race);
   };
 
   /**
@@ -177,8 +214,8 @@ var Aigle = (function (AigleCore) {
    *   console.log(order); // [3, 2, 1]
    * });
    */
-  Aigle.prototype.props = function props$1 () {
-    return this.then(props);
+  Aigle.prototype.props = function props () {
+    return addProxy(this, Props);
   };
 
   /**
@@ -224,7 +261,7 @@ var Aigle = (function (AigleCore) {
    * });
    */
   Aigle.prototype.parallel = function parallel () {
-    return addProxy(this, AigleParallel);
+    return addProxy(this, Parallel);
   };
 
   /**
@@ -2793,7 +2830,7 @@ var Aigle = (function (AigleCore) {
    *   .then(value => console.log(value); // 'test'
    */
   Aigle.prototype.delay = function delay (ms) {
-    return addReceiver(this, new Delay(ms));
+    return addAigle(this, new Delay(ms));
   };
 
   /**
@@ -3011,8 +3048,10 @@ var Aigle = (function (AigleCore) {
     var _key = ref$1._key;
     var _receivers = ref$1._receivers;
     this._receivers = undefined;
-    while (_receivers.length !== 0) {
-      var ref$2 = _receivers.shift();
+    var i = -1;
+    var array = _receivers.array;
+    while (++i < _receivers.length) {
+      var ref$2 = array[i];
       var receiver = ref$2.receiver;
       var onFulfilled = ref$2.onFulfilled;
       if (receiver instanceof AigleProxy) {
@@ -3024,33 +3063,35 @@ var Aigle = (function (AigleCore) {
   };
 
   Aigle.prototype._reject = function _reject (reason, unhandled) {
-    var this$1 = this;
-
     if (this._resolved !== 0) {
       return;
     }
-    if (unhandled === undefined && this._receiver === undefined) {
-      setImmediate(function () { return this$1._reject(reason, true); });
-      return;
+    if (unhandled === undefined) {
+      this._value = reason;
+      if (this._receiver === undefined) {
+        invokeAsync(this);
+        return;
+      }
     }
-    this._resolved = 2;
-    this._value = reason;
     stackTraces && reconstructStack(this);
+    this._resolved = 2;
     this._callReject();
   };
 
   Aigle.prototype._callReject = function _callReject () {
-    if (this._receiver === undefined) {
+    var ref = this;
+    var _receiver = ref._receiver;
+    if (_receiver === undefined) {
       process.emit('unhandledRejection', this._value);
       return;
     }
-    var ref = this;
-    var _receiver = ref._receiver;
-    var _key = ref._key;
     this._receiver = undefined;
+    if (_receiver === INTERNAL) {
+      return;
+    }
     if (_receiver instanceof AigleProxy) {
       _receiver._callReject(this._value);
-    } else if (_key === INTERNAL) {
+    } else if (this._key === INTERNAL) {
       _receiver._reject(this._value);
     } else {
       callReject(_receiver, this._onRejected, this._value);
@@ -3062,8 +3103,10 @@ var Aigle = (function (AigleCore) {
     var _value = ref$1._value;
     var _receivers = ref$1._receivers;
     this._receivers = undefined;
-    while (_receivers.length !== 0) {
-      var ref$2 = _receivers.shift();
+    var i = -1;
+    var array = _receivers.array;
+    while (++i < _receivers.length) {
+      var ref$2 = array[i];
       var receiver = ref$2.receiver;
       var onRejected = ref$2.onRejected;
       if (receiver instanceof AigleProxy) {
@@ -3087,167 +3130,170 @@ module.exports = { Aigle: Aigle };
 /* functions, classes */
 var ref$2 = require('./all');
 var all = ref$2.all;
-var AigleAll = ref$2.AigleAll;
+var All = ref$2.All;
 var attempt = require('./attempt');
-var race = require('./race');
-var ref$3 = require('./props');
-var props = ref$3.props;
-var ref$4 = require('./parallel');
-var parallel = ref$4.parallel;
-var AigleParallel = ref$4.AigleParallel;
-var ref$5 = require('./each');
-var each = ref$5.each;
-var Each = ref$5.Each;
-var ref$6 = require('./eachSeries');
-var eachSeries = ref$6.eachSeries;
-var EachSeries = ref$6.EachSeries;
-var ref$7 = require('./eachLimit');
-var eachLimit = ref$7.eachLimit;
-var EachLimit = ref$7.EachLimit;
-var ref$8 = require('./map');
-var map = ref$8.map;
-var Map = ref$8.Map;
-var ref$9 = require('./mapSeries');
-var mapSeries = ref$9.mapSeries;
-var MapSeries = ref$9.MapSeries;
-var ref$10 = require('./mapLimit');
-var mapLimit = ref$10.mapLimit;
-var MapLimit = ref$10.MapLimit;
-var ref$11 = require('./mapValues');
-var mapValues = ref$11.mapValues;
-var MapValues = ref$11.MapValues;
-var ref$12 = require('./mapValuesSeries');
-var mapValuesSeries = ref$12.mapValuesSeries;
-var MapValuesSeries = ref$12.MapValuesSeries;
-var ref$13 = require('./mapValuesLimit');
-var mapValuesLimit = ref$13.mapValuesLimit;
-var MapValuesLimit = ref$13.MapValuesLimit;
-var ref$14 = require('./filter');
-var filter = ref$14.filter;
-var Filter = ref$14.Filter;
-var ref$15 = require('./filterSeries');
-var filterSeries = ref$15.filterSeries;
-var FilterSeries = ref$15.FilterSeries;
-var ref$16 = require('./filterLimit');
-var filterLimit = ref$16.filterLimit;
-var FilterLimit = ref$16.FilterLimit;
-var ref$17 = require('./reject');
-var reject = ref$17.reject;
-var Reject = ref$17.Reject;
-var ref$18 = require('./rejectSeries');
-var rejectSeries = ref$18.rejectSeries;
-var RejectSeries = ref$18.RejectSeries;
-var ref$19 = require('./rejectLimit');
-var rejectLimit = ref$19.rejectLimit;
-var RejectLimit = ref$19.RejectLimit;
-var ref$20 = require('./find');
-var find = ref$20.find;
-var Find = ref$20.Find;
-var ref$21 = require('./findSeries');
-var findSeries = ref$21.findSeries;
-var FindSeries = ref$21.FindSeries;
-var ref$22 = require('./findLimit');
-var findLimit = ref$22.findLimit;
-var FindLimit = ref$22.FindLimit;
-var ref$23 = require('./pick');
-var pick = ref$23.pick;
-var Pick = ref$23.Pick;
-var ref$24 = require('./pickSeries');
-var pickSeries = ref$24.pickSeries;
-var PickSeries = ref$24.PickSeries;
-var ref$25 = require('./pickLimit');
-var pickLimit = ref$25.pickLimit;
-var PickLimit = ref$25.PickLimit;
-var ref$26 = require('./omit');
-var omit = ref$26.omit;
-var Omit = ref$26.Omit;
-var ref$27 = require('./omitSeries');
-var omitSeries = ref$27.omitSeries;
-var OmitSeries = ref$27.OmitSeries;
-var ref$28 = require('./omitLimit');
-var omitLimit = ref$28.omitLimit;
-var OmitLimit = ref$28.OmitLimit;
-var ref$29 = require('./reduce');
-var reduce = ref$29.reduce;
-var Reduce = ref$29.Reduce;
-var ref$30 = require('./transform');
-var transform = ref$30.transform;
-var Transform = ref$30.Transform;
-var ref$31 = require('./transformSeries');
-var transformSeries = ref$31.transformSeries;
-var TransformSeries = ref$31.TransformSeries;
-var ref$32 = require('./transformLimit');
-var transformLimit = ref$32.transformLimit;
-var TransformLimit = ref$32.TransformLimit;
-var ref$33 = require('./sortBy');
-var sortBy = ref$33.sortBy;
-var SortBy = ref$33.SortBy;
-var ref$34 = require('./sortBySeries');
-var sortBySeries = ref$34.sortBySeries;
-var SortBySeries = ref$34.SortBySeries;
-var ref$35 = require('./sortByLimit');
-var sortByLimit = ref$35.sortByLimit;
-var SortByLimit = ref$35.SortByLimit;
-var ref$36 = require('./some');
-var some = ref$36.some;
-var Some = ref$36.Some;
-var ref$37 = require('./someSeries');
-var someSeries = ref$37.someSeries;
-var SomeSeries = ref$37.SomeSeries;
-var ref$38 = require('./someLimit');
-var someLimit = ref$38.someLimit;
-var SomeLimit = ref$38.SomeLimit;
-var ref$39 = require('./every');
-var every = ref$39.every;
-var Every = ref$39.Every;
-var ref$40 = require('./everySeries');
-var everySeries = ref$40.everySeries;
-var EverySeries = ref$40.EverySeries;
-var ref$41 = require('./everyLimit');
-var everyLimit = ref$41.everyLimit;
-var EveryLimit = ref$41.EveryLimit;
-var ref$42 = require('./concat');
-var concat = ref$42.concat;
-var Concat = ref$42.Concat;
-var ref$43 = require('./concatSeries');
-var concatSeries = ref$43.concatSeries;
-var ConcatSeries = ref$43.ConcatSeries;
-var ref$44 = require('./concatLimit');
-var concatLimit = ref$44.concatLimit;
-var ConcatLimit = ref$44.ConcatLimit;
-var ref$45 = require('./groupBy');
-var groupBy = ref$45.groupBy;
-var GroupBy = ref$45.GroupBy;
-var ref$46 = require('./groupBySeries');
-var groupBySeries = ref$46.groupBySeries;
-var GroupBySeries = ref$46.GroupBySeries;
-var ref$47 = require('./groupByLimit');
-var groupByLimit = ref$47.groupByLimit;
-var GroupByLimit = ref$47.GroupByLimit;
-var ref$48 = require('./join');
-var join = ref$48.join;
-var Spread = ref$48.Spread;
-var ref$49 = require('./delay');
-var delay = ref$49.delay;
-var Delay = ref$49.Delay;
+var ref$3 = require('./race');
+var race = ref$3.race;
+var Race = ref$3.Race;
+var ref$4 = require('./props');
+var props = ref$4.props;
+var Props = ref$4.Props;
+var ref$5 = require('./parallel');
+var parallel = ref$5.parallel;
+var Parallel = ref$5.Parallel;
+var ref$6 = require('./each');
+var each = ref$6.each;
+var Each = ref$6.Each;
+var ref$7 = require('./eachSeries');
+var eachSeries = ref$7.eachSeries;
+var EachSeries = ref$7.EachSeries;
+var ref$8 = require('./eachLimit');
+var eachLimit = ref$8.eachLimit;
+var EachLimit = ref$8.EachLimit;
+var ref$9 = require('./map');
+var map = ref$9.map;
+var Map = ref$9.Map;
+var ref$10 = require('./mapSeries');
+var mapSeries = ref$10.mapSeries;
+var MapSeries = ref$10.MapSeries;
+var ref$11 = require('./mapLimit');
+var mapLimit = ref$11.mapLimit;
+var MapLimit = ref$11.MapLimit;
+var ref$12 = require('./mapValues');
+var mapValues = ref$12.mapValues;
+var MapValues = ref$12.MapValues;
+var ref$13 = require('./mapValuesSeries');
+var mapValuesSeries = ref$13.mapValuesSeries;
+var MapValuesSeries = ref$13.MapValuesSeries;
+var ref$14 = require('./mapValuesLimit');
+var mapValuesLimit = ref$14.mapValuesLimit;
+var MapValuesLimit = ref$14.MapValuesLimit;
+var ref$15 = require('./filter');
+var filter = ref$15.filter;
+var Filter = ref$15.Filter;
+var ref$16 = require('./filterSeries');
+var filterSeries = ref$16.filterSeries;
+var FilterSeries = ref$16.FilterSeries;
+var ref$17 = require('./filterLimit');
+var filterLimit = ref$17.filterLimit;
+var FilterLimit = ref$17.FilterLimit;
+var ref$18 = require('./reject');
+var reject = ref$18.reject;
+var Reject = ref$18.Reject;
+var ref$19 = require('./rejectSeries');
+var rejectSeries = ref$19.rejectSeries;
+var RejectSeries = ref$19.RejectSeries;
+var ref$20 = require('./rejectLimit');
+var rejectLimit = ref$20.rejectLimit;
+var RejectLimit = ref$20.RejectLimit;
+var ref$21 = require('./find');
+var find = ref$21.find;
+var Find = ref$21.Find;
+var ref$22 = require('./findSeries');
+var findSeries = ref$22.findSeries;
+var FindSeries = ref$22.FindSeries;
+var ref$23 = require('./findLimit');
+var findLimit = ref$23.findLimit;
+var FindLimit = ref$23.FindLimit;
+var ref$24 = require('./pick');
+var pick = ref$24.pick;
+var Pick = ref$24.Pick;
+var ref$25 = require('./pickSeries');
+var pickSeries = ref$25.pickSeries;
+var PickSeries = ref$25.PickSeries;
+var ref$26 = require('./pickLimit');
+var pickLimit = ref$26.pickLimit;
+var PickLimit = ref$26.PickLimit;
+var ref$27 = require('./omit');
+var omit = ref$27.omit;
+var Omit = ref$27.Omit;
+var ref$28 = require('./omitSeries');
+var omitSeries = ref$28.omitSeries;
+var OmitSeries = ref$28.OmitSeries;
+var ref$29 = require('./omitLimit');
+var omitLimit = ref$29.omitLimit;
+var OmitLimit = ref$29.OmitLimit;
+var ref$30 = require('./reduce');
+var reduce = ref$30.reduce;
+var Reduce = ref$30.Reduce;
+var ref$31 = require('./transform');
+var transform = ref$31.transform;
+var Transform = ref$31.Transform;
+var ref$32 = require('./transformSeries');
+var transformSeries = ref$32.transformSeries;
+var TransformSeries = ref$32.TransformSeries;
+var ref$33 = require('./transformLimit');
+var transformLimit = ref$33.transformLimit;
+var TransformLimit = ref$33.TransformLimit;
+var ref$34 = require('./sortBy');
+var sortBy = ref$34.sortBy;
+var SortBy = ref$34.SortBy;
+var ref$35 = require('./sortBySeries');
+var sortBySeries = ref$35.sortBySeries;
+var SortBySeries = ref$35.SortBySeries;
+var ref$36 = require('./sortByLimit');
+var sortByLimit = ref$36.sortByLimit;
+var SortByLimit = ref$36.SortByLimit;
+var ref$37 = require('./some');
+var some = ref$37.some;
+var Some = ref$37.Some;
+var ref$38 = require('./someSeries');
+var someSeries = ref$38.someSeries;
+var SomeSeries = ref$38.SomeSeries;
+var ref$39 = require('./someLimit');
+var someLimit = ref$39.someLimit;
+var SomeLimit = ref$39.SomeLimit;
+var ref$40 = require('./every');
+var every = ref$40.every;
+var Every = ref$40.Every;
+var ref$41 = require('./everySeries');
+var everySeries = ref$41.everySeries;
+var EverySeries = ref$41.EverySeries;
+var ref$42 = require('./everyLimit');
+var everyLimit = ref$42.everyLimit;
+var EveryLimit = ref$42.EveryLimit;
+var ref$43 = require('./concat');
+var concat = ref$43.concat;
+var Concat = ref$43.Concat;
+var ref$44 = require('./concatSeries');
+var concatSeries = ref$44.concatSeries;
+var ConcatSeries = ref$44.ConcatSeries;
+var ref$45 = require('./concatLimit');
+var concatLimit = ref$45.concatLimit;
+var ConcatLimit = ref$45.ConcatLimit;
+var ref$46 = require('./groupBy');
+var groupBy = ref$46.groupBy;
+var GroupBy = ref$46.GroupBy;
+var ref$47 = require('./groupBySeries');
+var groupBySeries = ref$47.groupBySeries;
+var GroupBySeries = ref$47.GroupBySeries;
+var ref$48 = require('./groupByLimit');
+var groupByLimit = ref$48.groupByLimit;
+var GroupByLimit = ref$48.GroupByLimit;
+var ref$49 = require('./join');
+var join = ref$49.join;
+var Spread = ref$49.Spread;
+var ref$50 = require('./delay');
+var delay = ref$50.delay;
+var Delay = ref$50.Delay;
 var Timeout = require('./timeout');
-var ref$50 = require('./whilst');
-var whilst = ref$50.whilst;
-var ref$51 = require('./doWhilst');
-var doWhilst = ref$51.doWhilst;
-var ref$52 = require('./until');
-var until = ref$52.until;
+var ref$51 = require('./whilst');
+var whilst = ref$51.whilst;
+var ref$52 = require('./doWhilst');
+var doWhilst = ref$52.doWhilst;
+var ref$53 = require('./until');
+var until = ref$53.until;
 var doUntil = require('./doUntil');
 var retry = require('./retry');
 var times = require('./times');
 var timesSeries = require('./timesSeries');
 var timesLimit = require('./timesLimit');
-var ref$53 = require('./using');
-var using = ref$53.using;
-var Disposer = ref$53.Disposer;
-var ref$54 = require('./debug');
-var resolveStack = ref$54.resolveStack;
-var reconstructStack = ref$54.reconstructStack;
+var ref$54 = require('./using');
+var using = ref$54.using;
+var Disposer = ref$54.Disposer;
+var ref$55 = require('./debug');
+var resolveStack = ref$55.resolveStack;
+var reconstructStack = ref$55.reconstructStack;
 
 Aigle.VERSION = VERSION;
 
@@ -3330,8 +3376,10 @@ Aigle.config = config;
 Aigle.longStackTraces = longStackTraces;
 
 /* errors */
-var ref$55 = require('./error');
-var TimeoutError = ref$55.TimeoutError;
+var ref$56 = require('./error');
+var CancellationError = ref$56.CancellationError;
+var TimeoutError = ref$56.TimeoutError;
+Aigle.CancellationError = CancellationError;
 Aigle.TimeoutError = TimeoutError;
 
 function _resolve(value) {
@@ -3365,7 +3413,7 @@ function execute(promise, executor) {
       return;
     }
     executor = undefined;
-    promise._resolve(value);
+    callReceiver(promise, value);
   }
 
   function reject(reason) {
@@ -3374,6 +3422,44 @@ function execute(promise, executor) {
     }
     executor = undefined;
     promise._reject(reason);
+  }
+}
+
+function executeWithCancel(promise, executor) {
+  stackTraces && resolveStack(promise);
+  try {
+    executor(resolve, reject, onCancel);
+  } catch(e) {
+    reject(e);
+  }
+
+  function resolve(value) {
+    if (executor === undefined) {
+      return;
+    }
+    executor = undefined;
+    callReceiver(promise, value);
+  }
+
+  function reject(reason) {
+    if (executor === undefined) {
+      return;
+    }
+    executor = undefined;
+    promise._reject(reason);
+  }
+
+  function onCancel(handler) {
+    if (typeof handler !== 'function') {
+      throw new TypeError('onCancel must be function');
+    }
+    if (executor === undefined) {
+      return;
+    }
+    if (promise._onCancelQueue === undefined) {
+      promise._onCancelQueue = new Queue();
+    }
+    promise._onCancelQueue.push(handler);
   }
 }
 
@@ -3473,9 +3559,16 @@ function addProxy(promise, Proxy, arg1, arg2, arg3) {
 /**
  * @param {Object} opts
  * @param {boolean} [opts.longStackTraces]
+ * @param {boolean} [opts.cancellation]
  */
 function config(opts) {
-  stackTraces = !!opts.longStackTraces;
+  opts = opts || {};
+  if (opts.longStackTraces !== undefined) {
+    stackTraces = !!opts.longStackTraces;
+  }
+  if (opts.cancellation !== undefined) {
+    _execute = opts.cancellation ? executeWithCancel : execute;
+  }
 }
 
 function longStackTraces() {
@@ -3496,8 +3589,8 @@ var INTERNAL = ref$2.INTERNAL;
 var PENDING = ref$2.PENDING;
 var promiseArrayEach = ref$2.promiseArrayEach;
 
-var AigleAll = (function (AigleProxy) {
-  function AigleAll(array) {
+var All = (function (AigleProxy) {
+  function All(array) {
     AigleProxy.call(this);
     this._promise = new Aigle(INTERNAL);
     if (array === PENDING) {
@@ -3515,25 +3608,25 @@ var AigleAll = (function (AigleProxy) {
     }
   }
 
-  if ( AigleProxy ) AigleAll.__proto__ = AigleProxy;
-  AigleAll.prototype = Object.create( AigleProxy && AigleProxy.prototype );
-  AigleAll.prototype.constructor = AigleAll;
+  if ( AigleProxy ) All.__proto__ = AigleProxy;
+  All.prototype = Object.create( AigleProxy && AigleProxy.prototype );
+  All.prototype.constructor = All;
 
-  AigleAll.prototype._callResolve = function _callResolve (value, index) {
+  All.prototype._callResolve = function _callResolve (value, index) {
     this._result[index] = value;
     if (--this._rest === 0) {
       this._promise._resolve(this._result);
     }
   };
 
-  AigleAll.prototype._callReject = function _callReject (reason) {
+  All.prototype._callReject = function _callReject (reason) {
     this._promise._reject(reason);
   };
 
-  return AigleAll;
+  return All;
 }(AigleProxy));
 
-module.exports = { all: all, AigleAll: AigleAll };
+module.exports = { all: all, All: All };
 
 function set(array) {
   var size = array.length;
@@ -3577,7 +3670,7 @@ function execute() {
  * });
  */
 function all(array) {
-  return new AigleAll(array)._execute();
+  return new All(array)._execute();
 }
 
 
@@ -3893,36 +3986,36 @@ function reconstructStack(promise) {
 },{}],9:[function(require,module,exports){
 'use strict';
 
-var ref = require('aigle-core');
-var AigleProxy = ref.AigleProxy;
-var ref$1 = require('./aigle');
-var Aigle = ref$1.Aigle;
-var ref$2 = require('./internal/util');
-var INTERNAL = ref$2.INTERNAL;
+var ref = require('./aigle');
+var Aigle = ref.Aigle;
+var ref$1 = require('./internal/util');
+var INTERNAL = ref$1.INTERNAL;
 
-var Delay = (function (AigleProxy) {
+var Delay = (function (Aigle) {
   function Delay(ms) {
-    AigleProxy.call(this);
-    this._promise = new Aigle(INTERNAL);
+    Aigle.call(this, INTERNAL);
     this._ms = ms;
+    this._timer = undefined;
   }
 
-  if ( AigleProxy ) Delay.__proto__ = AigleProxy;
-  Delay.prototype = Object.create( AigleProxy && AigleProxy.prototype );
+  if ( Aigle ) Delay.__proto__ = Aigle;
+  Delay.prototype = Object.create( Aigle && Aigle.prototype );
   Delay.prototype.constructor = Delay;
 
-  Delay.prototype._callResolve = function _callResolve (value) {
+  Delay.prototype._resolve = function _resolve (value) {
     var this$1 = this;
 
-    setTimeout(function () { return this$1._promise._resolve(value); }, this._ms);
+    this._timer = setTimeout(function () { return Aigle.prototype._resolve.call(this$1, value); }, this._ms);
+    return this;
   };
 
-  Delay.prototype._callReject = function _callReject (reason) {
-    this._promise._reject(reason);
+  Delay.prototype._reject = function _reject (reason) {
+    clearTimeout(this._timer);
+    Aigle.prototype._reject.call(this, reason);
   };
 
   return Delay;
-}(AigleProxy));
+}(Aigle));
 
 module.exports = { delay: delay, Delay: Delay };
 
@@ -3939,12 +4032,10 @@ module.exports = { delay: delay, Delay: Delay };
  *   .then(value => console.log(value); // 'test'
  */
 function delay(ms, value) {
-  var delay = new Delay(ms);
-  delay._callResolve(value);
-  return delay._promise;
+  return new Delay(ms)._resolve(value);
 }
 
-},{"./aigle":2,"./internal/util":31,"aigle-core":71}],10:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31}],10:[function(require,module,exports){
 'use strict';
 
 var ref = require('./doWhilst');
@@ -4480,7 +4571,10 @@ function eachSeries(collection, iterator) {
 },{"./aigle":2,"./internal/collection":29,"./internal/util":31,"aigle-core":71}],15:[function(require,module,exports){
 'use strict';
 
-var types = ['TimeoutError'];
+var types = [
+  'CancellationError',
+  'TimeoutError'
+];
 var l = types.length;
 while (l--) {
   exports[types[l]] = (function (Error) {
@@ -5879,19 +5973,29 @@ function groupBySeries(collection, iterator) {
 },{"./eachSeries":14,"./internal/collection":29,"./internal/util":31}],28:[function(require,module,exports){
 'use strict';
 
-var ticked = false;
-var len = 0;
 var queue = Array(8);
+var len = 0;
+var ticked = false;
 
 function tick() {
   var i = -1;
   while (++i < len) {
     var promise = queue[i];
     queue[i] = undefined;
-    promise._resolved === 1 ? promise._callResolve() : promise._callReject();
+    switch (promise._resolved) {
+    case 0:
+      promise._reject(promise._value, true);
+      break;
+    case 1:
+      promise._callResolve();
+      break;
+    case 2:
+      promise._callReject();
+      break;
+    }
   }
-  ticked = false;
   len = 0;
+  ticked = false;
 }
 
 function invoke(promise) {
@@ -6182,13 +6286,6 @@ Queue.prototype.push = function push (task) {
   this.array[this.length++] = task;
 };
 
-Queue.prototype.shift = function shift () {
-  var index = --this.length;
-  var task = this.array[index];
-  this.array[index] = undefined;
-  return task;
-};
-
 module.exports = Queue;
 
 },{}],31:[function(require,module,exports){
@@ -6214,6 +6311,7 @@ module.exports = {
   apply: apply,
   callResolve: callResolve,
   callReject: callReject,
+  callReceiver: callReceiver,
   callThen: callThen,
   callProxyReciever: callProxyReciever,
   promiseArrayEach: promiseArrayEach,
@@ -6288,29 +6386,7 @@ function callResolve(receiver, onFulfilled, value) {
     receiver._resolve(value);
     return;
   }
-  var promise = call1(onFulfilled, value);
-  if (promise === errorObj) {
-    receiver._reject(errorObj.e);
-    return;
-  }
-  if (promise instanceof AigleCore) {
-    switch (promise._resolved) {
-    case 0:
-      promise._addReceiver(receiver, INTERNAL);
-      return;
-    case 1:
-      receiver._resolve(promise._value);
-      return;
-    case 2:
-      receiver._reject(promise._value);
-      return;
-    }
-  }
-  if (promise && promise.then) {
-    callThen(promise, receiver);
-  } else {
-    receiver._resolve(promise);
-  }
+  callReceiver(receiver, call1(onFulfilled, value));
 }
 
 function callReject(receiver, onRejected, reason) {
@@ -6318,7 +6394,10 @@ function callReject(receiver, onRejected, reason) {
     receiver._reject(reason);
     return;
   }
-  var promise = call1(onRejected, reason);
+  callReceiver(receiver, call1(onRejected, reason));
+}
+
+function callReceiver(receiver, promise) {
   if (promise === errorObj) {
     receiver._reject(errorObj.e);
     return;
@@ -7577,8 +7656,8 @@ var PENDING = ref$2.PENDING;
 var promiseArrayEach = ref$2.promiseArrayEach;
 var promiseObjectEach = ref$2.promiseObjectEach;
 
-var AigleParallel = (function (AigleProxy) {
-  function AigleParallel(collection) {
+var Parallel = (function (AigleProxy) {
+  function Parallel(collection) {
     AigleProxy.call(this);
     this._promise = new Aigle(INTERNAL);
     this._rest = undefined;
@@ -7593,11 +7672,11 @@ var AigleParallel = (function (AigleProxy) {
     }
   }
 
-  if ( AigleProxy ) AigleParallel.__proto__ = AigleProxy;
-  AigleParallel.prototype = Object.create( AigleProxy && AigleProxy.prototype );
-  AigleParallel.prototype.constructor = AigleParallel;
+  if ( AigleProxy ) Parallel.__proto__ = AigleProxy;
+  Parallel.prototype = Object.create( AigleProxy && AigleProxy.prototype );
+  Parallel.prototype.constructor = Parallel;
 
-  AigleParallel.prototype._execute = function _execute () {
+  Parallel.prototype._execute = function _execute () {
     if (this._rest === 0) {
       this._promise._resolve(this._result);
     } else if (this._keys === undefined) {
@@ -7608,21 +7687,21 @@ var AigleParallel = (function (AigleProxy) {
     return this._promise;
   };
 
-  AigleParallel.prototype._callResolve = function _callResolve (value, index) {
+  Parallel.prototype._callResolve = function _callResolve (value, index) {
     this._result[index] = value;
     if (--this._rest === 0) {
       this._promise._resolve(this._result);
     }
   };
 
-  AigleParallel.prototype._callReject = function _callReject (reason) {
+  Parallel.prototype._callReject = function _callReject (reason) {
     this._promise._reject(reason);
   };
 
-  return AigleParallel;
+  return Parallel;
 }(AigleProxy));
 
-module.exports = { parallel: parallel, AigleParallel: AigleParallel };
+module.exports = { parallel: parallel, Parallel: Parallel };
 
 function execute(collection) {
   this._callResolve = this._result;
@@ -7692,7 +7771,7 @@ function set(collection) {
  * });
  */
 function parallel(collection) {
-  return new AigleParallel(collection)._execute();
+  return new Parallel(collection)._execute();
 }
 
 },{"./aigle":2,"./internal/util":31,"aigle-core":71}],43:[function(require,module,exports){
@@ -8274,44 +8353,69 @@ var ref$1 = require('./aigle');
 var Aigle = ref$1.Aigle;
 var ref$2 = require('./internal/util');
 var INTERNAL = ref$2.INTERNAL;
+var PENDING = ref$2.PENDING;
 var promiseObjectEach = ref$2.promiseObjectEach;
 
-var AigleProps = (function (AigleProxy) {
-  function AigleProps(object) {
+var Props = (function (AigleProxy) {
+  function Props(object) {
     AigleProxy.call(this);
-    var keys = Object.keys(object);
-    var size = keys.length;
     this._promise = new Aigle(INTERNAL);
-    this._rest = size;
-    this._keys = keys;
-    this._coll = object;
     this._result = {};
-    if (size === 0) {
-      this._promise._resolve(this._result);
+    if (object === PENDING) {
+      this._rest = undefined;
+      this._coll = undefined;
+      this._keys = undefined;
+      this._execute = this._callResolve;
+      this._callResolve = set;
     } else {
-      promiseObjectEach(this);
+      var keys = Object.keys(object);
+      this._rest = keys.length;
+      this._coll = object;
+      this._keys = keys;
+      this._execute = execute;
     }
   }
 
-  if ( AigleProxy ) AigleProps.__proto__ = AigleProxy;
-  AigleProps.prototype = Object.create( AigleProxy && AigleProxy.prototype );
-  AigleProps.prototype.constructor = AigleProps;
+  if ( AigleProxy ) Props.__proto__ = AigleProxy;
+  Props.prototype = Object.create( AigleProxy && AigleProxy.prototype );
+  Props.prototype.constructor = Props;
 
-  AigleProps.prototype._callResolve = function _callResolve (value, key) {
+  Props.prototype._callResolve = function _callResolve (value, key) {
     this._result[key] = value;
     if (--this._rest === 0) {
       this._promise._resolve(this._result);
     }
   };
 
-  AigleProps.prototype._callReject = function _callReject (reason) {
+  Props.prototype._callReject = function _callReject (reason) {
     this._promise._reject(reason);
   };
 
-  return AigleProps;
+  return Props;
 }(AigleProxy));
 
-module.exports = { props: props, AigleProps: AigleProps };
+module.exports = { props: props, Props: Props };
+
+function set(object) {
+  var keys = Object.keys(object);
+  this._rest = keys.length;
+  this._coll = object;
+  this._keys = keys;
+  this._callResolve = this._execute;
+  execute.call(this);
+  return this;
+}
+
+function execute() {
+  if (this._rest === 0) {
+    this._promise._resolve(this._result);
+  } else {
+    promiseObjectEach(this);
+  }
+  return this._promise;
+}
+
+module.exports = { props: props, Props: Props };
 
 /**
  * @param {Object} object
@@ -8335,33 +8439,33 @@ module.exports = { props: props, AigleProps: AigleProps };
  * });
  */
 function props(object) {
-  return new AigleProps(object)._promise;
+  return new Props(object)._execute();
 }
 
 },{"./aigle":2,"./internal/util":31,"aigle-core":71}],49:[function(require,module,exports){
 'use strict';
 
 var ref = require('./parallel');
-var AigleParallel = ref.AigleParallel;
+var Parallel = ref.Parallel;
 
-var AigleRace = (function (AigleParallel) {
-  function AigleRace(collection) {
-    AigleParallel.call(this, collection);
+var Race = (function (Parallel) {
+  function Race(collection) {
+    Parallel.call(this, collection);
     this._result = undefined;
   }
 
-  if ( AigleParallel ) AigleRace.__proto__ = AigleParallel;
-  AigleRace.prototype = Object.create( AigleParallel && AigleParallel.prototype );
-  AigleRace.prototype.constructor = AigleRace;
+  if ( Parallel ) Race.__proto__ = Parallel;
+  Race.prototype = Object.create( Parallel && Parallel.prototype );
+  Race.prototype.constructor = Race;
 
-  AigleRace.prototype._callResolve = function _callResolve (value) {
+  Race.prototype._callResolve = function _callResolve (value) {
     this._promise._resolve(value);
   };
 
-  return AigleRace;
-}(AigleParallel));
+  return Race;
+}(Parallel));
 
-module.exports = race;
+module.exports = { race: race, Race: Race };
 
 /**
  * @param {Object|Array} collection
@@ -8382,7 +8486,7 @@ module.exports = race;
  * .then(value => console.log(value)); // 3
  */
 function race(collection) {
-  return new AigleRace(collection)._execute();
+  return new Race(collection)._execute();
 }
 
 },{"./parallel":42}],50:[function(require,module,exports){
@@ -9830,6 +9934,10 @@ var TimesSeries = (function (AigleProxy) {
     }
   };
 
+  TimesSeries.prototype._callReject = function _callReject (reason) {
+    this._promise._reject(reason);
+  };
+
   return TimesSeries;
 }(AigleProxy));
 
@@ -10952,7 +11060,7 @@ process.umask = function() { return 0; };
 },{"_process":72}],74:[function(require,module,exports){
 module.exports={
   "name": "aigle",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "browser": "browser.js",

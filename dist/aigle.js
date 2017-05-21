@@ -19,9 +19,11 @@ const {
   errorObj,
   call0,
   callResolve,
-  callReject
+  callReject,
+  callReceiver
 } = require('./internal/util');
 let stackTraces = false;
+let _execute = execute;
 
 class Aigle extends AigleCore {
 
@@ -40,7 +42,7 @@ class Aigle extends AigleCore {
     if (executor === INTERNAL) {
       return;
     }
-    execute(this, executor);
+    _execute(this, executor);
   }
 
   /**
@@ -91,6 +93,40 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * @example
+   * const { CancellationError } = Aigle;
+   * let cancelled = false;
+   * const promise = new Aigle((resolve, reject, onCancel) => {
+   *   setTimeout(resolve, 30, 'resolved');
+   *   onCancel(() => cancelled = true);
+   * });
+   * promise.cancel();
+   * promise.catch(error => {
+   *   console.log(error instanceof CancellationError); // true
+   *   console.log(cancelled); // true
+   * });
+   */
+  cancel() {
+    if (_execute === execute) {
+      return;
+    }
+    const { _onCancelQueue } = this;
+    if (_onCancelQueue) {
+      let i = -1;
+      const { array } = _onCancelQueue;
+      this._onCancelQueue = undefined;
+      while (++i < _onCancelQueue.length) {
+        array[i]();
+      }
+    }
+    this._reject(new CancellationError('late cancellation observer'));
+  }
+
+  suppressUnhandledRejections() {
+    this._receiver = INTERNAL;
+  }
+
+  /**
    * @param {Function} handler
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -134,7 +170,7 @@ class Aigle extends AigleCore {
    * });
    */
   all() {
-    return addProxy(this, AigleAll);
+    return addProxy(this, All);
   }
 
   /**
@@ -149,7 +185,7 @@ class Aigle extends AigleCore {
    * .then(value => console.log(value)); // 3
    */
   race() {
-    return this.then(race);
+    return addProxy(this, Race);
   }
 
   /**
@@ -175,7 +211,7 @@ class Aigle extends AigleCore {
    * });
    */
   props() {
-    return this.then(props);
+    return addProxy(this, Props);
   }
 
   /**
@@ -221,7 +257,7 @@ class Aigle extends AigleCore {
    * });
    */
   parallel() {
-    return addProxy(this, AigleParallel);
+    return addProxy(this, Parallel);
   }
 
   /**
@@ -2790,7 +2826,7 @@ class Aigle extends AigleCore {
    *   .then(value => console.log(value); // 'test'
    */
   delay(ms) {
-    return addReceiver(this, new Delay(ms));
+    return addAigle(this, new Delay(ms));
   }
 
   /**
@@ -3004,8 +3040,10 @@ class Aigle extends AigleCore {
     }
     const { _value, _key, _receivers } = this;
     this._receivers = undefined;
-    while (_receivers.length !== 0) {
-      const { receiver, onFulfilled } = _receivers.shift();
+    let i = -1;
+    const { array } = _receivers;
+    while (++i < _receivers.length) {
+      const { receiver, onFulfilled } = array[i];
       if (receiver instanceof AigleProxy) {
         receiver._callResolve(_value, _key);
       } else {
@@ -3018,26 +3056,31 @@ class Aigle extends AigleCore {
     if (this._resolved !== 0) {
       return;
     }
-    if (unhandled === undefined && this._receiver === undefined) {
-      setImmediate(() => this._reject(reason, true));
-      return;
+    if (unhandled === undefined) {
+      this._value = reason;
+      if (this._receiver === undefined) {
+        invokeAsync(this);
+        return;
+      }
     }
-    this._resolved = 2;
-    this._value = reason;
     stackTraces && reconstructStack(this);
+    this._resolved = 2;
     this._callReject();
   }
 
   _callReject() {
-    if (this._receiver === undefined) {
+    const { _receiver } = this;
+    if (_receiver === undefined) {
       process.emit('unhandledRejection', this._value);
       return;
     }
-    const { _receiver, _key } = this;
     this._receiver = undefined;
+    if (_receiver === INTERNAL) {
+      return;
+    }
     if (_receiver instanceof AigleProxy) {
       _receiver._callReject(this._value);
-    } else if (_key === INTERNAL) {
+    } else if (this._key === INTERNAL) {
       _receiver._reject(this._value);
     } else {
       callReject(_receiver, this._onRejected, this._value);
@@ -3047,8 +3090,10 @@ class Aigle extends AigleCore {
     }
     const { _value, _receivers } = this;
     this._receivers = undefined;
-    while (_receivers.length !== 0) {
-      const { receiver, onRejected } = _receivers.shift();
+    let i = -1;
+    const { array } = _receivers;
+    while (++i < _receivers.length) {
+      const { receiver, onRejected } = array[i];
       if (receiver instanceof AigleProxy) {
         receiver._callReject(_value);
       } else {
@@ -3066,11 +3111,11 @@ class Aigle extends AigleCore {
 module.exports = { Aigle };
 
 /* functions, classes */
-const { all, AigleAll } = require('./all');
+const { all, All } = require('./all');
 const attempt = require('./attempt');
-const race = require('./race');
-const { props } = require('./props');
-const { parallel, AigleParallel } = require('./parallel');
+const { race, Race } = require('./race');
+const { props, Props } = require('./props');
+const { parallel, Parallel } = require('./parallel');
 const { each, Each } = require('./each');
 const { eachSeries, EachSeries } = require('./eachSeries');
 const { eachLimit, EachLimit } = require('./eachLimit');
@@ -3209,7 +3254,11 @@ Aigle.config = config;
 Aigle.longStackTraces = longStackTraces;
 
 /* errors */
-const { TimeoutError } = require('./error');
+const {
+  CancellationError,
+  TimeoutError
+} = require('./error');
+Aigle.CancellationError = CancellationError;
 Aigle.TimeoutError = TimeoutError;
 
 function _resolve(value) {
@@ -3243,7 +3292,7 @@ function execute(promise, executor) {
       return;
     }
     executor = undefined;
-    promise._resolve(value);
+    callReceiver(promise, value);
   }
 
   function reject(reason) {
@@ -3252,6 +3301,44 @@ function execute(promise, executor) {
     }
     executor = undefined;
     promise._reject(reason);
+  }
+}
+
+function executeWithCancel(promise, executor) {
+  stackTraces && resolveStack(promise);
+  try {
+    executor(resolve, reject, onCancel);
+  } catch(e) {
+    reject(e);
+  }
+
+  function resolve(value) {
+    if (executor === undefined) {
+      return;
+    }
+    executor = undefined;
+    callReceiver(promise, value);
+  }
+
+  function reject(reason) {
+    if (executor === undefined) {
+      return;
+    }
+    executor = undefined;
+    promise._reject(reason);
+  }
+
+  function onCancel(handler) {
+    if (typeof handler !== 'function') {
+      throw new TypeError('onCancel must be function');
+    }
+    if (executor === undefined) {
+      return;
+    }
+    if (promise._onCancelQueue === undefined) {
+      promise._onCancelQueue = new Queue();
+    }
+    promise._onCancelQueue.push(handler);
   }
 }
 
@@ -3350,9 +3437,16 @@ function addProxy(promise, Proxy, arg1, arg2, arg3) {
 /**
  * @param {Object} opts
  * @param {boolean} [opts.longStackTraces]
+ * @param {boolean} [opts.cancellation]
  */
 function config(opts) {
-  stackTraces = !!opts.longStackTraces;
+  opts = opts || {};
+  if (opts.longStackTraces !== undefined) {
+    stackTraces = !!opts.longStackTraces;
+  }
+  if (opts.cancellation !== undefined) {
+    _execute = opts.cancellation ? executeWithCancel : execute;
+  }
 }
 
 function longStackTraces() {
@@ -3368,7 +3462,7 @@ const { AigleProxy } = require('aigle-core');
 const { Aigle } = require('./aigle');
 const { INTERNAL, PENDING, promiseArrayEach } = require('./internal/util');
 
-class AigleAll extends AigleProxy {
+class All extends AigleProxy {
 
   constructor(array) {
     super();
@@ -3400,7 +3494,7 @@ class AigleAll extends AigleProxy {
   }
 }
 
-module.exports = { all, AigleAll };
+module.exports = { all, All };
 
 function set(array) {
   const size = array.length;
@@ -3444,7 +3538,7 @@ function execute() {
  * });
  */
 function all(array) {
-  return new AigleAll(array)._execute();
+  return new All(array)._execute();
 }
 
 
@@ -3733,24 +3827,25 @@ function reconstructStack(promise) {
 },{}],9:[function(require,module,exports){
 'use strict';
 
-const { AigleProxy } = require('aigle-core');
 const { Aigle } = require('./aigle');
 const { INTERNAL } = require('./internal/util');
 
-class Delay extends AigleProxy {
+class Delay extends Aigle {
 
   constructor(ms) {
-    super();
-    this._promise = new Aigle(INTERNAL);
+    super(INTERNAL);
     this._ms = ms;
+    this._timer = undefined;
   }
 
-  _callResolve(value) {
-    setTimeout(() => this._promise._resolve(value), this._ms);
+  _resolve(value) {
+    this._timer = setTimeout(() => Aigle.prototype._resolve.call(this, value), this._ms);
+    return this;
   }
 
-  _callReject(reason) {
-    this._promise._reject(reason);
+  _reject(reason) {
+    clearTimeout(this._timer);
+    Aigle.prototype._reject.call(this, reason);
   }
 }
 
@@ -3769,12 +3864,10 @@ module.exports = { delay, Delay };
  *   .then(value => console.log(value); // 'test'
  */
 function delay(ms, value) {
-  const delay = new Delay(ms);
-  delay._callResolve(value);
-  return delay._promise;
+  return new Delay(ms)._resolve(value);
 }
 
-},{"./aigle":2,"./internal/util":31,"aigle-core":71}],10:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31}],10:[function(require,module,exports){
 'use strict';
 
 const { DoWhilst } = require('./doWhilst');
@@ -4272,7 +4365,10 @@ function eachSeries(collection, iterator) {
 },{"./aigle":2,"./internal/collection":29,"./internal/util":31,"aigle-core":71}],15:[function(require,module,exports){
 'use strict';
 
-const types = ['TimeoutError'];
+const types = [
+  'CancellationError',
+  'TimeoutError'
+];
 let l = types.length;
 while (l--) {
   exports[types[l]] = class extends Error {
@@ -5567,19 +5663,29 @@ function groupBySeries(collection, iterator) {
 },{"./eachSeries":14,"./internal/collection":29,"./internal/util":31}],28:[function(require,module,exports){
 'use strict';
 
-let ticked = false;
-let len = 0;
 const queue = Array(8);
+let len = 0;
+let ticked = false;
 
 function tick() {
   let i = -1;
   while (++i < len) {
     const promise = queue[i];
     queue[i] = undefined;
-    promise._resolved === 1 ? promise._callResolve() : promise._callReject();
+    switch (promise._resolved) {
+    case 0:
+      promise._reject(promise._value, true);
+      break;
+    case 1:
+      promise._callResolve();
+      break;
+    case 2:
+      promise._callReject();
+      break;
+    }
   }
-  ticked = false;
   len = 0;
+  ticked = false;
 }
 
 function invoke(promise) {
@@ -5822,13 +5928,6 @@ class Queue {
   push(task) {
     this.array[this.length++] = task;
   }
-
-  shift() {
-    const index = --this.length;
-    const task = this.array[index];
-    this.array[index] = undefined;
-    return task;
-  }
 }
 
 module.exports = Queue;
@@ -5854,6 +5953,7 @@ module.exports = {
   apply,
   callResolve,
   callReject,
+  callReceiver,
   callThen,
   callProxyReciever,
   promiseArrayEach,
@@ -5928,29 +6028,7 @@ function callResolve(receiver, onFulfilled, value) {
     receiver._resolve(value);
     return;
   }
-  const promise = call1(onFulfilled, value);
-  if (promise === errorObj) {
-    receiver._reject(errorObj.e);
-    return;
-  }
-  if (promise instanceof AigleCore) {
-    switch (promise._resolved) {
-    case 0:
-      promise._addReceiver(receiver, INTERNAL);
-      return;
-    case 1:
-      receiver._resolve(promise._value);
-      return;
-    case 2:
-      receiver._reject(promise._value);
-      return;
-    }
-  }
-  if (promise && promise.then) {
-    callThen(promise, receiver);
-  } else {
-    receiver._resolve(promise);
-  }
+  callReceiver(receiver, call1(onFulfilled, value));
 }
 
 function callReject(receiver, onRejected, reason) {
@@ -5958,7 +6036,10 @@ function callReject(receiver, onRejected, reason) {
     receiver._reject(reason);
     return;
   }
-  const promise = call1(onRejected, reason);
+  callReceiver(receiver, call1(onRejected, reason));
+}
+
+function callReceiver(receiver, promise) {
   if (promise === errorObj) {
     receiver._reject(errorObj.e);
     return;
@@ -7126,7 +7207,7 @@ const {
   promiseObjectEach
 } = require('./internal/util');
 
-class AigleParallel extends AigleProxy {
+class Parallel extends AigleProxy {
 
   constructor(collection) {
     super();
@@ -7166,7 +7247,7 @@ class AigleParallel extends AigleProxy {
   }
 }
 
-module.exports = { parallel, AigleParallel };
+module.exports = { parallel, Parallel };
 
 function execute(collection) {
   this._callResolve = this._result;
@@ -7236,7 +7317,7 @@ function set(collection) {
  * });
  */
 function parallel(collection) {
-  return new AigleParallel(collection)._execute();
+  return new Parallel(collection)._execute();
 }
 
 },{"./aigle":2,"./internal/util":31,"aigle-core":71}],43:[function(require,module,exports){
@@ -7781,23 +7862,26 @@ function iterate(suffix, filter, obj, target, depth, memo) {
 const { AigleProxy } = require('aigle-core');
 
 const { Aigle } = require('./aigle');
-const { INTERNAL, promiseObjectEach } = require('./internal/util');
+const { INTERNAL, PENDING, promiseObjectEach } = require('./internal/util');
 
-class AigleProps extends AigleProxy {
+class Props extends AigleProxy {
 
   constructor(object) {
     super();
-    const keys = Object.keys(object);
-    const size = keys.length;
     this._promise = new Aigle(INTERNAL);
-    this._rest = size;
-    this._keys = keys;
-    this._coll = object;
     this._result = {};
-    if (size === 0) {
-      this._promise._resolve(this._result);
+    if (object === PENDING) {
+      this._rest = undefined;
+      this._coll = undefined;
+      this._keys = undefined;
+      this._execute = this._callResolve;
+      this._callResolve = set;
     } else {
-      promiseObjectEach(this);
+      const keys = Object.keys(object);
+      this._rest = keys.length;
+      this._coll = object;
+      this._keys = keys;
+      this._execute = execute;
     }
   }
 
@@ -7813,7 +7897,28 @@ class AigleProps extends AigleProxy {
   }
 }
 
-module.exports = { props, AigleProps };
+module.exports = { props, Props };
+
+function set(object) {
+  const keys = Object.keys(object);
+  this._rest = keys.length;
+  this._coll = object;
+  this._keys = keys;
+  this._callResolve = this._execute;
+  execute.call(this);
+  return this;
+}
+
+function execute() {
+  if (this._rest === 0) {
+    this._promise._resolve(this._result);
+  } else {
+    promiseObjectEach(this);
+  }
+  return this._promise;
+}
+
+module.exports = { props, Props };
 
 /**
  * @param {Object} object
@@ -7837,15 +7942,15 @@ module.exports = { props, AigleProps };
  * });
  */
 function props(object) {
-  return new AigleProps(object)._promise;
+  return new Props(object)._execute();
 }
 
 },{"./aigle":2,"./internal/util":31,"aigle-core":71}],49:[function(require,module,exports){
 'use strict';
 
-const { AigleParallel } = require('./parallel');
+const { Parallel } = require('./parallel');
 
-class AigleRace extends AigleParallel {
+class Race extends Parallel {
 
   constructor(collection) {
     super(collection);
@@ -7857,7 +7962,7 @@ class AigleRace extends AigleParallel {
   }
 }
 
-module.exports = race;
+module.exports = { race, Race };
 
 /**
  * @param {Object|Array} collection
@@ -7878,7 +7983,7 @@ module.exports = race;
  * .then(value => console.log(value)); // 3
  */
 function race(collection) {
-  return new AigleRace(collection)._execute();
+  return new Race(collection)._execute();
 }
 
 },{"./parallel":42}],50:[function(require,module,exports){
@@ -9184,6 +9289,10 @@ class TimesSeries extends AigleProxy {
       this._iterate();
     }
   }
+
+  _callReject(reason) {
+    this._promise._reject(reason);
+  }
 }
 
 
@@ -10223,7 +10332,7 @@ process.umask = function() { return 0; };
 },{"_process":72}],74:[function(require,module,exports){
 module.exports={
   "name": "aigle",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "browser": "browser.js",
