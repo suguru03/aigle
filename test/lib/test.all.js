@@ -238,7 +238,7 @@ parallel('#all', () => {
     process.on('unhandledRejection', done);
     const error = new Error('error');
     const promise = Aigle.reject(error);
-    promise.catch(error => assert(error));
+    promise.catch(assert);
     const tasks = [promise, promise, promise];
     return Aigle.delay(DELAY, tasks)
       .all()
