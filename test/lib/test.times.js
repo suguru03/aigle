@@ -4,7 +4,7 @@ const assert = require('assert');
 
 const parallel = require('mocha.parallel');
 const Aigle = require('../../');
-const DELAY = require('../config').DELAY;
+const { DELAY } = require('../config');
 
 parallel('times', () => {
 
@@ -52,6 +52,16 @@ parallel('times', () => {
       });
   });
 
+  it('should return an array even if iterator is undefined', () => {
+
+    return Aigle.times(5)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
+        assert.strictEqual(res.length, 5);
+        assert.deepEqual(res, [0, 1, 2, 3, 4]);
+      });
+  });
+
   it('should catch a TypeError', () => {
 
     const iterator = n => n();
@@ -83,6 +93,19 @@ parallel('#times', () => {
         assert.strictEqual(res.length, count);
         assert.deepEqual(res, [0, 2, 4, 6, 8]);
         assert.deepEqual(order, [0, 2, 4, 1, 3]);
+      });
+  });
+
+  it('should execute with delay', () => {
+
+    const count = 5;
+    const iterator = n => n * 2;
+    return Aigle.delay(DELAY, count)
+      .times(iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
+        assert.strictEqual(res.length, count);
+        assert.deepEqual(res, [0, 2, 4, 6, 8]);
       });
   });
 });
