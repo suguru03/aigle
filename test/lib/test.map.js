@@ -131,7 +131,7 @@ parallel('map', () => {
   it('should execute with multiple receivers on asynchronous', () => {
 
     const array = [1, 2, 3];
-    const promise = new Aigle(resolve => setImmediate(() => resolve(array)));
+    const promise = new Aigle(resolve => process.nextTick(() => resolve(array)));
     const iterator = value => Aigle.delay(value * DELAY, value * 2);
     return Aigle.all([
       promise.map(iterator),

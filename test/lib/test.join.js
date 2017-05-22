@@ -92,7 +92,7 @@ parallel('#spread', () => {
   it('should work on asynchronous', () => {
 
     const array = [1, 2, 3];
-    return new Aigle(resolve => setImmediate(() => resolve(array)))
+    return new Aigle(resolve => process.nextTick(() => resolve(array)))
       .spread((arg1, arg2, arg3) => {
         assert.strictEqual(arg1, array[0]);
         assert.strictEqual(arg2, array[1]);

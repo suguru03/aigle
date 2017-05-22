@@ -9,8 +9,8 @@ module.exports = ({ Aigle, Bluebird, neoAsync }) => {
       doc: true,
       setup: config => {
         this.array = _.times(config.count);
-        this.aigleIterator = value => new Aigle(resolve => setImmediate(resolve, value * 2));
-        this.bluebirdIterator = value => new Bluebird(resolve => setImmediate(resolve, value * 2));
+        this.aigleIterator = value => new Aigle(resolve => process.nextTick(resolve, value * 2));
+        this.bluebirdIterator = value => new Bluebird(resolve => process.nextTick(resolve, value * 2));
       },
       aigle: () => {
         return Aigle.mapSeries(this.array, this.aigleIterator);
@@ -25,8 +25,8 @@ module.exports = ({ Aigle, Bluebird, neoAsync }) => {
         this.array = _.times(config.count);
         this.aigle = Aigle.resolve(this.array);
         this.bluebird = Bluebird.resolve(this.array);
-        this.aigleIterator = value => new Aigle(resolve => setImmediate(resolve, value * 2));
-        this.bluebirdIterator = value => new Bluebird(resolve => setImmediate(resolve, value * 2));
+        this.aigleIterator = value => new Aigle(resolve => process.nextTick(resolve, value * 2));
+        this.bluebirdIterator = value => new Bluebird(resolve => process.nextTick(resolve, value * 2));
       },
       aigle: () => {
         return this.aigle.mapSeries(this.aigleIterator);
@@ -54,8 +54,8 @@ module.exports = ({ Aigle, Bluebird, neoAsync }) => {
     'mapSeries:array:async': {
       setup: config => {
         this.array = _.times(config.count);
-        this.promiseIterator = value => new Aigle(resolve => setImmediate(resolve, value * 2));
-        this.neoAsyncIterator = (n, cb) => setImmediate(cb, null, n * 2);
+        this.promiseIterator = value => new Aigle(resolve => process.nextTick(resolve, value * 2));
+        this.neoAsyncIterator = (n, cb) => process.nextTick(cb, null, n * 2);
       },
       aigle: () => {
         return Aigle.mapSeries(this.array, this.promiseIterator);

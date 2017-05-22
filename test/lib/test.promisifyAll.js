@@ -14,13 +14,13 @@ parallel('promisifyAll', () => {
         this._value = undefined;
       }
       set(value, callback) {
-        setImmediate(() => {
+        process.nextTick(() => {
           this._value = value;
           callback();
         });
       }
       get(callback) {
-        setImmediate(() => callback(null, this._value));
+        process.nextTick(() => callback(null, this._value));
       }
     }
     const test = new Test();
@@ -96,7 +96,7 @@ parallel('promisifyAll', () => {
         this._value = undefined;
       }
       get(callback) {
-        setImmediate(() => callback(null, this._value));
+        process.nextTick(() => callback(null, this._value));
       }
     }
     try {

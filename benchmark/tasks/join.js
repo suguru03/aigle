@@ -3,7 +3,7 @@
 module.exports = ({ Aigle, Bluebird }) => {
 
   function callResolve(resolve) {
-    setImmediate(resolve);
+    process.nextTick(resolve);
   }
   return {
     'join': {

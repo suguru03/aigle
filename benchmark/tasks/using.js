@@ -19,7 +19,7 @@ module.exports = ({ Aigle, Bluebird }) => {
   }
 
   function create(resolve) {
-    setImmediate(resolve, new Resource());
+    process.nextTick(resolve, new Resource());
   }
   function dispose(resource) {
     resource.close();

@@ -12,13 +12,13 @@ module.exports = ({ Aigle, Bluebird }) => {
       setup: config => count = config.count,
       aigle: () => {
         const tasks = _.times(count, () => {
-          return new Aigle(resolve => setImmediate(resolve));
+          return new Aigle(resolve => process.nextTick(resolve));
         });
         return Aigle.race(tasks);
       },
       bluebird: () => {
         const tasks = _.times(count, () => {
-          return new Bluebird(resolve => setImmediate(resolve));
+          return new Bluebird(resolve => process.nextTick(resolve));
         });
         return Bluebird.race(tasks);
       }

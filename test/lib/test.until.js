@@ -18,7 +18,7 @@ parallel('until', () => {
     };
     const iterator = () => {
       order.iterator.push(count++);
-      return new Aigle(resolve => setImmediate(() => resolve(count)));
+      return new Aigle(resolve => process.nextTick(() => resolve(count)));
     };
     return Aigle.until(test, iterator)
       .then(res => {
@@ -39,7 +39,7 @@ parallel('until', () => {
     };
     const iterator = value => {
       order.iterator.push(value++);
-      return new Aigle(resolve => setImmediate(() => resolve(value)));
+      return new Aigle(resolve => process.nextTick(() => resolve(value)));
     };
     return Aigle.until(value, test, iterator)
       .then(res => {
@@ -71,11 +71,11 @@ parallel('until', () => {
     const order = { test: [], iterator: [] };
     const test = () => {
       order.test.push(count);
-      return new Aigle(resolve => setImmediate(() => resolve(count === limit)));
+      return new Aigle(resolve => process.nextTick(() => resolve(count === limit)));
     };
     const iterator = () => {
       order.iterator.push(count++);
-      return new Aigle(resolve => setImmediate(() => resolve(count)));
+      return new Aigle(resolve => process.nextTick(() => resolve(count)));
     };
     return Aigle.until(test, iterator)
       .then(res => {
@@ -99,7 +99,7 @@ parallel('#until', () => {
     };
     const iterator = value => {
       order.iterator.push(value++);
-      return new Aigle(resolve => setImmediate(() => resolve(value)));
+      return new Aigle(resolve => process.nextTick(() => resolve(value)));
     };
     return Aigle.resolve(value)
       .until(test, iterator)

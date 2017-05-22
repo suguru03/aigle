@@ -111,10 +111,10 @@ describe('#cancel', () => {
 
     let called = 0;
     return new Aigle((resolve, reject, onCancel) => {
-      setImmediate(resolve, 1);
-      setImmediate(resolve, 2);
-      setImmediate(reject, 3);
-      setImmediate(reject, 4);
+      process.nextTick(resolve, 1);
+      process.nextTick(resolve, 2);
+      process.nextTick(reject, 3);
+      process.nextTick(reject, 4);
       onCancel(() => called++);
     })
     .then(value => {

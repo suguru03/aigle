@@ -21,8 +21,8 @@ module.exports = ({ Aigle, neoAsync }) => {
     'rejectSeries:array:async': {
       setup: config => {
         this.array = _.times(config.count);
-        this.promiseIterator = value => new Aigle(resolve => setImmediate(resolve, value % 2));
-        this.neoAsyncIterator = (n, cb) => setImmediate(cb, null, n % 2);
+        this.promiseIterator = value => new Aigle(resolve => process.nextTick(resolve, value % 2));
+        this.neoAsyncIterator = (n, cb) => process.nextTick(cb, null, n % 2);
       },
       aigle: () => {
         return Aigle.rejectSeries(this.array, this.promiseIterator);
