@@ -208,6 +208,7 @@ Functions
 - [`Promise.delay`](https://suguru03.github.io/aigle/docs/global.html#delay)
 - [`Promise.promisify`](https://suguru03.github.io/aigle/docs/global.html#promisify)
 - [`Promise.promisifyAll`](https://suguru03.github.io/aigle/docs/global.html#promisifyAll)
+- [`Promise.config`](https://suguru03.github.io/aigle/docs/global.html#config)
 
 ### Debug
 
