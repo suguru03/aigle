@@ -1,8 +1,12 @@
-# Aigle
+<p align="center">
+  <img alt="aigle" src="https://raw.githubusercontent.com/suguru03/aigle/gh-pages/images/logo.png" height=260>
+</p>
 
-[![npm](https://img.shields.io/npm/v/aigle.svg)](https://www.npmjs.com/package/aigle)
-[![CircleCI branch](https://img.shields.io/circleci/project/github/suguru03/aigle/master.svg)](https://circleci.com/gh/suguru03/aigle/tree/master)
-[![Codecov branch](https://img.shields.io/codecov/c/github/suguru03/aigle/master.svg)](https://codecov.io/gh/suguru03/aigle)
+<p align="center">
+  <a href="https://www.npmjs.com/package/aigle"><img alt="npm" src="https://img.shields.io/npm/v/aigle.svg"></a>
+  <a href="https://circleci.com/gh/suguru03/aigle/tree/master"><img alt="CircleCI Status" src="https://img.shields.io/circleci/project/github/suguru03/aigle/master.svg"></a>
+  <a href="https://codecov.io/gh/suguru03/aigle"><img alt="Coverage Status" src="https://img.shields.io/codecov/c/github/suguru03/aigle/master.svg"></a>
+</p>
 
 Aigle is an ideal promise library which is faster and more efficient than other libraries.
 On top of being an impressive benchmark exercise, it is a production-ready library that implements the Promise A+ standard.
