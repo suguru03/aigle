@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="aigle" src="https://raw.githubusercontent.com/suguru03/aigle/gh-pages/images/logo.png" height=260>
+  <img alt="aigle" src="https://raw.githubusercontent.com/suguru03/aigle/gh-pages/images/logo.png" width=500>
 </p>
 
 <p align="center">
