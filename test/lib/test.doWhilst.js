@@ -3,7 +3,7 @@
 const assert = require('assert');
 
 const parallel = require('mocha.parallel');
-const Aigle = require('../../');
+const Aigle = require('../proxy');
 
 parallel('doWhilst', () => {
 

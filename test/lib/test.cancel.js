@@ -4,7 +4,7 @@ const assert = require('assert');
 
 const parallel = require('mocha.parallel');
 
-const Aigle = require('../../');
+const Aigle = require('../proxy');
 const { DELAY } = require('../config');
 const { CancellationError } = Aigle;
 
