@@ -28,7 +28,23 @@ let _execute = execute;
 class Aigle extends AigleCore {
 
   /**
+   * Create a new promise instance. It is same as native Promise.
+   * It has three states, `pending`, `fulfilled` and `rejected`, the first state is `pending`.
+   * The passed function has `resolve` and `reject` as the arguments,
+   * if `reject` is called or an error is caused, the state goes to `rejected` and then the error is thrown to next `catch`.
+   * If request is success and `resolve` is called, `then` or next task is called.
    * @param {Function} executor
+   * @example
+   * return new Promise((resolve, reject) => {
+   *   fs.readFile('filepath', (err, data) => {
+   *     if (err) {
+   *       return reject(err);
+   *    }
+   *    resolve(data);
+   *  });
+   * })
+   * .then(data => ...)
+   * .catch(err => ...);
    */
   constructor(executor) {
     super();
@@ -2935,7 +2951,7 @@ class Aigle extends AigleCore {
    *   });
    */
   times(iterator) {
-    return this.then(value => times(value, iterator));
+    return addProxy(this, Times, iterator);
   }
 
   /**
@@ -2959,7 +2975,7 @@ class Aigle extends AigleCore {
    *   });
    */
   timesSeries(iterator) {
-    return this.then(value => timesSeries(value, iterator));
+    return addProxy(this, TimesSeries, iterator);
   }
 
   /**
@@ -3001,7 +3017,7 @@ class Aigle extends AigleCore {
    *   });
    */
   timesLimit(limit, iterator) {
-    return this.then(value => timesLimit(value, limit, iterator));
+    return addProxy(this, TimesLimit, limit, iterator);
   }
 
   /**
@@ -3167,9 +3183,9 @@ const { doWhilst } = require('./doWhilst');
 const { until } = require('./until');
 const doUntil = require('./doUntil');
 const retry = require('./retry');
-const times = require('./times');
-const timesSeries = require('./timesSeries');
-const timesLimit = require('./timesLimit');
+const { times, Times } = require('./times');
+const { timesSeries, TimesSeries } = require('./timesSeries');
+const { timesLimit, TimesLimit } = require('./timesLimit');
 const { using, Disposer } = require('./using');
 const { resolveStack, reconstructStack } = require('./debug');
 
@@ -5945,6 +5961,7 @@ module.exports = {
   DEFAULT_LIMIT,
   INTERNAL,
   PENDING,
+  defaultIterator,
   errorObj,
   call0,
   call1,
@@ -5966,6 +5983,10 @@ module.exports = {
 function INTERNAL() {}
 
 function PENDING() {}
+
+function defaultIterator(n) {
+  return n;
+}
 
 function call0(handler) {
   try {
@@ -9102,19 +9123,35 @@ module.exports = Timeout;
 'use strict';
 
 const { AigleProxy } = require('aigle-core');
+
 const { Aigle } = require('./aigle');
-const { INTERNAL, call1, callProxyReciever } = require('./internal/util');
+const { INTERNAL, PENDING, defaultIterator, call1, callProxyReciever } = require('./internal/util');
 
 class Times extends AigleProxy {
 
   constructor(times, iterator) {
     super();
     this._promise = new Aigle(INTERNAL);
-    this._rest = times;
-    this._result = Array(times);
-    this._iterator = iterator;
-    let i = -1;
-    while (++i < times && callProxyReciever(call1(this._iterator, i), this, i)) {}
+    this._iterator = typeof iterator === 'function' ? iterator : defaultIterator;
+    this._rest = undefined;
+    this._result = undefined;
+    if (times === PENDING) {
+      this._rest = this._callResolve;
+      this._callResolve = execute;
+    } else {
+      set.call(this, times);
+    }
+  }
+
+  _execute() {
+    if (this._rest >= 1) {
+      const { _rest, _iterator } = this;
+      let i = -1;
+      while (++i < _rest && callProxyReciever(call1(_iterator, i), this, i)) {}
+    } else {
+      this._promise._resolve(this._result);
+    }
+    return this._promise;
   }
 
   _callResolve(value, index) {
@@ -9129,7 +9166,24 @@ class Times extends AigleProxy {
   }
 }
 
-module.exports = times;
+module.exports = { times, Times, set, execute };
+
+function set(times) {
+  times = +times;
+  if (times >= 1) {
+    this._rest = times;
+    this._result = Array(times);
+  } else {
+    this._rest = 0;
+    this._result = [];
+  }
+}
+
+function execute(times) {
+  this._callResolve = this._rest;
+  set.call(this, times);
+  this._execute();
+}
 
 /**
  * @param {integer} times
@@ -9152,34 +9206,56 @@ module.exports = times;
  *   });
  */
 function times(times, iterator) {
-  times = +times;
-  if (times >= 1) {
-    return new Times(times, iterator)._promise;
-  }
-  return Aigle.resolve([]);
+  return new Times(times, iterator)._execute();
 }
 
 },{"./aigle":2,"./internal/util":31,"aigle-core":71}],63:[function(require,module,exports){
 'use strict';
 
 const { AigleProxy } = require('aigle-core');
+
 const { Aigle } = require('./aigle');
-const { INTERNAL, DEFAULT_LIMIT, callProxyReciever, call1 } = require('./internal/util');
+const {
+  INTERNAL,
+  PENDING,
+  DEFAULT_LIMIT,
+  defaultIterator,
+  call1,
+  callProxyReciever
+} = require('./internal/util');
 
 class TimesLimit extends AigleProxy {
 
-  constructor(times, iterator, limit) {
+  constructor(times, limit, iterator) {
     super();
-    this._promise = new Aigle(INTERNAL);
-    limit = limit > times ? times : limit;
-    this._index = 0;
-    this._rest = times;
-    this._callRest = times - limit;
-    this._result = Array(times);
-    this._iterator = iterator;
-    while (limit--) {
-      this._iterate();
+    if (typeof limit === 'function') {
+      iterator = limit;
+      limit = DEFAULT_LIMIT;
     }
+    this._promise = new Aigle(INTERNAL);
+    this._index = 0;
+    this._limit = limit;
+    this._iterator = typeof iterator === 'function' ? iterator : defaultIterator;
+    this._rest = undefined;
+    this._result = undefined;
+    this._callRest = undefined;
+    if (times === PENDING) {
+      this._rest = this._callResolve;
+      this._callResolve = execute;
+    } else {
+      set.call(this, times);
+    }
+  }
+
+  _execute() {
+    if (this._rest === 0) {
+      this._promise._resolve(this._result);
+    } else {
+      while (this._limit--) {
+        this._iterate();
+      }
+    }
+    return this._promise;
   }
 
   _iterate() {
@@ -9202,7 +9278,28 @@ class TimesLimit extends AigleProxy {
   }
 }
 
-module.exports = timesLimit;
+module.exports = { timesLimit, TimesLimit };
+
+function set(times) {
+  times = +times;
+  if (times >= 1) {
+    this._rest = times;
+    this._result = Array(times);
+    const { _limit } = this;
+    this._limit = _limit < times ? _limit : times;
+    this._callRest = times - this._limit;
+  } else {
+    this._rest = 0;
+    this._result = [];
+  }
+}
+
+function execute(times) {
+  this._callResolve = this._rest;
+  set.call(this, times);
+  this._execute();
+}
+
 
 /**
  * @param {integer} times
@@ -9242,38 +9339,42 @@ module.exports = timesLimit;
  *   });
  */
 function timesLimit(times, limit, iterator) {
-  times = +times;
-  if (typeof limit === 'function') {
-    iterator = limit;
-    limit = DEFAULT_LIMIT;
-  } else {
-    limit = +limit;
-  }
-  if (times >= 1 && limit >= 1) {
-    return new TimesLimit(times, iterator, limit)._promise;
-  }
-  return Aigle.resolve([]);
+  return new TimesLimit(times, limit, iterator)._execute();
 }
 
 },{"./aigle":2,"./internal/util":31,"aigle-core":71}],64:[function(require,module,exports){
 'use strict';
 
 const { AigleProxy } = require('aigle-core');
-const { Aigle } = require('./aigle');
-const { INTERNAL, call1, callProxyReciever } = require('./internal/util');
 
-module.exports = timesSeries;
+const { Aigle } = require('./aigle');
+const { set, execute } = require('./times');
+const { INTERNAL, PENDING, defaultIterator, call1, callProxyReciever } = require('./internal/util');
 
 class TimesSeries extends AigleProxy {
 
   constructor(times, iterator) {
     super();
     this._promise = new Aigle(INTERNAL);
+    this._iterator = typeof iterator === 'function' ? iterator : defaultIterator;
     this._index = 0;
-    this._rest = times;
-    this._result = Array(times);
-    this._iterator = iterator;
-    this._iterate();
+    this._rest = undefined;
+    this._result = undefined;
+    if (times === PENDING) {
+      this._rest = this._callResolve;
+      this._callResolve = execute;
+    } else {
+      set.call(this, times);
+    }
+  }
+
+  _execute() {
+    if (this._rest >= 1) {
+      this._iterate();
+    } else {
+      this._promise._resolve(this._result);
+    }
+    return this._promise;
   }
 
   _iterate() {
@@ -9295,7 +9396,7 @@ class TimesSeries extends AigleProxy {
   }
 }
 
-
+module.exports = { timesSeries, TimesSeries };
 
 /**
  * @param {integer} times
@@ -9318,14 +9419,10 @@ class TimesSeries extends AigleProxy {
  *   });
  */
 function timesSeries(times, iterator) {
-  times = +times;
-  if (times >= 1) {
-    return new TimesSeries(times, iterator)._promise;
-  }
-  return Aigle.resolve([]);
+  return new TimesSeries(times, iterator)._execute();
 }
 
-},{"./aigle":2,"./internal/util":31,"aigle-core":71}],65:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"./times":62,"aigle-core":71}],65:[function(require,module,exports){
 'use strict';
 
 const { Each } = require('./each');
@@ -10332,7 +10429,7 @@ process.umask = function() { return 0; };
 },{"_process":72}],74:[function(require,module,exports){
 module.exports={
   "name": "aigle",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "browser": "browser.js",
@@ -10354,7 +10451,7 @@ module.exports={
   "author": "Suguru Motegi",
   "license": "MIT",
   "devDependencies": {
-    "babili": "0.0.12",
+    "babili": "0.1.2",
     "benchmark": "^2.1.1",
     "bluebird": "^3.5.0",
     "browserify": "^14.1.0",

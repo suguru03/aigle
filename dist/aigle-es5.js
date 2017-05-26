@@ -2938,8 +2938,8 @@ var Aigle = (function (AigleCore) {
    *     console.log(order); // [2, 1, 0]
    *   });
    */
-  Aigle.prototype.times = function times$1 (iterator) {
-    return this.then(function (value) { return times(value, iterator); });
+  Aigle.prototype.times = function times (iterator) {
+    return addProxy(this, Times, iterator);
   };
 
   /**
@@ -2962,8 +2962,8 @@ var Aigle = (function (AigleCore) {
    *     console.log(order); // [0, 1, 2]
    *   });
    */
-  Aigle.prototype.timesSeries = function timesSeries$1 (iterator) {
-    return this.then(function (value) { return timesSeries(value, iterator); });
+  Aigle.prototype.timesSeries = function timesSeries (iterator) {
+    return addProxy(this, TimesSeries, iterator);
   };
 
   /**
@@ -3004,8 +3004,8 @@ var Aigle = (function (AigleCore) {
    *     console.log(order); // [2, 1, 0]
    *   });
    */
-  Aigle.prototype.timesLimit = function timesLimit$1 (limit, iterator) {
-    return this.then(function (value) { return timesLimit(value, limit, iterator); });
+  Aigle.prototype.timesLimit = function timesLimit (limit, iterator) {
+    return addProxy(this, TimesLimit, limit, iterator);
   };
 
   /**
@@ -3285,15 +3285,21 @@ var ref$53 = require('./until');
 var until = ref$53.until;
 var doUntil = require('./doUntil');
 var retry = require('./retry');
-var times = require('./times');
-var timesSeries = require('./timesSeries');
-var timesLimit = require('./timesLimit');
-var ref$54 = require('./using');
-var using = ref$54.using;
-var Disposer = ref$54.Disposer;
-var ref$55 = require('./debug');
-var resolveStack = ref$55.resolveStack;
-var reconstructStack = ref$55.reconstructStack;
+var ref$54 = require('./times');
+var times = ref$54.times;
+var Times = ref$54.Times;
+var ref$55 = require('./timesSeries');
+var timesSeries = ref$55.timesSeries;
+var TimesSeries = ref$55.TimesSeries;
+var ref$56 = require('./timesLimit');
+var timesLimit = ref$56.timesLimit;
+var TimesLimit = ref$56.TimesLimit;
+var ref$57 = require('./using');
+var using = ref$57.using;
+var Disposer = ref$57.Disposer;
+var ref$58 = require('./debug');
+var resolveStack = ref$58.resolveStack;
+var reconstructStack = ref$58.reconstructStack;
 
 Aigle.VERSION = VERSION;
 
@@ -3376,9 +3382,9 @@ Aigle.config = config;
 Aigle.longStackTraces = longStackTraces;
 
 /* errors */
-var ref$56 = require('./error');
-var CancellationError = ref$56.CancellationError;
-var TimeoutError = ref$56.TimeoutError;
+var ref$59 = require('./error');
+var CancellationError = ref$59.CancellationError;
+var TimeoutError = ref$59.TimeoutError;
 Aigle.CancellationError = CancellationError;
 Aigle.TimeoutError = TimeoutError;
 
@@ -6303,6 +6309,7 @@ module.exports = {
   DEFAULT_LIMIT: DEFAULT_LIMIT,
   INTERNAL: INTERNAL,
   PENDING: PENDING,
+  defaultIterator: defaultIterator,
   errorObj: errorObj,
   call0: call0,
   call1: call1,
@@ -6324,6 +6331,10 @@ module.exports = {
 function INTERNAL() {}
 
 function PENDING() {}
+
+function defaultIterator(n) {
+  return n;
+}
 
 function call0(handler) {
   try {
@@ -9716,10 +9727,13 @@ module.exports = Timeout;
 
 var ref = require('aigle-core');
 var AigleProxy = ref.AigleProxy;
+
 var ref$1 = require('./aigle');
 var Aigle = ref$1.Aigle;
 var ref$2 = require('./internal/util');
 var INTERNAL = ref$2.INTERNAL;
+var PENDING = ref$2.PENDING;
+var defaultIterator = ref$2.defaultIterator;
 var call1 = ref$2.call1;
 var callProxyReciever = ref$2.callProxyReciever;
 
@@ -9727,16 +9741,33 @@ var Times = (function (AigleProxy) {
   function Times(times, iterator) {
     AigleProxy.call(this);
     this._promise = new Aigle(INTERNAL);
-    this._rest = times;
-    this._result = Array(times);
-    this._iterator = iterator;
-    var i = -1;
-    while (++i < times && callProxyReciever(call1(this._iterator, i), this, i)) {}
+    this._iterator = typeof iterator === 'function' ? iterator : defaultIterator;
+    this._rest = undefined;
+    this._result = undefined;
+    if (times === PENDING) {
+      this._rest = this._callResolve;
+      this._callResolve = execute;
+    } else {
+      set.call(this, times);
+    }
   }
 
   if ( AigleProxy ) Times.__proto__ = AigleProxy;
   Times.prototype = Object.create( AigleProxy && AigleProxy.prototype );
   Times.prototype.constructor = Times;
+
+  Times.prototype._execute = function _execute () {
+    if (this._rest >= 1) {
+      var ref = this;
+      var _rest = ref._rest;
+      var _iterator = ref._iterator;
+      var i = -1;
+      while (++i < _rest && callProxyReciever(call1(_iterator, i), this, i)) {}
+    } else {
+      this._promise._resolve(this._result);
+    }
+    return this._promise;
+  };
 
   Times.prototype._callResolve = function _callResolve (value, index) {
     this._result[index] = value;
@@ -9752,7 +9783,24 @@ var Times = (function (AigleProxy) {
   return Times;
 }(AigleProxy));
 
-module.exports = times;
+module.exports = { times: times, Times: Times, set: set, execute: execute };
+
+function set(times) {
+  times = +times;
+  if (times >= 1) {
+    this._rest = times;
+    this._result = Array(times);
+  } else {
+    this._rest = 0;
+    this._result = [];
+  }
+}
+
+function execute(times) {
+  this._callResolve = this._rest;
+  set.call(this, times);
+  this._execute();
+}
 
 /**
  * @param {integer} times
@@ -9775,11 +9823,7 @@ module.exports = times;
  *   });
  */
 function times(times, iterator) {
-  times = +times;
-  if (times >= 1) {
-    return new Times(times, iterator)._promise;
-  }
-  return Aigle.resolve([]);
+  return new Times(times, iterator)._execute();
 }
 
 },{"./aigle":2,"./internal/util":31,"aigle-core":71}],63:[function(require,module,exports){
@@ -9787,34 +9831,55 @@ function times(times, iterator) {
 
 var ref = require('aigle-core');
 var AigleProxy = ref.AigleProxy;
+
 var ref$1 = require('./aigle');
 var Aigle = ref$1.Aigle;
 var ref$2 = require('./internal/util');
 var INTERNAL = ref$2.INTERNAL;
+var PENDING = ref$2.PENDING;
 var DEFAULT_LIMIT = ref$2.DEFAULT_LIMIT;
-var callProxyReciever = ref$2.callProxyReciever;
+var defaultIterator = ref$2.defaultIterator;
 var call1 = ref$2.call1;
+var callProxyReciever = ref$2.callProxyReciever;
 
 var TimesLimit = (function (AigleProxy) {
-  function TimesLimit(times, iterator, limit) {
-    var this$1 = this;
-
+  function TimesLimit(times, limit, iterator) {
     AigleProxy.call(this);
+    if (typeof limit === 'function') {
+      iterator = limit;
+      limit = DEFAULT_LIMIT;
+    }
     this._promise = new Aigle(INTERNAL);
-    limit = limit > times ? times : limit;
     this._index = 0;
-    this._rest = times;
-    this._callRest = times - limit;
-    this._result = Array(times);
-    this._iterator = iterator;
-    while (limit--) {
-      this$1._iterate();
+    this._limit = limit;
+    this._iterator = typeof iterator === 'function' ? iterator : defaultIterator;
+    this._rest = undefined;
+    this._result = undefined;
+    this._callRest = undefined;
+    if (times === PENDING) {
+      this._rest = this._callResolve;
+      this._callResolve = execute;
+    } else {
+      set.call(this, times);
     }
   }
 
   if ( AigleProxy ) TimesLimit.__proto__ = AigleProxy;
   TimesLimit.prototype = Object.create( AigleProxy && AigleProxy.prototype );
   TimesLimit.prototype.constructor = TimesLimit;
+
+  TimesLimit.prototype._execute = function _execute () {
+    var this$1 = this;
+
+    if (this._rest === 0) {
+      this._promise._resolve(this._result);
+    } else {
+      while (this._limit--) {
+        this$1._iterate();
+      }
+    }
+    return this._promise;
+  };
 
   TimesLimit.prototype._iterate = function _iterate () {
     var i = this._index++;
@@ -9838,7 +9903,29 @@ var TimesLimit = (function (AigleProxy) {
   return TimesLimit;
 }(AigleProxy));
 
-module.exports = timesLimit;
+module.exports = { timesLimit: timesLimit, TimesLimit: TimesLimit };
+
+function set(times) {
+  times = +times;
+  if (times >= 1) {
+    this._rest = times;
+    this._result = Array(times);
+    var ref = this;
+    var _limit = ref._limit;
+    this._limit = _limit < times ? _limit : times;
+    this._callRest = times - this._limit;
+  } else {
+    this._rest = 0;
+    this._result = [];
+  }
+}
+
+function execute(times) {
+  this._callResolve = this._rest;
+  set.call(this, times);
+  this._execute();
+}
+
 
 /**
  * @param {integer} times
@@ -9878,17 +9965,7 @@ module.exports = timesLimit;
  *   });
  */
 function timesLimit(times, limit, iterator) {
-  times = +times;
-  if (typeof limit === 'function') {
-    iterator = limit;
-    limit = DEFAULT_LIMIT;
-  } else {
-    limit = +limit;
-  }
-  if (times >= 1 && limit >= 1) {
-    return new TimesLimit(times, iterator, limit)._promise;
-  }
-  return Aigle.resolve([]);
+  return new TimesLimit(times, limit, iterator)._execute();
 }
 
 },{"./aigle":2,"./internal/util":31,"aigle-core":71}],64:[function(require,module,exports){
@@ -9896,29 +9973,47 @@ function timesLimit(times, limit, iterator) {
 
 var ref = require('aigle-core');
 var AigleProxy = ref.AigleProxy;
+
 var ref$1 = require('./aigle');
 var Aigle = ref$1.Aigle;
-var ref$2 = require('./internal/util');
-var INTERNAL = ref$2.INTERNAL;
-var call1 = ref$2.call1;
-var callProxyReciever = ref$2.callProxyReciever;
-
-module.exports = timesSeries;
+var ref$2 = require('./times');
+var set = ref$2.set;
+var execute = ref$2.execute;
+var ref$3 = require('./internal/util');
+var INTERNAL = ref$3.INTERNAL;
+var PENDING = ref$3.PENDING;
+var defaultIterator = ref$3.defaultIterator;
+var call1 = ref$3.call1;
+var callProxyReciever = ref$3.callProxyReciever;
 
 var TimesSeries = (function (AigleProxy) {
   function TimesSeries(times, iterator) {
     AigleProxy.call(this);
     this._promise = new Aigle(INTERNAL);
+    this._iterator = typeof iterator === 'function' ? iterator : defaultIterator;
     this._index = 0;
-    this._rest = times;
-    this._result = Array(times);
-    this._iterator = iterator;
-    this._iterate();
+    this._rest = undefined;
+    this._result = undefined;
+    if (times === PENDING) {
+      this._rest = this._callResolve;
+      this._callResolve = execute;
+    } else {
+      set.call(this, times);
+    }
   }
 
   if ( AigleProxy ) TimesSeries.__proto__ = AigleProxy;
   TimesSeries.prototype = Object.create( AigleProxy && AigleProxy.prototype );
   TimesSeries.prototype.constructor = TimesSeries;
+
+  TimesSeries.prototype._execute = function _execute () {
+    if (this._rest >= 1) {
+      this._iterate();
+    } else {
+      this._promise._resolve(this._result);
+    }
+    return this._promise;
+  };
 
   TimesSeries.prototype._iterate = function _iterate () {
     var i = this._index++;
@@ -9941,7 +10036,7 @@ var TimesSeries = (function (AigleProxy) {
   return TimesSeries;
 }(AigleProxy));
 
-
+module.exports = { timesSeries: timesSeries, TimesSeries: TimesSeries };
 
 /**
  * @param {integer} times
@@ -9964,14 +10059,10 @@ var TimesSeries = (function (AigleProxy) {
  *   });
  */
 function timesSeries(times, iterator) {
-  times = +times;
-  if (times >= 1) {
-    return new TimesSeries(times, iterator)._promise;
-  }
-  return Aigle.resolve([]);
+  return new TimesSeries(times, iterator)._execute();
 }
 
-},{"./aigle":2,"./internal/util":31,"aigle-core":71}],65:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":31,"./times":62,"aigle-core":71}],65:[function(require,module,exports){
 'use strict';
 
 var ref = require('./each');
@@ -11060,7 +11151,7 @@ process.umask = function() { return 0; };
 },{"_process":72}],74:[function(require,module,exports){
 module.exports={
   "name": "aigle",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "browser": "browser.js",
@@ -11082,7 +11173,7 @@ module.exports={
   "author": "Suguru Motegi",
   "license": "MIT",
   "devDependencies": {
-    "babili": "0.0.12",
+    "babili": "0.1.2",
     "benchmark": "^2.1.1",
     "bluebird": "^3.5.0",
     "browserify": "^14.1.0",
