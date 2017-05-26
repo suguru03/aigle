@@ -65,7 +65,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line25">line 25</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line41">line 41</a>
     </li></ul></dd>
     
 
@@ -104,12 +104,34 @@
 
 
 
+<div class="description">
+    <p>Create a new promise instance. It is same as native Promise.
+It has three states, <code>pending</code>, <code>fulfilled</code> and <code>rejected</code>, the first state is <code>pending</code>.
+The passed function has <code>resolve</code> and <code>reject</code> as the arguments,
+if <code>reject</code> is called or an error is caused, the state goes to <code>rejected</code> and then the error is thrown to next <code>catch</code>.
+If request is success and <code>resolve</code> is called, <code>then</code> or next task is called.</p>
+</div>
 
 
 
 
 
 
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>return new Promise((resolve, reject) => {
+  fs.readFile('filepath', (err, data) => {
+    if (err) {
+      return reject(err);
+   }
+   resolve(data);
+ });
+})
+.then(data => ...)
+.catch(err => ...);</code></pre>
 
 
 
@@ -212,7 +234,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line164">line 164</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line180">line 180</a>
     </li></ul></dd>
     
 
@@ -336,7 +358,7 @@ Aigle.resolve([
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line101">line 101</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line117">line 117</a>
     </li></ul></dd>
     
 
@@ -431,7 +453,7 @@ promise.catch(error => {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line63">line 63</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line79">line 79</a>
     </li></ul></dd>
     
 
@@ -591,7 +613,7 @@ promise.catch(error => {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2544">line 2544</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2560">line 2560</a>
     </li></ul></dd>
     
 
@@ -755,7 +777,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2648">line 2648</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2664">line 2664</a>
     </li></ul></dd>
     
 
@@ -996,7 +1018,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2584">line 2584</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2600">line 2600</a>
     </li></ul></dd>
     
 
@@ -1160,7 +1182,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2820">line 2820</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2836">line 2836</a>
     </li></ul></dd>
     
 
@@ -1300,7 +1322,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line3002">line 3002</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line3018">line 3018</a>
     </li></ul></dd>
     
 
@@ -1429,7 +1451,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2905">line 2905</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2921">line 2921</a>
     </li></ul></dd>
     
 
@@ -1603,7 +1625,7 @@ Aigle.resolve(0)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2870">line 2870</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2886">line 2886</a>
     </li></ul></dd>
     
 
@@ -1777,7 +1799,7 @@ Aigle.resolve(0)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line302">line 302</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line318">line 318</a>
     </li></ul></dd>
     
 
@@ -1951,7 +1973,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line397">line 397</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line413">line 413</a>
     </li></ul></dd>
     
 
@@ -2178,7 +2200,7 @@ return Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line361">line 361</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line377">line 377</a>
     </li></ul></dd>
     
 
@@ -2352,7 +2374,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2381">line 2381</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2397">line 2397</a>
     </li></ul></dd>
     
 
@@ -2607,7 +2629,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2504">line 2504</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2520">line 2520</a>
     </li></ul></dd>
     
 
@@ -2870,7 +2892,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2439">line 2439</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2455">line 2455</a>
     </li></ul></dd>
     
 
@@ -3072,7 +3094,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line820">line 820</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line836">line 836</a>
     </li></ul></dd>
     
 
@@ -3303,7 +3325,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line927">line 927</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line943">line 943</a>
     </li></ul></dd>
     
 
@@ -3604,7 +3626,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line861">line 861</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line877">line 877</a>
     </li></ul></dd>
     
 
@@ -3790,7 +3812,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line82">line 82</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line98">line 98</a>
     </li></ul></dd>
     
 
@@ -3941,7 +3963,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1201">line 1201</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1217">line 1217</a>
     </li></ul></dd>
     
 
@@ -4185,7 +4207,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1324">line 1324</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1340">line 1340</a>
     </li></ul></dd>
     
 
@@ -4448,7 +4470,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1259">line 1259</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1275">line 1275</a>
     </li></ul></dd>
     
 
@@ -4650,7 +4672,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2698">line 2698</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2714">line 2714</a>
     </li></ul></dd>
     
 
@@ -4847,7 +4869,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2804">line 2804</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2820">line 2820</a>
     </li></ul></dd>
     
 
@@ -5110,7 +5132,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2739">line 2739</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2755">line 2755</a>
     </li></ul></dd>
     
 
@@ -5296,7 +5318,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line469">line 469</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line485">line 485</a>
     </li></ul></dd>
     
 
@@ -5505,7 +5527,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line577">line 577</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line593">line 593</a>
     </li></ul></dd>
     
 
@@ -5806,7 +5828,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line511">line 511</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line527">line 527</a>
     </li></ul></dd>
     
 
@@ -6018,7 +6040,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line640">line 640</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line656">line 656</a>
     </li></ul></dd>
     
 
@@ -6227,7 +6249,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line740">line 740</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line756">line 756</a>
     </li></ul></dd>
     
 
@@ -6484,7 +6506,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line681">line 681</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line697">line 697</a>
     </li></ul></dd>
     
 
@@ -6670,7 +6692,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1584">line 1584</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1600">line 1600</a>
     </li></ul></dd>
     
 
@@ -6901,7 +6923,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1684">line 1684</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1700">line 1700</a>
     </li></ul></dd>
     
 
@@ -7158,7 +7180,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1625">line 1625</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1641">line 1641</a>
     </li></ul></dd>
     
 
@@ -7344,7 +7366,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line251">line 251</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line267">line 267</a>
     </li></ul></dd>
     
 
@@ -7517,7 +7539,7 @@ Aigle.resolve({
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1404">line 1404</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1420">line 1420</a>
     </li></ul></dd>
     
 
@@ -7742,7 +7764,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1504">line 1504</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1520">line 1520</a>
     </li></ul></dd>
     
 
@@ -7999,7 +8021,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1445">line 1445</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1461">line 1461</a>
     </li></ul></dd>
     
 
@@ -8185,7 +8207,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line205">line 205</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line221">line 221</a>
     </li></ul></dd>
     
 
@@ -8309,7 +8331,7 @@ Aigle.resolve({
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line179">line 179</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line195">line 195</a>
     </li></ul></dd>
     
 
@@ -8422,7 +8444,7 @@ Aigle.resolve({
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1712">line 1712</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1728">line 1728</a>
     </li></ul></dd>
     
 
@@ -8617,7 +8639,7 @@ return Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1007">line 1007</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1023">line 1023</a>
     </li></ul></dd>
     
 
@@ -8842,7 +8864,7 @@ Aigle.collection(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1107">line 1107</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1123">line 1123</a>
     </li></ul></dd>
     
 
@@ -9099,7 +9121,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1048">line 1048</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1064">line 1064</a>
     </li></ul></dd>
     
 
@@ -9285,7 +9307,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2158">line 2158</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2174">line 2174</a>
     </li></ul></dd>
     
 
@@ -9523,7 +9545,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2275">line 2275</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2291">line 2291</a>
     </li></ul></dd>
     
 
@@ -9780,7 +9802,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2216">line 2216</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2232">line 2232</a>
     </li></ul></dd>
     
 
@@ -9982,7 +10004,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1964">line 1964</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1980">line 1980</a>
     </li></ul></dd>
     
 
@@ -10183,7 +10205,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2064">line 2064</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2080">line 2080</a>
     </li></ul></dd>
     
 
@@ -10440,7 +10462,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2005">line 2005</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2021">line 2021</a>
     </li></ul></dd>
     
 
@@ -10626,7 +10648,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line138">line 138</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line154">line 154</a>
     </li></ul></dd>
     
 
@@ -10792,7 +10814,7 @@ Aigle.resolve(string)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line52">line 52</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line68">line 68</a>
     </li></ul></dd>
     
 
@@ -10986,7 +11008,7 @@ Aigle.resolve(string)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2835">line 2835</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2851">line 2851</a>
     </li></ul></dd>
     
 
@@ -11168,7 +11190,7 @@ Aigle.delay(100)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2929">line 2929</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2945">line 2945</a>
     </li></ul></dd>
     
 
@@ -11338,7 +11360,7 @@ Aigle.resolve(3)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2995">line 2995</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line3011">line 3011</a>
     </li></ul></dd>
     
 
@@ -11579,7 +11601,7 @@ Aigle.resolve(3)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2953">line 2953</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2969">line 2969</a>
     </li></ul></dd>
     
 
@@ -11749,7 +11771,7 @@ Aigle.resolve(3)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line43">line 43</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line59">line 59</a>
     </li></ul></dd>
     
 
@@ -11847,7 +11869,7 @@ Aigle.resolve(3)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1772">line 1772</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1788">line 1788</a>
     </li></ul></dd>
     
 
@@ -12096,7 +12118,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1910">line 1910</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1926">line 1926</a>
     </li></ul></dd>
     
 
@@ -12389,7 +12411,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1832">line 1832</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line1848">line 1848</a>
     </li></ul></dd>
     
 
@@ -12638,7 +12660,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2878">line 2878</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2894">line 2894</a>
     </li></ul></dd>
     
 
@@ -12790,7 +12812,7 @@ Aigle.resolve(collection)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2843">line 2843</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line2859">line 2859</a>
     </li></ul></dd>
     
 
@@ -12943,7 +12965,7 @@ Aigle.resolve(collection)
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat May 20 2017 18:47:13 GMT-0700 (PDT) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu May 25 2017 22:40:18 GMT-0700 (PDT) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
