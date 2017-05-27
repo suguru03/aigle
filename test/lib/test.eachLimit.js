@@ -232,7 +232,8 @@ parallel('#eachLimit', () => {
 
     const order = [];
     const collection = [1, 5, 3, 4, 2];
-    const iterator = (value, key) => {
+    const iterator = (value, key, coll) => {
+      assert.strictEqual(coll, collection);
       return new Aigle(resolve => setTimeout(() => {
         order.push([key, value]);
         resolve(value);
@@ -280,7 +281,8 @@ parallel('#eachLimit', () => {
       task4: 4,
       task5: 2
     };
-    const iterator = (value, key) => {
+    const iterator = (value, key, coll) => {
+      assert.strictEqual(coll, collection);
       return new Aigle(resolve => setTimeout(() => {
         order.push([key, value]);
         resolve(value);
