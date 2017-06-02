@@ -24,7 +24,6 @@ var callResolve = ref$1.callResolve;
 var callReject = ref$1.callReject;
 var callReceiver = ref$1.callReceiver;
 var stackTraces = false;
-var _execute = execute;
 
 var Aigle = (function (AigleCore) {
   function Aigle(executor) {
@@ -39,7 +38,7 @@ var Aigle = (function (AigleCore) {
     if (executor === INTERNAL) {
       return;
     }
-    _execute(this, executor);
+    this._execute(executor);
   }
 
   if ( AigleCore ) Aigle.__proto__ = AigleCore;
@@ -110,7 +109,7 @@ var Aigle = (function (AigleCore) {
    * });
    */
   Aigle.prototype.cancel = function cancel () {
-    if (_execute === execute) {
+    if (this._execute === execute) {
       return;
     }
     var ref = this;
@@ -265,11 +264,14 @@ var Aigle = (function (AigleCore) {
   };
 
   /**
+   * `Aigle#each` will execute [`Aigle.each`](https://suguru03.github.io/aigle/docs/global.html#each) using a previous promise value and a defined iterator.
+   * The value will be assigned as the first argument to [`Aigle.each`](https://suguru03.github.io/aigle/docs/global.html#each) and
+   * the iterator will be assigned as the second argument.
    * @param {Function} iterator
    * @example
    * const order = [];
    * const collection = [1, 4, 2];
-   * const iterator = num => {
+   * const iterator = (num, value, collection) => {
    *   return Aigle.delay(num * 10)
    *     .then(() => order.push(num));
    * };
@@ -283,7 +285,7 @@ var Aigle = (function (AigleCore) {
    * @example
    * const order = [];
    * const collection = { a: 1, b: 4, c: 2 };
-   * const iterator = num => {
+   * const iterator = (num, key, collection) => {
    *   return Aigle.delay(num * 10)
    *     .then(() => order.push(num));
    * };
@@ -297,7 +299,7 @@ var Aigle = (function (AigleCore) {
    * @example
    * const order = [];
    * const collection = [1, 4, 2];
-   * const iterator = num => {
+   * const iterator = (num, value, collection) => {
    *   return Aigle.delay(num * 10)
    *     .then(() => {
    *       order.push(num);
@@ -324,11 +326,12 @@ var Aigle = (function (AigleCore) {
   };
 
   /**
+   * `Aigle#eachSeries` is almost the same as [`Aigle#each`](https://suguru03.github.io/aigle/docs/Aigle.html#each), but it will work in series.
    * @param {Function} iterator
    * @example
    * const order = [];
    * const collection = [1, 4, 2];
-   * const iterator = num => {
+   * const iterator = (num, index, collection) => {
    *   return Aigle.delay(num * 10)
    *     .then(() => order.push(num));
    * };
@@ -342,7 +345,7 @@ var Aigle = (function (AigleCore) {
    * @example
    * const order = [];
    * const collection = { a: 1, b: 4, c: 2 };
-   * const iterator = num => {
+   * const iterator = (num, index, collection) => {
    *   return Aigle.delay(num * 10)
    *     .then(() => order.push(num));
    * };
@@ -383,13 +386,15 @@ var Aigle = (function (AigleCore) {
   };
 
   /**
+   * `Aigle#eachLimit` is almost the same as [`Aigle.each`](https://suguru03.github.io/aigle/docs/Aigle.html#each) and
+   * [`Aigle.eachSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#eachSeries), but it will work with concurrency.
    * @param {number} [limit=8]
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const collection = [1, 5, 3, 4, 2];
    * return Aigle.resolve(collection)
-   *   .eachLimit(2, num => {
+   *   .eachLimit(2, (num, index, collection) => {
    *     return new Aigle(resolve => setTimeout(() => {
    *       console.log(num); // 1, 3, 5, 2, 4
    *       resolve(num);
@@ -399,7 +404,7 @@ var Aigle = (function (AigleCore) {
    * @example
    * const collection = [1, 5, 3, 4, 2];
    * return Aigle.resolve(collection)
-   *   .eachLimit(num => {
+   *   .eachLimit((num, index, collection) => {
    *     return new Aigle(resolve => setTimeout(() => {
    *       console.log(num); // 1, 2, 3, 4, 5
    *       resolve(num);
@@ -2289,12 +2294,15 @@ var Aigle = (function (AigleCore) {
   };
 
   /**
+   * `Aigle#every` will execute [`Aigle.every`](https://suguru03.github.io/aigle/docs/global.html#every) using a previous promise value and a defined iterator.
+   * The value will be assigned as the first argument to [`Aigle.every`](https://suguru03.github.io/aigle/docs/global.html#every) and
+   * the iterator will be assigned as the second argument.
    * @param {Function|Array|Object|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
    * const collection = [1, 4, 2];
-   * const iterator = num => {
+   * const iterator = (num, index, collection) => {
    *   return Aigle.delay(num * 10)
    *     .then(() => {
    *       order.push(num);
@@ -2311,7 +2319,7 @@ var Aigle = (function (AigleCore) {
    * @example
    * const order = [];
    * const collection = { a: 1, b: 4, c: 2 };
-   * const iterator = num => {
+   * const iterator = (num, key, collection) => {
    *   return Aigle.delay(num * 10)
    *     .then(() => {
    *       order.push(num);
@@ -2395,12 +2403,13 @@ var Aigle = (function (AigleCore) {
   };
 
   /**
+   * `Aigle#everySeries` is almost the same as [`Aigle#every`](https://suguru03.github.io/aigle/docs/Aigle.html#every), but it will work in series.
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
    * const collection = [1, 4, 2];
-   * const iterator = num => {
+   * const iterator = (num, index, collection) => {
    *   return Aigle.delay(num * 10)
    *     .then(() => {
    *       order.push(num);
@@ -2417,7 +2426,7 @@ var Aigle = (function (AigleCore) {
    * @example
    * const order = [];
    * const collection = { a: 1, b: 4, c: 2 };
-   * const iterator = num => {
+   * const iterator = (num, key, collection) => {
    *   return Aigle.delay(num * 10)
    *     .then(() => {
    *       order.push(num);
@@ -2453,13 +2462,15 @@ var Aigle = (function (AigleCore) {
   };
 
   /**
+   * `Aigle#everyLimit` is almost the same as [`Aigle.every`](https://suguru03.github.io/aigle/docs/Aigle.html#every) and
+   * [`Aigle.everySeries`](https://suguru03.github.io/aigle/docs/Aigle.html#everySeries), but it will work with concurrency.
    * @param {number} [limit=8]
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
    * const collection = [1, 5, 3, 4, 2];
-   * const iterator = (num, index) => {
+   * const iterator = (num, index, collection) => {
    *   return Aigle.delay(num * 10)
    *     .then(() => {
    *       order.push(num);
@@ -2482,7 +2493,7 @@ var Aigle = (function (AigleCore) {
    *   task4: 4,
    *   task5: 2
    * };
-   * const iterator = (num, key) => {
+   * const iterator = (num, key, collection) => {
    *   return Aigle.delay(num * 10)
    *     .then(() => {
    *       order.push(num);
@@ -2518,11 +2529,14 @@ var Aigle = (function (AigleCore) {
   };
 
   /**
+   * `Aigle#concat` will execute [`Aigle.concat`](https://suguru03.github.io/aigle/docs/global.html#concat) using a previous promise value and a defined iterator.
+   * The value will be assigned as the first argument to [`Aigle.concat`](https://suguru03.github.io/aigle/docs/global.html#concat) and
+   * the iterator will be assigned as the second argument.
    * @param {Function} iterator
    * @example
    * const order = [];
    * const collection = [1, 4, 2];
-   * const iterator = (num, index) => {
+   * const iterator = (num, index, collectioin) => {
    *   return Aigle.delay(num * 10)
    *     .then(() => {
    *       order.push(num);
@@ -2539,7 +2553,7 @@ var Aigle = (function (AigleCore) {
    * @example
    * const order = [];
    * const collection = { a: 1, b: 4, c: 2 };
-   * const iterator = (num, key) => {
+   * const iterator = (num, key, collection) => {
    *   return Aigle.delay(num * 10)
    *     .then(() => {
    *       order.push(num);
@@ -2558,11 +2572,12 @@ var Aigle = (function (AigleCore) {
   };
 
   /**
+   * `Aigle#concatSeries` is almost the same as [`Aigle#concat`](https://suguru03.github.io/aigle/docs/global.html#concat), but it will work in series.
    * @param {Function} iterator
    * @example
    * const order = [];
    * const collection = [1, 4, 2];
-   * const iterator = (num, index) => {
+   * const iterator = (num, index, collection) => {
    *   return Aigle.delay(num * 10)
    *     .then(() => {
    *       order.push(num);
@@ -2579,7 +2594,7 @@ var Aigle = (function (AigleCore) {
    * @example
    * const order = [];
    * const collection = { a: 1, b: 4, c: 2 };
-   * const iterator = (num, key) => {
+   * const iterator = (num, key, collection) => {
    *   return Aigle.delay(num * 10)
    *     .then(() => {
    *       order.push(num);
@@ -2598,12 +2613,14 @@ var Aigle = (function (AigleCore) {
   };
 
   /**
+   * `Aigle#concatLimit` is almost the same as [`Aigle#concat`](https://suguru03.github.io/aigle/docs/global.html#concat)
+   * and [`Aigle#concatSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#concat)), but it will work with concurrency.
    * @param {integer} [limit=8]
    * @param {Function} iterator
    * @example
    * const order = [];
    * const collection = [1, 5, 3, 4, 2];
-   * const iterator = (num, index) => {
+   * const iterator = (num, index, collection) => {
    *   return Aigle.delay(num * 10)
    *     .then(() => {
    *       order.push(num);
@@ -2626,7 +2643,7 @@ var Aigle = (function (AigleCore) {
    *   task4: 4,
    *   task5: 2
    * };
-   * const iterator = (num, key) => {
+   * const iterator = (num, key, collection) => {
    *   return Aigle.delay(num * 10)
    *     .then(() => {
    *       order.push(num);
@@ -3125,6 +3142,8 @@ var Aigle = (function (AigleCore) {
   return Aigle;
 }(AigleCore));
 
+Aigle.prototype._execute = execute;
+
 module.exports = { Aigle: Aigle };
 
 /* functions, classes */
@@ -3406,66 +3425,68 @@ function _reject(reason, iterator) {
 
 module.exports = Aigle;
 
-function execute(promise, executor) {
-  stackTraces && resolveStack(promise);
+function execute(executor) {
+  var this$1 = this;
+
+  stackTraces && resolveStack(this);
   try {
-    executor(resolve, reject);
+    executor(function (value) {
+      if (executor === undefined) {
+        return;
+      }
+      executor = undefined;
+      callReceiver(this$1, value);
+    }, function (reason) {
+      if (executor === undefined) {
+        return;
+      }
+      executor = undefined;
+      this$1._reject(reason);
+    });
   } catch(e) {
-    reject(e);
-  }
-
-  function resolve(value) {
     if (executor === undefined) {
       return;
     }
     executor = undefined;
-    callReceiver(promise, value);
-  }
-
-  function reject(reason) {
-    if (executor === undefined) {
-      return;
-    }
-    executor = undefined;
-    promise._reject(reason);
+    this._reject(e);
   }
 }
 
-function executeWithCancel(promise, executor) {
-  stackTraces && resolveStack(promise);
+function executeWithCancel(executor) {
+  var this$1 = this;
+
+  stackTraces && resolveStack(this);
   try {
-    executor(resolve, reject, onCancel);
+    executor(function (value) {
+      if (executor === undefined) {
+        return;
+      }
+      executor = undefined;
+      callReceiver(this$1, value);
+    }, function (reason) {
+      if (executor === undefined) {
+        return;
+      }
+      executor = undefined;
+      this$1._reject(reason);
+    }, function (handler) {
+      if (typeof handler !== 'function') {
+        throw new TypeError('onCancel must be function');
+      }
+      if (executor === undefined) {
+        return;
+      }
+      if (this$1._onCancelQueue === undefined) {
+        this$1._onCancelQueue = new Queue();
+      }
+      this$1._onCancelQueue.push(handler);
+    });
   } catch(e) {
-    reject(e);
-  }
-
-  function resolve(value) {
     if (executor === undefined) {
       return;
     }
     executor = undefined;
-    callReceiver(promise, value);
-  }
-
-  function reject(reason) {
-    if (executor === undefined) {
-      return;
-    }
-    executor = undefined;
-    promise._reject(reason);
-  }
-
-  function onCancel(handler) {
-    if (typeof handler !== 'function') {
-      throw new TypeError('onCancel must be function');
-    }
-    if (executor === undefined) {
-      return;
-    }
-    if (promise._onCancelQueue === undefined) {
-      promise._onCancelQueue = new Queue();
-    }
-    promise._onCancelQueue.push(handler);
+    this._reject(e);
   }
 }
 
@@ -3573,7 +3594,7 @@ function config(opts) {
     stackTraces = !!opts.longStackTraces;
   }
   if (opts.cancellation !== undefined) {
-    _execute = opts.cancellation ? executeWithCancel : execute;
+    Aigle.prototype._execute = opts.cancellation ? executeWithCancel : execute;
   }
 }
 
@@ -3740,13 +3761,19 @@ var Concat = (function (Each) {
 module.exports = { concat: concat, Concat: Concat };
 
 /**
+ * `Aigle.concat` has almost the same functionality as `Array#concat`.
+ * It iterates all elements of `collection` and executes `iterator` using each element on parallel.
+ * The `iterator` needs to return a promise or something.
+ * If a promise is returned, the function will wait until the promise is fulfilled.
+ * Then the result will be assigned to an array, the role is the same as `Array#concat`.
+ * All of them are finished, the function will return an array as a result.
  * @param {Array|Object} collection
  * @param {Function} iterator
  * @return {Aigle} Returns an Aigle instance
  * @example
  * const order = [];
  * const collection = [1, 4, 2];
- * const iterator = (num, index) => {
+ * const iterator = (num, index, collection) => {
  *   return Aigle.delay(num * 10)
  *     .then(() => {
  *       order.push(num);
@@ -3762,7 +3789,7 @@ module.exports = { concat: concat, Concat: Concat };
  * @example
  * const order = [];
  * const collection = { a: 1, b: 4, c: 2 };
- * const iterator = (num, key) => {
+ * const iterator = (num, key, collection) => {
  *   return Aigle.delay(num * 10)
  *     .then(() => {
  *       order.push(num);
@@ -3816,6 +3843,8 @@ module.exports = { concatLimit: concatLimit, ConcatLimit: ConcatLimit };
 
 
 /**
+ * `Aigle.concatLimit` is almost the as [`Aigle.concat`](https://suguru03.github.io/aigle/docs/Aigle.html#concat) and
+ * [`Aigle.concatSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#concatSeries), but it will work with concurrency.
  * @param {Array|Object} collection
  * @param {integer} [limit=8]
  * @param {Function} iterator
@@ -3823,7 +3852,7 @@ module.exports = { concatLimit: concatLimit, ConcatLimit: ConcatLimit };
  * @example
  * const order = [];
  * const collection = [1, 5, 3, 4, 2];
- * const iterator = (num, index) => {
+ * const iterator = (num, index, collection) => {
  *   return Aigle.delay(num * 10)
  *     .then(() => {
  *       order.push(num);
@@ -3845,7 +3874,7 @@ module.exports = { concatLimit: concatLimit, ConcatLimit: ConcatLimit };
  *   task4: 4,
  *   task5: 2
  * };
- * const iterator = (num, key) => {
+ * const iterator = (num, key, collection) => {
  *   return Aigle.delay(num * 10)
  *     .then(() => {
  *       order.push(num);
@@ -3914,13 +3943,14 @@ var ConcatSeries = (function (EachSeries) {
 module.exports = { concatSeries: concatSeries, ConcatSeries: ConcatSeries };
 
 /**
+ * `Aigle.concatSeries` is almost the as [`Aigle.concat`](https://suguru03.github.io/aigle/docs/Aigle.html#concat), but it will work in series.
  * @param {Array|Object} collection
  * @param {Function} iterator
  * @return {Aigle} Returns an Aigle instance
  * @example
  * const order = [];
  * const collection = [1, 4, 2];
- * const iterator = (num, index) => {
+ * const iterator = (num, index, collection) => {
  *   return Aigle.delay(num * 10)
  *     .then(() => {
  *       order.push(num);
@@ -3936,7 +3966,7 @@ module.exports = { concatSeries: concatSeries, ConcatSeries: ConcatSeries };
  * @example
  * const order = [];
  * const collection = { a: 1, b: 4, c: 2 };
- * const iterator = (num, key) => {
+ * const iterator = (num, key, collection) => {
  *   return Aigle.delay(num * 10)
  *     .then(() => {
  *       order.push(num);
@@ -4248,13 +4278,17 @@ var Each = (function (AigleProxy) {
 module.exports = { each: each, Each: Each };
 
 /**
+ * `Aigle.each` iterates all elements of `collection` and execute `iterator` for each element on parallel.
+ * The iterator is called with three arguments. (value, index|key, collection)
+ * If the iterator returns `false` or a promise which has `false` as a result, the promise state will be `onFulfilled` immediately.
+ * ⚠ All elements are already executed and can't be stopped. If you care about it, you should use [`Aigle.eachSeries`](https://suguru03.github.io/aigle/docs/global.html#eachSeries).
  * @param {Array|Object} collection
  * @param {Function} iterator
  * @return {Aigle} Returns an Aigle instance
  * @example
  * const order = [];
  * const collection = [1, 4, 2];
- * const iterator = num => {
+ * const iterator = (num, index, collection) => {
  *   return Aigle.delay(num * 10)
  *     .then(() => order.push(num));
  * };
@@ -4267,7 +4301,7 @@ module.exports = { each: each, Each: Each };
  * @example
  * const order = [];
  * const collection = { a: 1, b: 4, c: 2 };
- * const iterator = num => {
+ * const iterator = (num, key, collection) => {
  *   return Aigle.delay(num * 10)
  *     .then(() => order.push(num));
  * };
@@ -4280,7 +4314,7 @@ module.exports = { each: each, Each: Each };
  * @example
  * const order = [];
  * const collection = [1, 4, 2];
- * const iterator = num => {
+ * const iterator = (num, index, collection) => {
  *   return Aigle.delay(num * 10)
  *     .then(() => {
  *       order.push(num);
@@ -4379,8 +4413,12 @@ var EachLimit = (function (AigleProxy) {
 module.exports = { eachLimit: eachLimit, EachLimit: EachLimit };
 
 /**
- * @param {Array|Object} collection
- * @param {integer} [limit=8]
+ * `Aigle.eachLimit` is almost same as [`Aigle.each`](https://suguru03.github.io/aigle/docs/Aigle.html#each)
+ *  and [`Aigle.eachSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#eachSeries),
+ *  but it will work with concurrency.
+ * `limit` is concurrency, if it is not defined, concurrency is 8.
+ * @param {Array|Object} A - collection to iterate over
+ * @param {integer} [limit=8] - It is concurrncy, default is 8
  * @param {Function} iterator
  * @return {Aigle} Returns an Aigle instance
  * @example
@@ -4525,6 +4563,7 @@ var EachSeries = (function (AigleProxy) {
 module.exports = { eachSeries: eachSeries, EachSeries: EachSeries };
 
 /**
+ * `Aigle.eachSeries` is almost the same as [`Aigle.each`](https://suguru03.github.io/aigle/docs/Aigle.html#each), but it will work in series.
  * @param {Array|Object} collection
  * @param {Function} iterator
  * @return {Aigle} Returns an Aigle instance
@@ -4635,13 +4674,16 @@ var Every = (function (Each) {
 module.exports = { every: every, Every: Every };
 
 /**
+ * `Aigle.every` is similar to `Array#every`.
+ * If all elements return truthly or a promise which has a truthly value as a result,
+ * the result will be `true`, otherwise it will be `false`.
  * @param {Array|Object} collection
  * @param {Function|Array|Object|string} iterator
  * @return {Aigle} Returns an Aigle instance
  * @example
  * const order = [];
  * const collection = [1, 4, 2];
- * const iterator = num => {
+ * const iterator = (num, index, collection) => {
  *   return Aigle.delay(num * 10)
  *     .then(() => {
  *       order.push(num);
@@ -4657,7 +4699,7 @@ module.exports = { every: every, Every: Every };
  * @example
  * const order = [];
  * const collection = { a: 1, b: 4, c: 2 };
- * const iterator = num => {
+ * const iterator = (num, key, collection) => {
  *   return Aigle.delay(num * 10)
  *     .then(() => {
  *       order.push(num);
@@ -4849,13 +4891,14 @@ var EverySeries = (function (EachSeries) {
 module.exports = { everySeries: everySeries, EverySeries: EverySeries };
 
 /**
+ * `Aigle.everySeries` is almost the same as [`Aigle.every`](https://suguru03.github.io/aigle/docs/Aigle.html#every), but it will work in series.
  * @param {Array|Object} collection
  * @param {Function} iterator
  * @return {Aigle} Returns an Aigle instance
  * @example
  * const order = [];
  * const collection = [1, 4, 2];
- * const iterator = num => {
+ * const iterator = (num, index, collection) => {
  *   return Aigle.delay(num * 10)
  *     .then(() => {
  *       order.push(num);
@@ -4871,7 +4914,7 @@ module.exports = { everySeries: everySeries, EverySeries: EverySeries };
  * @example
  * const order = [];
  * const collection = { a: 1, b: 4, c: 2 };
- * const iterator = num => {
+ * const iterator = (num, key, collection) => {
  *   return Aigle.delay(num * 10)
  *     .then(() => {
  *       order.push(num);
@@ -6018,7 +6061,7 @@ module.exports = invoke;
 'use strict';
 
 var ref = require('./util');
-var call2 = ref.call2;
+var call3 = ref.call3;
 var callProxyReciever = ref.callProxyReciever;
 
 var ref$1 = [
@@ -6120,7 +6163,7 @@ function iterateArrayParallel() {
   var _iterator = ref._iterator;
   var _coll = ref._coll;
   var i = -1;
-  while (++i < _rest && callProxyReciever(call2(_iterator, _coll[i], i), this, i)) {}
+  while (++i < _rest && callProxyReciever(call3(_iterator, _coll[i], i, _coll), this, i)) {}
 }
 
 function iterateObjectParallel() {
@@ -6134,21 +6177,25 @@ function iterateObjectParallel() {
   var i = -1;
   while (++i < _rest) {
     var key = _keys[i];
-    if (callProxyReciever(call2(_iterator, _coll[key], key), this$1, i) === false) {
+    if (callProxyReciever(call3(_iterator, _coll[key], key, _coll), this$1, i) === false) {
       break;
     }
   }
 }
 
 function iterateArraySeries() {
+  var ref = this;
+  var _coll = ref._coll;
   var i = this._index++;
-  callProxyReciever(call2(this._iterator, this._coll[i], i), this, i);
+  callProxyReciever(call3(this._iterator, _coll[i], i, _coll), this, i);
 }
 
 function iterateObjectSeries() {
+  var ref = this;
+  var _coll = ref._coll;
   var i = this._index++;
   var key = this._keys[i];
-  callProxyReciever(call2(this._iterator, this._coll[key], key), this, i);
+  callProxyReciever(call3(this._iterator, _coll[key], key, _coll), this, i);
 }
 
 function iterateArrayWithString() {
@@ -6313,7 +6360,6 @@ module.exports = {
   errorObj: errorObj,
   call0: call0,
   call1: call1,
-  call2: call2,
   call3: call3,
   apply: apply,
   callResolve: callResolve,
@@ -6354,15 +6400,6 @@ function call1(handler, value) {
   }
 }
 
-function call2(handler, arg1, arg2) {
-  try {
-    return handler(arg1, arg2);
-  } catch(e) {
-    errorObj.e = e;
-    return errorObj;
-  }
-}
-
 function call3(handler, arg1, arg2, arg3) {
   try {
     return handler(arg1, arg2, arg3);
@@ -6397,7 +6434,12 @@ function callResolve(receiver, onFulfilled, value) {
     receiver._resolve(value);
     return;
   }
-  callReceiver(receiver, call1(onFulfilled, value));
+  var promise = call1(onFulfilled, value);
+  if (promise === errorObj) {
+    receiver._reject(errorObj.e);
+    return;
+  }
+  callReceiver(receiver, promise);
 }
 
 function callReject(receiver, onRejected, reason) {
@@ -6405,12 +6447,17 @@ function callReject(receiver, onRejected, reason) {
     receiver._reject(reason);
     return;
   }
-  callReceiver(receiver, call1(onRejected, reason));
+  var promise = call1(onRejected, reason);
+  if (promise === errorObj) {
+    receiver._reject(errorObj.e);
+    return;
+  }
+  callReceiver(receiver, promise);
 }
 
 function callReceiver(receiver, promise) {
-  if (promise === errorObj) {
-    receiver._reject(errorObj.e);
+  if (!promise || !promise.then) {
+    receiver._resolve(promise);
     return;
   }
   if (promise instanceof AigleCore) {
@@ -6426,11 +6473,7 @@ function callReceiver(receiver, promise) {
       return;
     }
   }
-  if (promise && promise.then) {
-    callThen(promise, receiver);
-  } else {
-    receiver._resolve(promise);
-  }
+  callThen(promise, receiver);
 }
 
 function callThen(promise, receiver) {
@@ -11151,7 +11194,7 @@ process.umask = function() { return 0; };
 },{"_process":72}],74:[function(require,module,exports){
 module.exports={
   "name": "aigle",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "browser": "browser.js",
