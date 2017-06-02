@@ -458,7 +458,7 @@ Aigle.all([
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="concat.js.html">concat.js</a>, <a href="concat.js.html#line62">line 62</a>
+        <a href="concat.js.html">concat.js</a>, <a href="concat.js.html#line68">line 68</a>
     </li></ul></dd>
     
 
@@ -497,6 +497,15 @@ Aigle.all([
 
 
 
+<div class="description">
+    <p><code>Aigle.concat</code> has almost the same functionality as <code>Array#concat</code>.
+It iterates all elements of <code>collection</code> and executes <code>iterator</code> using each element on parallel.
+The <code>iterator</code> needs to return a promise or something.
+If a promise is returned, the function will wait until the promise is fulfilled.
+Then the result will be assigned to an array, the role is the same as <code>Array#concat</code>.
+All of them are finished, the function will return an array as a result.</p>
+</div>
+
 
 
 
@@ -509,7 +518,7 @@ Aigle.all([
     
     <pre class="prettyprint"><code>const order = [];
 const collection = [1, 4, 2];
-const iterator = (num, index) => {
+const iterator = (num, index, collection) => {
   return Aigle.delay(num * 10)
     .then(() => {
       order.push(num);
@@ -524,7 +533,7 @@ Aigle.concat(collection, iterator)
 
     <pre class="prettyprint"><code>const order = [];
 const collection = { a: 1, b: 4, c: 2 };
-const iterator = (num, key) => {
+const iterator = (num, key, collection) => {
   return Aigle.delay(num * 10)
     .then(() => {
       order.push(num);
@@ -668,7 +677,7 @@ Aigle.concat(collection, iterator)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="concatLimit.js.html">concatLimit.js</a>, <a href="concatLimit.js.html#line88">line 88</a>
+        <a href="concatLimit.js.html">concatLimit.js</a>, <a href="concatLimit.js.html#line90">line 90</a>
     </li></ul></dd>
     
 
@@ -707,6 +716,11 @@ Aigle.concat(collection, iterator)
 
 
 
+<div class="description">
+    <p><code>Aigle.concatLimit</code> is almost the as <a href="https://suguru03.github.io/aigle/docs/Aigle.html#concat"><code>Aigle.concat</code></a> and
+<a href="https://suguru03.github.io/aigle/docs/Aigle.html#concatSeries"><code>Aigle.concatSeries</code></a>, but it will work with concurrency.</p>
+</div>
+
 
 
 
@@ -719,7 +733,7 @@ Aigle.concat(collection, iterator)
     
     <pre class="prettyprint"><code>const order = [];
 const collection = [1, 5, 3, 4, 2];
-const iterator = (num, index) => {
+const iterator = (num, index, collection) => {
   return Aigle.delay(num * 10)
     .then(() => {
       order.push(num);
@@ -740,7 +754,7 @@ const collection = {
   task4: 4,
   task5: 2
 };
-const iterator = (num, key) => {
+const iterator = (num, key, collection) => {
   return Aigle.delay(num * 10)
     .then(() => {
       order.push(num);
@@ -966,7 +980,7 @@ Aigle.concatLimit(collection, iterator)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="concatSeries.js.html">concatSeries.js</a>, <a href="concatSeries.js.html#line64">line 64</a>
+        <a href="concatSeries.js.html">concatSeries.js</a>, <a href="concatSeries.js.html#line65">line 65</a>
     </li></ul></dd>
     
 
@@ -1005,6 +1019,10 @@ Aigle.concatLimit(collection, iterator)
 
 
 
+<div class="description">
+    <p><code>Aigle.concatSeries</code> is almost the as <a href="https://suguru03.github.io/aigle/docs/Aigle.html#concat"><code>Aigle.concat</code></a>, but it will work in series.</p>
+</div>
+
 
 
 
@@ -1017,7 +1035,7 @@ Aigle.concatLimit(collection, iterator)
     
     <pre class="prettyprint"><code>const order = [];
 const collection = [1, 4, 2];
-const iterator = (num, index) => {
+const iterator = (num, index, collection) => {
   return Aigle.delay(num * 10)
     .then(() => {
       order.push(num);
@@ -1032,7 +1050,7 @@ Aigle.concatSeries(collection, iterator)
 
     <pre class="prettyprint"><code>const order = [];
 const collection = { a: 1, b: 4, c: 2 };
-const iterator = (num, key) => {
+const iterator = (num, key, collection) => {
   return Aigle.delay(num * 10)
     .then(() => {
       order.push(num);
@@ -1176,7 +1194,7 @@ Aigle.concatSeries(collection, iterator)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line3450">line 3450</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line3467">line 3467</a>
     </li></ul></dd>
     
 
@@ -2114,7 +2132,7 @@ Aigle.doWhilst(0, iterator, tester)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="each.js.html">each.js</a>, <a href="each.js.html#line97">line 97</a>
+        <a href="each.js.html">each.js</a>, <a href="each.js.html#line101">line 101</a>
     </li></ul></dd>
     
 
@@ -2153,6 +2171,13 @@ Aigle.doWhilst(0, iterator, tester)
 
 
 
+<div class="description">
+    <p><code>Aigle.each</code> iterates all elements of <code>collection</code> and execute <code>iterator</code> for each element on parallel.
+The iterator is called with three arguments. (value, index|key, collection)
+If the iterator returns <code>false</code> or a promise which has <code>false</code> as a result, the promise state will be <code>onFulfilled</code> immediately.
+⚠ All elements are already executed and can't be stopped. If you care about it, you should use <a href="https://suguru03.github.io/aigle/docs/global.html#eachSeries"><code>Aigle.eachSeries</code></a>.</p>
+</div>
+
 
 
 
@@ -2165,7 +2190,7 @@ Aigle.doWhilst(0, iterator, tester)
     
     <pre class="prettyprint"><code>const order = [];
 const collection = [1, 4, 2];
-const iterator = num => {
+const iterator = (num, index, collection) => {
   return Aigle.delay(num * 10)
     .then(() => order.push(num));
 };
@@ -2177,7 +2202,7 @@ Aigle.each(collection, iterator)
 
     <pre class="prettyprint"><code>const order = [];
 const collection = { a: 1, b: 4, c: 2 };
-const iterator = num => {
+const iterator = (num, key, collection) => {
   return Aigle.delay(num * 10)
     .then(() => order.push(num));
 };
@@ -2189,7 +2214,7 @@ Aigle.each(collection, iterator)
 
     <pre class="prettyprint"><code>const order = [];
 const collection = [1, 4, 2];
-const iterator = num => {
+const iterator = (num, index, collection) => {
   return Aigle.delay(num * 10)
     .then(() => {
       order.push(num);
@@ -2333,7 +2358,7 @@ Aigle.each(collection, iterator)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line326">line 326</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line328">line 328</a>
     </li></ul></dd>
     
 
@@ -2462,7 +2487,7 @@ Aigle.each(collection, iterator)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line422">line 422</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line427">line 427</a>
     </li></ul></dd>
     
 
@@ -2634,7 +2659,7 @@ Aigle.each(collection, iterator)
 
     
 
-    <h4 class="name" id="eachLimit"><span class="type-signature"></span>eachLimit<span class="signature">(collection, limit<span class="signature-attributes">opt</span>, iterator)</span><span class="type-signature"> &rarr; {<a href="Aigle.html">Aigle</a>}</span></h4>
+    <h4 class="name" id="eachLimit"><span class="type-signature"></span>eachLimit<span class="signature">(A, limit<span class="signature-attributes">opt</span>, iterator)</span><span class="type-signature"> &rarr; {<a href="Aigle.html">Aigle</a>}</span></h4>
 
     
 
@@ -2646,7 +2671,7 @@ Aigle.each(collection, iterator)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="eachLimit.js.html">eachLimit.js</a>, <a href="eachLimit.js.html#line149">line 149</a>
+        <a href="eachLimit.js.html">eachLimit.js</a>, <a href="eachLimit.js.html#line153">line 153</a>
     </li></ul></dd>
     
 
@@ -2684,6 +2709,13 @@ Aigle.each(collection, iterator)
 
 
 
+
+<div class="description">
+    <p><code>Aigle.eachLimit</code> is almost same as <a href="https://suguru03.github.io/aigle/docs/Aigle.html#each"><code>Aigle.each</code></a>
+ and <a href="https://suguru03.github.io/aigle/docs/Aigle.html#eachSeries"><code>Aigle.eachSeries</code></a>,
+ but it will work with concurrency.
+<code>limit</code> is concurrency, if it is not defined, concurrency is 8.</p>
+</div>
 
 
 
@@ -2793,7 +2825,7 @@ Aigle.eachLimit(collection, iterator)
 
         <tr>
             
-                <td class="name"><code>collection</code></td>
+                <td class="name"><code>A</code></td>
             
 
             <td class="type">
@@ -2824,7 +2856,7 @@ Aigle.eachLimit(collection, iterator)
                 </td>
             
 
-            <td class="description last"></td>
+            <td class="description last"><p>collection to iterate over</p></td>
         </tr>
 
     
@@ -2863,7 +2895,7 @@ Aigle.eachLimit(collection, iterator)
                 </td>
             
 
-            <td class="description last"></td>
+            <td class="description last"><p>It is concurrncy, default is 8</p></td>
         </tr>
 
     
@@ -2959,7 +2991,7 @@ Aigle.eachLimit(collection, iterator)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="eachSeries.js.html">eachSeries.js</a>, <a href="eachSeries.js.html#line101">line 101</a>
+        <a href="eachSeries.js.html">eachSeries.js</a>, <a href="eachSeries.js.html#line102">line 102</a>
     </li></ul></dd>
     
 
@@ -2997,6 +3029,10 @@ Aigle.eachLimit(collection, iterator)
 
 
 
+
+<div class="description">
+    <p><code>Aigle.eachSeries</code> is almost the same as <a href="https://suguru03.github.io/aigle/docs/Aigle.html#each"><code>Aigle.each</code></a>, but it will work in series.</p>
+</div>
 
 
 
@@ -3178,7 +3214,7 @@ Aigle.eachSeries(collection, iterator)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line385">line 385</a>
+        <a href="aigle.js.html">aigle.js</a>, <a href="aigle.js.html#line388">line 388</a>
     </li></ul></dd>
     
 
@@ -3307,7 +3343,7 @@ Aigle.eachSeries(collection, iterator)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="every.js.html">every.js</a>, <a href="every.js.html#line115">line 115</a>
+        <a href="every.js.html">every.js</a>, <a href="every.js.html#line118">line 118</a>
     </li></ul></dd>
     
 
@@ -3346,6 +3382,12 @@ Aigle.eachSeries(collection, iterator)
 
 
 
+<div class="description">
+    <p><code>Aigle.every</code> is similar to <code>Array#every</code>.
+If all elements return truthly or a promise which has a truthly value as a result,
+the result will be <code>true</code>, otherwise it will be <code>false</code>.</p>
+</div>
+
 
 
 
@@ -3358,7 +3400,7 @@ Aigle.eachSeries(collection, iterator)
     
     <pre class="prettyprint"><code>const order = [];
 const collection = [1, 4, 2];
-const iterator = num => {
+const iterator = (num, index, collection) => {
   return Aigle.delay(num * 10)
     .then(() => {
       order.push(num);
@@ -3373,7 +3415,7 @@ Aigle.every(collection, iterator)
 
     <pre class="prettyprint"><code>const order = [];
 const collection = { a: 1, b: 4, c: 2 };
-const iterator = num => {
+const iterator = (num, key, collection) => {
   return Aigle.delay(num * 10)
     .then(() => {
       order.push(num);
@@ -3869,7 +3911,7 @@ Aigle.everyLimit(collection, iterator)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="everySeries.js.html">everySeries.js</a>, <a href="everySeries.js.html#line77">line 77</a>
+        <a href="everySeries.js.html">everySeries.js</a>, <a href="everySeries.js.html#line78">line 78</a>
     </li></ul></dd>
     
 
@@ -3908,6 +3950,10 @@ Aigle.everyLimit(collection, iterator)
 
 
 
+<div class="description">
+    <p><code>Aigle.everySeries</code> is almost the same as <a href="https://suguru03.github.io/aigle/docs/Aigle.html#every"><code>Aigle.every</code></a>, but it will work in series.</p>
+</div>
+
 
 
 
@@ -3920,7 +3966,7 @@ Aigle.everyLimit(collection, iterator)
     
     <pre class="prettyprint"><code>const order = [];
 const collection = [1, 4, 2];
-const iterator = num => {
+const iterator = (num, index, collection) => {
   return Aigle.delay(num * 10)
     .then(() => {
       order.push(num);
@@ -3935,7 +3981,7 @@ Aigle.everySeries(collection, iterator)
 
     <pre class="prettyprint"><code>const order = [];
 const collection = { a: 1, b: 4, c: 2 };
-const iterator = num => {
+const iterator = (num, key, collection) => {
   return Aigle.delay(num * 10)
     .then(() => {
       order.push(num);
@@ -15162,7 +15208,7 @@ Aigle.transformSeries(collection, iterator, [])
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu May 25 2017 22:40:18 GMT-0700 (PDT) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu Jun 01 2017 23:22:42 GMT-0700 (PDT) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
