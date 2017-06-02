@@ -115,6 +115,10 @@ if (makeDoc) {
     console.log('Making README...');
     let doc = '## Benchmark \n\n(using [benchmark.js](https://github.com/bestiejs/benchmark.js))\n';
 
+    // environment
+    doc += '\n### Environment\n';
+    doc += `- Node ${process.version}\n`;
+
     // version
     doc += '\n### Libraries\n';
     doc += _.reduce(versionMap, (result, version, key) => {
