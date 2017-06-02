@@ -150,6 +150,17 @@ describe('#cancel', () => {
       done();
     }, DELAY);
   });
+
+  it('should not catch an error if a promise is fulfilled', done => {
+
+    new Aigle(resolve => {
+      resolve();
+      throw new Error('error');
+    })
+    .catch(done)
+    .delay(DELAY)
+    .then(done);
+  });
 });
 
 parallel('#cancel:false', () => {
