@@ -6,7 +6,7 @@ module.exports = ({ Aigle, Bluebird }) => {
     'promisify': {
       doc: true,
       setup: () => {
-        this.func = callback => setImmediate(callback);
+        this.func = callback => process.nextTick(callback);
       },
       aigle: () => {
         return Aigle.promisify(this.func)();
@@ -17,7 +17,7 @@ module.exports = ({ Aigle, Bluebird }) => {
     },
     'promisify:multiple': {
       setup: () => {
-        this.func = (a, b, c, callback) => setImmediate(callback);
+        this.func = (a, b, c, callback) => process.nextTick(callback);
       },
       aigle: () => {
         return Aigle.promisify(this.func)(1, 2, 3);

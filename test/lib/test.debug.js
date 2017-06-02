@@ -3,7 +3,7 @@
 const assert = require('assert');
 
 const parallel = require('mocha.parallel');
-const Aigle = require('../../');
+const Aigle = require('../proxy');
 
 parallel('longStackTracesTrace', () => {
 
@@ -12,7 +12,7 @@ parallel('longStackTracesTrace', () => {
     Aigle.longStackTraces();
     const error = new Error('error');
     return new Aigle((resolve, reject) => {
-      setImmediate(reject, error);
+      process.nextTick(reject, error);
     })
     .then(() => assert(false))
     .catch(error => {
@@ -24,11 +24,11 @@ parallel('longStackTracesTrace', () => {
   it('should get long trace using config', () => {
 
     Aigle.config({ longStackTraces: true });
-    return new Aigle(resolve => setImmediate(resolve))
+    return new Aigle(resolve => process.nextTick(resolve))
     .then(() => {
       return [
-        new Aigle(resolve => setImmediate(resolve)),
-        new Aigle(resolve => setImmediate(resolve)),
+        new Aigle(resolve => process.nextTick(resolve)),
+        new Aigle(resolve => process.nextTick(resolve)),
         Aigle.reject(new Error('error'))
       ];
     })

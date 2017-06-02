@@ -3,7 +3,7 @@
 const assert = require('assert');
 
 const parallel = require('mocha.parallel');
-const Aigle = require('../../');
+const Aigle = require('../proxy');
 const { DELAY } = require('../config');
 
 parallel('resolve', () => {
@@ -196,26 +196,26 @@ parallel('#then', () => {
   it('should execute with multiple receivers on asynchronous', done => {
 
     let called = 0;
-    const p = new Aigle(resolve => setImmediate(() => resolve(0)));
+    const p = new Aigle(resolve => process.nextTick(() => resolve(0)));
     p.then(value => {
       assert.strictEqual(value, 0);
       assert.strictEqual(called++, 0);
       return new Aigle(resolve => {
-        setImmediate(() => resolve(++value));
+        process.nextTick(() => resolve(++value));
       });
     });
     p.then(value => {
       assert.strictEqual(value, 0);
       assert.strictEqual(called++, 1);
       return new Aigle(resolve => {
-        setImmediate(() => resolve(++value));
+        process.nextTick(() => resolve(++value));
       });
     });
     p.then(value => {
       assert.strictEqual(value, 0);
       assert.strictEqual(called++, 2);
       return new Aigle(resolve => {
-        setImmediate(() => resolve(++value));
+        process.nextTick(() => resolve(++value));
       });
     })
     .then(value => {
@@ -225,7 +225,7 @@ parallel('#then', () => {
       assert.strictEqual(value, 0);
       assert.strictEqual(called++, 3);
       return new Aigle(resolve => {
-        setImmediate(() => resolve(++value));
+        process.nextTick(() => resolve(++value));
       });
     });
     setTimeout(() => {
@@ -238,7 +238,7 @@ parallel('#then', () => {
 
     Aigle.resolve(1)
       .then(value => new Promise(resolve => {
-        setImmediate(() => resolve(++value));
+        process.nextTick(() => resolve(++value));
       }))
       .then(value => new Promise(resolve => resolve(++value)))
       .then(value => {
@@ -429,7 +429,7 @@ describe('#catch', () => {
 
     let called = 0;
     const error = new Error('error');
-    const p = new Aigle((resolve, reject) => setImmediate(() => reject(error)));
+    const p = new Aigle((resolve, reject) => process.nextTick(() => reject(error)));
     p.catch(err => {
       called++;
       assert.strictEqual(err, error);
@@ -485,7 +485,7 @@ describe('#catch', () => {
       .catch(ReferenceError, () => assert(false))
       .catch(TypeError, error => {
         assert.ok(error instanceof TypeError);
-        return new Aigle((resolve, reject) => setImmediate(() => {
+        return new Aigle((resolve, reject) => process.nextTick(() => {
           reject(new SyntaxError('error'));
         }));
       })
@@ -503,7 +503,7 @@ describe('#catch', () => {
 
     Aigle.reject(1)
       .catch(value => new Promise((resolve, reject) => {
-        setImmediate(() => reject(++value));
+        process.nextTick(() => reject(++value));
       }))
       .catch(value => new Promise((resolve, reject) => {
         reject(++value);
@@ -680,7 +680,7 @@ describe('#finally', () => {
     Aigle.reject(1)
       .finally(value => {
         assert.strictEqual(value, undefined);
-        return new Promise(value => setImmediate(() => value(2)));
+        return new Promise(value => process.nextTick(() => value(2)));
       })
       .catch(error => {
         assert.strictEqual(error, 1);

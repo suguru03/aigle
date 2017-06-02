@@ -3,7 +3,7 @@
 const assert = require('assert');
 
 const parallel = require('mocha.parallel');
-const Aigle = require('../../');
+const Aigle = require('../proxy');
 const DELAY = require('../config').DELAY;
 
 parallel('map', () => {
@@ -131,7 +131,7 @@ parallel('map', () => {
   it('should execute with multiple receivers on asynchronous', () => {
 
     const array = [1, 2, 3];
-    const promise = new Aigle(resolve => setImmediate(() => resolve(array)));
+    const promise = new Aigle(resolve => process.nextTick(() => resolve(array)));
     const iterator = value => Aigle.delay(value * DELAY, value * 2);
     return Aigle.all([
       promise.map(iterator),

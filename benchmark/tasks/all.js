@@ -14,13 +14,13 @@ module.exports = ({ Aigle, Bluebird }) => {
       },
       aigle: () => {
         const tasks = _.times(count, n => {
-          return new Aigle(resolve => setImmediate(resolve, n));
+          return new Aigle(resolve => process.nextTick(resolve, n));
         });
         return Aigle.all(tasks);
       },
       bluebird: () => {
         const tasks = _.times(count, n => {
-          return new Bluebird(resolve => setImmediate(resolve, n));
+          return new Bluebird(resolve => process.nextTick(resolve, n));
         });
         return Bluebird.all(tasks);
       }
@@ -48,13 +48,13 @@ module.exports = ({ Aigle, Bluebird }) => {
       },
       aigle: () => {
         const tasks = _.times(count, n => {
-          return new Aigle(resolve => setImmediate(resolve, n));
+          return new Aigle(resolve => process.nextTick(resolve, n));
         });
         return Aigle.resolve(tasks).all();
       },
       bluebird: () => {
         const tasks = _.times(count, n => {
-          return new Bluebird(resolve => setImmediate(resolve, n));
+          return new Bluebird(resolve => process.nextTick(resolve, n));
         });
         return Bluebird.resolve(tasks).all();
       }

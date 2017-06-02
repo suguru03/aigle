@@ -4,7 +4,7 @@ const assert = require('assert');
 
 const _ = require('lodash');
 const parallel = require('mocha.parallel');
-const Aigle = require('../../');
+const Aigle = require('../proxy');
 const util = require('../util');
 const { DELAY } = require('../config');
 
@@ -177,7 +177,7 @@ parallel('#all', () => {
   it('should execute with multiple receivers on asynchronous', () => {
 
     const array = [1, 2, 3];
-    const promise = new Aigle(resolve => setImmediate(() => resolve(array)));
+    const promise = new Aigle(resolve => process.nextTick(() => resolve(array)));
     return Aigle.all([
       promise.all()
         .then(value => {
@@ -201,7 +201,7 @@ parallel('#all', () => {
   it('should catch error with multiple receivers on asynchronous', () => {
 
     const error = new TypeError('error');
-    const promise = new Aigle((resolve, reject) => setImmediate(() => reject(error)));
+    const promise = new Aigle((resolve, reject) => process.nextTick(() => reject(error)));
     return Aigle.all([
       promise.all(),
       promise.all(),

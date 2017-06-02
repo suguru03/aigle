@@ -2,7 +2,7 @@
 
 const assert = require('assert');
 
-const Aigle = require('../../');
+const Aigle = require('../proxy');
 
 const parallel = require('mocha.parallel');
 const DELAY = require('../config').DELAY;

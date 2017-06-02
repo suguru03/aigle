@@ -3,7 +3,7 @@
 const assert = require('assert');
 
 const parallel = require('mocha.parallel');
-const Aigle = require('../../');
+const Aigle = require('../proxy');
 
 parallel('doWhilst', () => {
 
@@ -18,7 +18,7 @@ parallel('doWhilst', () => {
     };
     const iterator = () => {
       order.iterator.push(count++);
-      return new Aigle(resolve => setImmediate(() => resolve(count)));
+      return new Aigle(resolve => process.nextTick(() => resolve(count)));
     };
     return Aigle.doWhilst(iterator, test)
       .then(res => {
@@ -39,7 +39,7 @@ parallel('doWhilst', () => {
     };
     const iterator = value => {
       order.iterator.push(value++);
-      return new Aigle(resolve => setImmediate(() => resolve(value)));
+      return new Aigle(resolve => process.nextTick(() => resolve(value)));
     };
     return Aigle.doWhilst(value, iterator, test)
       .then(res => {
@@ -71,11 +71,11 @@ parallel('doWhilst', () => {
     const order = { test: [], iterator: [] };
     const test = () => {
       order.test.push(count);
-      return new Aigle(resolve => setImmediate(() => resolve(count < limit)));
+      return new Aigle(resolve => process.nextTick(() => resolve(count < limit)));
     };
     const iterator = () => {
       order.iterator.push(count++);
-      return new Aigle(resolve => setImmediate(() => resolve(count)));
+      return new Aigle(resolve => process.nextTick(() => resolve(count)));
     };
     return Aigle.doWhilst(iterator, test)
       .then(res => {
@@ -99,7 +99,7 @@ parallel('#doWhilst', () => {
     };
     const iterator = value => {
       order.iterator.push(value++);
-      return new Aigle(resolve => setImmediate(() => resolve(value)));
+      return new Aigle(resolve => process.nextTick(() => resolve(value)));
     };
     return Aigle.resolve(value)
       .doWhilst(iterator, test)

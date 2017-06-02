@@ -24,9 +24,9 @@ module.exports = ({ Aigle, neoAsync }) => {
         this.limit = 8;
         this.array = _.times(config.count);
         this.aigleIterator = () => new Aigle(next);
-        this.neoAsyncIterator = (n, cb) => setImmediate(cb);
+        this.neoAsyncIterator = (n, cb) => process.nextTick(cb);
         function next(resolve) {
-          setImmediate(resolve);
+          process.nextTick(resolve);
         }
       },
       aigle: () => {

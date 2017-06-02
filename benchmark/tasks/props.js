@@ -14,7 +14,7 @@ module.exports = ({ Aigle, Bluebird }) => {
         const tasks = _.chain(count)
           .times()
           .transform((result, n) => {
-            result[n] = new Aigle(resolve => setImmediate(resolve));
+            result[n] = new Aigle(resolve => process.nextTick(resolve));
           }, {})
           .value();
         return Aigle.props(tasks);
@@ -23,7 +23,7 @@ module.exports = ({ Aigle, Bluebird }) => {
         const tasks = _.chain(count)
           .times()
           .transform((result, n) => {
-            result[n] = new Bluebird(resolve => setImmediate(resolve));
+            result[n] = new Bluebird(resolve => process.nextTick(resolve));
           }, {})
           .value();
         return Bluebird.props(tasks);

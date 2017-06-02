@@ -3,7 +3,7 @@
 const assert = require('assert');
 
 const parallel = require('mocha.parallel');
-const Aigle = require('../../');
+const Aigle = require('../proxy');
 
 parallel('whilst', () => {
 
@@ -18,7 +18,7 @@ parallel('whilst', () => {
     };
     const iterator = () => {
       order.iterator.push(count++);
-      return new Aigle(resolve => setImmediate(() => resolve(count)));
+      return new Aigle(resolve => process.nextTick(() => resolve(count)));
     };
     return Aigle.whilst(test, iterator)
       .then(res => {
@@ -39,7 +39,7 @@ parallel('whilst', () => {
     };
     const iterator = value => {
       order.iterator.push(value++);
-      return new Aigle(resolve => setImmediate(() => resolve(value)));
+      return new Aigle(resolve => process.nextTick(() => resolve(value)));
     };
     return Aigle.whilst(value, test, iterator)
       .then(res => {
@@ -71,11 +71,11 @@ parallel('whilst', () => {
     const order = { test: [], iterator: [] };
     const test = () => {
       order.test.push(count);
-      return new Aigle(resolve => setImmediate(() => resolve(count < limit)));
+      return new Aigle(resolve => process.nextTick(() => resolve(count < limit)));
     };
     const iterator = () => {
       order.iterator.push(count++);
-      return new Aigle(resolve => setImmediate(() => resolve(count)));
+      return new Aigle(resolve => process.nextTick(() => resolve(count)));
     };
     return Aigle.whilst(test, iterator)
       .then(res => {
@@ -89,7 +89,7 @@ parallel('whilst', () => {
 
     const test = () => test.value();
     const iterator = () => {
-      return new Aigle(resolve => setImmediate(() => resolve()));
+      return new Aigle(resolve => process.nextTick(() => resolve()));
     };
     return Aigle.whilst(test, iterator)
       .then(() => assert(false))
@@ -119,7 +119,7 @@ parallel('#whilst', () => {
     };
     const iterator = value => {
       order.iterator.push(value++);
-      return new Aigle(resolve => setImmediate(() => resolve(value)));
+      return new Aigle(resolve => process.nextTick(() => resolve(value)));
     };
     return Aigle.resolve(value)
       .whilst(test, iterator)
