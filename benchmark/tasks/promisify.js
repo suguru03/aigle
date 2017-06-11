@@ -1,5 +1,7 @@
 'use strict';
 
+const util = require('util');
+
 module.exports = ({ Aigle, Bluebird }) => {
 
   return {
@@ -8,23 +10,28 @@ module.exports = ({ Aigle, Bluebird }) => {
       setup: () => {
         this.func = callback => setImmediate(callback);
       },
-      aigle: () => {
-        return Aigle.promisify(this.func)();
+      aigle: () => Aigle.promisify(this.func)(),
+      bluebird: () => Bluebird.promisify(this.func)(),
+      'native': () => util.promisify(this.func)()
+    },
+    'promisify:promisifed': {
+      doc: true,
+      setup: () => {
+        const func = callback => setImmediate(callback);
+        this.aiglePromisifed = Aigle.promisify(func);
+        this.bluebirdPromisifed = Bluebird.promisify(func);
+        this.nativePromisified = util.promisify(func);
       },
-      bluebird: () => {
-        return Bluebird.promisify(this.func)();
-      }
+      aigle: () => this.aiglePromisifed(),
+      bluebird: () => this.bluebirdPromisifed(),
+      'native': () => this.nativePromisified()
     },
     'promisify:multiple': {
       setup: () => {
         this.func = (a, b, c, callback) => setImmediate(callback);
       },
-      aigle: () => {
-        return Aigle.promisify(this.func)(1, 2, 3);
-      },
-      bluebird: () => {
-        return Bluebird.promisify(this.func)(1, 2, 3);
-      }
+      aigle: () => Aigle.promisify(this.func)(1, 2, 3),
+      bluebird: () => Bluebird.promisify(this.func)(1, 2, 3)
     },
     'promisifyAll': {
       doc: true,

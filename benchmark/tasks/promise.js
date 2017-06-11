@@ -25,6 +25,13 @@ module.exports = ({ Aigle, Bluebird }) => {
           p = p.then(value => new Bluebird(resolve => setImmediate(resolve, value)));
         });
         return p;
+      },
+      'native': () => {
+        let p = new Promise(resolve => setImmediate(resolve, 0));
+        _.times(count, () => {
+          p = p.then(value => new Promise(resolve => setImmediate(resolve, value)));
+        });
+        return p;
       }
     },
     'promise:resolve': {
