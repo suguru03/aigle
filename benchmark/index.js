@@ -29,10 +29,11 @@ if (makeDoc) {
 
 console.log('======================================');
 const versionMap = _.mapValues(functions, (obj, key) => {
-  const version = obj.version || obj.VERSION || '0.0.0';
-  console.log(`[${key}] v${version}`);
+  const version = `v${obj.version || obj.VERSION || '0.0.0'}`;
+  console.log(`[${key}] ${version}`);
   return version;
 });
+versionMap.native = process.version;
 
 let tasks = require('./tasks')(functions);
 if (target) {
@@ -122,7 +123,7 @@ if (makeDoc) {
     // version
     doc += '\n### Libraries\n';
     doc += _.reduce(versionMap, (result, version, key) => {
-      return `${result}- ${key} v${version}\n`;
+      return `${result}- ${key} ${version}\n`;
     }, '');
 
     // benchmarks

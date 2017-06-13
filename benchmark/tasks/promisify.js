@@ -14,7 +14,7 @@ module.exports = ({ Aigle, Bluebird }) => {
       bluebird: () => Bluebird.promisify(this.func)(),
       'native': () => util.promisify(this.func)()
     },
-    'promisify:promisifed': {
+    'promisify:promisified': {
       doc: true,
       setup: () => {
         const func = callback => setImmediate(callback);

@@ -36,7 +36,8 @@ module.exports = ({ Aigle, Bluebird }) => {
     },
     'promise:resolve': {
       aigle: () => Aigle.resolve(),
-      bluebird: () => Bluebird.resolve()
+      bluebird: () => Bluebird.resolve(),
+      'native': () => Promise.resolve()
     },
     'promise:resume': {
       setup: () => {

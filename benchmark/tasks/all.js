@@ -23,6 +23,12 @@ module.exports = ({ Aigle, Bluebird }) => {
           return new Bluebird(resolve => setImmediate(resolve, n));
         });
         return Bluebird.all(tasks);
+      },
+      'native': () => {
+        const tasks = _.times(count, n => {
+          return new Promise(resolve => setImmediate(resolve, n));
+        });
+        return Promise.all(tasks);
       }
     },
     'all:sync': {
