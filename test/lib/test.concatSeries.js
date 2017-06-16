@@ -69,6 +69,14 @@ parallel('concatSeries', () => {
       });
   });
 
+  it('should pass falthy except for undefined', () => {
+
+    const collection = [null, undefined, 0, '', false];
+    const iterator = value => value;
+    return Aigle.concatSeries(collection, iterator)
+      .then(res => assert.deepEqual(res, [null, 0, '', false]));
+  });
+
   it('should return an empty array if collection is an empty array', () => {
 
     const iterator = value => {

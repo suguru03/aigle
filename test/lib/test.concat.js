@@ -22,7 +22,7 @@ parallel('concat', () => {
     return Aigle.concat(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 2, 4]);
+        assert.deepEqual(res, [1, 4, 2]);
         assert.deepEqual(order, [
           [0, 1],
           [2, 2],
@@ -49,13 +49,21 @@ parallel('concat', () => {
     return Aigle.concat(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 2, 4]);
+        assert.deepEqual(res, [1, 4, 2]);
         assert.deepEqual(order, [
           ['task1', 1],
           ['task3', 2],
           ['task2', 4]
         ]);
       });
+  });
+
+  it('should pass falthy except for undefined', () => {
+
+    const collection = [null, undefined, 0, '', false];
+    const iterator = value => value;
+    return Aigle.concat(collection, iterator)
+      .then(res => assert.deepEqual(res, [null, 0, '', false]));
   });
 
   it('should return an empty array if collection is an empty array', () => {
@@ -124,7 +132,7 @@ parallel('#concat', () => {
     return Aigle.resolve(collection)
       .concat(iterator)
       .then(res => {
-        assert.deepEqual(res, [1, 2, 4]);
+        assert.deepEqual(res, [1, 4, 2]);
         assert.deepEqual(order, [
           [0, 1],
           [2, 2],
@@ -149,7 +157,7 @@ parallel('#concat', () => {
     return Aigle.resolve(collection)
       .concat(iterator)
       .then(res => {
-        assert.deepEqual(res, [1, 2, 4]);
+        assert.deepEqual(res, [1, 4, 2]);
         assert.deepEqual(order, [
           ['task1', 1],
           ['task3', 2],

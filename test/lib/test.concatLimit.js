@@ -24,7 +24,7 @@ parallel('concatLimit', () => {
     return Aigle.concatLimit(collection, 2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 3, 5, 2, 4]);
+        assert.deepEqual(res, [1, 5, 3, 4, 2]);
         assert.deepEqual(order, [
           [0, 1],
           [2, 3],
@@ -54,7 +54,7 @@ parallel('concatLimit', () => {
     return Aigle.concatLimit(collection, 2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 3, 5, 2, 4]);
+        assert.deepEqual(res, [1, 5, 3, 4, 2]);
         assert.deepEqual(order, [
           ['task1', 1],
           ['task3', 3],
@@ -78,6 +78,14 @@ parallel('concatLimit', () => {
       .then(() => {
         assert.deepEqual(order, _.times(8));
       });
+  });
+
+  it('should pass falthy except for undefined', () => {
+
+    const collection = [null, undefined, 0, '', false];
+    const iterator = value => value;
+    return Aigle.concatLimit(collection, iterator)
+      .then(res => assert.deepEqual(res, [null, 0, '', false]));
   });
 
   it('should return an empty array if collection is an empty array', () => {
@@ -185,7 +193,7 @@ parallel('#concatLimit', () => {
       .concatLimit(2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 3, 5, 2, 4]);
+        assert.deepEqual(res, [1, 5, 3, 4, 2]);
         assert.deepEqual(order, [
           [0, 1],
           [2, 3],
@@ -215,7 +223,7 @@ parallel('#concatLimit', () => {
       .concatLimit(2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 3, 5, 2, 4]);
+        assert.deepEqual(res, [1, 5, 3, 4, 2]);
         assert.deepEqual(order, [
           ['task1', 1],
           ['task3', 3],
