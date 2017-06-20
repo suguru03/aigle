@@ -23,7 +23,7 @@
   "author": "Suguru Motegi",
   "license": "MIT",
   "devDependencies": {
-    "babili": "0.1.2",
+    "babili": "0.1.4",
     "benchmark": "^2.1.1",
     "bluebird": "^3.5.0",
     "browserify": "^14.1.0",
