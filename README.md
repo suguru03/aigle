@@ -28,6 +28,21 @@ npm install --save aigle
 const Promise = require('aigle');
 ```
 
+#### Async/Await
+
+```js
+async function getUsers(ids) {
+  const users = await Aigle.map(ids, getUser);
+  const targets = await Aigle.filter(users, filterUser);
+  return targets;
+}
+
+async function getUsers(ids) {
+  return await Aigle.map(ids, getUser)
+    .filter(filterUser);
+}
+```
+
 ### browser
 Recommend to use [webpack](https://github.com/webpack/webpack), [browserify](https://github.com/substack/node-browserify), [Rollup](https://github.com/rollup/rollup) or any bundling tool.
 
