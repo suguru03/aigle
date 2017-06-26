@@ -4,7 +4,7 @@
 require('setimmediate');
 module.exports = require('./lib/aigle');
 
-},{"./lib/aigle":2,"setimmediate":73}],2:[function(require,module,exports){
+},{"./lib/aigle":2,"setimmediate":79}],2:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -425,6 +425,9 @@ var Aigle = (function (AigleCore) {
   };
 
   /**
+   * `Aigle#map` will execute [`Aigle.map`](https://suguru03.github.io/aigle/docs/global.html#map) using a previous promise value and a defined iterator.
+   * The value will be assigned as the first argument to [`Aigle.map`](https://suguru03.github.io/aigle/docs/global.html#map) and
+   * the iterator will be assigned as the second argument.
    * @param {Function|string} iterator - if you define string, you can use shorthand which is similar to lodash
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -488,6 +491,7 @@ var Aigle = (function (AigleCore) {
   };
 
   /**
+   * `Aigle#mapSeries` is almost the same as [`Aigle#map`](https://suguru03.github.io/aigle/docs/global.html#map), but it will work in series.
    * @param {Array|Object} collection
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
@@ -530,6 +534,8 @@ var Aigle = (function (AigleCore) {
   };
 
   /**
+   * `Aigle#mapLimit` is almost the same as [`Aigle#map`](https://suguru03.github.io/aigle/docs/global.html#map)
+   * and [`Aigle#mapSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#mapSeries)), but it will work with concurrency.
    * @param {Array|Object} collection
    * @param {integer} [limit=8]
    * @param {Function} iterator
@@ -759,6 +765,9 @@ var Aigle = (function (AigleCore) {
   };
 
   /**
+   * `Aigle#filter` will execute [`Aigle.filter`](https://suguru03.github.io/aigle/docs/global.html#filter) using a previous promise value and a defined iterator.
+   * The value will be assigned as the first argument to [`Aigle.filter`](https://suguru03.github.io/aigle/docs/global.html#filter) and
+   * the iterator will be assigned as the second argument.
    * @param {Function|Array|Object|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -839,6 +848,7 @@ var Aigle = (function (AigleCore) {
   };
 
   /**
+   * `Aigle#filterSeries` is almost the same as [`Aigle#filter`](https://suguru03.github.io/aigle/docs/global.html#filter), but it will work in series.
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -880,6 +890,8 @@ var Aigle = (function (AigleCore) {
   };
 
   /**
+   * `Aigle#filterLimit` is almost the same as [`Aigle#filter`](https://suguru03.github.io/aigle/docs/global.html#filter)
+   * and [`Aigle#filterSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#filterSeries)), but it will work with concurrency.
    * @param {Array|Object} collection
    * @param {integer} [limit=8]
    * @param {Function} iterator
@@ -1126,6 +1138,9 @@ var Aigle = (function (AigleCore) {
   };
 
   /**
+   * `Aigle#find` will execute [`Aigle.find`](https://suguru03.github.io/aigle/docs/global.html#find) using a previous promise value and a defined iterator.
+   * The value will be assigned as the first argument to [`Aigle.find`](https://suguru03.github.io/aigle/docs/global.html#find) and
+   * the iterator will be assigned as the second argument.
    * @param {Function|Array|Object|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -1220,6 +1235,7 @@ var Aigle = (function (AigleCore) {
   };
 
   /**
+   * `Aigle#findSeries` is almost the same as [`Aigle#find`](https://suguru03.github.io/aigle/docs/global.html#find), but it will work in series.
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -1278,6 +1294,8 @@ var Aigle = (function (AigleCore) {
   };
 
   /**
+   * `Aigle#findLimit` is almost the same as [`Aigle#find`](https://suguru03.github.io/aigle/docs/global.html#find)
+   * and [`Aigle#findSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#findSeries)), but it will work with concurrency.
    * @param {integer} [limit=8]
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
@@ -1340,6 +1358,56 @@ var Aigle = (function (AigleCore) {
    */
   Aigle.prototype.findLimit = function findLimit (limit, iterator) {
     return addProxy(this, FindLimit, limit, iterator);
+  };
+
+  /**
+   * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   */
+  Aigle.prototype.findIndex = function findIndex (iterator) {
+    return addProxy(this, FindIndex, iterator);
+  };
+
+  /**
+   * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   */
+  Aigle.prototype.findIndexSeries = function findIndexSeries (iterator) {
+    return addProxy(this, FindIndexSeries, iterator);
+  };
+
+  /**
+   * @param {integer} [limit=8]
+   * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   */
+  Aigle.prototype.findIndexLimit = function findIndexLimit (limit, iterator) {
+    return addProxy(this, FindIndexLimit, limit, iterator);
+  };
+
+  /**
+   * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   */
+  Aigle.prototype.findKey = function findKey (iterator) {
+    return addProxy(this, FindKey, iterator);
+  };
+
+  /**
+   * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   */
+  Aigle.prototype.findKeySeries = function findKeySeries (iterator) {
+    return addProxy(this, FindKeySeries, iterator);
+  };
+
+  /**
+   * @param {integer} [limit=8]
+   * @param {Function} iterator
+   * @return {Aigle} Returns an Aigle instance
+   */
+  Aigle.prototype.findKeyLimit = function findKeyLimit (limit, iterator) {
+    return addProxy(this, FindKeyLimit, limit, iterator);
   };
 
   /**
@@ -2614,7 +2682,7 @@ var Aigle = (function (AigleCore) {
 
   /**
    * `Aigle#concatLimit` is almost the same as [`Aigle#concat`](https://suguru03.github.io/aigle/docs/global.html#concat)
-   * and [`Aigle#concatSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#concat)), but it will work with concurrency.
+   * and [`Aigle#concatSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#concatSeries)), but it will work with concurrency.
    * @param {integer} [limit=8]
    * @param {Function} iterator
    * @example
@@ -3214,111 +3282,129 @@ var FindSeries = ref$22.FindSeries;
 var ref$23 = require('./findLimit');
 var findLimit = ref$23.findLimit;
 var FindLimit = ref$23.FindLimit;
-var ref$24 = require('./pick');
-var pick = ref$24.pick;
-var Pick = ref$24.Pick;
-var ref$25 = require('./pickSeries');
-var pickSeries = ref$25.pickSeries;
-var PickSeries = ref$25.PickSeries;
-var ref$26 = require('./pickLimit');
-var pickLimit = ref$26.pickLimit;
-var PickLimit = ref$26.PickLimit;
-var ref$27 = require('./omit');
-var omit = ref$27.omit;
-var Omit = ref$27.Omit;
-var ref$28 = require('./omitSeries');
-var omitSeries = ref$28.omitSeries;
-var OmitSeries = ref$28.OmitSeries;
-var ref$29 = require('./omitLimit');
-var omitLimit = ref$29.omitLimit;
-var OmitLimit = ref$29.OmitLimit;
-var ref$30 = require('./reduce');
-var reduce = ref$30.reduce;
-var Reduce = ref$30.Reduce;
-var ref$31 = require('./transform');
-var transform = ref$31.transform;
-var Transform = ref$31.Transform;
-var ref$32 = require('./transformSeries');
-var transformSeries = ref$32.transformSeries;
-var TransformSeries = ref$32.TransformSeries;
-var ref$33 = require('./transformLimit');
-var transformLimit = ref$33.transformLimit;
-var TransformLimit = ref$33.TransformLimit;
-var ref$34 = require('./sortBy');
-var sortBy = ref$34.sortBy;
-var SortBy = ref$34.SortBy;
-var ref$35 = require('./sortBySeries');
-var sortBySeries = ref$35.sortBySeries;
-var SortBySeries = ref$35.SortBySeries;
-var ref$36 = require('./sortByLimit');
-var sortByLimit = ref$36.sortByLimit;
-var SortByLimit = ref$36.SortByLimit;
-var ref$37 = require('./some');
-var some = ref$37.some;
-var Some = ref$37.Some;
-var ref$38 = require('./someSeries');
-var someSeries = ref$38.someSeries;
-var SomeSeries = ref$38.SomeSeries;
-var ref$39 = require('./someLimit');
-var someLimit = ref$39.someLimit;
-var SomeLimit = ref$39.SomeLimit;
-var ref$40 = require('./every');
-var every = ref$40.every;
-var Every = ref$40.Every;
-var ref$41 = require('./everySeries');
-var everySeries = ref$41.everySeries;
-var EverySeries = ref$41.EverySeries;
-var ref$42 = require('./everyLimit');
-var everyLimit = ref$42.everyLimit;
-var EveryLimit = ref$42.EveryLimit;
-var ref$43 = require('./concat');
-var concat = ref$43.concat;
-var Concat = ref$43.Concat;
-var ref$44 = require('./concatSeries');
-var concatSeries = ref$44.concatSeries;
-var ConcatSeries = ref$44.ConcatSeries;
-var ref$45 = require('./concatLimit');
-var concatLimit = ref$45.concatLimit;
-var ConcatLimit = ref$45.ConcatLimit;
-var ref$46 = require('./groupBy');
-var groupBy = ref$46.groupBy;
-var GroupBy = ref$46.GroupBy;
-var ref$47 = require('./groupBySeries');
-var groupBySeries = ref$47.groupBySeries;
-var GroupBySeries = ref$47.GroupBySeries;
-var ref$48 = require('./groupByLimit');
-var groupByLimit = ref$48.groupByLimit;
-var GroupByLimit = ref$48.GroupByLimit;
-var ref$49 = require('./join');
-var join = ref$49.join;
-var Spread = ref$49.Spread;
-var ref$50 = require('./delay');
-var delay = ref$50.delay;
-var Delay = ref$50.Delay;
+var ref$24 = require('./findIndex');
+var findIndex = ref$24.findIndex;
+var FindIndex = ref$24.FindIndex;
+var ref$25 = require('./findIndexSeries');
+var findIndexSeries = ref$25.findIndexSeries;
+var FindIndexSeries = ref$25.FindIndexSeries;
+var ref$26 = require('./findIndexLimit');
+var findIndexLimit = ref$26.findIndexLimit;
+var FindIndexLimit = ref$26.FindIndexLimit;
+var ref$27 = require('./findKey');
+var findKey = ref$27.findKey;
+var FindKey = ref$27.FindKey;
+var ref$28 = require('./findKeySeries');
+var findKeySeries = ref$28.findKeySeries;
+var FindKeySeries = ref$28.FindKeySeries;
+var ref$29 = require('./findKeyLimit');
+var findKeyLimit = ref$29.findKeyLimit;
+var FindKeyLimit = ref$29.FindKeyLimit;
+var ref$30 = require('./pick');
+var pick = ref$30.pick;
+var Pick = ref$30.Pick;
+var ref$31 = require('./pickSeries');
+var pickSeries = ref$31.pickSeries;
+var PickSeries = ref$31.PickSeries;
+var ref$32 = require('./pickLimit');
+var pickLimit = ref$32.pickLimit;
+var PickLimit = ref$32.PickLimit;
+var ref$33 = require('./omit');
+var omit = ref$33.omit;
+var Omit = ref$33.Omit;
+var ref$34 = require('./omitSeries');
+var omitSeries = ref$34.omitSeries;
+var OmitSeries = ref$34.OmitSeries;
+var ref$35 = require('./omitLimit');
+var omitLimit = ref$35.omitLimit;
+var OmitLimit = ref$35.OmitLimit;
+var ref$36 = require('./reduce');
+var reduce = ref$36.reduce;
+var Reduce = ref$36.Reduce;
+var ref$37 = require('./transform');
+var transform = ref$37.transform;
+var Transform = ref$37.Transform;
+var ref$38 = require('./transformSeries');
+var transformSeries = ref$38.transformSeries;
+var TransformSeries = ref$38.TransformSeries;
+var ref$39 = require('./transformLimit');
+var transformLimit = ref$39.transformLimit;
+var TransformLimit = ref$39.TransformLimit;
+var ref$40 = require('./sortBy');
+var sortBy = ref$40.sortBy;
+var SortBy = ref$40.SortBy;
+var ref$41 = require('./sortBySeries');
+var sortBySeries = ref$41.sortBySeries;
+var SortBySeries = ref$41.SortBySeries;
+var ref$42 = require('./sortByLimit');
+var sortByLimit = ref$42.sortByLimit;
+var SortByLimit = ref$42.SortByLimit;
+var ref$43 = require('./some');
+var some = ref$43.some;
+var Some = ref$43.Some;
+var ref$44 = require('./someSeries');
+var someSeries = ref$44.someSeries;
+var SomeSeries = ref$44.SomeSeries;
+var ref$45 = require('./someLimit');
+var someLimit = ref$45.someLimit;
+var SomeLimit = ref$45.SomeLimit;
+var ref$46 = require('./every');
+var every = ref$46.every;
+var Every = ref$46.Every;
+var ref$47 = require('./everySeries');
+var everySeries = ref$47.everySeries;
+var EverySeries = ref$47.EverySeries;
+var ref$48 = require('./everyLimit');
+var everyLimit = ref$48.everyLimit;
+var EveryLimit = ref$48.EveryLimit;
+var ref$49 = require('./concat');
+var concat = ref$49.concat;
+var Concat = ref$49.Concat;
+var ref$50 = require('./concatSeries');
+var concatSeries = ref$50.concatSeries;
+var ConcatSeries = ref$50.ConcatSeries;
+var ref$51 = require('./concatLimit');
+var concatLimit = ref$51.concatLimit;
+var ConcatLimit = ref$51.ConcatLimit;
+var ref$52 = require('./groupBy');
+var groupBy = ref$52.groupBy;
+var GroupBy = ref$52.GroupBy;
+var ref$53 = require('./groupBySeries');
+var groupBySeries = ref$53.groupBySeries;
+var GroupBySeries = ref$53.GroupBySeries;
+var ref$54 = require('./groupByLimit');
+var groupByLimit = ref$54.groupByLimit;
+var GroupByLimit = ref$54.GroupByLimit;
+var ref$55 = require('./join');
+var join = ref$55.join;
+var Spread = ref$55.Spread;
+var ref$56 = require('./delay');
+var delay = ref$56.delay;
+var Delay = ref$56.Delay;
 var Timeout = require('./timeout');
-var ref$51 = require('./whilst');
-var whilst = ref$51.whilst;
-var ref$52 = require('./doWhilst');
-var doWhilst = ref$52.doWhilst;
-var ref$53 = require('./until');
-var until = ref$53.until;
+var ref$57 = require('./whilst');
+var whilst = ref$57.whilst;
+var ref$58 = require('./doWhilst');
+var doWhilst = ref$58.doWhilst;
+var ref$59 = require('./until');
+var until = ref$59.until;
 var doUntil = require('./doUntil');
 var retry = require('./retry');
-var ref$54 = require('./times');
-var times = ref$54.times;
-var Times = ref$54.Times;
-var ref$55 = require('./timesSeries');
-var timesSeries = ref$55.timesSeries;
-var TimesSeries = ref$55.TimesSeries;
-var ref$56 = require('./timesLimit');
-var timesLimit = ref$56.timesLimit;
-var TimesLimit = ref$56.TimesLimit;
-var ref$57 = require('./using');
-var using = ref$57.using;
-var Disposer = ref$57.Disposer;
-var ref$58 = require('./debug');
-var resolveStack = ref$58.resolveStack;
-var reconstructStack = ref$58.reconstructStack;
+var ref$60 = require('./times');
+var times = ref$60.times;
+var Times = ref$60.Times;
+var ref$61 = require('./timesSeries');
+var timesSeries = ref$61.timesSeries;
+var TimesSeries = ref$61.TimesSeries;
+var ref$62 = require('./timesLimit');
+var timesLimit = ref$62.timesLimit;
+var TimesLimit = ref$62.TimesLimit;
+var ref$63 = require('./using');
+var using = ref$63.using;
+var Disposer = ref$63.Disposer;
+var ref$64 = require('./debug');
+var resolveStack = ref$64.resolveStack;
+var reconstructStack = ref$64.reconstructStack;
 
 Aigle.VERSION = VERSION;
 
@@ -3351,6 +3437,12 @@ Aigle.rejectLimit = rejectLimit;
 Aigle.find = find;
 Aigle.findSeries = findSeries;
 Aigle.findLimit = findLimit;
+Aigle.findIndex = findIndex;
+Aigle.findIndexSeries = findIndexSeries;
+Aigle.findIndexLimit = findIndexLimit;
+Aigle.findKey = findKey;
+Aigle.findKeySeries = findKeySeries;
+Aigle.findKeyLimit = findKeyLimit;
 Aigle.detect = find;
 Aigle.detectSeries = findSeries;
 Aigle.detectLimit = findLimit;
@@ -3401,9 +3493,9 @@ Aigle.config = config;
 Aigle.longStackTraces = longStackTraces;
 
 /* errors */
-var ref$59 = require('./error');
-var CancellationError = ref$59.CancellationError;
-var TimeoutError = ref$59.TimeoutError;
+var ref$65 = require('./error');
+var CancellationError = ref$65.CancellationError;
+var TimeoutError = ref$65.TimeoutError;
 Aigle.CancellationError = CancellationError;
 Aigle.TimeoutError = TimeoutError;
 
@@ -3603,7 +3695,7 @@ function longStackTraces() {
 }
 
 }).call(this,require('_process'))
-},{"./all":3,"./attempt":4,"./concat":5,"./concatLimit":6,"./concatSeries":7,"./debug":8,"./delay":9,"./doUntil":10,"./doWhilst":11,"./each":12,"./eachLimit":13,"./eachSeries":14,"./error":15,"./every":16,"./everyLimit":17,"./everySeries":18,"./filter":19,"./filterLimit":20,"./filterSeries":21,"./find":22,"./findLimit":23,"./findSeries":24,"./groupBy":25,"./groupByLimit":26,"./groupBySeries":27,"./internal/async":28,"./internal/queue":30,"./internal/util":31,"./join":32,"./map":33,"./mapLimit":34,"./mapSeries":35,"./mapValues":36,"./mapValuesLimit":37,"./mapValuesSeries":38,"./omit":39,"./omitLimit":40,"./omitSeries":41,"./parallel":42,"./pick":43,"./pickLimit":44,"./pickSeries":45,"./promisify":46,"./promisifyAll":47,"./props":48,"./race":49,"./reduce":50,"./reject":51,"./rejectLimit":52,"./rejectSeries":53,"./retry":54,"./some":55,"./someLimit":56,"./someSeries":57,"./sortBy":58,"./sortByLimit":59,"./sortBySeries":60,"./timeout":61,"./times":62,"./timesLimit":63,"./timesSeries":64,"./transform":65,"./transformLimit":66,"./transformSeries":67,"./until":68,"./using":69,"./whilst":70,"_process":72,"aigle-core":71}],3:[function(require,module,exports){
+},{"./all":3,"./attempt":4,"./concat":5,"./concatLimit":6,"./concatSeries":7,"./debug":8,"./delay":9,"./doUntil":10,"./doWhilst":11,"./each":12,"./eachLimit":13,"./eachSeries":14,"./error":15,"./every":16,"./everyLimit":17,"./everySeries":18,"./filter":19,"./filterLimit":20,"./filterSeries":21,"./find":22,"./findIndex":23,"./findIndexLimit":24,"./findIndexSeries":25,"./findKey":26,"./findKeyLimit":27,"./findKeySeries":28,"./findLimit":29,"./findSeries":30,"./groupBy":31,"./groupByLimit":32,"./groupBySeries":33,"./internal/async":34,"./internal/queue":36,"./internal/util":37,"./join":38,"./map":39,"./mapLimit":40,"./mapSeries":41,"./mapValues":42,"./mapValuesLimit":43,"./mapValuesSeries":44,"./omit":45,"./omitLimit":46,"./omitSeries":47,"./parallel":48,"./pick":49,"./pickLimit":50,"./pickSeries":51,"./promisify":52,"./promisifyAll":53,"./props":54,"./race":55,"./reduce":56,"./reject":57,"./rejectLimit":58,"./rejectSeries":59,"./retry":60,"./some":61,"./someLimit":62,"./someSeries":63,"./sortBy":64,"./sortByLimit":65,"./sortBySeries":66,"./timeout":67,"./times":68,"./timesLimit":69,"./timesSeries":70,"./transform":71,"./transformLimit":72,"./transformSeries":73,"./until":74,"./using":75,"./whilst":76,"_process":78,"aigle-core":77}],3:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -3701,7 +3793,7 @@ function all(array) {
 }
 
 
-},{"./aigle":2,"./internal/util":31,"aigle-core":71}],4:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":37,"aigle-core":77}],4:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -3727,38 +3819,42 @@ function attempt(handler) {
   return receiver;
 }
 
-},{"./aigle":2,"./internal/util":31}],5:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":37}],5:[function(require,module,exports){
 'use strict';
 
 var ref = require('./each');
 var Each = ref.Each;
+var ref$1 = require('./internal/util');
+var concatArray = ref$1.concatArray;
+var ref$2 = require('./internal/collection');
+var setParallel = ref$2.setParallel;
 
 var Concat = (function (Each) {
   function Concat(collection, iterator) {
-    Each.call(this, collection, iterator);
-    this._result = [];
+    Each.call(this, collection, iterator, set);
   }
 
   if ( Each ) Concat.__proto__ = Each;
   Concat.prototype = Object.create( Each && Each.prototype );
   Concat.prototype.constructor = Concat;
 
-  Concat.prototype._callResolve = function _callResolve (value) {
-    if (Array.isArray(value)) {
-      (ref = this._result).push.apply(ref, value);
-    } else {
-      this._result.push(value);
-    }
+  Concat.prototype._callResolve = function _callResolve (value, index) {
+    this._result[index] = value;
     if (--this._rest === 0) {
-      this._promise._resolve(this._result);
+      this._promise._resolve(concatArray(this._result));
     }
-    var ref;
   };
 
   return Concat;
 }(Each));
 
 module.exports = { concat: concat, Concat: Concat };
+
+function set(collection) {
+  setParallel.call(this, collection);
+  this._result = Array(this._rest);
+  return this;
+}
 
 /**
  * `Aigle.concat` has almost the same functionality as `Array#concat`.
@@ -3806,34 +3902,32 @@ function concat(collection, iterator) {
   return new Concat(collection, iterator)._execute();
 }
 
-},{"./each":12}],6:[function(require,module,exports){
+},{"./each":12,"./internal/collection":35,"./internal/util":37}],6:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachLimit');
 var EachLimit = ref.EachLimit;
+var ref$1 = require('./internal/util');
+var concatArray = ref$1.concatArray;
+var ref$2 = require('./internal/collection');
+var setLimit = ref$2.setLimit;
 
 var ConcatLimit = (function (EachLimit) {
   function ConcatLimit(collection, limit, iterator) {
-    EachLimit.call(this, collection, limit, iterator);
-    this._result = [];
+    EachLimit.call(this, collection, limit, iterator, set);
   }
 
   if ( EachLimit ) ConcatLimit.__proto__ = EachLimit;
   ConcatLimit.prototype = Object.create( EachLimit && EachLimit.prototype );
   ConcatLimit.prototype.constructor = ConcatLimit;
 
-  ConcatLimit.prototype._callResolve = function _callResolve (value) {
-    if (Array.isArray(value)) {
-      (ref = this._result).push.apply(ref, value);
-    } else {
-      this._result.push(value);
-    }
+  ConcatLimit.prototype._callResolve = function _callResolve (value, index) {
+    this._result[index] = value;
     if (--this._rest === 0) {
-      this._promise._resolve(this._result);
+      this._promise._resolve(concatArray(this._result));
     } else if (this._callRest-- > 0) {
       this._iterate();
     }
-    var ref;
   };
 
   return ConcatLimit;
@@ -3841,6 +3935,11 @@ var ConcatLimit = (function (EachLimit) {
 
 module.exports = { concatLimit: concatLimit, ConcatLimit: ConcatLimit };
 
+function set(collection) {
+  setLimit.call(this, collection);
+  this._result = Array(this._rest);
+  return this;
+}
 
 /**
  * `Aigle.concatLimit` is almost the as [`Aigle.concat`](https://suguru03.github.io/aigle/docs/Aigle.html#concat) and
@@ -3907,7 +4006,7 @@ function concatLimit(collection, limit, iterator) {
   return new ConcatLimit(collection, limit, iterator)._execute();
 }
 
-},{"./eachLimit":13}],7:[function(require,module,exports){
+},{"./eachLimit":13,"./internal/collection":35,"./internal/util":37}],7:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachSeries');
@@ -3926,7 +4025,7 @@ var ConcatSeries = (function (EachSeries) {
   ConcatSeries.prototype._callResolve = function _callResolve (value) {
     if (Array.isArray(value)) {
       (ref = this._result).push.apply(ref, value);
-    } else {
+    } else if (value !== undefined) {
       this._result.push(value);
     }
     if (--this._rest === 0) {
@@ -4071,7 +4170,7 @@ function delay(ms, value) {
   return new Delay(ms)._resolve(value);
 }
 
-},{"./aigle":2,"./internal/util":31}],10:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":37}],10:[function(require,module,exports){
 'use strict';
 
 var ref = require('./doWhilst');
@@ -4135,7 +4234,7 @@ function doUntil(value, iterator, tester) {
   return new DoWhilst(new UntilTester(tester), iterator)._iterate(value);
 }
 
-},{"./doWhilst":11,"./until":68}],11:[function(require,module,exports){
+},{"./doWhilst":11,"./until":74}],11:[function(require,module,exports){
 'use strict';
 
 var ref = require('./whilst');
@@ -4215,7 +4314,7 @@ function doWhilst(value, iterator, tester) {
   return new DoWhilst(new WhilstTester(tester), iterator)._iterate(value);
 }
 
-},{"./whilst":70}],12:[function(require,module,exports){
+},{"./whilst":76}],12:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -4231,21 +4330,24 @@ var execute = ref$3.execute;
 var setParallel = ref$3.setParallel;
 
 var Each = (function (AigleProxy) {
-  function Each(collection, iterator) {
+  function Each(collection, iterator, set) {
+    if ( set === void 0 ) set = setParallel;
+
     AigleProxy.call(this);
     this._iterator = iterator;
     this._promise = new Aigle(INTERNAL);
     this._coll = undefined;
+    this._size = undefined;
     this._rest = undefined;
     this._keys = undefined;
     this._result = undefined;
     this._iterate = undefined;
     if (collection === PENDING) {
-      this._set = setParallel;
+      this._set = set;
       this._iterate = this._callResolve;
       this._callResolve = execute;
     } else {
-      setParallel.call(this, collection);
+      set.call(this, collection);
     }
   }
 
@@ -4331,7 +4433,7 @@ function each(collection, iterator) {
   return new Each(collection, iterator)._execute();
 }
 
-},{"./aigle":2,"./internal/collection":29,"./internal/util":31,"aigle-core":71}],13:[function(require,module,exports){
+},{"./aigle":2,"./internal/collection":35,"./internal/util":37,"aigle-core":77}],13:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -4348,7 +4450,9 @@ var execute = ref$3.execute;
 var setLimit = ref$3.setLimit;
 
 var EachLimit = (function (AigleProxy) {
-  function EachLimit(collection, limit, iterator) {
+  function EachLimit(collection, limit, iterator, set) {
+    if ( set === void 0 ) set = setLimit;
+
     AigleProxy.call(this);
     if (typeof limit === 'function') {
       iterator = limit;
@@ -4366,11 +4470,11 @@ var EachLimit = (function (AigleProxy) {
     this._iterate = undefined;
     this._callRest = undefined;
     if (collection === PENDING) {
-      this._set = setLimit;
+      this._set = set;
       this._iterate = this._callResolve;
       this._callResolve = execute;
     } else {
-      setLimit.call(this, collection);
+      set.call(this, collection);
     }
   }
 
@@ -4496,7 +4600,7 @@ function eachLimit(collection, limit, iterator) {
 }
 
 
-},{"./aigle":2,"./internal/collection":29,"./internal/util":31,"aigle-core":71}],14:[function(require,module,exports){
+},{"./aigle":2,"./internal/collection":35,"./internal/util":37,"aigle-core":77}],14:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -4512,7 +4616,9 @@ var execute = ref$3.execute;
 var setSeries = ref$3.setSeries;
 
 var EachSeries = (function (AigleProxy) {
-  function EachSeries(collection, iterator) {
+  function EachSeries(collection, iterator, set) {
+    if ( set === void 0 ) set = setSeries;
+
     AigleProxy.call(this);
     this._iterator = iterator;
     this._promise = new Aigle(INTERNAL);
@@ -4524,11 +4630,11 @@ var EachSeries = (function (AigleProxy) {
     this._result = undefined;
     this._iterate = undefined;
     if (collection === PENDING) {
-      this._set = setSeries;
+      this._set = set;
       this._iterate = this._callResolve;
       this._callResolve = execute;
     } else {
-      setSeries.call(this, collection);
+      set.call(this, collection);
     }
   }
 
@@ -4613,7 +4719,7 @@ function eachSeries(collection, iterator) {
   return new EachSeries(collection, iterator)._execute();
 }
 
-},{"./aigle":2,"./internal/collection":29,"./internal/util":31,"aigle-core":71}],15:[function(require,module,exports){
+},{"./aigle":2,"./internal/collection":35,"./internal/util":37,"aigle-core":77}],15:[function(require,module,exports){
 'use strict';
 
 var types = [
@@ -4765,7 +4871,7 @@ function every(collection, iterator) {
   return new Every(collection, iterator)._execute();
 }
 
-},{"./each":12,"./internal/collection":29,"./internal/util":31}],17:[function(require,module,exports){
+},{"./each":12,"./internal/collection":35,"./internal/util":37}],17:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachLimit');
@@ -4956,17 +5062,11 @@ var ref$1 = require('./internal/collection');
 var setShorthand = ref$1.setShorthand;
 var ref$2 = require('./internal/util');
 var INTERNAL = ref$2.INTERNAL;
-var PENDING = ref$2.PENDING;
 var compactArray = ref$2.compactArray;
 
 var Filter = (function (Each) {
   function Filter(collection, iterator) {
-    Each.call(this, collection, iterator);
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      set.call(this, collection);
-    }
+    Each.call(this, collection, iterator, set);
   }
 
   if ( Each ) Filter.__proto__ = Each;
@@ -5002,6 +5102,12 @@ function callResolveObject(value, index) {
 }
 
 /**
+ * `Aigle.filter` has almost the same functionality as `Array#filter`.
+ * It iterates all elements of `collection` and executes `iterator` using each element on parallel.
+ * The `iterator` needs to return a promise or something.
+ * If a promise is returned, the function will wait until the promise is fulfilled.
+ * If the result is falsy, the element will be removed.
+ * All of them are finished, the function will return an array as a result.
  * @param {Array|Object} collection
  * @param {Function|Array|Object|string} iterator
  * @return {Aigle} Returns an Aigle instance
@@ -5077,7 +5183,7 @@ function filter(collection, iterator) {
   return new Filter(collection, iterator)._execute();
 }
 
-},{"./each":12,"./internal/collection":29,"./internal/util":31}],20:[function(require,module,exports){
+},{"./each":12,"./internal/collection":35,"./internal/util":37}],20:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachLimit');
@@ -5086,18 +5192,11 @@ var ref$1 = require('./internal/collection');
 var setLimit = ref$1.setLimit;
 var ref$2 = require('./internal/util');
 var INTERNAL = ref$2.INTERNAL;
-var PENDING = ref$2.PENDING;
 var compactArray = ref$2.compactArray;
 
 var FilterLimit = (function (EachLimit) {
   function FilterLimit(collection, limit, iterator) {
-    EachLimit.call(this, collection, limit, iterator);
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      this._result = Array(this._rest);
-      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
-    }
+    EachLimit.call(this, collection, limit, iterator, set);
   }
 
   if ( EachLimit ) FilterLimit.__proto__ = EachLimit;
@@ -5135,6 +5234,8 @@ function callResolveObject(value, index) {
 }
 
 /**
+ * `Aigle.filterLimit` is almost the as [`Aigle.filter`](https://suguru03.github.io/aigle/docs/Aigle.html#filter) and
+ * [`Aigle.filterSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#filterSeries), but it will work with concurrency.
  * @param {Array|Object} collection
  * @param {integer} [limit=8]
  * @param {Function} iterator
@@ -5197,7 +5298,7 @@ function filterLimit(collection, limit, iterator) {
   return new FilterLimit(collection, limit, iterator)._execute();
 }
 
-},{"./eachLimit":13,"./internal/collection":29,"./internal/util":31}],21:[function(require,module,exports){
+},{"./eachLimit":13,"./internal/collection":35,"./internal/util":37}],21:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachSeries');
@@ -5206,18 +5307,11 @@ var ref$1 = require('./internal/collection');
 var setSeries = ref$1.setSeries;
 var ref$2 = require('./internal/util');
 var INTERNAL = ref$2.INTERNAL;
-var PENDING = ref$2.PENDING;
 var compactArray = ref$2.compactArray;
 
 var FilterSeries = (function (EachSeries) {
   function FilterSeries(collection, iterator) {
-    EachSeries.call(this, collection, iterator);
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      this._result = Array(this._rest);
-      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
-    }
+    EachSeries.call(this, collection, iterator, set);
   }
 
   if ( EachSeries ) FilterSeries.__proto__ = EachSeries;
@@ -5255,6 +5349,7 @@ function callResolveObject(value, index) {
 }
 
 /**
+ * `Aigle.filterSeries` is almost the as [`Aigle.filter`](https://suguru03.github.io/aigle/docs/Aigle.html#filter), but it will work in series.
  * @param {Array|Object} collection
  * @param {Function} iterator
  * @return {Aigle} Returns an Aigle instance
@@ -5294,24 +5389,17 @@ function filterSeries(collection, iterator) {
   return new FilterSeries(collection, iterator)._execute();
 }
 
-},{"./eachSeries":14,"./internal/collection":29,"./internal/util":31}],22:[function(require,module,exports){
+},{"./eachSeries":14,"./internal/collection":35,"./internal/util":37}],22:[function(require,module,exports){
 'use strict';
 
 var ref = require('./each');
 var Each = ref.Each;
-var ref$1 = require('./internal/util');
-var PENDING = ref$1.PENDING;
-var ref$2 = require('./internal/collection');
-var setShorthand = ref$2.setShorthand;
+var ref$1 = require('./internal/collection');
+var setShorthand = ref$1.setShorthand;
 
 var Find = (function (Each) {
   function Find(collection, iterator) {
-    Each.call(this, collection, iterator);
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      set.call(this, collection);
-    }
+    Each.call(this, collection, iterator, set);
   }
 
   if ( Each ) Find.__proto__ = Each;
@@ -5348,6 +5436,11 @@ function callResolveObject(value, index) {
 }
 
 /**
+ * `Aigle.find` has almost the same functionality as `Array#find`.
+ * It iterates all elements of `collection` and executes `iterator` using each element on parallel.
+ * The `iterator` needs to return a promise or something.
+ * If a promise is returned, the function will wait until the promise is fulfilled.
+ * If the result is truthly, the element will be returned as a result.
  * @param {Array|Object} collection
  * @param {Function|Array|Object|string} iterator
  * @return {Aigle} Returns an Aigle instance
@@ -5436,24 +5529,339 @@ function find(collection, iterator) {
   return new Find(collection, iterator)._execute();
 }
 
-},{"./each":12,"./internal/collection":29,"./internal/util":31}],23:[function(require,module,exports){
+},{"./each":12,"./internal/collection":35}],23:[function(require,module,exports){
+'use strict';
+
+var ref = require('./each');
+var Each = ref.Each;
+var ref$1 = require('./internal/collection');
+var setShorthand = ref$1.setShorthand;
+
+var FindIndex = (function (Each) {
+  function FindIndex(collection, iterator) {
+    Each.call(this, collection, iterator, set);
+    this._result = -1;
+  }
+
+  if ( Each ) FindIndex.__proto__ = Each;
+  FindIndex.prototype = Object.create( Each && Each.prototype );
+  FindIndex.prototype.constructor = FindIndex;
+
+  FindIndex.prototype._callResolve = function _callResolve (value, index) {
+    if (value) {
+      this._size = 0;
+      this._promise._resolve(index);
+    } else if (--this._rest === 0) {
+      this._promise._resolve(-1);
+    }
+  };
+
+  return FindIndex;
+}(Each));
+
+module.exports = { findIndex: findIndex, FindIndex: FindIndex };
+
+function set(collection) {
+  setShorthand.call(this, collection);
+  if (this._keys !== undefined) {
+    this._rest = 0;
+  }
+  return this;
+}
+
+/**
+ * @param {Array|Object} collection
+ * @param {Function|Array|Object|string} iterator
+ * @return {Aigle} Returns an Aigle instance
+ */
+function findIndex(collection, iterator) {
+  return new FindIndex(collection, iterator)._execute();
+}
+
+},{"./each":12,"./internal/collection":35}],24:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachLimit');
 var EachLimit = ref.EachLimit;
-var ref$1 = require('./internal/util');
-var PENDING = ref$1.PENDING;
-var ref$2 = require('./internal/collection');
-var setLimit = ref$2.setLimit;
+var ref$1 = require('./internal/collection');
+var setLimit = ref$1.setLimit;
+
+var FindIndexLimit = (function (EachLimit) {
+  function FindIndexLimit(collection, limit, iterator) {
+    EachLimit.call(this, collection, limit, iterator, set);
+    this._result = -1;
+  }
+
+  if ( EachLimit ) FindIndexLimit.__proto__ = EachLimit;
+  FindIndexLimit.prototype = Object.create( EachLimit && EachLimit.prototype );
+  FindIndexLimit.prototype.constructor = FindIndexLimit;
+
+  FindIndexLimit.prototype._callResolve = function _callResolve (value, index) {
+    if (value) {
+      this._callRest = 0;
+      this._promise._resolve(index);
+    } else if (--this._rest === 0) {
+      this._promise._resolve(-1);
+    } else if (this._callRest-- > 0) {
+      this._iterate();
+    }
+  };
+
+  return FindIndexLimit;
+}(EachLimit));
+
+module.exports = { findIndexLimit: findIndexLimit, FindIndexLimit: FindIndexLimit };
+
+function set(collection) {
+  setLimit.call(this, collection);
+  if (this._keys !== undefined) {
+    this._rest = 0;
+  }
+  return this;
+}
+
+/**
+ * @param {Array|Object} collection
+ * @param {integer} [limit=8]
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ */
+function findIndexLimit(collection, limit, iterator) {
+  return new FindIndexLimit(collection, limit, iterator)._execute();
+}
+
+},{"./eachLimit":13,"./internal/collection":35}],25:[function(require,module,exports){
+'use strict';
+
+var ref = require('./eachSeries');
+var EachSeries = ref.EachSeries;
+var ref$1 = require('./internal/collection');
+var setSeries = ref$1.setSeries;
+
+var FindIndexSeries = (function (EachSeries) {
+  function FindIndexSeries(collection, iterator) {
+    EachSeries.call(this, collection, iterator, set);
+    this._result = -1;
+  }
+
+  if ( EachSeries ) FindIndexSeries.__proto__ = EachSeries;
+  FindIndexSeries.prototype = Object.create( EachSeries && EachSeries.prototype );
+  FindIndexSeries.prototype.constructor = FindIndexSeries;
+  FindIndexSeries.prototype._callResolve = function _callResolve (value, index) {
+    if (value) {
+      this._promise._resolve(index);
+    } else if (--this._rest === 0) {
+      this._promise._resolve(-1);
+    } else {
+      this._iterate();
+    }
+  };
+
+  return FindIndexSeries;
+}(EachSeries));
+
+module.exports = { findIndexSeries: findIndexSeries, FindIndexSeries: FindIndexSeries };
+
+function set(collection) {
+  setSeries.call(this, collection);
+  if (this._keys !== undefined) {
+    this._rest = 0;
+  }
+  return this;
+}
+
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ */
+function findIndexSeries(collection, iterator) {
+  return new FindIndexSeries(collection, iterator)._execute();
+}
+
+},{"./eachSeries":14,"./internal/collection":35}],26:[function(require,module,exports){
+'use strict';
+
+var ref = require('./each');
+var Each = ref.Each;
+var ref$1 = require('./internal/collection');
+var setShorthand = ref$1.setShorthand;
+
+var FindKey = (function (Each) {
+  function FindKey(collection, iterator) {
+    Each.call(this, collection, iterator, set);
+  }
+
+  if ( Each ) FindKey.__proto__ = Each;
+  FindKey.prototype = Object.create( Each && Each.prototype );
+  FindKey.prototype.constructor = FindKey;
+
+  return FindKey;
+}(Each));
+
+module.exports = { findKey: findKey, FindKey: FindKey };
+
+function set(collection) {
+  setShorthand.call(this, collection);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(value, index) {
+  if (value) {
+    this._size = 0;
+    this._promise._resolve(("" + index));
+  } else if (--this._rest === 0) {
+    this._promise._resolve();
+  }
+}
+
+function callResolveObject(value, index) {
+  if (value) {
+    this._size = 0;
+    this._promise._resolve(this._keys[index]);
+  } else if (--this._rest === 0) {
+    this._promise._resolve();
+  }
+}
+
+/**
+ * @param {Array|Object} collection
+ * @param {Function|Array|Object|string} iterator
+ * @return {Aigle} Returns an Aigle instance
+ */
+function findKey(collection, iterator) {
+  return new FindKey(collection, iterator)._execute();
+}
+
+},{"./each":12,"./internal/collection":35}],27:[function(require,module,exports){
+'use strict';
+
+var ref = require('./eachLimit');
+var EachLimit = ref.EachLimit;
+var ref$1 = require('./internal/collection');
+var setLimit = ref$1.setLimit;
+
+var FindKeyLimit = (function (EachLimit) {
+  function FindKeyLimit(collection, limit, iterator) {
+    EachLimit.call(this, collection, limit, iterator, set);
+  }
+
+  if ( EachLimit ) FindKeyLimit.__proto__ = EachLimit;
+  FindKeyLimit.prototype = Object.create( EachLimit && EachLimit.prototype );
+  FindKeyLimit.prototype.constructor = FindKeyLimit;
+
+  return FindKeyLimit;
+}(EachLimit));
+
+module.exports = { findKeyLimit: findKeyLimit, FindKeyLimit: FindKeyLimit };
+
+function set(collection) {
+  setLimit.call(this, collection);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(value, index) {
+  if (value) {
+    this._callRest = 0;
+    this._promise._resolve(("" + index));
+  } else if (--this._rest === 0) {
+    this._promise._resolve();
+  } else if (this._callRest-- > 0) {
+    this._iterate();
+  }
+}
+
+function callResolveObject(value, index) {
+  if (value) {
+    this._callRest = 0;
+    this._promise._resolve(this._keys[index]);
+  } else if (--this._rest === 0) {
+    this._promise._resolve();
+  } else if (this._callRest-- > 0) {
+    this._iterate();
+  }
+}
+
+/**
+ * @param {Array|Object} collection
+ * @param {integer} [limit=8]
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ */
+function findKeyLimit(collection, limit, iterator) {
+  return new FindKeyLimit(collection, limit, iterator)._execute();
+}
+
+},{"./eachLimit":13,"./internal/collection":35}],28:[function(require,module,exports){
+'use strict';
+
+var ref = require('./eachSeries');
+var EachSeries = ref.EachSeries;
+var ref$1 = require('./internal/collection');
+var setSeries = ref$1.setSeries;
+
+var FindKeySeries = (function (EachSeries) {
+  function FindKeySeries(collection, iterator) {
+    EachSeries.call(this, collection, iterator, set);
+  }
+
+  if ( EachSeries ) FindKeySeries.__proto__ = EachSeries;
+  FindKeySeries.prototype = Object.create( EachSeries && EachSeries.prototype );
+  FindKeySeries.prototype.constructor = FindKeySeries;
+
+  return FindKeySeries;
+}(EachSeries));
+
+module.exports = { findKeySeries: findKeySeries, FindKeySeries: FindKeySeries };
+
+function set(collection) {
+  setSeries.call(this, collection);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(value, index) {
+  if (value) {
+    this._promise._resolve(("" + index));
+  } else if (--this._rest === 0) {
+    this._promise._resolve();
+  } else {
+    this._iterate();
+  }
+}
+
+function callResolveObject(value, index) {
+  if (value) {
+    this._promise._resolve(this._keys[index]);
+  } else if (--this._rest === 0) {
+    this._promise._resolve();
+  } else {
+    this._iterate();
+  }
+}
+
+/**
+ * @param {Array|Object} collection
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
+ */
+function findKeySeries(collection, iterator) {
+  return new FindKeySeries(collection, iterator)._execute();
+}
+
+},{"./eachSeries":14,"./internal/collection":35}],29:[function(require,module,exports){
+'use strict';
+
+var ref = require('./eachLimit');
+var EachLimit = ref.EachLimit;
+var ref$1 = require('./internal/collection');
+var setLimit = ref$1.setLimit;
 
 var FindLimit = (function (EachLimit) {
   function FindLimit(collection, limit, iterator) {
-    EachLimit.call(this, collection, limit, iterator);
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
-    }
+    EachLimit.call(this, collection, limit, iterator, set);
   }
 
   if ( EachLimit ) FindLimit.__proto__ = EachLimit;
@@ -5493,8 +5901,9 @@ function callResolveObject(value, index) {
   }
 }
 
-
 /**
+ * `Aigle.findLimit` is almost the as [`Aigle.find`](https://suguru03.github.io/aigle/docs/Aigle.html#find) and
+ * [`Aigle.findSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#findSeries), but it will work with concurrency.
  * @param {Array|Object} collection
  * @param {integer} [limit=8]
  * @param {Function} iterator
@@ -5551,24 +5960,17 @@ function findLimit(collection, limit, iterator) {
   return new FindLimit(collection, limit, iterator)._execute();
 }
 
-},{"./eachLimit":13,"./internal/collection":29,"./internal/util":31}],24:[function(require,module,exports){
+},{"./eachLimit":13,"./internal/collection":35}],30:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachSeries');
 var EachSeries = ref.EachSeries;
-var ref$1 = require('./internal/util');
-var PENDING = ref$1.PENDING;
-var ref$2 = require('./internal/collection');
-var setSeries = ref$2.setSeries;
+var ref$1 = require('./internal/collection');
+var setSeries = ref$1.setSeries;
 
 var FindSeries = (function (EachSeries) {
   function FindSeries(collection, iterator) {
-    EachSeries.call(this, collection, iterator);
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
-    }
+    EachSeries.call(this, collection, iterator, set);
   }
 
   if ( EachSeries ) FindSeries.__proto__ = EachSeries;
@@ -5607,6 +6009,7 @@ function callResolveObject(value, index) {
 }
 
 /**
+ * `Aigle.findSeries` is almost the as [`Aigle.find`](https://suguru03.github.io/aigle/docs/Aigle.html#find), but it will work in series.
  * @param {Array|Object} collection
  * @param {Function} iterator
  * @return {Aigle} Returns an Aigle instance
@@ -5662,25 +6065,18 @@ function findSeries(collection, iterator) {
   return new FindSeries(collection, iterator)._execute();
 }
 
-},{"./eachSeries":14,"./internal/collection":29,"./internal/util":31}],25:[function(require,module,exports){
+},{"./eachSeries":14,"./internal/collection":35}],31:[function(require,module,exports){
 'use strict';
 
 var ref = require('./each');
 var Each = ref.Each;
-var ref$1 = require('./internal/util');
-var PENDING = ref$1.PENDING;
-var ref$2 = require('./internal/collection');
-var setShorthand = ref$2.setShorthand;
+var ref$1 = require('./internal/collection');
+var setShorthand = ref$1.setShorthand;
 
 var GroupBy = (function (Each) {
   function GroupBy(collection, iterator) {
-    Each.call(this, collection, iterator);
+    Each.call(this, collection, iterator, set);
     this._result = {};
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      set.call(this, collection);
-    }
   }
 
   if ( Each ) GroupBy.__proto__ = Each;
@@ -5792,25 +6188,18 @@ function groupBy(collection, iterator) {
   return  new GroupBy(collection, iterator)._execute();
 }
 
-},{"./each":12,"./internal/collection":29,"./internal/util":31}],26:[function(require,module,exports){
+},{"./each":12,"./internal/collection":35}],32:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachLimit');
 var EachLimit = ref.EachLimit;
-var ref$1 = require('./internal/util');
-var PENDING = ref$1.PENDING;
-var ref$2 = require('./internal/collection');
-var setLimit = ref$2.setLimit;
+var ref$1 = require('./internal/collection');
+var setLimit = ref$1.setLimit;
 
 var GroupByLimit = (function (EachLimit) {
   function GroupByLimit(collection, limit, iterator) {
-    EachLimit.call(this, collection, limit, iterator);
+    EachLimit.call(this, collection, limit, iterator, set);
     this._result = {};
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
-    }
   }
 
   if ( EachLimit ) GroupByLimit.__proto__ = EachLimit;
@@ -5917,25 +6306,18 @@ function groupByLimit(collection, limit, iterator) {
   return new GroupByLimit(collection, limit, iterator)._execute();
 }
 
-},{"./eachLimit":13,"./internal/collection":29,"./internal/util":31}],27:[function(require,module,exports){
+},{"./eachLimit":13,"./internal/collection":35}],33:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachSeries');
 var EachSeries = ref.EachSeries;
-var ref$1 = require('./internal/util');
-var PENDING = ref$1.PENDING;
-var ref$2 = require('./internal/collection');
-var setSeries = ref$2.setSeries;
+var ref$1 = require('./internal/collection');
+var setSeries = ref$1.setSeries;
 
 var GroupBySeries = (function (EachSeries) {
   function GroupBySeries(collection, iterator) {
-    EachSeries.call(this, collection, iterator);
+    EachSeries.call(this, collection, iterator, set);
     this._result = {};
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
-    }
   }
 
   if ( EachSeries ) GroupBySeries.__proto__ = EachSeries;
@@ -6019,7 +6401,7 @@ function groupBySeries(collection, iterator) {
   return new GroupBySeries(collection, iterator)._execute();
 }
 
-},{"./eachSeries":14,"./internal/collection":29,"./internal/util":31}],28:[function(require,module,exports){
+},{"./eachSeries":14,"./internal/collection":35}],34:[function(require,module,exports){
 'use strict';
 
 var queue = Array(8);
@@ -6057,7 +6439,7 @@ function invoke(promise) {
 
 module.exports = invoke;
 
-},{}],29:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 'use strict';
 
 var ref = require('./util');
@@ -6325,7 +6707,7 @@ function iterateObjectWithObject() {
   }
 }
 
-},{"./util":31}],30:[function(require,module,exports){
+},{"./util":37}],36:[function(require,module,exports){
 'use strict';
 
 var Queue = function Queue(size) {
@@ -6341,7 +6723,7 @@ Queue.prototype.push = function push (task) {
 
 module.exports = Queue;
 
-},{}],31:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -6370,6 +6752,7 @@ module.exports = {
   promiseArrayEach: promiseArrayEach,
   promiseObjectEach: promiseObjectEach,
   compactArray: compactArray,
+  concatArray: concatArray,
   clone: clone,
   sort: sort
 };
@@ -6595,6 +6978,21 @@ function compactArray(array) {
   return result;
 }
 
+function concatArray(array) {
+  var i = -1;
+  var l = array.length;
+  var result = [];
+  while (++i < l) {
+    var value = array[i];
+    if (Array.isArray(value)) {
+      result.push.apply(result, value);
+    } else if (value !== undefined) {
+      result.push(value);
+    }
+  }
+  return result;
+}
+
 function clone(target) {
   return Array.isArray(target) ? cloneArray(target) : cloneObject(target);
 }
@@ -6632,7 +7030,7 @@ function sort(array) {
   return array;
 }
 
-},{"../../package.json":74,"aigle-core":71}],32:[function(require,module,exports){
+},{"../../package.json":80,"aigle-core":77}],38:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -6766,24 +7164,17 @@ function spread(proxy, array) {
   callProxyReciever(apply(_handler, array), proxy, INTERNAL);
 }
 
-},{"./aigle":2,"./internal/util":31,"aigle-core":71}],33:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":37,"aigle-core":77}],39:[function(require,module,exports){
 'use strict';
 
 var ref = require('./each');
 var Each = ref.Each;
-var ref$1 = require('./internal/util');
-var PENDING = ref$1.PENDING;
-var ref$2 = require('./internal/collection');
-var setShorthand = ref$2.setShorthand;
+var ref$1 = require('./internal/collection');
+var setShorthand = ref$1.setShorthand;
 
 var Map = (function (Each) {
   function Map(collection, iterator) {
-    Each.call(this, collection, iterator);
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      set.call(this, collection);
-    }
+    Each.call(this, collection, iterator, set);
   }
 
   if ( Each ) Map.__proto__ = Each;
@@ -6809,6 +7200,11 @@ function set(collection) {
 }
 
 /**
+ * `Aigle.map` has almost the same functionality as `Array#map`.
+ * It iterates all elements of `collection` and executes `iterator` using each element on parallel.
+ * The `iterator` needs to return a promise or something.
+ * Then the result will be assigned to an array and the array order will be ensured.
+ * All of them are finished, the function will return an array as a result.
  * @param {Array|Object} collection
  * @param {Function|string} iterator
  * @return {Aigle} Returns an Aigle instance
@@ -6859,24 +7255,17 @@ function map(collection, iterator) {
   return new Map(collection, iterator)._execute();
 }
 
-},{"./each":12,"./internal/collection":29,"./internal/util":31}],34:[function(require,module,exports){
+},{"./each":12,"./internal/collection":35}],40:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachLimit');
 var EachLimit = ref.EachLimit;
-var ref$1 = require('./internal/util');
-var PENDING = ref$1.PENDING;
-var ref$2 = require('./internal/collection');
-var setLimit = ref$2.setLimit;
+var ref$1 = require('./internal/collection');
+var setLimit = ref$1.setLimit;
 
 var MapLimit = (function (EachLimit) {
   function MapLimit(collection, limit, iterator) {
-    EachLimit.call(this, collection, limit, iterator);
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      this._result = Array(this._rest);
-    }
+    EachLimit.call(this, collection, limit, iterator, set);
   }
 
   if ( EachLimit ) MapLimit.__proto__ = EachLimit;
@@ -6905,6 +7294,8 @@ function set(collection) {
 
 
 /**
+ * `Aigle.mapLimit` is almost the as [`Aigle.map`](https://suguru03.github.io/aigle/docs/Aigle.html#map) and
+ * [`Aigle.mapSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#mapSeries), but it will work with concurrency.
  * @param {Array|Object} collection
  * @param {integer} [limit=8]
  * @param {Function} iterator
@@ -6962,24 +7353,17 @@ function mapLimit(collection, limit, iterator) {
 }
 
 
-},{"./eachLimit":13,"./internal/collection":29,"./internal/util":31}],35:[function(require,module,exports){
+},{"./eachLimit":13,"./internal/collection":35}],41:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachSeries');
 var EachSeries = ref.EachSeries;
-var ref$1 = require('./internal/util');
-var PENDING = ref$1.PENDING;
-var ref$2 = require('./internal/collection');
-var setSeries = ref$2.setSeries;
+var ref$1 = require('./internal/collection');
+var setSeries = ref$1.setSeries;
 
 var MapSeries = (function (EachSeries) {
   function MapSeries(collection, iterator) {
-    EachSeries.call(this, collection, iterator);
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      this._result = Array(this._rest);
-    }
+    EachSeries.call(this, collection, iterator, set);
   }
 
   if ( EachSeries ) MapSeries.__proto__ = EachSeries;
@@ -7007,6 +7391,7 @@ function set(collection) {
 }
 
 /**
+ * `Aigle.mapSeries` is almost the as [`Aigle.map`](https://suguru03.github.io/aigle/docs/Aigle.html#map), but it will work in series.
  * @param {Array|Object} collection
  * @param {Function} iterator
  * @return {Aigle} Returns an Aigle instance
@@ -7046,25 +7431,18 @@ function mapSeries(collection, iterator) {
   return new MapSeries(collection, iterator)._execute();
 }
 
-},{"./eachSeries":14,"./internal/collection":29,"./internal/util":31}],36:[function(require,module,exports){
+},{"./eachSeries":14,"./internal/collection":35}],42:[function(require,module,exports){
 'use strict';
 
 var ref = require('./each');
 var Each = ref.Each;
-var ref$1 = require('./internal/util');
-var PENDING = ref$1.PENDING;
-var ref$2 = require('./internal/collection');
-var setShorthand = ref$2.setShorthand;
+var ref$1 = require('./internal/collection');
+var setShorthand = ref$1.setShorthand;
 
 var MapValues = (function (Each) {
   function MapValues(collection, iterator) {
-    Each.call(this, collection, iterator);
+    Each.call(this, collection, iterator, set);
     this._result = {};
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      set.call(this, collection);
-    }
   }
 
   if ( Each ) MapValues.__proto__ = Each;
@@ -7145,25 +7523,18 @@ function mapValues(collection, iterator) {
   return new MapValues(collection, iterator)._execute();
 }
 
-},{"./each":12,"./internal/collection":29,"./internal/util":31}],37:[function(require,module,exports){
+},{"./each":12,"./internal/collection":35}],43:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachLimit');
 var EachLimit = ref.EachLimit;
-var ref$1 = require('./internal/util');
-var PENDING = ref$1.PENDING;
-var ref$2 = require('./internal/collection');
-var setLimit = ref$2.setLimit;
+var ref$1 = require('./internal/collection');
+var setLimit = ref$1.setLimit;
 
 var MapValuesLimit = (function (EachLimit) {
   function MapValuesLimit(collection, limit, iterator) {
-    EachLimit.call(this, collection, limit, iterator);
+    EachLimit.call(this, collection, limit, iterator, set);
     this._result = {};
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
-    }
   }
 
   if ( EachLimit ) MapValuesLimit.__proto__ = EachLimit;
@@ -7256,25 +7627,18 @@ function mapValuesLimit(collection, limit, iterator) {
   return new MapValuesLimit(collection, limit, iterator)._execute();
 }
 
-},{"./eachLimit":13,"./internal/collection":29,"./internal/util":31}],38:[function(require,module,exports){
+},{"./eachLimit":13,"./internal/collection":35}],44:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachSeries');
 var EachSeries = ref.EachSeries;
-var ref$1 = require('./internal/util');
-var PENDING = ref$1.PENDING;
-var ref$2 = require('./internal/collection');
-var setSeries = ref$2.setSeries;
+var ref$1 = require('./internal/collection');
+var setSeries = ref$1.setSeries;
 
 var MapValuesSeries = (function (EachSeries) {
   function MapValuesSeries(collection, iterator) {
-    EachSeries.call(this, collection, iterator);
+    EachSeries.call(this, collection, iterator, set);
     this._result = {};
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
-    }
   }
 
   if ( EachSeries ) MapValuesSeries.__proto__ = EachSeries;
@@ -7350,25 +7714,18 @@ function mapValuesSeries(collection, iterator) {
   return new MapValuesSeries(collection, iterator)._execute();
 }
 
-},{"./eachSeries":14,"./internal/collection":29,"./internal/util":31}],39:[function(require,module,exports){
+},{"./eachSeries":14,"./internal/collection":35}],45:[function(require,module,exports){
 'use strict';
 
 var ref = require('./each');
 var Each = ref.Each;
-var ref$1 = require('./internal/util');
-var PENDING = ref$1.PENDING;
-var ref$2 = require('./internal/collection');
-var setShorthand = ref$2.setShorthand;
+var ref$1 = require('./internal/collection');
+var setShorthand = ref$1.setShorthand;
 
 var Omit = (function (Each) {
   function Omit(collection, iterator) {
-    Each.call(this, collection, iterator);
+    Each.call(this, collection, iterator, set);
     this._result = {};
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      set.call(this, collection);
-    }
   }
 
   if ( Each ) Omit.__proto__ = Each;
@@ -7481,25 +7838,18 @@ function omit(collection, iterator) {
   return new Omit(collection, iterator)._execute();
 }
 
-},{"./each":12,"./internal/collection":29,"./internal/util":31}],40:[function(require,module,exports){
+},{"./each":12,"./internal/collection":35}],46:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachLimit');
 var EachLimit = ref.EachLimit;
-var ref$1 = require('./internal/util');
-var PENDING = ref$1.PENDING;
-var ref$2 = require('./internal/collection');
-var setLimit = ref$2.setLimit;
+var ref$1 = require('./internal/collection');
+var setLimit = ref$1.setLimit;
 
 var OmitLimit = (function (EachLimit) {
   function OmitLimit(collection, limit, iterator) {
-    EachLimit.call(this, collection, limit, iterator);
+    EachLimit.call(this, collection, limit, iterator, set);
     this._result = {};
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
-    }
   }
 
   if ( EachLimit ) OmitLimit.__proto__ = EachLimit;
@@ -7597,7 +7947,7 @@ function omitLimit(collection, limit, iterator) {
   return new OmitLimit(collection, limit, iterator)._execute();
 }
 
-},{"./eachLimit":13,"./internal/collection":29,"./internal/util":31}],41:[function(require,module,exports){
+},{"./eachLimit":13,"./internal/collection":35}],47:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachSeries');
@@ -7696,7 +8046,7 @@ function omitSeries(collection, iterator) {
   return new OmitSeries(collection, iterator)._execute();
 }
 
-},{"./eachSeries":14,"./internal/collection":29,"./internal/util":31}],42:[function(require,module,exports){
+},{"./eachSeries":14,"./internal/collection":35,"./internal/util":37}],48:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -7828,25 +8178,18 @@ function parallel(collection) {
   return new Parallel(collection)._execute();
 }
 
-},{"./aigle":2,"./internal/util":31,"aigle-core":71}],43:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":37,"aigle-core":77}],49:[function(require,module,exports){
 'use strict';
 
 var ref = require('./each');
 var Each = ref.Each;
-var ref$1 = require('./internal/util');
-var PENDING = ref$1.PENDING;
-var ref$2 = require('./internal/collection');
-var setShorthand = ref$2.setShorthand;
+var ref$1 = require('./internal/collection');
+var setShorthand = ref$1.setShorthand;
 
 var Pick = (function (Each) {
   function Pick(collection, iterator) {
-    Each.call(this, collection, iterator);
+    Each.call(this, collection, iterator, set);
     this._result = {};
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      set.call(this, collection);
-    }
   }
 
   if ( Each ) Pick.__proto__ = Each;
@@ -7959,25 +8302,18 @@ function pick(collection, iterator) {
   return new Pick(collection, iterator)._execute();
 }
 
-},{"./each":12,"./internal/collection":29,"./internal/util":31}],44:[function(require,module,exports){
+},{"./each":12,"./internal/collection":35}],50:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachLimit');
 var EachLimit = ref.EachLimit;
-var ref$1 = require('./internal/util');
-var PENDING = ref$1.PENDING;
-var ref$2 = require('./internal/collection');
-var setLimit = ref$2.setLimit;
+var ref$1 = require('./internal/collection');
+var setLimit = ref$1.setLimit;
 
 var PickLimit = (function (EachLimit) {
   function PickLimit(collection, limit, iterator) {
-    EachLimit.call(this, collection, limit, iterator);
+    EachLimit.call(this, collection, limit, iterator, set);
     this._result = {};
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
-    }
   }
 
   if ( EachLimit ) PickLimit.__proto__ = EachLimit;
@@ -8075,25 +8411,18 @@ function pickLimit(collection, limit, iterator) {
   return new PickLimit(collection, limit, iterator)._execute();
 }
 
-},{"./eachLimit":13,"./internal/collection":29,"./internal/util":31}],45:[function(require,module,exports){
+},{"./eachLimit":13,"./internal/collection":35}],51:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachSeries');
 var EachSeries = ref.EachSeries;
-var ref$1 = require('./internal/util');
-var PENDING = ref$1.PENDING;
-var ref$2 = require('./internal/collection');
-var setSeries = ref$2.setSeries;
+var ref$1 = require('./internal/collection');
+var setSeries = ref$1.setSeries;
 
 var PickSeries = (function (EachSeries) {
   function PickSeries(collection, iterator) {
-    EachSeries.call(this, collection, iterator);
+    EachSeries.call(this, collection, iterator, set);
     this._result = {};
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
-    }
   }
 
   if ( EachSeries ) PickSeries.__proto__ = EachSeries;
@@ -8174,7 +8503,7 @@ function pickSeries(collection, iterator) {
   return new PickSeries(collection, iterator)._execute();
 }
 
-},{"./eachSeries":14,"./internal/collection":29,"./internal/util":31}],46:[function(require,module,exports){
+},{"./eachSeries":14,"./internal/collection":35}],52:[function(require,module,exports){
 'use strict';
 
 var ref = require('./aigle');
@@ -8303,7 +8632,7 @@ function makeFunction(fn, ctx) {
   }
 }
 
-},{"./aigle":2,"./internal/util":31}],47:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":37}],53:[function(require,module,exports){
 'use strict';
 
 var promisify = require('./promisify');
@@ -8397,7 +8726,7 @@ function iterate(suffix, filter, obj, target, depth, memo) {
   }
 }
 
-},{"./promisify":46}],48:[function(require,module,exports){
+},{"./promisify":52}],54:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -8496,7 +8825,7 @@ function props(object) {
   return new Props(object)._execute();
 }
 
-},{"./aigle":2,"./internal/util":31,"aigle-core":71}],49:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":37,"aigle-core":77}],55:[function(require,module,exports){
 'use strict';
 
 var ref = require('./parallel');
@@ -8543,7 +8872,7 @@ function race(collection) {
   return new Race(collection)._execute();
 }
 
-},{"./parallel":42}],50:[function(require,module,exports){
+},{"./parallel":48}],56:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -8671,7 +9000,7 @@ function reduce(collection, iterator, result) {
   return new Reduce(collection, iterator, result)._execute();
 }
 
-},{"./aigle":2,"./internal/collection":29,"./internal/util":31,"aigle-core":71}],51:[function(require,module,exports){
+},{"./aigle":2,"./internal/collection":35,"./internal/util":37,"aigle-core":77}],57:[function(require,module,exports){
 'use strict';
 
 var ref = require('./each');
@@ -8680,17 +9009,11 @@ var ref$1 = require('./internal/collection');
 var setShorthand = ref$1.setShorthand;
 var ref$2 = require('./internal/util');
 var INTERNAL = ref$2.INTERNAL;
-var PENDING = ref$2.PENDING;
 var compactArray = ref$2.compactArray;
 
 var Reject = (function (Each) {
   function Reject(collection, iterator) {
-    Each.call(this, collection, iterator);
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      set.call(this, collection);
-    }
+    Each.call(this, collection, iterator, set);
   }
 
   if ( Each ) Reject.__proto__ = Each;
@@ -8811,7 +9134,7 @@ function reject(collection, iterator) {
   return new Reject(collection, iterator)._execute();
 }
 
-},{"./each":12,"./internal/collection":29,"./internal/util":31}],52:[function(require,module,exports){
+},{"./each":12,"./internal/collection":35,"./internal/util":37}],58:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachLimit');
@@ -8820,18 +9143,11 @@ var ref$1 = require('./internal/collection');
 var setLimit = ref$1.setLimit;
 var ref$2 = require('./internal/util');
 var INTERNAL = ref$2.INTERNAL;
-var PENDING = ref$2.PENDING;
 var compactArray = ref$2.compactArray;
 
 var RejectLimit = (function (EachLimit) {
   function RejectLimit(collection, limit, iterator) {
-    EachLimit.call(this, collection, limit, iterator);
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      this._result = Array(this._rest);
-      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
-    }
+    EachLimit.call(this, collection, limit, iterator, set);
   }
 
   if ( EachLimit ) RejectLimit.__proto__ = EachLimit;
@@ -8925,7 +9241,7 @@ function rejectLimit(collection, limit, iterator) {
   return new RejectLimit(collection, limit, iterator)._execute();
 }
 
-},{"./eachLimit":13,"./internal/collection":29,"./internal/util":31}],53:[function(require,module,exports){
+},{"./eachLimit":13,"./internal/collection":35,"./internal/util":37}],59:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachSeries');
@@ -8934,18 +9250,11 @@ var ref$1 = require('./internal/collection');
 var setSeries = ref$1.setSeries;
 var ref$2 = require('./internal/util');
 var INTERNAL = ref$2.INTERNAL;
-var PENDING = ref$2.PENDING;
 var compactArray = ref$2.compactArray;
 
 var RejectSeries = (function (EachSeries) {
   function RejectSeries(collection, iterator) {
-    EachSeries.call(this, collection, iterator);
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      this._result = Array(this._rest);
-      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
-    }
+    EachSeries.call(this, collection, iterator, set);
   }
 
   if ( EachSeries ) RejectSeries.__proto__ = EachSeries;
@@ -9022,7 +9331,7 @@ function rejectSeries(collection, iterator) {
   return new RejectSeries(collection, iterator)._execute();
 }
 
-},{"./eachSeries":14,"./internal/collection":29,"./internal/util":31}],54:[function(require,module,exports){
+},{"./eachSeries":14,"./internal/collection":35,"./internal/util":37}],60:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -9104,25 +9413,18 @@ function retry(times, handler) {
   return new Retry(handler, times)._promise;
 }
 
-},{"./aigle":2,"./internal/util":31,"aigle-core":71}],55:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":37,"aigle-core":77}],61:[function(require,module,exports){
 'use strict';
 
 var ref = require('./each');
 var Each = ref.Each;
-var ref$1 = require('./internal/util');
-var PENDING = ref$1.PENDING;
-var ref$2 = require('./internal/collection');
-var setShorthand = ref$2.setShorthand;
+var ref$1 = require('./internal/collection');
+var setShorthand = ref$1.setShorthand;
 
 var Some = (function (Each) {
   function Some(collection, iterator) {
-    Each.call(this, collection, iterator);
+    Each.call(this, collection, iterator, setShorthand);
     this._result = false;
-    if (collection === PENDING) {
-      this._set = setShorthand;
-    } else {
-      setShorthand.call(this, collection);
-    }
   }
 
   if ( Each ) Some.__proto__ = Each;
@@ -9231,7 +9533,7 @@ function some(collection, iterator) {
   return new Some(collection, iterator)._execute();
 }
 
-},{"./each":12,"./internal/collection":29,"./internal/util":31}],56:[function(require,module,exports){
+},{"./each":12,"./internal/collection":35}],62:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachLimit');
@@ -9319,7 +9621,7 @@ function someLimit(collection, limit, iterator) {
   return new SomeLimit(collection, limit, iterator)._execute();
 }
 
-},{"./eachLimit":13}],57:[function(require,module,exports){
+},{"./eachLimit":13}],63:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachSeries.js');
@@ -9406,25 +9708,19 @@ function someSeries(collection, iterator) {
   return new SomeSeries(collection, iterator)._execute();
 }
 
-},{"./eachSeries.js":14}],58:[function(require,module,exports){
+},{"./eachSeries.js":14}],64:[function(require,module,exports){
 'use strict';
 
 var ref = require('./each');
 var Each = ref.Each;
 var ref$1 = require('./internal/util');
-var PENDING = ref$1.PENDING;
 var sort = ref$1.sort;
 var ref$2 = require('./internal/collection');
 var setShorthand = ref$2.setShorthand;
 
 var SortBy = (function (Each) {
   function SortBy(collection, iterator) {
-    Each.call(this, collection, iterator);
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      set.call(this, collection);
-    }
+    Each.call(this, collection, iterator, set);
   }
 
   if ( Each ) SortBy.__proto__ = Each;
@@ -9509,26 +9805,19 @@ function sortBy(collection, iterator) {
   return new SortBy(collection, iterator)._execute();
 }
 
-},{"./each":12,"./internal/collection":29,"./internal/util":31}],59:[function(require,module,exports){
+},{"./each":12,"./internal/collection":35,"./internal/util":37}],65:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachLimit');
 var EachLimit = ref.EachLimit;
 var ref$1 = require('./internal/util');
-var PENDING = ref$1.PENDING;
 var sort = ref$1.sort;
 var ref$2 = require('./internal/collection');
 var setLimit = ref$2.setLimit;
 
 var SortByLimit = (function (EachLimit) {
   function SortByLimit(collection, limit, iterator) {
-    EachLimit.call(this, collection, limit, iterator);
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      this._result = Array(this._rest);
-      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
-    }
+    EachLimit.call(this, collection, limit, iterator, set);
   }
 
   if ( EachLimit ) SortByLimit.__proto__ = EachLimit;
@@ -9622,26 +9911,19 @@ function sortByLimit(collection, limit, iterator) {
   return new SortByLimit(collection, limit, iterator)._execute();
 }
 
-},{"./eachLimit":13,"./internal/collection":29,"./internal/util":31}],60:[function(require,module,exports){
+},{"./eachLimit":13,"./internal/collection":35,"./internal/util":37}],66:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachSeries');
 var EachSeries = ref.EachSeries;
 var ref$1 = require('./internal/util');
-var PENDING = ref$1.PENDING;
 var sort = ref$1.sort;
 var ref$2 = require('./internal/collection');
 var setSeries = ref$2.setSeries;
 
 var SortBySeries = (function (EachSeries) {
   function SortBySeries(collection, iterator) {
-    EachSeries.call(this, collection, iterator);
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      this._result = Array(this._rest);
-      this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
-    }
+    EachSeries.call(this, collection, iterator, set);
   }
 
   if ( EachSeries ) SortBySeries.__proto__ = EachSeries;
@@ -9718,7 +10000,7 @@ function sortBySeries(collection, iterator) {
   return new SortBySeries(collection, iterator)._execute();
 }
 
-},{"./eachSeries":14,"./internal/collection":29,"./internal/util":31}],61:[function(require,module,exports){
+},{"./eachSeries":14,"./internal/collection":35,"./internal/util":37}],67:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -9765,7 +10047,7 @@ var Timeout = (function (AigleProxy) {
 
 module.exports = Timeout;
 
-},{"./aigle":2,"./error":15,"./internal/util":31,"aigle-core":71}],62:[function(require,module,exports){
+},{"./aigle":2,"./error":15,"./internal/util":37,"aigle-core":77}],68:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -9869,7 +10151,7 @@ function times(times, iterator) {
   return new Times(times, iterator)._execute();
 }
 
-},{"./aigle":2,"./internal/util":31,"aigle-core":71}],63:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":37,"aigle-core":77}],69:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -10011,7 +10293,7 @@ function timesLimit(times, limit, iterator) {
   return new TimesLimit(times, limit, iterator)._execute();
 }
 
-},{"./aigle":2,"./internal/util":31,"aigle-core":71}],64:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":37,"aigle-core":77}],70:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -10105,7 +10387,7 @@ function timesSeries(times, iterator) {
   return new TimesSeries(times, iterator)._execute();
 }
 
-},{"./aigle":2,"./internal/util":31,"./times":62,"aigle-core":71}],65:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":37,"./times":68,"aigle-core":77}],71:[function(require,module,exports){
 'use strict';
 
 var ref = require('./each');
@@ -10113,21 +10395,15 @@ var Each = ref.Each;
 var ref$1 = require('./internal/collection');
 var setParallel = ref$1.setParallel;
 var ref$2 = require('./internal/util');
-var PENDING = ref$2.PENDING;
 var call3 = ref$2.call3;
 var callProxyReciever = ref$2.callProxyReciever;
 var clone = ref$2.clone;
 
 var Transform = (function (Each) {
   function Transform(collection, iterator, accumulator) {
-    Each.call(this, collection, iterator);
+    Each.call(this, collection, iterator, set);
     if (accumulator !== undefined) {
       this._result = accumulator;
-    }
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      set.call(this, collection);
     }
   }
 
@@ -10250,7 +10526,7 @@ function transform(collection, iterator, accumulator) {
   return new Transform(collection, iterator, accumulator)._execute();
 }
 
-},{"./each":12,"./internal/collection":29,"./internal/util":31}],66:[function(require,module,exports){
+},{"./each":12,"./internal/collection":35,"./internal/util":37}],72:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachLimit');
@@ -10259,7 +10535,6 @@ var ref$1 = require('./internal/collection');
 var setLimit = ref$1.setLimit;
 var ref$2 = require('./internal/util');
 var DEFAULT_LIMIT = ref$2.DEFAULT_LIMIT;
-var PENDING = ref$2.PENDING;
 var call3 = ref$2.call3;
 var callProxyReciever = ref$2.callProxyReciever;
 var clone = ref$2.clone;
@@ -10271,14 +10546,9 @@ var TransformLimit = (function (EachLimit) {
       iterator = limit;
       limit = DEFAULT_LIMIT;
     }
-    EachLimit.call(this, collection, limit, iterator);
+    EachLimit.call(this, collection, limit, iterator, set);
     if (accumulator !== undefined) {
       this._result = accumulator;
-    }
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      set.call(this, collection);
     }
   }
 
@@ -10403,7 +10673,7 @@ function transformLimit(collection, limit, iterator, accumulator) {
   return new TransformLimit(collection, limit, iterator, accumulator)._execute();
 }
 
-},{"./eachLimit":13,"./internal/collection":29,"./internal/util":31}],67:[function(require,module,exports){
+},{"./eachLimit":13,"./internal/collection":35,"./internal/util":37}],73:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachSeries');
@@ -10411,21 +10681,15 @@ var EachSeries = ref.EachSeries;
 var ref$1 = require('./internal/collection');
 var setSeries = ref$1.setSeries;
 var ref$2 = require('./internal/util');
-var PENDING = ref$2.PENDING;
 var call3 = ref$2.call3;
 var callProxyReciever = ref$2.callProxyReciever;
 var clone = ref$2.clone;
 
 var TransformSeries = (function (EachSeries) {
   function TransformSeries(collection, iterator, accumulator) {
-    EachSeries.call(this, collection, iterator);
+    EachSeries.call(this, collection, iterator, set);
     if (accumulator !== undefined) {
       this._result = accumulator;
-    }
-    if (collection === PENDING) {
-      this._set = set;
-    } else {
-      set.call(this, collection);
     }
   }
 
@@ -10533,7 +10797,7 @@ function transformSeries(collection, iterator, accumulator) {
   return new TransformSeries(collection, iterator, accumulator)._execute();
 }
 
-},{"./eachSeries":14,"./internal/collection":29,"./internal/util":31}],68:[function(require,module,exports){
+},{"./eachSeries":14,"./internal/collection":35,"./internal/util":37}],74:[function(require,module,exports){
 'use strict';
 
 var ref = require('./whilst');
@@ -10576,7 +10840,7 @@ function until(value, tester, iterator) {
   return new AigleWhilst(new UntilTester(tester), iterator)._iterate(value);
 }
 
-},{"./whilst":70}],69:[function(require,module,exports){
+},{"./whilst":76}],75:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -10709,7 +10973,7 @@ function using() {
   return new Using(array, handler)._promise;
 }
 
-},{"./aigle":2,"./internal/util":31,"aigle-core":71}],70:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":37,"aigle-core":77}],76:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -10802,7 +11066,7 @@ function whilst(value, tester, iterator) {
   return new AigleWhilst(new WhilstTester(tester), iterator)._iterate(value);
 }
 
-},{"./aigle":2,"./internal/util":31,"aigle-core":71}],71:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":37,"aigle-core":77}],77:[function(require,module,exports){
 'use strict';
 
 var AigleCore = function AigleCore() {};
@@ -10811,7 +11075,7 @@ var AigleProxy = function AigleProxy() {};
 
 module.exports = { AigleCore: AigleCore, AigleProxy: AigleProxy };
 
-},{}],72:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -10999,7 +11263,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],73:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 (function (process,global){
 (function (global, undefined) {
     "use strict";
@@ -11191,14 +11455,15 @@ process.umask = function() { return 0; };
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":72}],74:[function(require,module,exports){
+},{"_process":78}],80:[function(require,module,exports){
 module.exports={
   "name": "aigle",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "browser": "browser.js",
   "scripts": {
+    "bench": "node --expose_gc ./benchmark -d",
     "test": "DELAY=50 istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- -R spec ./test --recursive && codecov"
   },
   "keywords": [
@@ -11216,7 +11481,7 @@ module.exports={
   "author": "Suguru Motegi",
   "license": "MIT",
   "devDependencies": {
-    "babili": "0.1.2",
+    "babili": "0.1.4",
     "benchmark": "^2.1.1",
     "bluebird": "^3.5.0",
     "browserify": "^14.1.0",

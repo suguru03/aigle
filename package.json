@@ -1,6 +1,6 @@
 {
   "name": "aigle",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "browser": "browser.js",
