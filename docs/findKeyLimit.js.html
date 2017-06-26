@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>retry.js - Documentation</title>
+    <title>findKeyLimit.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,7 +27,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">retry.js</h1>
+    <h1 class="page-title">findKeyLimit.js</h1>
     
 
     
@@ -39,74 +39,54 @@
         <article>
             <pre class="prettyprint source linenums"><code>'use strict';
 
-const { AigleProxy } = require('aigle-core');
-const { Aigle } = require('./aigle');
-const { INTERNAL, call0, callProxyReciever } = require('./internal/util');
-const DEFAULT_RETRY = 5;
+const { EachLimit } = require('./eachLimit');
+const { setLimit } = require('./internal/collection');
 
-class Retry extends AigleProxy {
+class FindKeyLimit extends EachLimit {
 
-  constructor(handler, times) {
-    super();
-    this._promise = new Aigle(INTERNAL);
-    this._rest = times;
-    this._handler = handler;
-    this._iterate();
+  constructor(collection, limit, iterator) {
+    super(collection, limit, iterator, set);
   }
-
-  _iterate() {
-    callProxyReciever(call0(this._handler), this, undefined);
-  }
-
-  _callResolve(value) {
-    this._promise._resolve(value);
-  }
-
-  _callReject(reason) {
-    if (--this._rest === 0) {
-      this._promise._reject(reason);
-    } else {
-      this._iterate();
-    }
-  }
-
 }
 
-module.exports = retry;
+module.exports = { findKeyLimit, FindKeyLimit };
+
+function set(collection) {
+  setLimit.call(this, collection);
+  this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+  return this;
+}
+
+function callResolveArray(value, index) {
+  if (value) {
+    this._callRest = 0;
+    this._promise._resolve(`${index}`);
+  } else if (--this._rest === 0) {
+    this._promise._resolve();
+  } else if (this._callRest-- > 0) {
+    this._iterate();
+  }
+}
+
+function callResolveObject(value, index) {
+  if (value) {
+    this._callRest = 0;
+    this._promise._resolve(this._keys[index]);
+  } else if (--this._rest === 0) {
+    this._promise._resolve();
+  } else if (this._callRest-- > 0) {
+    this._iterate();
+  }
+}
 
 /**
- * @param {Integer} [times=5]
- * @param {Function} handler
- * @example
- * let called = 0;
- * Aigle.retry(3, () => {
- *   return new Aigle((resolve, reject) => {
- *     setTimeout(() => reject(++called), 10);
- *   });
- * })
- * .catch(error => {
- *   console.log(error); // 3
- *   console.log(called); // 3
- * });
- *
- * @example
- * let called = 0;
- * Aigle.retry(() => {
- *   return new Aigle((resolve, reject) => {
- *     setTimeout(() => reject(++called), 10);
- *   });
- * })
- * .catch(error => {
- *   console.log(error); // 5
- *   console.log(called); // 5
- * });
+ * @param {Array|Object} collection
+ * @param {integer} [limit=8]
+ * @param {Function} iterator
+ * @return {Aigle} Returns an Aigle instance
  */
-function retry(times, handler) {
-  if (typeof times === 'function') {
-    handler = times;
-    times = DEFAULT_RETRY;
-  }
-  return new Retry(handler, times)._promise;
+function findKeyLimit(collection, limit, iterator) {
+  return new FindKeyLimit(collection, limit, iterator)._execute();
 }
 </code></pre>
         </article>

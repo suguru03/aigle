@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>retry.js - Documentation</title>
+    <title>findIndex.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,7 +27,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">retry.js</h1>
+    <h1 class="page-title">findIndex.js</h1>
     
 
     
@@ -39,74 +39,43 @@
         <article>
             <pre class="prettyprint source linenums"><code>'use strict';
 
-const { AigleProxy } = require('aigle-core');
-const { Aigle } = require('./aigle');
-const { INTERNAL, call0, callProxyReciever } = require('./internal/util');
-const DEFAULT_RETRY = 5;
+const { Each } = require('./each');
+const { setShorthand } = require('./internal/collection');
 
-class Retry extends AigleProxy {
+class FindIndex extends Each {
 
-  constructor(handler, times) {
-    super();
-    this._promise = new Aigle(INTERNAL);
-    this._rest = times;
-    this._handler = handler;
-    this._iterate();
+  constructor(collection, iterator) {
+    super(collection, iterator, set);
+    this._result = -1;
   }
 
-  _iterate() {
-    callProxyReciever(call0(this._handler), this, undefined);
-  }
-
-  _callResolve(value) {
-    this._promise._resolve(value);
-  }
-
-  _callReject(reason) {
-    if (--this._rest === 0) {
-      this._promise._reject(reason);
-    } else {
-      this._iterate();
+  _callResolve(value, index) {
+    if (value) {
+      this._size = 0;
+      this._promise._resolve(index);
+    } else if (--this._rest === 0) {
+      this._promise._resolve(-1);
     }
   }
-
 }
 
-module.exports = retry;
+module.exports = { findIndex, FindIndex };
+
+function set(collection) {
+  setShorthand.call(this, collection);
+  if (this._keys !== undefined) {
+    this._rest = 0;
+  }
+  return this;
+}
 
 /**
- * @param {Integer} [times=5]
- * @param {Function} handler
- * @example
- * let called = 0;
- * Aigle.retry(3, () => {
- *   return new Aigle((resolve, reject) => {
- *     setTimeout(() => reject(++called), 10);
- *   });
- * })
- * .catch(error => {
- *   console.log(error); // 3
- *   console.log(called); // 3
- * });
- *
- * @example
- * let called = 0;
- * Aigle.retry(() => {
- *   return new Aigle((resolve, reject) => {
- *     setTimeout(() => reject(++called), 10);
- *   });
- * })
- * .catch(error => {
- *   console.log(error); // 5
- *   console.log(called); // 5
- * });
+ * @param {Array|Object} collection
+ * @param {Function|Array|Object|string} iterator
+ * @return {Aigle} Returns an Aigle instance
  */
-function retry(times, handler) {
-  if (typeof times === 'function') {
-    handler = times;
-    times = DEFAULT_RETRY;
-  }
-  return new Retry(handler, times)._promise;
+function findIndex(collection, iterator) {
+  return new FindIndex(collection, iterator)._execute();
 }
 </code></pre>
         </article>
