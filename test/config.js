@@ -2,4 +2,4 @@
 
 const DELAY = process.env.DELAY || 30;
 
-exports.DELAY = DELAY;
+Object.assign(exports, { DELAY });
