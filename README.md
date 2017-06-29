@@ -237,6 +237,7 @@ Functions
 #### class functions
 
 - [`Promise.delay`](https://suguru03.github.io/aigle/docs/global.html#delay)
+- [`Promise.mixin`](https://suguru03.github.io/aigle/docs/global.html#mixin)
 - [`Promise.promisify`](https://suguru03.github.io/aigle/docs/global.html#promisify)
 - [`Promise.promisifyAll`](https://suguru03.github.io/aigle/docs/global.html#promisifyAll)
 - [`Promise.config`](https://suguru03.github.io/aigle/docs/global.html#config)
