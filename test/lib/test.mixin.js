@@ -60,4 +60,21 @@ parallel('mixin', () => {
       .sortedUniqBy(n => Aigle.delay(DELAY, Math.round(n)))
       .then(array => assert.deepEqual(array, [1.1, 2.3, 2.5]));
   });
+
+  it('should execute with a static function', () => {
+
+    Aigle.mixin({ sum: _.sum }, { override: true });
+    return Aigle.sum([1, 2, 3])
+      .then(value => assert.strictEqual(value, 6));
+  });
+
+  it('should execute with object', () => {
+
+    Aigle.mixin({ countBy: _.countBy }, { override: true });
+    const object = { a: 1.1, b: 1.4, c: 2.2 };
+    return Aigle.delay(DELAY, object)
+      .countBy(n => Aigle.delay(DELAY, Math.floor(n)))
+      .then(object => assert.deepEqual(object, { '1': 2, '2': 1 }));
+  });
+
 });
