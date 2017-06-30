@@ -42,7 +42,7 @@
     "mocha.parallel": "^0.15.0",
     "neo-async": "^2.0.1",
     "require-dir": "^0.3.1",
-    "run-sequence": "^1.2.2",
+    "run-sequence": "^2.0.0",
     "setimmediate": "^1.0.5",
     "uglify-js": "^3.0.0"
   },
