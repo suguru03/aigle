@@ -62,6 +62,16 @@ parallel('times', () => {
       });
   });
 
+  it('should execute with decimal number', () => {
+
+    return Aigle.times(5.5)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
+        assert.strictEqual(res.length, 5);
+        assert.deepEqual(res, [0, 1, 2, 3, 4]);
+      });
+  });
+
   it('should catch a TypeError', () => {
 
     const iterator = n => n();
