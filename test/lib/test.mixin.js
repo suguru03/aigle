@@ -77,4 +77,25 @@ parallel('mixin', () => {
       .then(object => assert.deepEqual(object, { '1': 2, '2': 1 }));
   });
 
+  it('should catch an error', () => {
+
+    const error = new Error('error');
+    Aigle.mixin({ countBy: _.countBy }, { override: true });
+    return Aigle.countBy([0, 1, 2], n => {
+      return n % 2 ? Aigle.delay(DELAY, n) : Aigle.reject(error);
+    })
+    .then(assert.fail)
+    .catch(err => assert.strictEqual(err, error));
+  });
+
+  it('should catch an error', () => {
+
+    const error = new Error('error');
+    Aigle.mixin({ countBy: _.countBy }, { override: true });
+    return Aigle.countBy({ a: 0, b: 1, c: 2 }, n => {
+      return n % 2 ? Aigle.delay(DELAY, n) : Aigle.reject(error);
+    })
+    .then(assert.fail)
+    .catch(err => assert.strictEqual(err, error));
+  });
 });
