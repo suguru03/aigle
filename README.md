@@ -25,7 +25,7 @@ npm install --save aigle
 ```
 
 ```js
-const Promise = require('aigle');
+const Aigle = require('aigle');
 ```
 
 #### Async/Await
@@ -41,6 +41,18 @@ async function getUsers(ids) {
   return await Aigle.map(ids, getUser)
     .filter(filterUser);
 }
+```
+
+#### Convert synchronous functions to asynchronous functions
+
+```js
+Aigle.mixin(require('lodash'));
+
+return Aigle.map([1.1, 1.4, 2.2], n => Aigle.delay(10, n * 2)) // [2.2, 2.8, 4.4]
+  .uniqBy(n => Aigle.delay(10, Math.floor(n))) // [2.2, 4.4]
+  .sum() // 6.6
+  .times() // [0, 1, 2, 3, 4, 5];
+  .then(value => console.log(value)); // [0, 1, 2, 3, 4, 5];
 ```
 
 ### browser
