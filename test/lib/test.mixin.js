@@ -53,7 +53,15 @@ parallel('mixin', () => {
       .then(value => assert.deepEqual(value [2, 4, 6]));
   });
 
-  it('should execute with promisified iterator', () => {
+  it('should execute with a synchronous iterator', () => {
+
+    Aigle.mixin({ sortedUniqBy: _.sortedUniqBy }, { override: true });
+    return Aigle.delay(10, [1.1, 1.4, 2.3, 2.5, 2.7])
+      .sortedUniqBy(Math.round)
+      .then(array => assert.deepEqual(array, [1.1, 2.3, 2.5]));
+  });
+
+  it('should execute with a asynchronous iterator', () => {
 
     Aigle.mixin({ sortedUniqBy: _.sortedUniqBy }, { override: true });
     return Aigle.delay(10, [1.1, 1.4, 2.3, 2.5, 2.7])
@@ -88,7 +96,7 @@ parallel('mixin', () => {
     .catch(err => assert.strictEqual(err, error));
   });
 
-  it('should catch an error', () => {
+  it('should execute with object and catch an error', () => {
 
     const error = new Error('error');
     Aigle.mixin({ countBy: _.countBy }, { override: true });
