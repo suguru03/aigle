@@ -30,6 +30,7 @@
     "buble": "^0.15.2",
     "codecov": "^2.1.0",
     "docdash": "^0.4.0",
+    "fs-extra": "^4.0.1",
     "gulp": "^3.9.1",
     "gulp-bump": "^2.7.0",
     "gulp-git": "^2.0.0",
