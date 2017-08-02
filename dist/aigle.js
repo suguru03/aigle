@@ -163,6 +163,8 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#all` will execute [`Aigle.all`](https://suguru03.github.io/aigle/docs/global.html#all) using a previous promise value.
+   * The value will be assigned as the first argument to [`Aigle.all`](https://suguru03.github.io/aigle/docs/global.html#all).
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -204,6 +206,8 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#props` will execute [`Aigle.props`](https://suguru03.github.io/aigle/docs/global.html#props) using a previous promise value.
+   * The value will be assigned as the first argument to [`Aigle.props`](https://suguru03.github.io/aigle/docs/global.html#props).
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -230,6 +234,8 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#parallel` will execute [`Aigle.parallel`](https://suguru03.github.io/aigle/docs/global.html#parallel) using a previous promise value.
+   * The value will be assigned as the first argument to [`Aigle.parallel`](https://suguru03.github.io/aigle/docs/global.html#parallel).
    * @param {Array|Object} collection - it should be an array of object of Promise instances
    * @example
    * const order = [];
@@ -614,6 +620,9 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#mapValues` will execute [`Aigle.mapValues`](https://suguru03.github.io/aigle/docs/global.html#mapValues) using a previous promise value and a defined iterator.
+   * The value will be assigned as the first argument to [`Aigle.mapValues`](https://suguru03.github.io/aigle/docs/global.html#mapValues) and
+   * the iterator will be assigned as the second argument.
    * @param {Function|string} iterator - if you define string, you can use shorthand which is similar to lodash
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -677,6 +686,7 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#mapValuesSeries` is almost the same as [`Aigle#mapValues`](https://suguru03.github.io/aigle/docs/global.html#mapValues), but it will work in series.
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -718,6 +728,8 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#mapValuesLimit` is almost the same as [`Aigle#mapValues`](https://suguru03.github.io/aigle/docs/global.html#mapValues)
+   * and [`Aigle#mapValuesSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#mapValuesSeries)), but it will work with concurrency.
    * @param {number} [limit=8]
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
@@ -1564,6 +1576,9 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#pick` will execute [`Aigle.pick`](https://suguru03.github.io/aigle/docs/global.html#pick) using a previous promise value and a defined iterator.
+   * The value will be assigned as the first argument to [`Aigle.pick`](https://suguru03.github.io/aigle/docs/global.html#pick) and
+   * the iterator will be assigned as the second argument.
    * @param {Function|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -1644,6 +1659,7 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#pickSeries` is almost the same as [`Aigle#pick`](https://suguru03.github.io/aigle/docs/global.html#pick), but it will work in series.
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -1685,6 +1701,8 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#pickLimit` is almost the same as [`Aigle#pick`](https://suguru03.github.io/aigle/docs/global.html#pick)
+   * and [`Aigle#pickSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#pickSeries)), but it will work with concurrency.
    * @param {number} [limit=8]
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
@@ -1744,6 +1762,9 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#omit` will execute [`Aigle.omit`](https://suguru03.github.io/aigle/docs/global.html#omit) using a previous promise value and a defined iterator.
+   * The value will be assigned as the first argument to [`Aigle.omit`](https://suguru03.github.io/aigle/docs/global.html#omit) and
+   * the iterator will be assigned as the second argument.
    * @param {Function|Array|Object|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -1824,6 +1845,7 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#omitSeries` is almost the same as [`Aigle#omit`](https://suguru03.github.io/aigle/docs/global.html#omit), but it will work in series.
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -1865,6 +1887,8 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#omitLimit` is almost the same as [`Aigle#omit`](https://suguru03.github.io/aigle/docs/global.html#omit)
+   * and [`Aigle#omitSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#omitSeries)), but it will work with concurrency.
    * @param {number} [limit=8]
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
@@ -2304,6 +2328,9 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#some` will execute [`Aigle.some`](https://suguru03.github.io/aigle/docs/global.html#some) using a previous promise value and a defined iterator.
+   * The value will be assigned as the first argument to [`Aigle.some`](https://suguru03.github.io/aigle/docs/global.html#some) and
+   * the iterator will be assigned as the second argument.
    * @param {Function|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -2398,6 +2425,7 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#someSeries` is almost the same as [`Aigle#some`](https://suguru03.github.io/aigle/docs/global.html#some), but it will work in series.
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -2456,6 +2484,8 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#someLimit` is almost the same as [`Aigle#some`](https://suguru03.github.io/aigle/docs/global.html#some)
+   * and [`Aigle#someSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#someSeries)), but it will work with concurrency.
    * @param {number} [limit=8]
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
@@ -3814,6 +3844,8 @@ function execute() {
 }
 
 /**
+ * `Aigle.all` is almost the same functionality as `Promise.all`.
+ * It will return an Aigle instance.
  * @param {Array} array
  * @return {Aigle} Returns an Aigle instance
  * @example
@@ -6671,26 +6703,28 @@ function executeWithPromisify(value) {
   const iterator = _args[1];
   const isFunc = typeof iterator === 'function';
   if (isFunc && Array.isArray(value)) {
-    map(value, (value, key, array) => iterator(value, key, array))
-      .then(array => {
-        let index = 0;
-        _args[1] = () => array[index++];
-        callProxyReciever(apply(this._func, _args), this);
-      })
-      .catch(error => this._callReject(error));
+    callIterator(this, map, array => {
+      let index = 0;
+      _args[1] = () => array[index++];
+      callProxyReciever(apply(this._func, _args), this);
+    });
   } else if (isFunc && value && typeof value === 'object') {
-    mapValues(value, (value, key, object) => iterator(value, key, object))
-      .then(object => {
-        let index = 0;
-        const keys = Object.keys(object);
-        _args[1] = () => object[keys[index++]];
-        callProxyReciever(apply(this._func, _args), this);
-      })
-      .catch(error => this._callReject(error));
+    callIterator(this, mapValues, object => {
+      let index = 0;
+      const keys = Object.keys(object);
+      _args[1] = () => object[keys[index++]];
+      callProxyReciever(apply(this._func, _args), this);
+    });
   } else {
     callProxyReciever(apply(this._func, _args), this);
   }
   return this._promise;
+}
+
+function callIterator(proxy, func, onFulfilled) {
+  const [collection, iterator] = proxy._args;
+  const p = func(collection, (value, key) => iterator(value, key, collection));
+  return p._resolved === 1 ? onFulfilled(p._value) : p.then(onFulfilled, error => proxy._callReject(error));
 }
 
 /**
@@ -7262,7 +7296,7 @@ function set(collection) {
 
 
 /**
- * `Aigle.mapLimit` is almost the as [`Aigle.map`](https://suguru03.github.io/aigle/docs/Aigle.html#map) and
+ * `Aigle.mapLimit` is almost the smae as [`Aigle.map`](https://suguru03.github.io/aigle/docs/Aigle.html#map) and
  * [`Aigle.mapSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#mapSeries), but it will work with concurrency.
  * @param {Array|Object} collection
  * @param {integer} [limit=8]
@@ -7352,7 +7386,7 @@ function set(collection) {
 }
 
 /**
- * `Aigle.mapSeries` is almost the as [`Aigle.map`](https://suguru03.github.io/aigle/docs/Aigle.html#map), but it will work in series.
+ * `Aigle.mapSeries` is almost the smae as [`Aigle.map`](https://suguru03.github.io/aigle/docs/Aigle.html#map), but it will work in series.
  * @param {Array|Object} collection
  * @param {Function} iterator
  * @return {Aigle} Returns an Aigle instance
@@ -7429,6 +7463,8 @@ function callResolveObject(value, index) {
 }
 
 /**
+ * `Aigle.mapValues` is similar to [`Aigle.map`](https://suguru03.github.io/aigle/docs/global.html#map).
+ * It returns an object instead of an array.
  * @param {Array|Object} collection
  * @param {Function|string} iterator
  * @return {Aigle} Returns an Aigle instance
@@ -7518,6 +7554,8 @@ function callResolveObject(value, index) {
 }
 
 /**
+ * `Aigle.mapValuesLimit` is almost the same as [`Aigle.mapValues`](https://suguru03.github.io/aigle/docs/Aigle.html#mapValues) and
+ * [`Aigle.mapValuesSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#mapValuesSeries), but it will work with concurrency.
  * @param {Array|Object} collection
  * @param {integer} [limit=8]
  * @param {Function} iterator
@@ -7615,6 +7653,7 @@ function callResolveObject(value, index) {
 }
 
 /**
+ * `Aigle.mapValuesSeries` is almost the same as [`Aigle.mapValues`](https://suguru03.github.io/aigle/docs/Aigle.html#mapValues), but it will work in series.
  * @param {Array|Object} collection
  * @param {Function} iterator
  * @return {Aigle} Returns an Aigle instance
@@ -7696,6 +7735,8 @@ function callResolveObject(value, index) {
 }
 
 /**
+ * `Aigle.omit` has almost the same functionality as [`Aigle.reject`](https://suguru03.github.io/aigle/docs/global.html#reject).
+ * It will return an object as a result.
  * @param {Array|Object} collection
  * @param {Function|Array|Object|string} iterator
  * @return {Aigle} Returns an Aigle instance
@@ -7817,6 +7858,8 @@ function callResolveObject(value, index) {
 }
 
 /**
+ * `Aigle.omitLimit` is almost the as [`Aigle.omit`](https://suguru03.github.io/aigle/docs/Aigle.html#omit) and
+ * [`Aigle.omitSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#omitSeries), but it will work with concurrency.
  * @param {Array|Object} collection
  * @param {integer} [limit=8]
  * @param {Function} iterator
@@ -7925,6 +7968,7 @@ function callResolveObject(value, index) {
 }
 
 /**
+ * `Aigle.omitSeries` is almost the as [`Aigle.omit`](https://suguru03.github.io/aigle/docs/Aigle.html#omit), but it will work in series.
  * @param {Array|Object} collection
  * @param {Function} iterator
  * @return {Aigle} Returns an Aigle instance
@@ -8047,6 +8091,8 @@ function set(collection) {
 }
 
 /**
+ * `Aigle.parallel` functionality is [`Aigle.all`](https://suguru03.github.io/aigle/docs/global.html#all) plus [`Aigle.props`](https://suguru03.github.io/aigle/docs/global.html#props).
+ * The function allows an object or an array as the first argument.
  * @param {Array|Object} collection - it should be an array/object of Promise instances
  * @example
  * const order = [];
@@ -8132,6 +8178,8 @@ function callResolveObject(value, index) {
 }
 
 /**
+ * `Aigle.pick` has almost the same functionality as [`Aigle.filter`](https://suguru03.github.io/aigle/docs/global.html#filter).
+ * It will return an object as a result.
  * @param {Array|Object} collection
  * @param {Function|Array|Object|string} iterator
  * @return {Aigle} Returns an Aigle instance
@@ -8253,6 +8301,8 @@ function callResolveObject(value, index) {
 }
 
 /**
+ * `Aigle.pickLimit` is almost the as [`Aigle.pick`](https://suguru03.github.io/aigle/docs/Aigle.html#pick) and
+ * [`Aigle.pickSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#pickSeries), but it will work with concurrency.
  * @param {Array|Object} collection
  * @param {integer} [limit=8]
  * @param {Function} iterator
@@ -8355,6 +8405,7 @@ function callResolveObject(value, index) {
 }
 
 /**
+ * `Aigle.pickSeries` is almost the as [`Aigle.pick`](https://suguru03.github.io/aigle/docs/Aigle.html#pick), but it will work in series.
  * @param {Array|Object} collection
  * @param {Function} iterator
  * @return {Aigle} Returns an Aigle instance
@@ -8673,6 +8724,8 @@ function execute() {
 module.exports = { props, Props };
 
 /**
+ * `Aigle.props` is almost the same functionality as [`Aigle.all`](https://suguru03.github.io/aigle/docs/global.html#all)
+ * But the function allows an object as the first argument instead of an array.
  * @param {Object} object
  * @example
  * const order = [];
@@ -9256,6 +9309,11 @@ class Some extends Each {
 module.exports = { some, Some };
 
 /**
+ * `Aigle.some` has almost the same functionality as `Array#some`.
+ * It iterates all elements of `collection` and executes `iterator` using each element on parallel.
+ * The `iterator` needs to return a promise or something..
+ * If a promise is returned, the function will wait until the promise is fulfilled.
+ * If the result is truthy, the function will return true otherwise false.
  * @param {Array|Object} collection
  * @param {Function|Array|Object|string} iterator
  * @return {Aigle} Returns an Aigle instance
@@ -9370,6 +9428,8 @@ class SomeLimit extends EachLimit {
 module.exports = { someLimit, SomeLimit };
 
 /**
+ * `Aigle.someLimit` is almost the as [`Aigle.some`](https://suguru03.github.io/aigle/docs/Aigle.html#some) and
+ * [`Aigle.someSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#someSeries), but it will work with concurrency.
  * @param {Array|Object} collection
  * @param {integer} [limit=8]
  * @param {Function} iterator
@@ -9452,6 +9512,7 @@ class SomeSeries extends EachSeries {
 module.exports = { someSeries, SomeSeries };
 
 /**
+ * `Aigle.someSeries` is almost the as [`Aigle.some`](https://suguru03.github.io/aigle/docs/Aigle.html#some), but it will work in series.
  * @param {Array|Object} collection
  * @param {Function} iterator
  * @return {Aigle} Returns an Aigle instance
@@ -11109,7 +11170,7 @@ process.umask = function() { return 0; };
 },{"_process":79}],81:[function(require,module,exports){
 module.exports={
   "name": "aigle",
-  "version": "1.6.0",
+  "version": "1.7.0-0",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "browser": "browser.js",
@@ -11139,6 +11200,7 @@ module.exports={
     "buble": "^0.15.2",
     "codecov": "^2.1.0",
     "docdash": "^0.4.0",
+    "fs-extra": "^4.0.1",
     "gulp": "^3.9.1",
     "gulp-bump": "^2.7.0",
     "gulp-git": "^2.0.0",
