@@ -30,5 +30,10 @@ async function publish() {
   // copy README
   fs.copySync(path.resolve(rootpath, 'README.md'), path.resolve(buildpath, 'README.md'));
 
+  // rewrite util
+  const utilpath = path.resolve(buildpath, 'internal', 'util.js');
+  const file = fs.readFileSync(utilpath, 'utf8').replace('../../package.json', '../package.json');
+  fs.writeFileSync(utilpath, file, 'utf8');
+
   await exec(`cd ${buildpath} && npm publish`);
 }
