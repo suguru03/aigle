@@ -10,7 +10,7 @@ const runSequence = require('run-sequence');
 const tagVersion = require('gulp-tag-version');
 
 const packagepath = './package.json';
-const types = ['patch', 'prepatch', 'minor', 'preminor', 'major', 'premajor'];
+const types = ['patch', 'prepatch', 'minor', 'preminor', 'major', 'premajor', 'prerelease'];
 
 _.forEach(types, type => {
   gulp.task(`release:package:${type}`, updateVersion(type));
