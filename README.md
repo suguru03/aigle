@@ -28,6 +28,10 @@ npm install --save aigle
 const Aigle = require('aigle');
 ```
 
+```js
+const each = require('aigle/each');
+```
+
 #### Async/Await
 
 ```js
