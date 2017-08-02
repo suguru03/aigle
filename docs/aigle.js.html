@@ -194,6 +194,8 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#all` will execute [`Aigle.all`](https://suguru03.github.io/aigle/docs/global.html#all) using a previous promise value.
+   * The value will be assigned as the first argument to [`Aigle.all`](https://suguru03.github.io/aigle/docs/global.html#all).
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -235,6 +237,8 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#props` will execute [`Aigle.props`](https://suguru03.github.io/aigle/docs/global.html#props) using a previous promise value.
+   * The value will be assigned as the first argument to [`Aigle.props`](https://suguru03.github.io/aigle/docs/global.html#props).
    * @return {Aigle} Returns an Aigle instance
    * @example
    * const order = [];
@@ -261,6 +265,8 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#parallel` will execute [`Aigle.parallel`](https://suguru03.github.io/aigle/docs/global.html#parallel) using a previous promise value.
+   * The value will be assigned as the first argument to [`Aigle.parallel`](https://suguru03.github.io/aigle/docs/global.html#parallel).
    * @param {Array|Object} collection - it should be an array of object of Promise instances
    * @example
    * const order = [];
@@ -645,6 +651,9 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#mapValues` will execute [`Aigle.mapValues`](https://suguru03.github.io/aigle/docs/global.html#mapValues) using a previous promise value and a defined iterator.
+   * The value will be assigned as the first argument to [`Aigle.mapValues`](https://suguru03.github.io/aigle/docs/global.html#mapValues) and
+   * the iterator will be assigned as the second argument.
    * @param {Function|string} iterator - if you define string, you can use shorthand which is similar to lodash
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -708,6 +717,7 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#mapValuesSeries` is almost the same as [`Aigle#mapValues`](https://suguru03.github.io/aigle/docs/global.html#mapValues), but it will work in series.
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -749,6 +759,8 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#mapValuesLimit` is almost the same as [`Aigle#mapValues`](https://suguru03.github.io/aigle/docs/global.html#mapValues)
+   * and [`Aigle#mapValuesSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#mapValuesSeries)), but it will work with concurrency.
    * @param {number} [limit=8]
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
@@ -1595,6 +1607,9 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#pick` will execute [`Aigle.pick`](https://suguru03.github.io/aigle/docs/global.html#pick) using a previous promise value and a defined iterator.
+   * The value will be assigned as the first argument to [`Aigle.pick`](https://suguru03.github.io/aigle/docs/global.html#pick) and
+   * the iterator will be assigned as the second argument.
    * @param {Function|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -1675,6 +1690,7 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#pickSeries` is almost the same as [`Aigle#pick`](https://suguru03.github.io/aigle/docs/global.html#pick), but it will work in series.
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -1716,6 +1732,8 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#pickLimit` is almost the same as [`Aigle#pick`](https://suguru03.github.io/aigle/docs/global.html#pick)
+   * and [`Aigle#pickSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#pickSeries)), but it will work with concurrency.
    * @param {number} [limit=8]
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
@@ -1775,6 +1793,9 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#omit` will execute [`Aigle.omit`](https://suguru03.github.io/aigle/docs/global.html#omit) using a previous promise value and a defined iterator.
+   * The value will be assigned as the first argument to [`Aigle.omit`](https://suguru03.github.io/aigle/docs/global.html#omit) and
+   * the iterator will be assigned as the second argument.
    * @param {Function|Array|Object|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -1855,6 +1876,7 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#omitSeries` is almost the same as [`Aigle#omit`](https://suguru03.github.io/aigle/docs/global.html#omit), but it will work in series.
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -1896,6 +1918,8 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#omitLimit` is almost the same as [`Aigle#omit`](https://suguru03.github.io/aigle/docs/global.html#omit)
+   * and [`Aigle#omitSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#omitSeries)), but it will work with concurrency.
    * @param {number} [limit=8]
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
@@ -2335,6 +2359,9 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#some` will execute [`Aigle.some`](https://suguru03.github.io/aigle/docs/global.html#some) using a previous promise value and a defined iterator.
+   * The value will be assigned as the first argument to [`Aigle.some`](https://suguru03.github.io/aigle/docs/global.html#some) and
+   * the iterator will be assigned as the second argument.
    * @param {Function|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -2429,6 +2456,7 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#someSeries` is almost the same as [`Aigle#some`](https://suguru03.github.io/aigle/docs/global.html#some), but it will work in series.
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -2487,6 +2515,8 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#someLimit` is almost the same as [`Aigle#some`](https://suguru03.github.io/aigle/docs/global.html#some)
+   * and [`Aigle#someSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#someSeries)), but it will work with concurrency.
    * @param {number} [limit=8]
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
@@ -3793,7 +3823,7 @@ function mixin(sources, opts = {}) {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Jul 04 2017 21:57:34 GMT-0700 (PDT) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Wed Aug 02 2017 08:59:24 GMT-0700 (PDT) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
