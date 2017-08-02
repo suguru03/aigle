@@ -11944,7 +11944,7 @@ process.umask = function() { return 0; };
 },{"_process":79}],81:[function(require,module,exports){
 module.exports={
   "name": "aigle",
-  "version": "1.7.0-0",
+  "version": "1.7.0-1",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "browser": "browser.js",
