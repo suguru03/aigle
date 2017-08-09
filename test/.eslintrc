@@ -1,3 +1,5 @@
+parserOptions:
+  ecmaVersion: 8
 rules:
   # Best Practices
   no-return-assign: "off"

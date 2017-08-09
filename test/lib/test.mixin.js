@@ -13,7 +13,8 @@ parallel('mixin', () => {
   it('should execute with function', () => {
 
     const test1 = value => value * 2;
-    Aigle.mixin({ test1 }, { promisify: false });
+    const obj = Aigle.mixin({ test1 }, { promisify: false });
+    assert.strictEqual(obj, Aigle);
     return Aigle.resolve(1)
       .test1()
       .then(value => assert.strictEqual(value, 2));
@@ -38,6 +39,16 @@ parallel('mixin', () => {
       });
     sync = false;
     return promise;
+  });
+
+  it('should allow the lodash chain', async () => {
+
+    const lo = Aigle.mixin(_);
+    const array = await lo.chain([1, 2, 3])
+      .map(async n => Aigle.delay(DELAY, n * 2))
+      .value();
+    assert.deepEqual(array, [2, 4, 6]);
+    assert.strictEqual(await lo.sum(array), 12);
   });
 
   it('should override Aigle functions', () => {
