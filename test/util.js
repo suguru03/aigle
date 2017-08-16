@@ -1,6 +1,8 @@
 'use strict';
 
-exports.makeDelayTask = order => {
+Object.assign(exports, { makeDelayTask });
+
+function makeDelayTask(order) {
   return function delay(value, error, delay) {
     if (arguments.length === 2) {
       delay = error;
@@ -17,5 +19,4 @@ exports.makeDelayTask = order => {
       }, delay);
     });
   };
-};
-
+}
