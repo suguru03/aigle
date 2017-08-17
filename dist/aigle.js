@@ -2174,6 +2174,9 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#sortBy` will execute [`Aigle.sortBy`](https://suguru03.github.io/aigle/docs/global.html#sortBy) using a previous promise value and a defined iterator.
+   * The value will be assigned as the first argument to [`Aigle.sortBy`](https://suguru03.github.io/aigle/docs/global.html#sortBy) and
+   * the iterator will be assigned as the second argument.
    * @param {Function|string} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -2228,6 +2231,7 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#sortBySeries` is almost the same as [`Aigle#sortBy`](https://suguru03.github.io/aigle/docs/global.html#sortBy), but it will work in series.
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -2269,6 +2273,8 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * `Aigle#sortByLimit` is almost the same as [`Aigle#sortBy`](https://suguru03.github.io/aigle/docs/global.html#sortBy)
+   * and [`Aigle#sortBySeries`](https://suguru03.github.io/aigle/docs/Aigle.html#sortBySeries)), but it will work with concurrency.
    * @param {number} [limit=8]
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
@@ -3086,6 +3092,8 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * After a previous promise is resolved, the timer will be started with `ms`.
+   * After `ms`, the delay's promise will be resolved with the previous promise value.
    * @param {number} ms
    * @example
    * Aigle.resolve()
@@ -3766,10 +3774,21 @@ function longStackTraces() {
  */
 function mixin(sources, opts = {}) {
   const { override, promisify = true } = opts;
-  Object.keys(sources).forEach(key => {
+  Object.getOwnPropertyNames(sources).forEach(key => {
     const func = sources[key];
     if (typeof func !== 'function' || Aigle[key] && !override) {
       return;
+    }
+    // check lodash chain
+    if (key === 'chain') {
+      const obj = func();
+      if (obj && obj.__chain__) {
+        Aigle.chain = _resolve;
+        Aigle.prototype.value = function() {
+          return this;
+        };
+        return;
+      }
     }
     const Proxy = createProxy(func, promisify);
     Aigle[key] = function(value, arg1, arg2, arg3) {
@@ -3779,6 +3798,7 @@ function mixin(sources, opts = {}) {
       return addProxy(this, Proxy, arg1, arg2, arg3);
     };
   });
+  return Aigle;
 }
 
 }).call(this,require('_process'))
@@ -4196,6 +4216,7 @@ class Delay extends Aigle {
 module.exports = { delay, Delay };
 
 /**
+ * Return a promise which will be resolved with `value` after `ms`.
  * @param {number} ms
  * @param {*} value
  * @return {Aigle} Returns an Aigle instance
@@ -9606,6 +9627,8 @@ function callResolveObject(criteria, index) {
 }
 
 /**
+ * It iterates all elements of `collection` and executes `iterator` using each element on parallel.
+ * It creates a sorted array which is ordered by results of iterator.
  * @param {Array|Object} collection
  * @param {Function|string} iterator
  * @return {Aigle} Returns an Aigle instance
@@ -9699,6 +9722,8 @@ function callResolveObject(criteria, index) {
 }
 
 /**
+ * `Aigle.sortByLimit` is almost the smae as [`Aigle.sortBy`](https://suguru03.github.io/aigle/docs/Aigle.html#sortBy) and
+ * [`Aigle.sortBySeries`](https://suguru03.github.io/aigle/docs/Aigle.html#sortBySeries), but it will work with concurrency.
  * @param {Array|Object} collection
  * @param {integer} [limit=8]
  * @param {Function} iterator
@@ -9797,6 +9822,8 @@ function callResolveObject(criteria, index) {
 }
 
 /**
+ * `Aigle.sortBySeries` is almost the smae as [`Aigle.sortBy`](https://suguru03.github.io/aigle/docs/Aigle.html#sortBy), but it will work in series.
+ *
  * @param {Array|Object} collection
  * @param {Function} iterator
  * @return {Aigle} Returns an Aigle instance
@@ -11170,7 +11197,7 @@ process.umask = function() { return 0; };
 },{"_process":79}],81:[function(require,module,exports){
 module.exports={
   "name": "aigle",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "browser": "browser.js",
