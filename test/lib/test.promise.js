@@ -719,3 +719,33 @@ parallel('#toString', () => {
     assert.strictEqual(promise.toString(), '[object Promise]');
   });
 });
+
+parallel('#isPending', () => {
+
+  it('should return true if a promise is pending', () => {
+
+    const promise = new Aigle(() => {});
+    assert.strictEqual(promise.isPending(), true);
+  });
+
+  it('should return false if a promise is fulfilled', () => {
+
+    const promise = Aigle.resolve();
+    assert.strictEqual(promise.isPending(), false);
+  });
+});
+
+parallel('#isFulfilled', () => {
+
+  it('should return false if a promise is pending', () => {
+
+    const promise = new Aigle(() => {});
+    assert.strictEqual(promise.isFulfilled(), false);
+  });
+
+  it('should return true if a promise is fulfilled', () => {
+
+    const promise = Aigle.resolve();
+    assert.strictEqual(promise.isFulfilled(), true);
+  });
+});
