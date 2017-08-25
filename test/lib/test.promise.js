@@ -733,6 +733,12 @@ parallel('#isPending', () => {
     const promise = Aigle.resolve();
     assert.strictEqual(promise.isPending(), false);
   });
+
+  it('should return false if a promise is rejected', () => {
+
+    const promise = Aigle.reject();
+    assert.strictEqual(promise.isPending(), false);
+  });
 });
 
 parallel('#isFulfilled', () => {
@@ -747,5 +753,61 @@ parallel('#isFulfilled', () => {
 
     const promise = Aigle.resolve();
     assert.strictEqual(promise.isFulfilled(), true);
+  });
+
+  it('should return false if a promise is rejected', () => {
+
+    const promise = Aigle.reject();
+    assert.strictEqual(promise.isFulfilled(), false);
+  });
+});
+
+parallel('#isRejected', () => {
+
+  it('should return false if a promise is pending', () => {
+
+    const promise = new Aigle(() => {});
+    assert.strictEqual(promise.isRejected(), false);
+  });
+
+  it('should return false if a promise is fulfilled', () => {
+
+    const promise = Aigle.resolve();
+    assert.strictEqual(promise.isRejected(), false);
+  });
+
+  it('should return true if a promise is rejected', () => {
+
+    const promise = Aigle.reject();
+    assert.strictEqual(promise.isRejected(), true);
+  });
+});
+
+
+parallel('#isCancelled', () => {
+
+  before(() => Aigle.config({ cancellation: true }));
+
+  after(() => Aigle.config({ cancellation: false }));
+
+  it('should return false if a promise is cancelled', () => {
+
+    const promise = new Aigle(() => {});
+    promise.cancel();
+    assert.strictEqual(promise.isCancelled(), true);
+  });
+
+  it('should return false if a promise is already fulfilled', () => {
+
+    const promise = Aigle.resolve();
+    promise.cancel();
+    assert.strictEqual(promise.isCancelled(), false);
+  });
+
+  it('should return false if a promise is already rejected', () => {
+
+    const promise = Aigle.reject();
+    promise.cancel();
+    assert.strictEqual(promise.isCancelled(), false);
   });
 });
