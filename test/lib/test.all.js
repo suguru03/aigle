@@ -110,7 +110,6 @@ parallel('all', () => {
 
   it('should execute with an error promise', done => {
 
-    process.on('unhandledRejection', done);
     const promise = Aigle.reject(1);
     Aigle.all([
       Aigle.reject(1),
