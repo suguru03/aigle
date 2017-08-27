@@ -26,7 +26,7 @@ async function publish() {
   fs.copySync(path.resolve(rootpath, 'dist', 'aigle-es5.min.js'), path.resolve(buildpath, 'aigle-es5.min.js'));
 
   // copy package.json
-  const json = _.omit(require('../../package'), ['files', 'scripts']);
+  const json = _.omit(require('../../package'), ['files', 'scripts', 'private']);
   json.main = 'aigle.js';
   json.browser = 'aigle-es5.min.js';
   fs.writeFileSync(path.resolve(buildpath, 'package.json'), JSON.stringify(json, null, 2), 'utf8');
