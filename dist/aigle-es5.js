@@ -18,6 +18,7 @@ var ref$1 = require('./internal/util');
 var VERSION = ref$1.VERSION;
 var INTERNAL = ref$1.INTERNAL;
 var PENDING = ref$1.PENDING;
+var UNHANDLED = ref$1.UNHANDLED;
 var errorObj = ref$1.errorObj;
 var call0 = ref$1.call0;
 var callResolve = ref$1.callResolve;
@@ -44,13 +45,6 @@ var Aigle = (function (AigleCore) {
   if ( AigleCore ) Aigle.__proto__ = AigleCore;
   Aigle.prototype = Object.create( AigleCore && AigleCore.prototype );
   Aigle.prototype.constructor = Aigle;
-
-  /**
-   * @return {string}
-   */
-  Aigle.prototype.toString = function toString () {
-    return '[object Promise]';
-  };
 
   /**
    * @param {Function} onFulfilled
@@ -92,6 +86,41 @@ var Aigle = (function (AigleCore) {
   Aigle.prototype.finally = function finally$1 (handler) {
     handler = typeof handler !== 'function' ? handler : createFinallyHandler(this, handler);
     return addAigle(this, new Aigle(INTERNAL), handler, handler);
+  };
+
+  /**
+   * @return {string}
+   */
+  Aigle.prototype.toString = function toString () {
+    return '[object Promise]';
+  };
+
+  /**
+   * @return {boolean}
+   */
+  Aigle.prototype.isPending = function isPending () {
+    return this._resolved === 0;
+  };
+
+  /**
+   * @return {boolean}
+   */
+  Aigle.prototype.isFulfilled = function isFulfilled () {
+    return this._resolved === 1;
+  };
+
+  /**
+   * @return {boolean}
+   */
+  Aigle.prototype.isRejected = function isRejected () {
+    return this._resolved === 2;
+  };
+
+  /**
+   * @return {boolean}
+   */
+  Aigle.prototype.isCancelled = function isCancelled () {
+    return this._value instanceof CancellationError;
   };
 
   /**
@@ -3326,30 +3355,29 @@ var Aigle = (function (AigleCore) {
     }
   };
 
-  Aigle.prototype._reject = function _reject (reason, unhandled) {
+  Aigle.prototype._reject = function _reject (reason) {
     if (this._resolved !== 0) {
       return;
     }
-    if (unhandled === undefined) {
-      this._value = reason;
-      if (this._receiver === undefined) {
-        invokeAsync(this);
-        return;
-      }
+    this._resolved = 2;
+    this._value = reason;
+    if (this._receiver === undefined) {
+      this._receiver = UNHANDLED;
+      invokeAsync(this);
+      return;
     }
     stackTraces && reconstructStack(this);
-    this._resolved = 2;
     this._callReject();
   };
 
   Aigle.prototype._callReject = function _callReject () {
     var ref = this;
     var _receiver = ref._receiver;
-    if (_receiver === undefined) {
+    this._receiver = undefined;
+    if (_receiver === undefined || _receiver === UNHANDLED) {
       process.emit('unhandledRejection', this._value);
       return;
     }
-    this._receiver = undefined;
     if (_receiver === INTERNAL) {
       return;
     }
@@ -3807,8 +3835,12 @@ function createFinallyHandler(promise, handler) {
 
 function addAigle(promise, receiver, onFulfilled, onRejected) {
   stackTraces && resolveStack(receiver, promise);
-  if (promise._receiver === undefined) {
+  if (promise._receiver === undefined || promise._receiver === INTERNAL) {
     promise._resolved !== 0 && invokeAsync(promise);
+    promise._receiver = receiver;
+    promise._onFulfilled = onFulfilled;
+    promise._onRejected = onRejected;
+  } else if (promise._receiver === UNHANDLED) {
     promise._receiver = receiver;
     promise._onFulfilled = onFulfilled;
     promise._onRejected = onRejected;
@@ -6780,9 +6812,6 @@ function tick() {
     var promise = queue[i];
     queue[i] = undefined;
     switch (promise._resolved) {
-    case 0:
-      promise._reject(promise._value, true);
-      break;
     case 1:
       promise._callResolve();
       break;
@@ -7225,6 +7254,7 @@ module.exports = {
   DEFAULT_LIMIT: DEFAULT_LIMIT,
   INTERNAL: INTERNAL,
   PENDING: PENDING,
+  UNHANDLED: UNHANDLED,
   defaultIterator: defaultIterator,
   errorObj: errorObj,
   call0: call0,
@@ -7247,6 +7277,8 @@ module.exports = {
 function INTERNAL() {}
 
 function PENDING() {}
+
+function UNHANDLED() {}
 
 function defaultIterator(n) {
   return n;
@@ -7339,6 +7371,7 @@ function callReceiver(receiver, promise) {
       receiver._resolve(promise._value);
       return;
     case 2:
+      promise.suppressUnhandledRejections();
       receiver._reject(promise._value);
       return;
     }
@@ -7380,6 +7413,7 @@ function callProxyReciever(promise, receiver, index) {
       receiver._callResolve(promise._value, index);
       return true;
     case 2:
+      promise.suppressUnhandledRejections();
       receiver._callReject(promise._value);
       return false;
     }
@@ -7411,6 +7445,7 @@ function promiseArrayEach(receiver) {
         receiver._callResolve(promise._value, i);
         continue;
       case 2:
+        promise.suppressUnhandledRejections();
         receiver._callReject(promise._value);
         return;
       }
@@ -7440,6 +7475,7 @@ function promiseObjectEach(receiver) {
         receiver._callResolve(promise._value, key);
         continue;
       case 2:
+        promise.suppressUnhandledRejections();
         receiver._callReject(promise._value);
         return;
       }
@@ -11971,7 +12007,7 @@ process.umask = function() { return 0; };
 },{"_process":79}],81:[function(require,module,exports){
 module.exports={
   "name": "aigle",
-  "version": "1.7.1",
+  "version": "1.8.0-0",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "browser": "browser.js",
