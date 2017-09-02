@@ -811,3 +811,45 @@ parallel('#isCancelled', () => {
     assert.strictEqual(promise.isCancelled(), false);
   });
 });
+
+parallel('#value', () => {
+
+  it('should return a value if a promise is fulfilled', () => {
+
+    const value = Aigle.resolve(1).value();
+    assert.strictEqual(value, 1);
+  });
+
+  it('should not return a value if a promise is pending', () => {
+
+    const value = new Aigle(() => {}).value();
+    assert.strictEqual(value, undefined);
+  });
+
+  it('should not return a value if a promise is rejected', () => {
+
+    const value = Aigle.reject(1).value();
+    assert.strictEqual(value, undefined);
+  });
+});
+
+parallel('#reason', () => {
+
+  it('should return a reason if a promise is fulfilled', () => {
+
+    const reason = Aigle.resolve(1).reason();
+    assert.strictEqual(reason, undefined);
+  });
+
+  it('should not return a reason if a promise is pending', () => {
+
+    const reason = new Aigle(() => {}).reason();
+    assert.strictEqual(reason, undefined);
+  });
+
+  it('should not return a reason if a promise is rejected', () => {
+
+    const reason = Aigle.reject(1).reason();
+    assert.strictEqual(reason, 1);
+  });
+});
