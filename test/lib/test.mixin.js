@@ -1,14 +1,21 @@
 'use strict';
 
+const path = require('path');
 const assert = require('assert');
 
 const _ = require('lodash');
 const parallel = require('mocha.parallel');
 
-const Aigle = require('../../');
 const { DELAY } = require('../config');
 
 parallel('mixin', () => {
+
+  let Aigle;
+  const aiglepath = path.resolve(__dirname, '../../lib/aigle.js');
+  beforeEach(() => {
+    Aigle = require(aiglepath);
+    _.forOwn(require.cache, (v, key) => delete require.cache[key]);
+  });
 
   it('should execute with function', () => {
 
