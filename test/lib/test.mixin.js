@@ -63,7 +63,6 @@ parallel('mixin', () => {
     const lo = Aigle.mixin(_);
     return lo.chain([1, 2, 3])
       .map(n => Aigle.delay(DELAY, n * 2))
-      .value()
       .then(array => {
         assert.deepEqual(array, [2, 4, 6]);
         return lo.sum(array);
