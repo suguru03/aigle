@@ -5,7 +5,7 @@ const assert = require('assert');
 const parallel = require('mocha.parallel');
 const Aigle = require('../../');
 const { TimeoutError } = Aigle;
-const DELAY = require('../config').DELAY;
+const { DELAY } = require('../config');
 
 parallel('#timeout', () => {
 

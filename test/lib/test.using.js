@@ -5,7 +5,7 @@ const assert = require('assert');
 const Aigle = require('../../');
 
 const parallel = require('mocha.parallel');
-const DELAY = require('../config').DELAY;
+const { DELAY } = require('../config');
 
 class Resource {
 

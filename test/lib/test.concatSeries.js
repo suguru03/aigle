@@ -4,7 +4,7 @@ const assert = require('assert');
 
 const parallel = require('mocha.parallel');
 const Aigle = require('../../');
-const DELAY = require('../config').DELAY;
+const { DELAY } = require('../config');
 
 parallel('concatSeries', () => {
 
