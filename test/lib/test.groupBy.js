@@ -22,7 +22,9 @@ parallel('groupBy', () => {
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepEqual(res, {
-          '0': [2, 4], '1': [1] });
+          '0': [2, 4],
+          '1': [1]
+        });
         assert.deepEqual(order, [
           [0, 1],
           [2, 2],
