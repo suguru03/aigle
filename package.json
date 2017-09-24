@@ -28,7 +28,7 @@
     "benchmark": "^2.1.1",
     "bluebird": "^3.5.0",
     "browserify": "^14.1.0",
-    "buble": "^0.15.2",
+    "buble": "^0.16.0",
     "codecov": "^2.1.0",
     "docdash": "^0.4.0",
     "fs-extra": "^4.0.1",
