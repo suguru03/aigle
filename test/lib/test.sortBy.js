@@ -56,6 +56,45 @@ parallel('sortBy', () => {
       });
   });
 
+  it('should keep the order if the criteria are same', () => {
+    const collection = [{
+      index: 0,
+      value: 4
+    }, {
+      index: 1,
+      value: 3
+    }, {
+      index: 2,
+      value: 2
+    }, {
+      index: 3,
+      value: 1
+    }, {
+      index: 4,
+      value: 0
+    }];
+    const iterator = ({ value }) => value % 2 === 0;
+    return Aigle.sortBy(collection, iterator)
+      .then(res => {
+        assert.deepEqual(res, [{
+          index: 1,
+          value: 3
+        }, {
+          index: 3,
+          value: 1
+        }, {
+          index: 0,
+          value: 4
+        }, {
+          index: 2,
+          value: 2
+        }, {
+          index: 4,
+          value: 0
+        }]);
+      });
+  });
+
   it('should return an empty array if collection is an empty array', () => {
 
     const iterator = value => {
@@ -80,32 +119,32 @@ parallel('sortBy', () => {
       });
   });
 
-  it('should return an empty array if collection is string', () => {
+    it('should return an empty array if collection is string', () => {
 
-    const iterator = value => {
-      value.test();
-    };
-    return Aigle.sortBy('test', iterator)
-      .then(res => {
-        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.strictEqual(res.length, 0);
-      });
+      const iterator = value => {
+        value.test();
+      };
+      return Aigle.sortBy('test', iterator)
+        .then(res => {
+          assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
+          assert.strictEqual(res.length, 0);
+        });
+    });
+
+    it('should throw TypeError', () => {
+
+      const collection = [1, 4, 2];
+      const iterator = value => {
+        value.test();
+      };
+      return Aigle.sortBy(collection, iterator)
+        .then(() => assert.ok(false))
+        .catch(TypeError, error => {
+          assert.ok(error);
+          assert.ok(error instanceof TypeError);
+        });
+    });
   });
-
-  it('should throw TypeError', () => {
-
-    const collection = [1, 4, 2];
-    const iterator = value => {
-      value.test();
-    };
-    return Aigle.sortBy(collection, iterator)
-      .then(() => assert.ok(false))
-      .catch(TypeError, error => {
-        assert.ok(error);
-        assert.ok(error instanceof TypeError);
-      });
-  });
-});
 
 parallel('#sortBy', () => {
 
