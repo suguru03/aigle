@@ -58,7 +58,7 @@ parallel('someSeries', () => {
       });
   });
 
-  it('should execute in parallel', () => {
+  it('should execute in series', () => {
 
     const order = [];
     const collection = [0, 4, 2];
@@ -79,7 +79,7 @@ parallel('someSeries', () => {
       });
   });
 
-  it('should execute with object collection in parallel', () => {
+  it('should execute with object collection in series', () => {
 
     const order = [];
     const collection = {
