@@ -137,6 +137,20 @@ class Aigle extends AigleCore {
   }
 
   /**
+   * @return {*}
+   */
+  value() {
+    return this._resolved === 1 ? this._value : undefined;
+  }
+
+  /**
+   * @return {*}
+   */
+  reason() {
+    return this._resolved === 2 ? this._value : undefined;
+  }
+
+  /**
    * @example
    * const { CancellationError } = Aigle;
    * let cancelled = false;
@@ -151,7 +165,7 @@ class Aigle extends AigleCore {
    * });
    */
   cancel() {
-    if (this._execute === execute) {
+    if (this._execute === execute || this._resolved !== 0) {
       return;
     }
     const { _onCancelQueue } = this;
@@ -163,7 +177,11 @@ class Aigle extends AigleCore {
         array[i]();
       }
     }
-    this._reject(new CancellationError('late cancellation observer'));
+    this._resolved = 2;
+    this._value = new CancellationError('late cancellation observer');
+    if (this._parent) {
+      this._parent.cancel();
+    }
   }
 
   suppressUnhandledRejections() {
@@ -3633,6 +3651,9 @@ function executeWithCancel(executor) {
       if (executor === undefined) {
         return;
       }
+      if (value instanceof Aigle && value._resolved === 0) {
+        this._parent = value;
+      }
       executor = undefined;
       callReceiver(this, value);
     }, reason => {
@@ -3645,7 +3666,7 @@ function executeWithCancel(executor) {
       if (typeof handler !== 'function') {
         throw new TypeError('onCancel must be function');
       }
-      if (executor === undefined) {
+      if (this._resolved !== 0) {
         return;
       }
       if (this._onCancelQueue === undefined) {
@@ -3816,9 +3837,6 @@ function mixin(sources, opts = {}) {
       const obj = func();
       if (obj && obj.__chain__) {
         Aigle.chain = _resolve;
-        Aigle.prototype.value = function() {
-          return this;
-        };
         return;
       }
     }
@@ -6838,7 +6856,8 @@ module.exports = {
   compactArray,
   concatArray,
   clone,
-  sort
+  sortArray,
+  sortObject
 };
 
 function INTERNAL() {}
@@ -7104,18 +7123,97 @@ function cloneObject(object) {
   return result;
 }
 
-function sortIterator(a, b) {
-  return a.criteria - b.criteria;
+/**
+ * @private
+ * @param {Array} array
+ * @param {number[]} criteria
+ */
+function sortArray(array, criteria) {
+  const l = array.length;
+  const indices = Array(l);
+  for (let i = 0; i < l; i++) {
+    indices[i] = i;
+  }
+  quickSort(criteria, 0, l - 1, indices);
+  const result = Array(l);
+  for (let n = 0; n < l; n++) {
+    const i = indices[n];
+    result[n] = i === undefined ? array[n] : array[i];
+  }
+  return result;
 }
 
-function sort(array) {
-  array.sort(sortIterator);
-  let l = array.length;
-  while (l--) {
-    array[l] = array[l].value;
+/**
+ * @private
+ * @param {Object} object
+ * @param {string[]} keys
+ * @param {number[]} criteria
+ */
+function sortObject(object, keys, criteria) {
+  const l = keys.length;
+  const indices = Array(l);
+  for (let i = 0; i < l; i++) {
+    indices[i] = i;
   }
-  return array;
+  quickSort(criteria, 0, l - 1, indices);
+  const result = Array(l);
+  for (let n = 0; n < l; n++) {
+    const i = indices[n];
+    result[n] = object[keys[i === undefined ? n : i]];
+  }
+  return result;
 }
+
+function partition(array, i, j, mid, indices) {
+  let l = i;
+  let r = j;
+  while (l <= r) {
+    i = l;
+    while (l < r && array[l] < mid) {
+      l++;
+    }
+    while (r >= i && array[r] >= mid) {
+      r--;
+    }
+    if (l > r) {
+      break;
+    }
+    swap(array, indices, l++, r--);
+  }
+  return l;
+}
+
+function swap(array, indices, l, r) {
+  const n = array[l];
+  array[l] = array[r];
+  array[r] = n;
+  const i = indices[l];
+  indices[l] = indices[r];
+  indices[r] = i;
+}
+
+function quickSort(array, i, j, indices) {
+  if (i === j) {
+    return;
+  }
+  let k = i;
+  while (++k <= j && array[i] === array[k]) {
+    const l = k - 1;
+    if (indices[l] > indices[k]) {
+      const i = indices[l];
+      indices[l] = indices[k];
+      indices[k] = i;
+    }
+  }
+  if (k > j) {
+    return;
+  }
+  const p = array[i] > array[k] ? i : k;
+  k = partition(array, i, j, array[p], indices);
+  quickSort(array, i, k - 1, indices);
+  quickSort(array, k, j, indices);
+}
+
 
 },{"../../package.json":81,"aigle-core":78}],39:[function(require,module,exports){
 'use strict';
@@ -9629,8 +9727,8 @@ function someSeries(collection, iterator) {
 'use strict';
 
 const { Each } = require('./each');
-const { sort } = require('./internal/util');
 const { setShorthand } = require('./internal/collection');
+const { sortArray, sortObject } = require('./internal/util');
 
 class SortBy extends Each {
 
@@ -9648,17 +9746,17 @@ function set(collection) {
   return this;
 }
 
-function callResolveArray(criteria, index) {
-  this._result[index] = { criteria, value: this._coll[index] };
+function callResolveArray(criterion, index) {
+  this._result[index] = criterion;
   if (--this._rest === 0) {
-    this._promise._resolve(sort(this._result));
+    this._promise._resolve(sortArray(this._coll, this._result));
   }
 }
 
-function callResolveObject(criteria, index) {
-  this._result[index] = { criteria, value: this._coll[this._keys[index]] };
+function callResolveObject(criterion, index) {
+  this._result[index] = criterion;
   if (--this._rest === 0) {
-    this._promise._resolve(sort(this._result));
+    this._promise._resolve(sortObject(this._coll, this._keys, this._result));
   }
 }
 
@@ -9720,8 +9818,8 @@ function sortBy(collection, iterator) {
 'use strict';
 
 const { EachLimit } = require('./eachLimit');
-const { sort } = require('./internal/util');
 const { setLimit } = require('./internal/collection');
+const { sortArray, sortObject } = require('./internal/util');
 
 class SortByLimit extends EachLimit {
 
@@ -9739,19 +9837,19 @@ function set(collection) {
   return this;
 }
 
-function callResolveArray(criteria, index) {
-  this._result[index] = { criteria, value: this._coll[index] };
+function callResolveArray(criterion, index) {
+  this._result[index] = criterion;
   if (--this._rest === 0) {
-    this._promise._resolve(sort(this._result));
+    this._promise._resolve(sortArray(this._coll, this._result));
   } else if (this._callRest-- > 0) {
     this._iterate();
   }
 }
 
-function callResolveObject(criteria, index) {
-  this._result[index] = { criteria, value: this._coll[this._keys[index]] };
+function callResolveObject(criterion, index) {
+  this._result[index] = criterion;
   if (--this._rest === 0) {
-    this._promise._resolve(sort(this._result));
+    this._promise._resolve(sortObject(this._coll, this._keys, this._result));
   } else if (this._callRest-- > 0) {
     this._iterate();
   }
@@ -9820,8 +9918,8 @@ function sortByLimit(collection, limit, iterator) {
 'use strict';
 
 const { EachSeries } = require('./eachSeries');
-const { sort } = require('./internal/util');
 const { setSeries } = require('./internal/collection');
+const { sortArray, sortObject } = require('./internal/util');
 
 class SortBySeries extends EachSeries {
 
@@ -9839,19 +9937,19 @@ function set(collection) {
   return this;
 }
 
-function callResolveArray(criteria, index) {
-  this._result[index] = { criteria, value: this._coll[index] };
+function callResolveArray(criterion, index) {
+  this._result[index] = criterion;
   if (--this._rest === 0) {
-    this._promise._resolve(sort(this._result));
+    this._promise._resolve(sortArray(this._coll, this._result));
   } else {
     this._iterate();
   }
 }
 
-function callResolveObject(criteria, index) {
-  this._result[index] = { criteria, value: this._coll[this._keys[index]] };
+function callResolveObject(criterion, index) {
+  this._result[index] = criterion;
   if (--this._rest === 0) {
-    this._promise._resolve(sort(this._result));
+    this._promise._resolve(sortObject(this._coll, this._keys, this._result));
   } else {
     this._iterate();
   }
@@ -11233,7 +11331,7 @@ process.umask = function() { return 0; };
 },{"_process":79}],81:[function(require,module,exports){
 module.exports={
   "name": "aigle",
-  "version": "1.8.1",
+  "version": "1.9.0",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "private": true,
@@ -11259,27 +11357,28 @@ module.exports={
   "devDependencies": {
     "babili": "0.1.4",
     "benchmark": "^2.1.1",
-    "bluebird": "^3.5.0",
-    "browserify": "^14.1.0",
-    "buble": "^0.15.2",
-    "codecov": "^2.1.0",
+    "bluebird": "^3.5.1",
+    "browserify": "^14.5.0",
+    "buble": "^0.16.0",
+    "codecov": "^2.3.1",
     "docdash": "^0.4.0",
-    "fs-extra": "^4.0.1",
+    "eslint": "^3.19.0",
+    "fs-extra": "^4.0.2",
     "gulp": "^3.9.1",
-    "gulp-bump": "^2.7.0",
-    "gulp-git": "^2.0.0",
+    "gulp-bump": "^2.8.0",
+    "gulp-git": "^2.4.2",
     "gulp-tag-version": "^1.3.0",
     "istanbul": "^0.4.5",
-    "jsdoc": "^3.4.3",
+    "jsdoc": "^3.5.5",
     "lodash": "^4.15.0",
     "minimist": "^1.2.0",
-    "mocha": "^3.2.0",
-    "mocha.parallel": "^0.15.0",
-    "neo-async": "^2.0.1",
+    "mocha": "^3.5.3",
+    "mocha.parallel": "^0.15.3",
+    "neo-async": "^2.5.0",
     "require-dir": "^0.3.1",
     "run-sequence": "^2.0.0",
     "setimmediate": "^1.0.5",
-    "uglify-js": "^3.0.0"
+    "uglify-js": "^3.1.5"
   },
   "dependencies": {
     "aigle-core": "^1.0.0"
