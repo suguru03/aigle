@@ -161,6 +161,29 @@ describe('#cancel', () => {
     .delay(DELAY)
     .then(done);
   });
+
+  it('should cancel all promise instances', () => {
+    const called = {
+      p1: false,
+      p2: false,
+      p3: false
+    };
+    const p1 = new Aigle((resolve, reject, onCancel) => onCancel(() => called.p1 = true));
+    const p2 = new Aigle((resolve, reject, onCancel) => {
+      resolve(p1);
+      onCancel(() => called.p2 = true);
+    });
+    const p3 = new Aigle((resolve, reject, onCancel) => {
+      resolve(p2);
+      onCancel(() => called.p3 = true);
+    });
+    p3.cancel();
+    assert.deepEqual(called, {
+      p1: true,
+      p2: true,
+      p3: true
+    });
+  });
 });
 
 parallel('#cancel:false', () => {
