@@ -29,7 +29,7 @@
     "bluebird": "^3.5.1",
     "browserify": "^14.5.0",
     "buble": "^0.16.0",
-    "codecov": "^2.3.1",
+    "codecov": "^3.0.0",
     "docdash": "^0.4.0",
     "eslint": "^3.19.0",
     "fs-extra": "^4.0.2",
