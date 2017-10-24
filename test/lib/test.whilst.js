@@ -18,7 +18,7 @@ parallel('whilst', () => {
     };
     const iterator = () => {
       order.iterator.push(count++);
-      return new Aigle(resolve => setImmediate(() => resolve(count)));
+      return new Aigle(resolve => setImmediate(resolve, count));
     };
     return Aigle.whilst(test, iterator)
       .then(res => {
@@ -39,7 +39,7 @@ parallel('whilst', () => {
     };
     const iterator = value => {
       order.iterator.push(value++);
-      return new Aigle(resolve => setImmediate(() => resolve(value)));
+      return new Aigle(resolve => setImmediate(resolve, value));
     };
     return Aigle.whilst(value, test, iterator)
       .then(res => {
@@ -75,7 +75,7 @@ parallel('whilst', () => {
     };
     const iterator = () => {
       order.iterator.push(count++);
-      return new Aigle(resolve => setImmediate(() => resolve(count)));
+      return new Aigle(resolve => setImmediate(resolve, count));
     };
     return Aigle.whilst(test, iterator)
       .then(res => {
@@ -88,9 +88,7 @@ parallel('whilst', () => {
   it('should throw TypeError', () => {
 
     const test = () => test.value();
-    const iterator = () => {
-      return new Aigle(resolve => setImmediate(() => resolve()));
-    };
+    const iterator = () => new Aigle(resolve => setImmediate(resolve));
     return Aigle.whilst(test, iterator)
       .then(() => assert(false))
       .catch(TypeError, error => assert.ok(error));
@@ -102,7 +100,7 @@ parallel('whilst', () => {
     const iterator = () => test.value();
     return Aigle.whilst(test, iterator)
       .then(() => assert(false))
-      .catch(TypeError, error => assert.ok(error));
+      .catch(TypeError, assert);
   });
 });
 
@@ -119,7 +117,7 @@ parallel('#whilst', () => {
     };
     const iterator = value => {
       order.iterator.push(value++);
-      return new Aigle(resolve => setImmediate(() => resolve(value)));
+      return new Aigle(resolve => setImmediate(resolve, value));
     };
     return Aigle.resolve(value)
       .whilst(test, iterator)
