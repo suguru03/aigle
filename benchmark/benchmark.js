@@ -1,11 +1,13 @@
 'use strict';
 
 const _ = require('lodash');
-const Suite = require('benchmark').Suite;
+const { Suite } = require('benchmark');
 
 class Benchmark {
 
-  constructor() {}
+  constructor() {
+    this._tasks = undefined;
+  }
 
   config() {
     return this;
