@@ -23,12 +23,12 @@ parallel('pickLimit', () => {
     return Aigle.pickLimit(collection, 2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           '0': 1,
           '1': 5,
           '2': 3
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 3],
           [1, 5],
@@ -56,12 +56,12 @@ parallel('pickLimit', () => {
     return Aigle.pickLimit(collection, 2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           task1: 1,
           task2: 5,
           task3: 3
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 3],
           ['task2', 5],
@@ -82,7 +82,7 @@ parallel('pickLimit', () => {
     Aigle.pickLimit(collection, iterator);
     return Aigle.delay(DELAY)
       .then(() => {
-        assert.deepEqual(order, _.times(8));
+        assert.deepStrictEqual(order, _.times(8));
       });
   });
 
@@ -94,7 +94,7 @@ parallel('pickLimit', () => {
     return Aigle.pickLimit([], iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {});
+        assert.deepStrictEqual(res, {});
       });
   });
 
@@ -106,7 +106,7 @@ parallel('pickLimit', () => {
     return Aigle.pickLimit({}, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {});
+        assert.deepStrictEqual(res, {});
       });
   });
 
@@ -118,7 +118,7 @@ parallel('pickLimit', () => {
     return Aigle.pickLimit('test', iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {});
+        assert.deepStrictEqual(res, {});
       });
   });
 
@@ -136,8 +136,8 @@ parallel('pickLimit', () => {
       .catch(error => error)
       .delay(DELAY * 5)
       .then(res => {
-        assert.deepEqual(res, 'error');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, 'error');
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 3],
           [1, 5]
@@ -165,8 +165,8 @@ parallel('pickLimit', () => {
       .catch(error => error)
       .delay(DELAY * 5)
       .then(res => {
-        assert.deepEqual(res, 'error');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, 'error');
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 3],
           ['task2', 5]
@@ -191,12 +191,12 @@ parallel('#pickLimit', () => {
       .pickLimit(2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           '0': 1,
           '1': 5,
           '2': 3
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 3],
           [1, 5],
@@ -225,12 +225,12 @@ parallel('#pickLimit', () => {
       .pickLimit(2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           task1: 1,
           task2: 5,
           task3: 3
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 3],
           ['task2', 5],
@@ -254,12 +254,12 @@ parallel('#pickLimit', () => {
       .pickLimit(2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           '0': 1,
           '1': 5,
           '2': 3
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 3],
           [1, 5],
@@ -283,7 +283,7 @@ parallel('#pickLimit', () => {
       .catch(TimeoutError, error => error)
       .then(error => {
         assert.ok(error instanceof TimeoutError);
-        assert.deepEqual(order, _.times(8));
+        assert.deepStrictEqual(order, _.times(8));
       });
   });
 });

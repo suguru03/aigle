@@ -21,12 +21,12 @@ parallel('all', () => {
     ];
     return Aigle.all(tasks)
       .then(res => {
-        assert.deepEqual(res, [
+        assert.deepStrictEqual(res, [
           'test1',
           'test2',
           'test3'
         ]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           'test3',
           'test2',
           'test1'
@@ -48,7 +48,7 @@ parallel('all', () => {
       .catch(err => {
         assert.ok(err);
         assert.strictEqual(err.message, 'error2');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           'test3',
           'test2'
         ]);
@@ -69,8 +69,8 @@ parallel('all', () => {
     });
     return global.Promise.all(tasks)
       .then(res => {
-        assert.deepEqual(res, [0, 1, 2, 3, 4]);
-        assert.deepEqual(order, [4, 3, 2, 1, 0]);
+        assert.deepStrictEqual(res, [0, 1, 2, 3, 4]);
+        assert.deepStrictEqual(order, [4, 3, 2, 1, 0]);
       });
   });
 
@@ -79,7 +79,7 @@ parallel('all', () => {
     const tasks = [
       new Aigle(resolve => resolve(1)),
       new Aigle(resolve => setTimeout(() => resolve(2), 20)),
-      new Aigle(resolve => setTimeout(() => resolve(3), 10)) ]; return Aigle.all(tasks) .then(res => assert.deepEqual(res, [1, 2, 3])); });
+      new Aigle(resolve => setTimeout(() => resolve(3), 10)) ]; return Aigle.all(tasks) .then(res => assert.deepStrictEqual(res, [1, 2, 3])); });
 
   it('should execute with not promise instance', () => {
 
@@ -89,13 +89,13 @@ parallel('all', () => {
       3
     ];
     return Aigle.all(tasks)
-      .then(res => assert.deepEqual(res, [1, 2, 3]));
+      .then(res => assert.deepStrictEqual(res, [1, 2, 3]));
   });
 
   it('should return immediately', () => {
 
     return Aigle.all([])
-      .then(res => assert.deepEqual(res, []));
+      .then(res => assert.deepStrictEqual(res, []));
   });
 
   it('should throw an error', () => {
@@ -136,12 +136,12 @@ parallel('#all', () => {
     return Aigle.resolve(tasks)
       .all()
       .then(res => {
-        assert.deepEqual(res, [
+        assert.deepStrictEqual(res, [
           'test1',
           'test2',
           'test3'
         ]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           'test3',
           'test2',
           'test1'
@@ -156,21 +156,21 @@ parallel('#all', () => {
     return Aigle.all([
       promise.all()
         .then(value => {
-          assert.deepEqual(value, array);
+          assert.deepStrictEqual(value, array);
           return 4;
         }),
       promise.all()
         .then(value => {
-          assert.deepEqual(value, array);
+          assert.deepStrictEqual(value, array);
           return 5;
         }),
       promise.all()
         .then(value => {
-          assert.deepEqual(value, array);
+          assert.deepStrictEqual(value, array);
           return 6;
         })
     ])
-    .then(value => assert.deepEqual(value, [4, 5, 6]));
+    .then(value => assert.deepStrictEqual(value, [4, 5, 6]));
   });
 
   it('should execute with multiple receivers on asynchronous', () => {
@@ -180,21 +180,21 @@ parallel('#all', () => {
     return Aigle.all([
       promise.all()
         .then(value => {
-          assert.deepEqual(value, array);
+          assert.deepStrictEqual(value, array);
           return 4;
         }),
       promise.all()
         .then(value => {
-          assert.deepEqual(value, array);
+          assert.deepStrictEqual(value, array);
           return 5;
         }),
       promise.all()
         .then(value => {
-          assert.deepEqual(value, array);
+          assert.deepStrictEqual(value, array);
           return 6;
         })
     ])
-    .then(value => assert.deepEqual(value, [4, 5, 6]));
+    .then(value => assert.deepStrictEqual(value, [4, 5, 6]));
   });
 
   it('should catch error with multiple receivers on asynchronous', () => {
@@ -225,7 +225,7 @@ parallel('#all', () => {
       .catch(err => {
         assert.ok(err);
         assert.strictEqual(err.message, 'error2');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           'test3',
           'test2'
         ]);

@@ -21,7 +21,7 @@ parallel('each', () => {
     return Aigle.each(collection, iterator)
       .then(res => {
         assert.strictEqual(res, undefined);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 2],
           [1, 4]
@@ -57,7 +57,7 @@ parallel('each', () => {
     return Aigle.each(collection, iterator)
       .then(res => {
         assert.strictEqual(res, undefined);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 2],
           ['task2', 4]
@@ -78,7 +78,7 @@ parallel('each', () => {
     return Aigle.each(collection, iterator)
       .then(res => {
         assert.strictEqual(res, undefined);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 2]
         ]);
@@ -102,7 +102,7 @@ parallel('each', () => {
     return Aigle.each(collection, iterator)
       .then(res => {
         assert.strictEqual(res, undefined);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 2]
         ]);
@@ -187,7 +187,7 @@ parallel('forEach', () => {
     return Aigle.forEach(collection, iterator)
       .then(res => {
         assert.strictEqual(res, undefined);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 2],
           [1, 4]
@@ -213,7 +213,7 @@ parallel('#each', () => {
       .each(iterator)
       .then(res => {
         assert.strictEqual(res, undefined);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 2],
           [1, 4]
@@ -239,7 +239,7 @@ parallel('#each', () => {
       .each(iterator)
       .then(res => {
         assert.strictEqual(res, undefined);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 2],
           ['task2', 4]
@@ -326,7 +326,7 @@ parallel('#forEach', () => {
       .forEach(iterator)
       .then(res => {
         assert.strictEqual(res, undefined);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 2],
           [1, 4]

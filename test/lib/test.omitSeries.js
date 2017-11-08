@@ -21,11 +21,11 @@ parallel('omitSeries', () => {
     return Aigle.omitSeries(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           '1': 4,
           '2': 2
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1],
           [1, 4],
           [2, 2]
@@ -40,7 +40,7 @@ parallel('omitSeries', () => {
     return Aigle.omitSeries(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           '1': 4,
           '2': 2
         });
@@ -64,11 +64,11 @@ parallel('omitSeries', () => {
     return Aigle.omitSeries(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           'task2': 4,
           'task3': 2
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task2', 4],
           ['task3', 2]
@@ -84,7 +84,7 @@ parallel('omitSeries', () => {
     return Aigle.omitSeries([], iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {});
+        assert.deepStrictEqual(res, {});
       });
   });
 
@@ -96,7 +96,7 @@ parallel('omitSeries', () => {
     return Aigle.omitSeries({}, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {});
+        assert.deepStrictEqual(res, {});
       });
   });
 
@@ -108,7 +108,7 @@ parallel('omitSeries', () => {
     return Aigle.omitSeries('test', iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {});
+        assert.deepStrictEqual(res, {});
       });
   });
   it('should throw TypeError', () => {
@@ -142,11 +142,11 @@ parallel('#omitSeries', () => {
       .omitSeries(iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           '1': 4,
           '2': 2
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1],
           [1, 4],
           [2, 2]
@@ -171,11 +171,11 @@ parallel('#omitSeries', () => {
       .omitSeries(iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           'task2': 4,
           'task3': 2
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task2', 4],
           ['task3', 2]
@@ -197,11 +197,11 @@ parallel('#omitSeries', () => {
       .omitSeries(iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           '1': 4,
           '2': 2
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1],
           [1, 4],
           [2, 2]

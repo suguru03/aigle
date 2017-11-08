@@ -23,7 +23,7 @@ parallel('findKeyLimit', () => {
     return Aigle.findKeyLimit(collection, 2, iterator)
       .then(res => {
         assert.strictEqual(res, '0');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1]
         ]);
       });
@@ -47,7 +47,7 @@ parallel('findKeyLimit', () => {
     return Aigle.findKeyLimit(collection, 2, iterator)
       .then(res => {
         assert.strictEqual(res, 'task1');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1]
         ]);
       });
@@ -66,7 +66,7 @@ parallel('findKeyLimit', () => {
     return Aigle.findKeyLimit(collection, 2, iterator)
       .then(res => {
         assert.strictEqual(res, undefined);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 0],
           [2, 2],
           [1, 4]
@@ -90,7 +90,7 @@ parallel('findKeyLimit', () => {
     return Aigle.findKeyLimit(collection, 2, iterator)
       .then(res => {
         assert.strictEqual(res, undefined);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 0],
           ['task3', 2],
           ['task2', 4]
@@ -109,7 +109,7 @@ parallel('findKeyLimit', () => {
     Aigle.findKeyLimit(collection, iterator);
     return Aigle.delay(DELAY)
       .then(() => {
-        assert.deepEqual(order, _.times(8));
+        assert.deepStrictEqual(order, _.times(8));
       });
   });
 
@@ -154,8 +154,8 @@ parallel('findKeyLimit', () => {
       .catch(error => error)
       .delay(DELAY * 5)
       .then(res => {
-        assert.deepEqual(res, 'error');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, 'error');
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 3],
           [1, 5]
@@ -183,8 +183,8 @@ parallel('findKeyLimit', () => {
       .catch(error => error)
       .delay(DELAY * 5)
       .then(res => {
-        assert.deepEqual(res, 'error');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, 'error');
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 3],
           ['task2', 5]
@@ -209,7 +209,7 @@ parallel('#findKeyLimit', () => {
       .findKeyLimit(2, iterator)
       .then(res => {
         assert.strictEqual(res, '0');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1]
         ]);
       });
@@ -234,7 +234,7 @@ parallel('#findKeyLimit', () => {
       .findKeyLimit(2, iterator)
       .then(res => {
         assert.strictEqual(res, 'task1');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1]
         ]);
       });
@@ -254,7 +254,7 @@ parallel('#findKeyLimit', () => {
       .findKeyLimit(2, iterator)
       .then(res => {
         assert.strictEqual(res, '0');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1]
         ]);
       });
@@ -274,7 +274,7 @@ parallel('#findKeyLimit', () => {
       .catch(TimeoutError, error => error)
       .then(error => {
         assert.ok(error instanceof TimeoutError);
-        assert.deepEqual(order, _.times(8));
+        assert.deepStrictEqual(order, _.times(8));
       });
   });
 });

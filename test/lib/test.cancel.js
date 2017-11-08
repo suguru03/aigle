@@ -178,7 +178,7 @@ describe('#cancel', () => {
       onCancel(() => called.p3 = true);
     });
     p3.cancel();
-    assert.deepEqual(called, {
+    assert.deepStrictEqual(called, {
       p1: true,
       p2: true,
       p3: true

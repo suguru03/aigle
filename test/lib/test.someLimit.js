@@ -23,7 +23,7 @@ parallel('someLimit', () => {
     return Aigle.someLimit(collection, 2, iterator)
       .then(res => {
         assert.strictEqual(res, true);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1]
         ]);
       });
@@ -47,7 +47,7 @@ parallel('someLimit', () => {
     return Aigle.someLimit(collection, 2, iterator)
       .then(res => {
         assert.strictEqual(res, true);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1]
         ]);
       });
@@ -66,7 +66,7 @@ parallel('someLimit', () => {
     return Aigle.someLimit(collection, 2, iterator)
       .then(res => {
         assert.strictEqual(res, false);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 0],
           [2, 2],
           [1, 4]
@@ -91,7 +91,7 @@ parallel('someLimit', () => {
     return Aigle.someLimit(collection, 2, iterator)
       .then(res => {
         assert.strictEqual(res, false);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 0],
           ['task3', 2],
           ['task2', 4]
@@ -110,7 +110,7 @@ parallel('someLimit', () => {
     Aigle.someLimit(collection, iterator);
     return Aigle.delay(DELAY)
       .then(() => {
-        assert.deepEqual(order, _.times(8));
+        assert.deepStrictEqual(order, _.times(8));
       });
   });
 
@@ -155,8 +155,8 @@ parallel('someLimit', () => {
       .catch(error => error)
       .delay(DELAY * 5)
       .then(res => {
-        assert.deepEqual(res, 'error');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, 'error');
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 3],
           [1, 5]
@@ -184,8 +184,8 @@ parallel('someLimit', () => {
       .catch(error => error)
       .delay(DELAY * 5)
       .then(res => {
-        assert.deepEqual(res, 'error');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, 'error');
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 3],
           ['task2', 5]
@@ -210,7 +210,7 @@ parallel('#someLimit', () => {
       .someLimit(2, iterator)
       .then(res => {
         assert.strictEqual(res, true);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1]
         ]);
       });
@@ -235,7 +235,7 @@ parallel('#someLimit', () => {
       .someLimit(2, iterator)
       .then(res => {
         assert.strictEqual(res, true);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1]
         ]);
       });
@@ -255,7 +255,7 @@ parallel('#someLimit', () => {
       .someLimit(2, iterator)
       .then(res => {
         assert.strictEqual(res, true);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1]
         ]);
       });
@@ -275,7 +275,7 @@ parallel('#someLimit', () => {
       .catch(TimeoutError, error => error)
       .then(error => {
         assert.ok(error instanceof TimeoutError);
-        assert.deepEqual(order, _.times(8));
+        assert.deepStrictEqual(order, _.times(8));
       });
   });
 });

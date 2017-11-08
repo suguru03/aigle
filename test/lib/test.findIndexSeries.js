@@ -21,7 +21,7 @@ parallel('findIndexSeries', () => {
     return Aigle.findIndexSeries(collection, iterator)
       .then(res => {
         assert.strictEqual(res, 0);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1]
         ]);
       });
@@ -52,7 +52,7 @@ parallel('findIndexSeries', () => {
     return Aigle.findIndexSeries(collection, iterator)
       .then(res => {
         assert.strictEqual(res, -1);
-        assert.deepEqual(order, []);
+        assert.deepStrictEqual(order, []);
       });
   });
 
@@ -69,7 +69,7 @@ parallel('findIndexSeries', () => {
     return Aigle.findIndexSeries(collection, iterator)
       .then(res => {
         assert.strictEqual(res, -1);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 0],
           [1, 4],
           [2, 2]
@@ -94,7 +94,7 @@ parallel('findIndexSeries', () => {
     return Aigle.findIndexSeries(collection, iterator)
       .then(res => {
         assert.strictEqual(res, -1);
-        assert.deepEqual(order, []);
+        assert.deepStrictEqual(order, []);
       });
   });
 
@@ -156,7 +156,7 @@ parallel('#findIndexSeries', () => {
       .findIndexSeries(iterator)
       .then(res => {
         assert.strictEqual(res, 0);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1]
         ]);
       });
@@ -179,7 +179,7 @@ parallel('#findIndexSeries', () => {
       .findIndexSeries(iterator)
       .then(res => {
         assert.strictEqual(res, -1);
-        assert.deepEqual(order, []);
+        assert.deepStrictEqual(order, []);
       });
   });
 
@@ -197,7 +197,7 @@ parallel('#findIndexSeries', () => {
       .findIndexSeries(iterator)
       .then(res => {
         assert.strictEqual(res, 0);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1]
         ]);
       });

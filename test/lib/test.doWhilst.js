@@ -22,8 +22,8 @@ parallel('doWhilst', () => {
     };
     return Aigle.doWhilst(iterator, test)
       .then(res => {
-        assert.deepEqual(order.iterator, [0, 1, 2, 3, 4]);
-        assert.deepEqual(order.test, [1, 2, 3, 4, 5]);
+        assert.deepStrictEqual(order.iterator, [0, 1, 2, 3, 4]);
+        assert.deepStrictEqual(order.test, [1, 2, 3, 4, 5]);
         assert.strictEqual(res, 5);
       });
   });
@@ -43,8 +43,8 @@ parallel('doWhilst', () => {
     };
     return Aigle.doWhilst(value, iterator, test)
       .then(res => {
-        assert.deepEqual(order.iterator, [1, 2, 3, 4]);
-        assert.deepEqual(order.test, [2, 3, 4, 5]);
+        assert.deepStrictEqual(order.iterator, [1, 2, 3, 4]);
+        assert.deepStrictEqual(order.test, [2, 3, 4, 5]);
         assert.strictEqual(res, 5);
       });
   });
@@ -79,8 +79,8 @@ parallel('doWhilst', () => {
     };
     return Aigle.doWhilst(iterator, test)
       .then(res => {
-        assert.deepEqual(order.iterator, [0, 1, 2, 3, 4]);
-        assert.deepEqual(order.test, [1, 2, 3, 4, 5]);
+        assert.deepStrictEqual(order.iterator, [0, 1, 2, 3, 4]);
+        assert.deepStrictEqual(order.test, [1, 2, 3, 4, 5]);
         assert.strictEqual(res, 5);
       });
   });
@@ -104,8 +104,8 @@ parallel('#doWhilst', () => {
     return Aigle.resolve(value)
       .doWhilst(iterator, test)
       .then(res => {
-        assert.deepEqual(order.iterator, [1, 2, 3, 4]);
-        assert.deepEqual(order.test, [2, 3, 4, 5]);
+        assert.deepStrictEqual(order.iterator, [1, 2, 3, 4]);
+        assert.deepStrictEqual(order.test, [2, 3, 4, 5]);
         assert.strictEqual(res, 5);
       });
   });

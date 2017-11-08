@@ -22,7 +22,7 @@ parallel('join', () => {
     return Aigle.join(tasks[0], tasks[1], tasks[2], fn)
       .then(res => {
         assert.strictEqual(res, 6);
-        assert.deepEqual(order, [3, 2, 1]);
+        assert.deepStrictEqual(order, [3, 2, 1]);
       });
   });
 
@@ -38,14 +38,14 @@ parallel('join', () => {
 
     const tasks = [2, 3, 1];
     return Aigle.join(tasks[0], tasks[1], tasks[2])
-      .then(res => assert.deepEqual(res, [2, 3, 1]));
+      .then(res => assert.deepStrictEqual(res, [2, 3, 1]));
   });
 
   it('should throw typeEror', () => {
 
     const tasks = [2, 3, 1];
     return Aigle.join(tasks[0], tasks[1], tasks[2])
-      .then(res => assert.deepEqual(res, [2, 3, 1]));
+      .then(res => assert.deepStrictEqual(res, [2, 3, 1]));
   });
 
   it('should throw TypeError', () => {

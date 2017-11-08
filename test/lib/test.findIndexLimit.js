@@ -23,7 +23,7 @@ parallel('findIndexLimit', () => {
     return Aigle.findIndexLimit(collection, 2, iterator)
       .then(res => {
         assert.strictEqual(res, 0);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1]
         ]);
       });
@@ -47,7 +47,7 @@ parallel('findIndexLimit', () => {
     return Aigle.findIndexLimit(collection, 2, iterator)
       .then(res => {
         assert.strictEqual(res, -1);
-        assert.deepEqual(order, []);
+        assert.deepStrictEqual(order, []);
       });
   });
 
@@ -64,7 +64,7 @@ parallel('findIndexLimit', () => {
     return Aigle.findIndexLimit(collection, 2, iterator)
       .then(res => {
         assert.strictEqual(res, -1);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 0],
           [2, 2],
           [1, 4]
@@ -88,7 +88,7 @@ parallel('findIndexLimit', () => {
     return Aigle.findIndexLimit(collection, 2, iterator)
       .then(res => {
         assert.strictEqual(res, -1);
-        assert.deepEqual(order, []);
+        assert.deepStrictEqual(order, []);
       });
   });
 
@@ -103,7 +103,7 @@ parallel('findIndexLimit', () => {
     Aigle.findIndexLimit(collection, iterator);
     return Aigle.delay(DELAY)
       .then(() => {
-        assert.deepEqual(order, _.times(8));
+        assert.deepStrictEqual(order, _.times(8));
       });
   });
 
@@ -148,8 +148,8 @@ parallel('findIndexLimit', () => {
       .catch(error => error)
       .delay(DELAY * 5)
       .then(res => {
-        assert.deepEqual(res, 'error');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, 'error');
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 3],
           [1, 5]
@@ -174,7 +174,7 @@ parallel('#findIndexLimit', () => {
       .findIndexLimit(2, iterator)
       .then(res => {
         assert.strictEqual(res, 0);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1]
         ]);
       });
@@ -199,7 +199,7 @@ parallel('#findIndexLimit', () => {
       .findIndexLimit(2, iterator)
       .then(res => {
         assert.strictEqual(res, -1);
-        assert.deepEqual(order, []);
+        assert.deepStrictEqual(order, []);
       });
   });
 
@@ -217,7 +217,7 @@ parallel('#findIndexLimit', () => {
       .findIndexLimit(2, iterator)
       .then(res => {
         assert.strictEqual(res, 0);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1]
         ]);
       });
@@ -237,7 +237,7 @@ parallel('#findIndexLimit', () => {
       .catch(TimeoutError, error => error)
       .then(error => {
         assert.ok(error instanceof TimeoutError);
-        assert.deepEqual(order, _.times(8));
+        assert.deepStrictEqual(order, _.times(8));
       });
   });
 });

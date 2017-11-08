@@ -23,11 +23,11 @@ parallel('groupByLimit', () => {
     return Aigle.groupByLimit(collection, 2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           '0': [2, 4],
           '1': [1, 3, 5]
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 3],
           [1, 5],
@@ -55,11 +55,11 @@ parallel('groupByLimit', () => {
     return Aigle.groupByLimit(collection, 2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           '0': [2, 4],
           '1': [1, 3, 5]
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 3],
           ['task2', 5],
@@ -80,7 +80,7 @@ parallel('groupByLimit', () => {
     Aigle.groupByLimit(collection, iterator);
     return Aigle.delay(DELAY)
       .then(() => {
-        assert.deepEqual(order, _.times(8));
+        assert.deepStrictEqual(order, _.times(8));
       });
   });
 
@@ -92,7 +92,7 @@ parallel('groupByLimit', () => {
     return Aigle.groupByLimit([], iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {});
+        assert.deepStrictEqual(res, {});
       });
   });
 
@@ -104,7 +104,7 @@ parallel('groupByLimit', () => {
     return Aigle.groupByLimit({}, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {});
+        assert.deepStrictEqual(res, {});
       });
   });
 
@@ -116,7 +116,7 @@ parallel('groupByLimit', () => {
     return Aigle.groupByLimit('test', iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {});
+        assert.deepStrictEqual(res, {});
       });
   });
 
@@ -134,8 +134,8 @@ parallel('groupByLimit', () => {
       .catch(error => error)
       .delay(DELAY * 5)
       .then(res => {
-        assert.deepEqual(res, 'error');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, 'error');
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 3],
           [1, 5]
@@ -163,8 +163,8 @@ parallel('groupByLimit', () => {
       .catch(error => error)
       .delay(DELAY * 5)
       .then(res => {
-        assert.deepEqual(res, 'error');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, 'error');
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 3],
           ['task2', 5]
@@ -189,11 +189,11 @@ parallel('#groupByLimit', () => {
       .groupByLimit(2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           '0': [2, 4],
           '1': [1, 3, 5]
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 3],
           [1, 5],
@@ -222,11 +222,11 @@ parallel('#groupByLimit', () => {
       .groupByLimit(2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           '0': [2, 4],
           '1': [1, 3, 5]
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 3],
           ['task2', 5],
@@ -250,11 +250,11 @@ parallel('#groupByLimit', () => {
       .groupByLimit(2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           '0': [2, 4],
           '1': [1, 3, 5]
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 3],
           [1, 5],
@@ -278,7 +278,7 @@ parallel('#groupByLimit', () => {
       .catch(TimeoutError, error => error)
       .then(error => {
         assert.ok(error instanceof TimeoutError);
-        assert.deepEqual(order, _.times(8));
+        assert.deepStrictEqual(order, _.times(8));
       });
   });
 });

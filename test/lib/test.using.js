@@ -79,7 +79,7 @@ parallel('using', () => {
       assert.strictEqual(r3, 1);
       return Aigle.all([r1.get(), r2.get(), r3]);
     })
-    .then(array => assert.deepEqual(array, [1, 1, 1]));
+    .then(array => assert.deepStrictEqual(array, [1, 1, 1]));
   });
 
   it('should cause an error', () => {

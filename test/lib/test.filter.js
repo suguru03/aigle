@@ -21,8 +21,8 @@ parallel('filter', () => {
     return Aigle.filter(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [1]);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 2],
           [1, 4]
@@ -47,8 +47,8 @@ parallel('filter', () => {
     return Aigle.filter(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [1]);
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 2],
           ['task2', 4]
@@ -68,7 +68,7 @@ parallel('filter', () => {
     let sync = true;
     const promise = Aigle.filter(collection, 'bool')
       .then(array => {
-        assert.deepEqual(array, [{
+        assert.deepStrictEqual(array, [{
           uid: 4, bool: 1
         }, {
           uid: 2, bool: 1
@@ -145,8 +145,8 @@ parallel('#filter', () => {
     return Aigle.resolve(collection)
       .filter(iterator)
       .then(res => {
-        assert.deepEqual(res, [1]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [1]);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 2],
           [1, 4]
@@ -170,8 +170,8 @@ parallel('#filter', () => {
     return Aigle.resolve(collection)
       .filter(iterator)
       .then(res => {
-        assert.deepEqual(res, [1]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [1]);
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 2],
           ['task2', 4]
@@ -192,8 +192,8 @@ parallel('#filter', () => {
     return Aigle.delay(DELAY, collection)
       .filter(iterator)
       .then(res => {
-        assert.deepEqual(res, [1]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [1]);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 2],
           [1, 4]
@@ -214,7 +214,7 @@ parallel('#filter', () => {
     const promise = Aigle.resolve(collection)
       .filter('bool')
       .then(array => {
-        assert.deepEqual(array, [{
+        assert.deepStrictEqual(array, [{
           uid: 4, bool: 1
         }, {
           uid: 2, bool: 1
@@ -237,7 +237,7 @@ parallel('#filter', () => {
     const promise = Aigle.resolve(collection)
       .filter('bool')
       .then(array => {
-        assert.deepEqual(array, [{
+        assert.deepStrictEqual(array, [{
           uid: 4, bool: 1
         }, {
           uid: 2, bool: 1
@@ -259,7 +259,7 @@ parallel('#filter', () => {
     }, null];
     return Aigle.resolve(collection)
       .filter(['uid', 4])
-      .then(array => assert.deepEqual(array, [{
+      .then(array => assert.deepStrictEqual(array, [{
         uid: 4, bool: 1
       }]));
   });
@@ -274,7 +274,7 @@ parallel('#filter', () => {
     };
     return Aigle.resolve(collection)
       .filter(['uid', 4])
-      .then(array => assert.deepEqual(array, [{
+      .then(array => assert.deepStrictEqual(array, [{
         uid: 4, bool: 1
       }]));
   });
@@ -290,7 +290,7 @@ parallel('#filter', () => {
     }, null];
     return Aigle.resolve(collection)
       .filter({ uid: 4 })
-      .then(array => assert.deepEqual(array, [{
+      .then(array => assert.deepStrictEqual(array, [{
         uid: 4, bool: 1
       }]));
   });
@@ -305,7 +305,7 @@ parallel('#filter', () => {
     };
     return Aigle.resolve(collection)
       .filter({ uid: 4 })
-      .then(array => assert.deepEqual(array, [{
+      .then(array => assert.deepStrictEqual(array, [{
         uid: 4, bool: 1
       }]));
   });
@@ -320,7 +320,7 @@ parallel('#filter', () => {
     };
     return Aigle.resolve(collection)
       .filter({ uid: 4, bool: 0 })
-      .then(array => assert.deepEqual(array, []));
+      .then(array => assert.deepStrictEqual(array, []));
   });
 
   it('should throw TypeError', () => {

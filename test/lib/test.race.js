@@ -21,7 +21,7 @@ parallel('race', () => {
     return Aigle.race(tasks)
       .then(res => {
         assert.strictEqual(res, 'test3');
-        assert.deepEqual(order, ['test3']);
+        assert.deepStrictEqual(order, ['test3']);
       });
   });
 
@@ -36,7 +36,7 @@ parallel('race', () => {
     return Aigle.race(tasks)
       .then(res => {
         assert.strictEqual(res, 'test3');
-        assert.deepEqual(order, ['test3']);
+        assert.deepStrictEqual(order, ['test3']);
       });
   });
 
@@ -54,7 +54,7 @@ parallel('race', () => {
       .catch(err => {
         assert.ok(err);
         assert.strictEqual(err.message, 'error3');
-        assert.deepEqual(order, ['test3']);
+        assert.deepStrictEqual(order, ['test3']);
       });
   });
 
@@ -72,7 +72,7 @@ parallel('race', () => {
       .catch(err => {
         assert.ok(err);
         assert.strictEqual(err.message, 'error3');
-        assert.deepEqual(order, ['test3']);
+        assert.deepStrictEqual(order, ['test3']);
       });
   });
 
@@ -111,7 +111,7 @@ parallel('#race', () => {
       .race()
       .then(res => {
         assert.strictEqual(res, 'test3');
-        assert.deepEqual(order, ['test3']);
+        assert.deepStrictEqual(order, ['test3']);
       });
   });
 
@@ -130,7 +130,7 @@ parallel('#race', () => {
       .catch(err => {
         assert.ok(err);
         assert.strictEqual(err.message, 'error3');
-        assert.deepEqual(order, ['test3']);
+        assert.deepStrictEqual(order, ['test3']);
       });
   });
 

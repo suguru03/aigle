@@ -24,14 +24,14 @@ parallel('mapValuesLimit', () => {
     return Aigle.mapValuesLimit(collection, 2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           '0': 2,
           '1': 10,
           '2': 6,
           '3': 8,
           '4': 4
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 3],
           [1, 5],
@@ -59,14 +59,14 @@ parallel('mapValuesLimit', () => {
     return Aigle.mapValuesLimit(collection, 2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           task1: 2,
           task2: 10,
           task3: 6,
           task4: 8,
           task5: 4
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 3],
           ['task2', 5],
@@ -87,7 +87,7 @@ parallel('mapValuesLimit', () => {
     Aigle.mapValuesLimit(collection, iterator);
     return Aigle.delay(DELAY)
       .then(() => {
-        assert.deepEqual(order, _.times(8));
+        assert.deepStrictEqual(order, _.times(8));
       });
   });
 
@@ -99,7 +99,7 @@ parallel('mapValuesLimit', () => {
     return Aigle.mapValuesLimit([], iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {});
+        assert.deepStrictEqual(res, {});
       });
   });
 
@@ -111,7 +111,7 @@ parallel('mapValuesLimit', () => {
     return Aigle.mapValuesLimit({}, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {});
+        assert.deepStrictEqual(res, {});
       });
   });
 
@@ -123,7 +123,7 @@ parallel('mapValuesLimit', () => {
     return Aigle.mapValuesLimit('test', iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {});
+        assert.deepStrictEqual(res, {});
       });
   });
 
@@ -141,8 +141,8 @@ parallel('mapValuesLimit', () => {
       .catch(error => error)
       .delay(DELAY * 5)
       .then(res => {
-        assert.deepEqual(res, 'error');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, 'error');
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 3],
           [1, 5]
@@ -170,8 +170,8 @@ parallel('mapValuesLimit', () => {
       .catch(error => error)
       .delay(DELAY * 5)
       .then(res => {
-        assert.deepEqual(res, 'error');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, 'error');
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 3],
           ['task2', 5]
@@ -196,14 +196,14 @@ parallel('#mapValuesLimit', () => {
       .mapValuesLimit(2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           '0': 2,
           '1': 10,
           '2': 6,
           '3': 8,
           '4': 4
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 3],
           [1, 5],
@@ -232,14 +232,14 @@ parallel('#mapValuesLimit', () => {
       .mapValuesLimit(2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           task1: 2,
           task2: 10,
           task3: 6,
           task4: 8,
           task5: 4
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 3],
           ['task2', 5],
@@ -263,14 +263,14 @@ parallel('#mapValuesLimit', () => {
       .mapValuesLimit(2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           '0': 2,
           '1': 10,
           '2': 6,
           '3': 8,
           '4': 4
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 3],
           [1, 5],
@@ -294,7 +294,7 @@ parallel('#mapValuesLimit', () => {
       .catch(TimeoutError, error => error)
       .then(error => {
         assert.ok(error instanceof TimeoutError);
-        assert.deepEqual(order, _.times(8));
+        assert.deepStrictEqual(order, _.times(8));
       });
   });
 });

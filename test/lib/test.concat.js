@@ -22,8 +22,8 @@ parallel('concat', () => {
     return Aigle.concat(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 4, 2]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [1, 4, 2]);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 2],
           [1, 4]
@@ -49,8 +49,8 @@ parallel('concat', () => {
     return Aigle.concat(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 4, 2]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [1, 4, 2]);
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 2],
           ['task2', 4]
@@ -63,7 +63,7 @@ parallel('concat', () => {
     const collection = [null, undefined, 0, '', false];
     const iterator = value => value;
     return Aigle.concat(collection, iterator)
-      .then(res => assert.deepEqual(res, [null, 0, '', false]));
+      .then(res => assert.deepStrictEqual(res, [null, 0, '', false]));
   });
 
   it('should return an empty array if collection is an empty array', () => {
@@ -132,8 +132,8 @@ parallel('#concat', () => {
     return Aigle.resolve(collection)
       .concat(iterator)
       .then(res => {
-        assert.deepEqual(res, [1, 4, 2]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [1, 4, 2]);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 2],
           [1, 4]
@@ -157,8 +157,8 @@ parallel('#concat', () => {
     return Aigle.resolve(collection)
       .concat(iterator)
       .then(res => {
-        assert.deepEqual(res, [1, 4, 2]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [1, 4, 2]);
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 2],
           ['task2', 4]

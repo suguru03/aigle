@@ -24,8 +24,8 @@ parallel('transformLimit', () => {
     return Aigle.transformLimit(collection, 2, iterator, [])
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 3, 5, 2, 4]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [1, 3, 5, 2, 4]);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 3],
           [1, 5],
@@ -55,8 +55,8 @@ parallel('transformLimit', () => {
     return Aigle.transformLimit(collection, 2, iterator, [])
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 3, 5, 2, 4]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [1, 3, 5, 2, 4]);
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 3],
           ['task2', 5],
@@ -77,7 +77,7 @@ parallel('transformLimit', () => {
     Aigle.transformLimit(collection, iterator);
     return Aigle.delay(DELAY)
       .then(() => {
-        assert.deepEqual(order, _.times(8));
+        assert.deepStrictEqual(order, _.times(8));
       });
   });
 
@@ -95,8 +95,8 @@ parallel('transformLimit', () => {
     return Aigle.transformLimit(collection, 2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 3, 5]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [1, 3, 5]);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 3],
           [1, 5]
@@ -124,12 +124,12 @@ parallel('transformLimit', () => {
     return Aigle.transformLimit(collection, 2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           task1: 1,
           task2: 5,
           task3: 3
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 3],
           ['task2', 5]
@@ -151,8 +151,8 @@ parallel('transformLimit', () => {
     return Aigle.transformLimit(collection, iterator, [])
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 2, 3, 4, 5]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [1, 2, 3, 4, 5]);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [4, 2],
           [2, 3],
@@ -176,8 +176,8 @@ parallel('transformLimit', () => {
     return Aigle.transformLimit(collection, iterator, [])
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 2, 3, 4, 5]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [1, 2, 3, 4, 5]);
+        assert.deepStrictEqual(order, [
           ['a', 1],
           ['e', 2],
           ['c', 3],
@@ -207,7 +207,7 @@ parallel('transformLimit', () => {
     return Aigle.transformLimit({}, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {});
+        assert.deepStrictEqual(res, {});
       });
   });
 
@@ -219,7 +219,7 @@ parallel('transformLimit', () => {
     return Aigle.transformLimit('test', iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {});
+        assert.deepStrictEqual(res, {});
       });
   });
 
@@ -237,8 +237,8 @@ parallel('transformLimit', () => {
       .catch(error => error)
       .delay(DELAY * 5)
       .then(res => {
-        assert.deepEqual(res, 'error');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, 'error');
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 3],
           [1, 5]
@@ -266,8 +266,8 @@ parallel('transformLimit', () => {
       .catch(error => error)
       .delay(DELAY * 5)
       .then(res => {
-        assert.deepEqual(res, 'error');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, 'error');
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 3],
           ['task2', 5]
@@ -293,8 +293,8 @@ parallel('#transformLimit', () => {
       .transformLimit(2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 3, 5, 2, 4]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [1, 3, 5, 2, 4]);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 3],
           [1, 5],
@@ -324,14 +324,14 @@ parallel('#transformLimit', () => {
       .transformLimit(2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           task1: 1,
           task2: 5,
           task3: 3,
           task4: 4,
           task5: 2
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 3],
           ['task2', 5],
@@ -356,8 +356,8 @@ parallel('#transformLimit', () => {
       .transformLimit(2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 3, 5, 2, 4]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [1, 3, 5, 2, 4]);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 3],
           [1, 5],
@@ -380,7 +380,7 @@ parallel('#transformLimit', () => {
       .catch(TimeoutError, error => error)
       .then(error => {
         assert.ok(error instanceof TimeoutError);
-        assert.deepEqual(order, _.times(8));
+        assert.deepStrictEqual(order, _.times(8));
       });
   });
 

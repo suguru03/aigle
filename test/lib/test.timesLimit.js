@@ -24,8 +24,8 @@ parallel('timesLimit', () => {
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.strictEqual(res.length, count);
-        assert.deepEqual(res, [0, 2, 4, 6, 8]);
-        assert.deepEqual(order, [0, 2, 1, 4, 3]);
+        assert.deepStrictEqual(res, [0, 2, 4, 6, 8]);
+        assert.deepStrictEqual(order, [0, 2, 1, 4, 3]);
       });
   });
 
@@ -37,7 +37,7 @@ parallel('timesLimit', () => {
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.strictEqual(res.length, count);
-        assert.deepEqual(res, [0, 2, 4, 6, 8]);
+        assert.deepStrictEqual(res, [0, 2, 4, 6, 8]);
       });
   });
 
@@ -51,7 +51,7 @@ parallel('timesLimit', () => {
     Aigle.timesLimit(10, iterator);
     return Aigle.delay(DELAY)
       .then(() => {
-        assert.deepEqual(order, _.times(8));
+        assert.deepStrictEqual(order, _.times(8));
       });
   });
 
@@ -70,7 +70,7 @@ parallel('timesLimit', () => {
       .delay(DELAY * 2)
       .then(res => {
         assert.strictEqual(res, 'error');
-        assert.deepEqual(order, _.times(5));
+        assert.deepStrictEqual(order, _.times(5));
       });
   });
 
@@ -90,7 +90,7 @@ parallel('timesLimit', () => {
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.strictEqual(res.length, 5);
-        assert.deepEqual(res, [0, 1, 2, 3, 4]);
+        assert.deepStrictEqual(res, [0, 1, 2, 3, 4]);
       });
   });
 
@@ -122,8 +122,8 @@ parallel('#timesLimit', () => {
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.strictEqual(res.length, count);
-        assert.deepEqual(res, [0, 2, 4, 6, 8]);
-        assert.deepEqual(order, [0, 2, 1, 4, 3]);
+        assert.deepStrictEqual(res, [0, 2, 4, 6, 8]);
+        assert.deepStrictEqual(order, [0, 2, 1, 4, 3]);
       });
   });
 
@@ -136,7 +136,7 @@ parallel('#timesLimit', () => {
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.strictEqual(res.length, count);
-        assert.deepEqual(res, [0, 2, 4, 6, 8]);
+        assert.deepStrictEqual(res, [0, 2, 4, 6, 8]);
       });
   });
 });

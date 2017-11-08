@@ -20,12 +20,12 @@ parallel('props', () => {
     };
     return Aigle.props(tasks)
       .then(res => {
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           task1: 'test1',
           task2: 'test2',
           task3: 'test3'
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           'test3',
           'test2',
           'test1'
@@ -47,7 +47,7 @@ parallel('props', () => {
       .catch(err => {
         assert.ok(err);
         assert.strictEqual(err.message, 'error2');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           'test3',
           'test2'
         ]);
@@ -62,7 +62,7 @@ parallel('props', () => {
       task3: new Aigle(resolve => setTimeout(() => resolve(3), 10))
     };
     return Aigle.props(tasks)
-      .then(res => assert.deepEqual(res, {
+      .then(res => assert.deepStrictEqual(res, {
         task1: 1,
         task2: 2,
         task3: 3
@@ -77,7 +77,7 @@ parallel('props', () => {
       task3: 3
     };
     return Aigle.props(tasks)
-      .then(res => assert.deepEqual(res, {
+      .then(res => assert.deepStrictEqual(res, {
         task1: 1,
         task2: 2,
         task3: 3
@@ -89,7 +89,7 @@ parallel('props', () => {
     return Aigle.props({})
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {});
+        assert.deepStrictEqual(res, {});
       });
   });
 
@@ -118,12 +118,12 @@ parallel('#props', () => {
     return Aigle.resolve(tasks)
       .props()
       .then(res => {
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           task1: 'test1',
           task2: 'test2',
           task3: 'test3'
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           'test3',
           'test2',
           'test1'
@@ -146,7 +146,7 @@ parallel('#props', () => {
       .catch(err => {
         assert.ok(err);
         assert.strictEqual(err.message, 'error2');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           'test3',
           'test2'
         ]);

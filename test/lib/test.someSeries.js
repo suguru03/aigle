@@ -21,7 +21,7 @@ parallel('someSeries', () => {
     return Aigle.someSeries(collection, iterator)
       .then(res => {
         assert.strictEqual(res, true);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1]
         ]);
       });
@@ -52,7 +52,7 @@ parallel('someSeries', () => {
     return Aigle.someSeries(collection, iterator)
       .then(res => {
         assert.strictEqual(res, true);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1]
         ]);
       });
@@ -71,7 +71,7 @@ parallel('someSeries', () => {
     return Aigle.someSeries(collection, iterator)
       .then(res => {
         assert.strictEqual(res, false);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 0],
           [1, 4],
           [2, 2]
@@ -96,7 +96,7 @@ parallel('someSeries', () => {
     return Aigle.someSeries(collection, iterator)
       .then(res => {
         assert.strictEqual(res, false);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 0],
           ['task2', 4],
           ['task3', 2]
@@ -161,7 +161,7 @@ parallel('#someSeries', () => {
       .someSeries(iterator)
       .then(res => {
         assert.strictEqual(res, true);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1]
         ]);
       });
@@ -184,7 +184,7 @@ parallel('#someSeries', () => {
       .someSeries(iterator)
       .then(res => {
         assert.strictEqual(res, true);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1]
         ]);
       });
@@ -204,7 +204,7 @@ parallel('#someSeries', () => {
       .someSeries(iterator)
       .then(res => {
         assert.strictEqual(res, true);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1]
         ]);
       });

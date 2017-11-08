@@ -20,12 +20,12 @@ parallel('parallel', () => {
     ];
     return Aigle.parallel(tasks)
       .then(res => {
-        assert.deepEqual(res, [
+        assert.deepStrictEqual(res, [
           'test1',
           'test2',
           'test3'
         ]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           'test3',
           'test2',
           'test1'
@@ -44,12 +44,12 @@ parallel('parallel', () => {
     };
     return Aigle.parallel(tasks)
       .then(res => {
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           task1: 'test1',
           task2: 'test2',
           task3: 'test3'
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           'test3',
           'test2',
           'test1'
@@ -62,7 +62,7 @@ parallel('parallel', () => {
     return Aigle.parallel([])
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, []);
+        assert.deepStrictEqual(res, []);
       });
   });
 
@@ -71,7 +71,7 @@ parallel('parallel', () => {
     return Aigle.parallel({})
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {});
+        assert.deepStrictEqual(res, {});
       });
   });
 
@@ -80,7 +80,7 @@ parallel('parallel', () => {
     return Aigle.parallel()
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {});
+        assert.deepStrictEqual(res, {});
       });
   });
 });
@@ -100,12 +100,12 @@ parallel('#parallel', () => {
     return Aigle.resolve(tasks)
       .parallel()
       .then(res => {
-        assert.deepEqual(res, [
+        assert.deepStrictEqual(res, [
           'test1',
           'test2',
           'test3'
         ]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           'test3',
           'test2',
           'test1'
@@ -125,12 +125,12 @@ parallel('#parallel', () => {
     return Aigle.resolve(tasks)
       .parallel()
       .then(res => {
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           task1: 'test1',
           task2: 'test2',
           task3: 'test3'
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           'test3',
           'test2',
           'test1'
@@ -150,12 +150,12 @@ parallel('#parallel', () => {
     return Aigle.delay(DELAY, tasks)
       .parallel()
       .then(res => {
-        assert.deepEqual(res, [
+        assert.deepStrictEqual(res, [
           'test1',
           'test2',
           'test3'
         ]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           'test3',
           'test2',
           'test1'
@@ -178,7 +178,7 @@ parallel('#parallel', () => {
       .catch(err => {
         assert.ok(err);
         assert.strictEqual(err.message, 'error2');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           'test3',
           'test2'
         ]);

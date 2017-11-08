@@ -21,8 +21,8 @@ parallel('eachSeries', () => {
     };
     return Aigle.eachSeries(collection, iterator)
       .then(res => {
-        assert.deepEqual(res, undefined);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, undefined);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [1, 4],
           [2, 2]
@@ -46,8 +46,8 @@ parallel('eachSeries', () => {
     };
     return Aigle.eachSeries(collection, iterator)
       .then(res => {
-        assert.deepEqual(res, undefined);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, undefined);
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task2', 4],
           ['task3', 2]
@@ -68,7 +68,7 @@ parallel('eachSeries', () => {
     return Aigle.eachSeries(collection, iterator)
       .then(res => {
         assert.strictEqual(res, undefined);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1],
           [1, 4]
         ]);
@@ -92,7 +92,7 @@ parallel('eachSeries', () => {
     return Aigle.eachSeries(collection, iterator)
       .then(res => {
         assert.strictEqual(res, undefined);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task2', 4]
         ]);
@@ -149,8 +149,8 @@ parallel('forEachSeries', () => {
     };
     return Aigle.forEachSeries(collection, iterator)
       .then(res => {
-        assert.deepEqual(res, undefined);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, undefined);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [1, 4],
           [2, 2]
@@ -175,8 +175,8 @@ parallel('#eachSeries', () => {
     return Aigle.resolve(collection)
       .eachSeries(iterator)
       .then(res => {
-        assert.deepEqual(res, undefined);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, undefined);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [1, 4],
           [2, 2]
@@ -201,8 +201,8 @@ parallel('#eachSeries', () => {
     return Aigle.resolve(collection)
       .eachSeries(iterator)
       .then(res => {
-        assert.deepEqual(res, undefined);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, undefined);
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task2', 4],
           ['task3', 2]
@@ -273,8 +273,8 @@ parallel('#forEachSeries', () => {
     return Aigle.resolve(collection)
       .forEachSeries(iterator)
       .then(res => {
-        assert.deepEqual(res, undefined);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, undefined);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [1, 4],
           [2, 2]

@@ -21,8 +21,8 @@ parallel('sortBy', () => {
     return Aigle.sortBy(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 2, 4]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [1, 2, 4]);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 2],
           [1, 4]
@@ -47,8 +47,8 @@ parallel('sortBy', () => {
     return Aigle.sortBy(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 2, 4]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [1, 2, 4]);
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 2],
           ['task2', 4]
@@ -76,7 +76,7 @@ parallel('sortBy', () => {
     const iterator = ({ value }) => value % 2 === 0;
     return Aigle.sortBy(collection, iterator)
       .then(res => {
-        assert.deepEqual(res, [{
+        assert.deepStrictEqual(res, [{
           index: 1,
           value: 3
         }, {
@@ -161,8 +161,8 @@ parallel('#sortBy', () => {
     return Aigle.resolve(collection)
       .sortBy(iterator)
       .then(res => {
-        assert.deepEqual(res, [1, 2, 4]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [1, 2, 4]);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 2],
           [1, 4]
@@ -186,8 +186,8 @@ parallel('#sortBy', () => {
     return Aigle.resolve(collection)
       .sortBy(iterator)
       .then(res => {
-        assert.deepEqual(res, [1, 2, 4]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [1, 2, 4]);
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 2],
           ['task2', 4]
@@ -208,8 +208,8 @@ parallel('#sortBy', () => {
     return Aigle.delay(DELAY, collection)
       .sortBy(iterator)
       .then(res => {
-        assert.deepEqual(res, [1, 2, 4]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [1, 2, 4]);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 2],
           [1, 4]
@@ -230,7 +230,7 @@ parallel('#sortBy', () => {
     const promise = Aigle.resolve(collection)
       .sortBy('uid')
       .then(array => {
-        assert.deepEqual(array, [{
+        assert.deepStrictEqual(array, [{
           uid: 1, name: 'test1'
         }, {
           uid: 2, name: 'test2'
@@ -254,7 +254,7 @@ parallel('#sortBy', () => {
     const promise = Aigle.resolve(collection)
       .sortBy('uid')
       .then(array => {
-        assert.deepEqual(array, [{
+        assert.deepStrictEqual(array, [{
           uid: 1, name: 'test1'
         }, {
           uid: 2, name: 'test2'
@@ -278,7 +278,7 @@ parallel('#sortBy', () => {
     }, null];
     return Aigle.resolve(collection)
       .filter(['uid', 4])
-      .then(array => assert.deepEqual(array, [{
+      .then(array => assert.deepStrictEqual(array, [{
         uid: 4, bool: 1
       }]));
   });
@@ -293,7 +293,7 @@ parallel('#sortBy', () => {
     };
     return Aigle.resolve(collection)
       .filter(['uid', 4])
-      .then(array => assert.deepEqual(array, [{
+      .then(array => assert.deepStrictEqual(array, [{
         uid: 4, bool: 1
       }]));
   });
@@ -309,7 +309,7 @@ parallel('#sortBy', () => {
     }, null];
     return Aigle.resolve(collection)
       .filter({ uid: 4 })
-      .then(array => assert.deepEqual(array, [{
+      .then(array => assert.deepStrictEqual(array, [{
         uid: 4, bool: 1
       }]));
   });
@@ -324,7 +324,7 @@ parallel('#sortBy', () => {
     };
     return Aigle.resolve(collection)
       .filter({ uid: 4 })
-      .then(array => assert.deepEqual(array, [{
+      .then(array => assert.deepStrictEqual(array, [{
         uid: 4, bool: 1
       }]));
   });

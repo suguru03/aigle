@@ -21,8 +21,8 @@ parallel('reject', () => {
     return Aigle.reject(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [4, 2]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [4, 2]);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 2],
           [1, 4]
@@ -47,8 +47,8 @@ parallel('reject', () => {
     return Aigle.reject(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [4, 2]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [4, 2]);
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 2],
           ['task2', 4]
@@ -122,8 +122,8 @@ parallel('#reject', () => {
     return Aigle.resolve(collection)
       .reject(iterator)
       .then(res => {
-        assert.deepEqual(res, [4, 2]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [4, 2]);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 2],
           [1, 4]
@@ -147,8 +147,8 @@ parallel('#reject', () => {
     return Aigle.resolve(collection)
       .reject(iterator)
       .then(res => {
-        assert.deepEqual(res, [4, 2]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [4, 2]);
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 2],
           ['task2', 4]
@@ -169,8 +169,8 @@ parallel('#reject', () => {
     return Aigle.delay(DELAY, collection)
       .reject(iterator)
       .then(res => {
-        assert.deepEqual(res, [4, 2]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [4, 2]);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 2],
           [1, 4]
@@ -191,7 +191,7 @@ parallel('#reject', () => {
     const promise = Aigle.resolve(collection)
       .reject('bool')
       .then(array => {
-        assert.deepEqual(array, [{
+        assert.deepStrictEqual(array, [{
           uid: 1, bool: 0
         }]);
         assert.strictEqual(sync, false);
@@ -211,7 +211,7 @@ parallel('#reject', () => {
     const promise = Aigle.resolve(collection)
       .reject('bool')
       .then(array => {
-        assert.deepEqual(array, [{
+        assert.deepStrictEqual(array, [{
           uid: 1, bool: 0
         }]);
         assert.strictEqual(sync, false);
@@ -231,7 +231,7 @@ parallel('#reject', () => {
     }, null];
     return Aigle.resolve(collection)
       .reject(['uid', 4])
-      .then(array => assert.deepEqual(array, [{
+      .then(array => assert.deepStrictEqual(array, [{
         uid: 1, bool: 0
       }, {
         uid: 2, bool: 1
@@ -248,7 +248,7 @@ parallel('#reject', () => {
     };
     return Aigle.resolve(collection)
       .reject(['uid', 4])
-      .then(array => assert.deepEqual(array, [{
+      .then(array => assert.deepStrictEqual(array, [{
         uid: 1, bool: 0
       }, {
         uid: 2, bool: 1
@@ -266,7 +266,7 @@ parallel('#reject', () => {
     }, null];
     return Aigle.resolve(collection)
       .reject({ uid: 4 })
-      .then(array => assert.deepEqual(array, [{
+      .then(array => assert.deepStrictEqual(array, [{
         uid: 1, bool: 0
       }, {
         uid: 2, bool: 1
@@ -283,7 +283,7 @@ parallel('#reject', () => {
     };
     return Aigle.resolve(collection)
       .reject({ uid: 4 })
-      .then(array => assert.deepEqual(array, [{
+      .then(array => assert.deepStrictEqual(array, [{
         uid: 1, bool: 0
       }, {
         uid: 2, bool: 1

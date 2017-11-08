@@ -22,8 +22,8 @@ parallel('concatSeries', () => {
     return Aigle.concatSeries(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 4, 2]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [1, 4, 2]);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [1, 4],
           [2, 2]
@@ -38,7 +38,7 @@ parallel('concatSeries', () => {
     return Aigle.concatSeries(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 4, 2]);
+        assert.deepStrictEqual(res, [1, 4, 2]);
       });
   });
 
@@ -60,8 +60,8 @@ parallel('concatSeries', () => {
     return Aigle.concatSeries(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [1, 4, 2]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [1, 4, 2]);
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task2', 4],
           ['task3', 2]
@@ -74,7 +74,7 @@ parallel('concatSeries', () => {
     const collection = [null, undefined, 0, '', false];
     const iterator = value => value;
     return Aigle.concatSeries(collection, iterator)
-      .then(res => assert.deepEqual(res, [null, 0, '', false]));
+      .then(res => assert.deepStrictEqual(res, [null, 0, '', false]));
   });
 
   it('should return an empty array if collection is an empty array', () => {
@@ -143,8 +143,8 @@ parallel('#concatSeries', () => {
     return Aigle.resolve(collection)
       .concatSeries(iterator)
       .then(res => {
-        assert.deepEqual(res, [1, 4, 2]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [1, 4, 2]);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [1, 4],
           [2, 2]
@@ -168,8 +168,8 @@ parallel('#concatSeries', () => {
     return Aigle.resolve(collection)
       .concatSeries(iterator)
       .then(res => {
-        assert.deepEqual(res, [1, 4, 2]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [1, 4, 2]);
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task2', 4],
           ['task3', 2]

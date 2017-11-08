@@ -21,7 +21,7 @@ parallel('find', () => {
     return Aigle.find(collection, iterator)
       .then(res => {
         assert.strictEqual(res, 1);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1]
         ]);
       });
@@ -44,7 +44,7 @@ parallel('find', () => {
     return Aigle.find(collection, iterator)
       .then(res => {
         assert.strictEqual(res, 1);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1]
         ]);
       });
@@ -63,7 +63,7 @@ parallel('find', () => {
     return Aigle.find(collection, iterator)
       .then(res => {
         assert.strictEqual(res, undefined);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 0],
           [2, 2],
           [1, 4]
@@ -88,7 +88,7 @@ parallel('find', () => {
     return Aigle.find(collection, iterator)
       .then(res => {
         assert.strictEqual(res, undefined);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 0],
           ['task3', 2],
           ['task2', 4]
@@ -154,7 +154,7 @@ parallel('#find', () => {
       .find(iterator)
       .then(res => {
         assert.strictEqual(res, 1);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1]
         ]);
       });
@@ -177,7 +177,7 @@ parallel('#find', () => {
       .find(iterator)
       .then(res => {
         assert.strictEqual(res, 1);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1]
         ]);
       });
@@ -197,7 +197,7 @@ parallel('#find', () => {
       .find(iterator)
       .then(res => {
         assert.strictEqual(res, 1);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1]
         ]);
       });
@@ -216,7 +216,7 @@ parallel('#find', () => {
     const promise = Aigle.resolve(collection)
       .find('bool')
       .then(res => {
-        assert.deepEqual(res, { uid: 4, bool: 1 });
+        assert.deepStrictEqual(res, { uid: 4, bool: 1 });
         assert.strictEqual(sync, false);
       });
     sync = false;
@@ -234,7 +234,7 @@ parallel('#find', () => {
     const promise = Aigle.resolve(collection)
       .find('bool')
       .then(res => {
-        assert.deepEqual(res, { uid: 4, bool: 1 });
+        assert.deepStrictEqual(res, { uid: 4, bool: 1 });
         assert.strictEqual(sync, false);
       });
     sync = false;
@@ -252,7 +252,7 @@ parallel('#find', () => {
     }];
     return Aigle.resolve(collection)
       .find(['bool', 1])
-      .then(res => assert.deepEqual(res, {
+      .then(res => assert.deepStrictEqual(res, {
         uid: 4, bool: 1
       }));
   });
@@ -266,7 +266,7 @@ parallel('#find', () => {
     };
     return Aigle.resolve(collection)
       .find(['uid', 2])
-      .then(res => assert.deepEqual(res, {
+      .then(res => assert.deepStrictEqual(res, {
         uid: 2, bool: 1
       }));
   });
@@ -282,7 +282,7 @@ parallel('#find', () => {
     }];
     return Aigle.resolve(collection)
       .find({ uid: 2 })
-      .then(res => assert.deepEqual(res, {
+      .then(res => assert.deepStrictEqual(res, {
         uid: 2, bool: 1
       }));
   });
@@ -296,7 +296,7 @@ parallel('#find', () => {
     };
     return Aigle.resolve(collection)
       .find({ uid: 4, bool: 1 })
-      .then(res => assert.deepEqual(res, {
+      .then(res => assert.deepStrictEqual(res, {
         uid: 4, bool: 1
       }));
   });

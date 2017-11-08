@@ -54,7 +54,7 @@ parallel('mixin', () => {
    *   const array = await lo.chain([1, 2, 3])
    *     .map(n => Aigle.delay(DELAY, n * 2))
    *     .value();
-   *   assert.deepEqual(array, [2, 4, 6]);
+   *   assert.deepStrictEqual(array, [2, 4, 6]);
    *   assert.strictEqual(await lo.sum(array), 12);
    * });
    */
@@ -64,7 +64,7 @@ parallel('mixin', () => {
     return lo.chain([1, 2, 3])
       .map(n => Aigle.delay(DELAY, n * 2))
       .then(array => {
-        assert.deepEqual(array, [2, 4, 6]);
+        assert.deepStrictEqual(array, [2, 4, 6]);
         return lo.sum(array);
       })
       .then(result => assert.strictEqual(result, 12));
@@ -80,7 +80,7 @@ parallel('mixin', () => {
         return array;
       })
       .all()
-      .then(value => assert.deepEqual(value [2, 4, 6]));
+      .then(value => assert.deepStrictEqual(value [2, 4, 6]));
   });
 
   it('should execute with a synchronous iterator', () => {
@@ -88,7 +88,7 @@ parallel('mixin', () => {
     Aigle.mixin({ sortedUniqBy: _.sortedUniqBy }, { override: true });
     return Aigle.delay(10, [1.1, 1.4, 2.3, 2.5, 2.7])
       .sortedUniqBy(Math.round)
-      .then(array => assert.deepEqual(array, [1.1, 2.3, 2.5]));
+      .then(array => assert.deepStrictEqual(array, [1.1, 2.3, 2.5]));
   });
 
   it('should execute with a asynchronous iterator', () => {
@@ -96,7 +96,7 @@ parallel('mixin', () => {
     Aigle.mixin({ sortedUniqBy: _.sortedUniqBy }, { override: true });
     return Aigle.delay(10, [1.1, 1.4, 2.3, 2.5, 2.7])
       .sortedUniqBy(n => Aigle.delay(DELAY, Math.round(n)))
-      .then(array => assert.deepEqual(array, [1.1, 2.3, 2.5]));
+      .then(array => assert.deepStrictEqual(array, [1.1, 2.3, 2.5]));
   });
 
   it('should execute with a static function', () => {
@@ -112,7 +112,7 @@ parallel('mixin', () => {
     const object = { a: 1.1, b: 1.4, c: 2.2 };
     return Aigle.delay(DELAY, object)
       .countBy(n => Aigle.delay(DELAY, Math.floor(n)))
-      .then(object => assert.deepEqual(object, { '1': 2, '2': 1 }));
+      .then(object => assert.deepStrictEqual(object, { '1': 2, '2': 1 }));
   });
 
   it('should catch an error', () => {

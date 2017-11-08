@@ -23,8 +23,8 @@ parallel('timesSeries', () => {
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.strictEqual(res.length, count);
-        assert.deepEqual(res, [0, 2, 4, 6, 8]);
-        assert.deepEqual(order, [0, 1, 2, 3, 4]);
+        assert.deepStrictEqual(res, [0, 2, 4, 6, 8]);
+        assert.deepStrictEqual(order, [0, 1, 2, 3, 4]);
       });
   });
 
@@ -36,7 +36,7 @@ parallel('timesSeries', () => {
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.strictEqual(res.length, count);
-        assert.deepEqual(res, [0, 2, 4, 6, 8]);
+        assert.deepStrictEqual(res, [0, 2, 4, 6, 8]);
       });
   });
 
@@ -56,7 +56,7 @@ parallel('timesSeries', () => {
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.strictEqual(res.length, 5);
-        assert.deepEqual(res, [0, 1, 2, 3, 4]);
+        assert.deepStrictEqual(res, [0, 1, 2, 3, 4]);
       });
   });
 
@@ -88,8 +88,8 @@ parallel('#timesSeries', () => {
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.strictEqual(res.length, count);
-        assert.deepEqual(res, [0, 2, 4, 6, 8]);
-        assert.deepEqual(order, [0, 1, 2, 3, 4]);
+        assert.deepStrictEqual(res, [0, 2, 4, 6, 8]);
+        assert.deepStrictEqual(order, [0, 1, 2, 3, 4]);
       });
   });
 
@@ -102,7 +102,7 @@ parallel('#timesSeries', () => {
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.strictEqual(res.length, count);
-        assert.deepEqual(res, [0, 2, 4, 6, 8]);
+        assert.deepStrictEqual(res, [0, 2, 4, 6, 8]);
       });
   });
 });

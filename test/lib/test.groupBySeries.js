@@ -21,11 +21,11 @@ parallel('groupBySeries', () => {
     return Aigle.groupBySeries(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           '0': [4, 2],
           '1': [1]
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1],
           [1, 4],
           [2, 2]
@@ -50,11 +50,11 @@ parallel('groupBySeries', () => {
     return Aigle.groupBySeries(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           '0': [4, 2],
           '1': [1]
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task2', 4],
           ['task3', 2]
@@ -70,7 +70,7 @@ parallel('groupBySeries', () => {
     return Aigle.groupBySeries([], iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {});
+        assert.deepStrictEqual(res, {});
       });
   });
 
@@ -82,7 +82,7 @@ parallel('groupBySeries', () => {
     return Aigle.groupBySeries({}, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {});
+        assert.deepStrictEqual(res, {});
       });
   });
 
@@ -94,7 +94,7 @@ parallel('groupBySeries', () => {
     return Aigle.groupBySeries('test', iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-        assert.deepEqual(res, {});
+        assert.deepStrictEqual(res, {});
       });
   });
   it('should throw TypeError', () => {
@@ -127,11 +127,11 @@ parallel('#groupBySeries', () => {
     return Aigle.resolve(collection)
       .groupBySeries(iterator)
       .then(res => {
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           '0': [4, 2],
           '1': [1]
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1],
           [1, 4],
           [2, 2]
@@ -155,11 +155,11 @@ parallel('#groupBySeries', () => {
     return Aigle.resolve(collection)
       .groupBySeries(iterator)
       .then(res => {
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           '0': [4, 2],
           '1': [1]
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task2', 4],
           ['task3', 2]
@@ -180,11 +180,11 @@ parallel('#groupBySeries', () => {
     return Aigle.delay(DELAY, collection)
       .groupBySeries(iterator)
       .then(res => {
-        assert.deepEqual(res, {
+        assert.deepStrictEqual(res, {
           '0': [4, 2],
           '1': [1]
         });
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1],
           [1, 4],
           [2, 2]

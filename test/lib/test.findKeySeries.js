@@ -21,7 +21,7 @@ parallel('findKeySeries', () => {
     return Aigle.findKeySeries(collection, iterator)
       .then(res => {
         assert.strictEqual(res, '0');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1]
         ]);
       });
@@ -52,7 +52,7 @@ parallel('findKeySeries', () => {
     return Aigle.findKeySeries(collection, iterator)
       .then(res => {
         assert.strictEqual(res, 'task1');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1]
         ]);
       });
@@ -71,7 +71,7 @@ parallel('findKeySeries', () => {
     return Aigle.findKeySeries(collection, iterator)
       .then(res => {
         assert.strictEqual(res, undefined);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 0],
           [1, 4],
           [2, 2]
@@ -96,7 +96,7 @@ parallel('findKeySeries', () => {
     return Aigle.findKeySeries(collection, iterator)
       .then(res => {
         assert.strictEqual(res, undefined);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 0],
           ['task2', 4],
           ['task3', 2]
@@ -162,7 +162,7 @@ parallel('#findKeySeries', () => {
       .findKeySeries(iterator)
       .then(res => {
         assert.strictEqual(res, '0');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1]
         ]);
       });
@@ -185,7 +185,7 @@ parallel('#findKeySeries', () => {
       .findKeySeries(iterator)
       .then(res => {
         assert.strictEqual(res, 'task1');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           ['task1', 1]
         ]);
       });
@@ -205,7 +205,7 @@ parallel('#findKeySeries', () => {
       .findKeySeries(iterator)
       .then(res => {
         assert.strictEqual(res, '0');
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(order, [
           [0, 1]
         ]);
       });

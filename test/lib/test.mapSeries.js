@@ -21,8 +21,8 @@ parallel('mapSeries', () => {
     return Aigle.mapSeries(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [2, 8, 4]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [2, 8, 4]);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [1, 4],
           [2, 2]
@@ -37,7 +37,7 @@ parallel('mapSeries', () => {
     return Aigle.mapSeries(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [2, 8, 4]);
+        assert.deepStrictEqual(res, [2, 8, 4]);
       });
   });
 
@@ -58,8 +58,8 @@ parallel('mapSeries', () => {
     return Aigle.mapSeries(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [2, 8, 4]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [2, 8, 4]);
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task2', 4],
           ['task3', 2]
@@ -138,8 +138,8 @@ parallel('#mapSeries', () => {
     return Aigle.resolve(collection)
       .mapSeries(iterator)
       .then(res => {
-        assert.deepEqual(res, [2, 8, 4]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [2, 8, 4]);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [1, 4],
           [2, 2]
@@ -163,8 +163,8 @@ parallel('#mapSeries', () => {
     return Aigle.resolve(collection)
       .mapSeries(iterator)
       .then(res => {
-        assert.deepEqual(res, [2, 8, 4]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [2, 8, 4]);
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task2', 4],
           ['task3', 2]
@@ -185,8 +185,8 @@ parallel('#mapSeries', () => {
     return Aigle.delay(DELAY, collection)
       .mapSeries(iterator)
       .then(res => {
-        assert.deepEqual(res, [2, 8, 4]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [2, 8, 4]);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [1, 4],
           [2, 2]

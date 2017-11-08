@@ -21,8 +21,8 @@ parallel('map', () => {
     return Aigle.map(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [2, 8, 4]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [2, 8, 4]);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 2],
           [1, 4]
@@ -47,8 +47,8 @@ parallel('map', () => {
     return Aigle.map(collection, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-        assert.deepEqual(res, [2, 8, 4]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [2, 8, 4]);
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 2],
           ['task2', 4]
@@ -104,7 +104,7 @@ parallel('map', () => {
     let sync = true;
     const promise = Aigle.map(collection, 'uid')
       .then(array => {
-        assert.deepEqual(array, [1, 4, 2]);
+        assert.deepStrictEqual(array, [1, 4, 2]);
         assert.strictEqual(sync, false);
       });
     sync = false;
@@ -121,7 +121,7 @@ parallel('map', () => {
     let sync = true;
     const promise = Aigle.map(collection, 'uid')
       .then(array => {
-        assert.deepEqual(array, [1, 4, 2]);
+        assert.deepStrictEqual(array, [1, 4, 2]);
         assert.strictEqual(sync, false);
       });
     sync = false;
@@ -138,7 +138,7 @@ parallel('map', () => {
       promise.map(iterator),
       promise.map(iterator)
     ])
-    .then(value => assert.deepEqual(value, [
+    .then(value => assert.deepStrictEqual(value, [
       [2, 4, 6],
       [2, 4, 6],
       [2, 4, 6]
@@ -175,8 +175,8 @@ parallel('#map', () => {
     return Aigle.resolve(collection)
       .map(iterator)
       .then(res => {
-        assert.deepEqual(res, [2, 8, 4]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [2, 8, 4]);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 2],
           [1, 4]
@@ -200,8 +200,8 @@ parallel('#map', () => {
     return Aigle.resolve(collection)
       .map(iterator)
       .then(res => {
-        assert.deepEqual(res, [2, 8, 4]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [2, 8, 4]);
+        assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 2],
           ['task2', 4]
@@ -222,8 +222,8 @@ parallel('#map', () => {
     return Aigle.delay(DELAY, collection)
       .map(iterator)
       .then(res => {
-        assert.deepEqual(res, [2, 8, 4]);
-        assert.deepEqual(order, [
+        assert.deepStrictEqual(res, [2, 8, 4]);
+        assert.deepStrictEqual(order, [
           [0, 1],
           [2, 2],
           [1, 4]
@@ -244,7 +244,7 @@ parallel('#map', () => {
     const promise = Aigle.resolve(collection)
       .map('uid')
       .then(array => {
-        assert.deepEqual(array, [1, 4, 2]);
+        assert.deepStrictEqual(array, [1, 4, 2]);
         assert.strictEqual(sync, false);
       });
     sync = false;
@@ -262,7 +262,7 @@ parallel('#map', () => {
     const promise = Aigle.resolve(collection)
       .map('uid')
       .then(array => {
-        assert.deepEqual(array, [1, 4, 2]);
+        assert.deepStrictEqual(array, [1, 4, 2]);
         assert.strictEqual(sync, false);
       });
     sync = false;
@@ -278,7 +278,7 @@ parallel('#map', () => {
     };
     return Aigle.resolve(collection)
       .groupBy(['bool', 1])
-      .then(object => assert.deepEqual(object, {
+      .then(object => assert.deepStrictEqual(object, {
         'true': [{
           uid: 4, bool: 1
         }, {
@@ -296,7 +296,7 @@ parallel('#map', () => {
     const collection = [{ uid: 1, name: 'test1'}, null, undefined, NaN];
     return Aigle.resolve(collection)
       .map('uid')
-      .then(array => assert.deepEqual(array, [1, undefined, undefined, undefined]));
+      .then(array => assert.deepStrictEqual(array, [1, undefined, undefined, undefined]));
   });
 
   it('should execute using shorthand with an object of random parameters', () => {
@@ -308,7 +308,7 @@ parallel('#map', () => {
     };
     return Aigle.resolve(collection)
       .map('uid')
-      .then(array => assert.deepEqual(array, [1, undefined, undefined]));
+      .then(array => assert.deepStrictEqual(array, [1, undefined, undefined]));
   });
 
   it('should catch a TypeError', () => {
