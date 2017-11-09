@@ -171,4 +171,20 @@ parallel('promisify', () => {
     return obj[key](1)
       .then(value => assert.strictEqual(value, 2));
   });
+
+  it('should work setTimeout the same functionality as util.promisify', () => {
+
+    const setTimeoutPromise = Aigle.promisify(setTimeout);
+    const str = 'foobar';
+    return setTimeoutPromise(DELAY, str)
+      .then(value => assert.strictEqual(value, str));
+  });
+
+  it('should work setImmediate the same functionality as util.promisify', () => {
+
+    const setImmedidatePromise = Aigle.promisify(setImmediate);
+    const str = 'foobar';
+    return setImmedidatePromise(str)
+      .then(value => assert.strictEqual(value, str));
+  });
 });
