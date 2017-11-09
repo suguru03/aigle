@@ -79,7 +79,11 @@ parallel('all', () => {
     const tasks = [
       new Aigle(resolve => resolve(1)),
       new Aigle(resolve => setTimeout(() => resolve(2), 20)),
-      new Aigle(resolve => setTimeout(() => resolve(3), 10)) ]; return Aigle.all(tasks) .then(res => assert.deepStrictEqual(res, [1, 2, 3])); });
+      new Aigle(resolve => setTimeout(() => resolve(3), 10))
+    ];
+    return Aigle.all(tasks)
+      .then(res => assert.deepStrictEqual(res, [1, 2, 3]));
+  });
 
   it('should execute with not promise instance', () => {
 
