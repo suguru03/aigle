@@ -26,7 +26,8 @@ rules:
   camelcase: "error"
   comma-dangle: ["error", "never"]
   comma-spacing: "error"
-  indent: ["error", 2]
+  indent: ["error", 2, { "MemberExpression": "off" }]
+  newline-per-chained-call: ["error"]
   key-spacing: "error"
   linebreak-style: ["error", "unix"]
   new-cap: "error"

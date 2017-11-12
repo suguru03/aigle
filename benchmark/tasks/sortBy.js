@@ -82,6 +82,6 @@ module.exports = ({ Aigle, neoAsync }) => {
       neoAsync: callback => {
         neoAsync.sortByLimit(this.array, 8, this.neoAsyncIterator, callback);
       }
-    },
+    }
   };
 };

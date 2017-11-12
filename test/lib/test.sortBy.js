@@ -119,32 +119,32 @@ parallel('sortBy', () => {
       });
   });
 
-    it('should return an empty array if collection is string', () => {
+  it('should return an empty array if collection is string', () => {
 
-      const iterator = value => {
-        value.test();
-      };
-      return Aigle.sortBy('test', iterator)
-        .then(res => {
-          assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
-          assert.strictEqual(res.length, 0);
-        });
-    });
-
-    it('should throw TypeError', () => {
-
-      const collection = [1, 4, 2];
-      const iterator = value => {
-        value.test();
-      };
-      return Aigle.sortBy(collection, iterator)
-        .then(() => assert.ok(false))
-        .catch(TypeError, error => {
-          assert.ok(error);
-          assert.ok(error instanceof TypeError);
-        });
-    });
+    const iterator = value => {
+      value.test();
+    };
+    return Aigle.sortBy('test', iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
+        assert.strictEqual(res.length, 0);
+      });
   });
+
+  it('should throw TypeError', () => {
+
+    const collection = [1, 4, 2];
+    const iterator = value => {
+      value.test();
+    };
+    return Aigle.sortBy(collection, iterator)
+      .then(() => assert.ok(false))
+      .catch(TypeError, error => {
+        assert.ok(error);
+        assert.ok(error instanceof TypeError);
+      });
+  });
+});
 
 parallel('#sortBy', () => {
 
