@@ -63,9 +63,9 @@ parallel('promisify', () => {
       callCount++;
       callback(null, callCount);
     };
-    const promisefied = Aigle.promisify(fn);
-    const first = promisefied();
-    const second = promisefied();
+    const promisified = Aigle.promisify(fn);
+    const first = promisified();
+    const second = promisified();
     first.then(res => assert.strictEqual(res, 1));
     second.then(res => assert.strictEqual(res, 2));
     first.then(res => assert.strictEqual(res, 1));
@@ -82,8 +82,8 @@ parallel('promisify', () => {
         callback(null, 2);
       }
     };
-    const promisefied = Aigle.promisify(obj, 'fn');
-    return promisefied(1)
+    const promisified = Aigle.promisify(obj, 'fn');
+    return promisified(1)
       .then(res => {
         assert.strictEqual(res, 2);
       });
@@ -98,8 +98,8 @@ parallel('promisify', () => {
         callback(null, 2);
       }
     };
-    const promisefied = Aigle.promisify(obj.fn, { context: ctx });
-    return promisefied(1)
+    const promisified = Aigle.promisify(obj.fn, { context: ctx });
+    return promisified(1)
       .then(res => {
         assert.strictEqual(res, 2);
       });
@@ -155,7 +155,7 @@ parallel('promisify', () => {
       .catch(TypeError, err => assert.strictEqual(err, error));
   });
 
-  it('should not cause error even if the function is already promisefied', () => {
+  it('should not cause error even if the function is already promisified', () => {
     const obj = {
       fn: function(arg, callback) {
         assert.strictEqual(this, obj);
@@ -163,10 +163,10 @@ parallel('promisify', () => {
         callback(null, 2);
       }
     };
-    const promisefied = Aigle.promisify(obj, 'fn');
-    Aigle.promisify(promisefied);
+    const promisified = Aigle.promisify(obj, 'fn');
+    Aigle.promisify(promisified);
     const key = 'test';
-    obj[key] = promisefied;
+    obj[key] = promisified;
     Aigle.promisify(obj, key);
     return obj[key](1)
       .then(value => assert.strictEqual(value, 2));
