@@ -76,22 +76,49 @@ parallel('race', () => {
       });
   });
 
-  it('should return undefined if tasks is an empty array', () => {
+  it('should be pending if tasks is an empty array', () => {
 
-    return Aigle.race([])
-      .then(res => assert.strictEqual(res, undefined));
+    let called = false;
+    Aigle.race([])
+      .then(() => called = true);
+    return Aigle.delay(DELAY)
+      .then(() => assert.strictEqual(called, false));
   });
 
-  it('should return undefined if tasks is an empty object', () => {
+  it('should be pending if tasks is an empty object', () => {
 
-    return Aigle.race({})
-      .then(res => assert.strictEqual(res, undefined));
+    let called = false;
+    Aigle.race({})
+      .then(() => called = true);
+    return Aigle.delay(DELAY)
+      .then(() => assert.strictEqual(called, false));
   });
 
   it('should return undefined if tasks is empty', () => {
 
-    return Aigle.race()
-      .then(res => assert.strictEqual(res, undefined));
+    let called = false;
+    Aigle.race()
+      .then(() => called = true);
+    return Aigle.delay(DELAY)
+      .then(() => assert.strictEqual(called, false));
+  });
+
+  it('should return a resolved promise', () => {
+    return Aigle.race([
+      Aigle.race(),
+      Aigle.resolve(1),
+      2
+    ])
+    .then(res => assert.strictEqual(res, 1));
+  });
+
+  it('should return a value', () => {
+    return Aigle.race([
+      Aigle.race(),
+      1,
+      Aigle.resolve(2)
+    ])
+    .then(res => assert.strictEqual(res, 1));
   });
 });
 
