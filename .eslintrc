@@ -2,41 +2,53 @@ env:
   es6: true
   node: true
 
-extends: 'eslint:recommended'
+extends: eslint:recommended
 
 rules:
   # Possible Errors
-  no-console: "off"
-  no-empty: "off"
+  no-console: off
+  no-empty: off
 
   # Best Practices
-  curly: "error"
-  dot-notation: "error"
-  eqeqeq: "error"
-  no-return-assign: "error"
-  no-proto: "error"
-  no-case-declarations: "off"
+  curly: error
+  dot-notation: error
+  eqeqeq: error
+  no-return-assign: error
+  no-proto: error
+  no-case-declarations: off
 
   # Strict Mode
-  strict: ["error", "global"]
+  strict:
+    - error
+    - global
 
   # Variables
 
   # Stylistic Issues
-  camelcase: "error"
-  comma-dangle: ["error", "never"]
-  comma-spacing: "error"
-  indent: ["error", 2, { "MemberExpression": "off" }]
-  newline-per-chained-call: ["error"]
-  key-spacing: "error"
-  linebreak-style: ["error", "unix"]
-  new-cap: "error"
-  quotes: ["error", "single"]
-  semi: ["error", "always"]
-  space-unary-ops: "error"
+  camelcase: error
+  comma-dangle:
+    - error
+    - never
+  comma-spacing: error
+  key-spacing: error
+  linebreak-style:
+    - error
+    - unix
+  indent:
+    - error
+    - 2
+    - MemberExpression: off
+  new-cap: error
+  quotes:
+    - error
+    - single
+  semi:
+    - error
+    - always
+  space-unary-ops: error
 
   # ECMAScript 6
-  no-var: "error"
+  no-var: error
 
   # Node.js
-  callback-return: "error"
+  callback-return: error
