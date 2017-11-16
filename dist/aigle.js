@@ -4796,11 +4796,7 @@ const types = [
 ];
 let l = types.length;
 while (l--) {
-  exports[types[l]] = class extends Error {
-    constructor(message) {
-      super(message);
-    }
-  };
+  exports[types[l]] = class extends Error {};
 }
 
 },{}],16:[function(require,module,exports){
@@ -8606,6 +8602,8 @@ function pickSeries(collection, iterator) {
 const Aigle = require('./aigle');
 const { INTERNAL } = require('./internal/util');
 
+const globalSetImmediate = typeof setImmediate === 'function' ? setImmediate : {};
+
 module.exports = promisify;
 
 /**
@@ -8634,6 +8632,12 @@ function promisify(fn, opts) {
     if (fn.__isPromisified__) {
       return fn;
     }
+    switch (fn) {
+    case setTimeout:
+      return Aigle.delay;
+    case globalSetImmediate:
+      return Aigle.resolve;
+    }
     const ctx = opts && opts.context !== undefined ? opts.context : undefined;
     return makeFunction(fn, ctx);
   default:
@@ -8646,13 +8650,7 @@ function promisify(fn, opts) {
  * @param {Aigle} promise
  */
 function makeCallback(promise) {
-  return (err, res) => {
-    if (err) {
-      promise._reject(err);
-    } else {
-      promise._resolve(res);
-    }
-  };
+  return (err, res) => err ? promise._reject(err) : promise._resolve(res);
 }
 
 /**
@@ -8915,6 +8913,9 @@ class Race extends Parallel {
   constructor(collection) {
     super(collection);
     this._result = undefined;
+    if (this._rest === 0) {
+      this._rest = -1;
+    }
   }
 
   _callResolve(value) {
@@ -11331,14 +11332,16 @@ process.umask = function() { return 0; };
 },{"_process":79}],81:[function(require,module,exports){
 module.exports={
   "name": "aigle",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "private": true,
   "browser": "browser.js",
   "scripts": {
     "bench": "node --expose_gc ./benchmark -d",
-    "test": "DELAY=50 istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- -R spec ./test --recursive && codecov"
+    "eslint": "eslint . --ext .js",
+    "test:only": "mocha test/**/*.js",
+    "test": "npm run eslint && DELAY=50 istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- -R spec ./test --recursive && codecov"
   },
   "keywords": [
     "aigle",
@@ -11359,10 +11362,10 @@ module.exports={
     "benchmark": "^2.1.1",
     "bluebird": "^3.5.1",
     "browserify": "^14.5.0",
-    "buble": "^0.16.0",
-    "codecov": "^2.3.1",
+    "buble": "^0.17.0",
+    "codecov": "^3.0.0",
     "docdash": "^0.4.0",
-    "eslint": "^3.19.0",
+    "eslint": "^4.11.0",
     "fs-extra": "^4.0.2",
     "gulp": "^3.9.1",
     "gulp-bump": "^2.8.0",
