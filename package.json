@@ -11,6 +11,7 @@
     "test:only": "mocha test/**/*.js",
     "test": "npm run eslint && DELAY=50 istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- -R spec ./test --recursive && codecov"
   },
+  "homepage": "https://github.com/suguru03/aigle",
   "keywords": [
     "aigle",
     "promise",
