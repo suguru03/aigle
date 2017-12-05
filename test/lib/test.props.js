@@ -84,6 +84,25 @@ parallel('props', () => {
       }));
   });
 
+  it('should work a Map instance', () => {
+
+    const order = [];
+    const delay = util.makeDelayTask(order);
+    const tasks = new Map([
+      ['task1', delay(1, DELAY * 3)],
+      ['task2', delay(2, DELAY * 2)],
+      ['task3', delay(3, DELAY * 1)]
+    ]);
+    return Aigle.props(tasks)
+      .then(res => {
+        assert.ok(res instanceof Map);
+        assert.strictEqual(res.get('task1'), 1);
+        assert.strictEqual(res.get('task2'), 2);
+        assert.strictEqual(res.get('task3'), 3);
+        assert.deepStrictEqual(order, [3, 2, 1]);
+      });
+  });
+
   it('should return immediately', () => {
 
     return Aigle.props({})
