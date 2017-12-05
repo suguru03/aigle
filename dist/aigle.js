@@ -3837,6 +3837,9 @@ function mixin(sources, opts = {}) {
       const obj = func();
       if (obj && obj.__chain__) {
         Aigle.chain = _resolve;
+        Aigle.prototype.value = function() {
+          return this;
+        };
         return;
       }
     }
@@ -11332,7 +11335,7 @@ process.umask = function() { return 0; };
 },{"_process":79}],81:[function(require,module,exports){
 module.exports={
   "name": "aigle",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "private": true,
@@ -11343,6 +11346,7 @@ module.exports={
     "test:only": "mocha test/**/*.js",
     "test": "npm run eslint && DELAY=50 istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- -R spec ./test --recursive && codecov"
   },
+  "homepage": "https://github.com/suguru03/aigle",
   "keywords": [
     "aigle",
     "promise",
@@ -11362,7 +11366,7 @@ module.exports={
     "benchmark": "^2.1.1",
     "bluebird": "^3.5.1",
     "browserify": "^14.5.0",
-    "buble": "^0.17.0",
+    "buble": "^0.18.0",
     "codecov": "^3.0.0",
     "docdash": "^0.4.0",
     "eslint": "^4.11.0",
