@@ -106,4 +106,15 @@ parallel('promisifyAll', () => {
       throw e;
     }
   });
+
+  it('should work even if null is included', () => {
+    const obj = {
+      get() {
+        return 1;
+      },
+      obj: null
+    };
+    Aigle.promisifyAll(obj);
+    assert.deepStrictEqual(Object.keys(obj), ['get', 'obj', 'getAsync']);
+  });
 });
