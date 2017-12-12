@@ -4,7 +4,6 @@ const assert = require('assert');
 
 const parallel = require('mocha.parallel');
 const Aigle = require('../../');
-
 parallel('promisifyAll', () => {
 
   it('should extend an instance', () => {
@@ -116,5 +115,29 @@ parallel('promisifyAll', () => {
     };
     Aigle.promisifyAll(obj);
     assert.deepStrictEqual(Object.keys(obj), ['get', 'obj', 'getAsync']);
+  });
+
+  it('should work a custom filter', () => {
+    class Test {
+      get() {
+        return this;
+      }
+      getAsync() {
+        return this;
+      }
+      set() {
+      }
+    }
+    Aigle.promisifyAll(Test, {
+      filter(name) {
+        return name === 'set';
+      }
+    });
+    const test = new Test();
+    assert.ok(test.get);
+    assert.ok(test.getAsync);
+    assert.ok(!test.getAsyncAsync);
+    assert.ok(test.set);
+    assert.ok(test.setAsync);
   });
 });
