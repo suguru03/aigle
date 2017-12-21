@@ -48,27 +48,18 @@ parallel('mixin', () => {
     return promise;
   });
 
-  /**
-   * it('should allow the lodash chain', async () => {
-   *   const lo = Aigle.mixin(_);
-   *   const array = await lo.chain([1, 2, 3])
-   *     .map(n => Aigle.delay(DELAY, n * 2))
-   *     .value();
-   *   assert.deepStrictEqual(array, [2, 4, 6]);
-   *   assert.strictEqual(await lo.sum(array), 12);
-   * });
-   */
-
   it('should allow the lodash chain', () => {
     const lo = Aigle.mixin(_);
     return lo.chain([1, 2, 3])
       .map(n => Aigle.delay(DELAY, n * 2))
       .value()
+      .tap(array => array.pop())
       .then(array => {
-        assert.deepStrictEqual(array, [2, 4, 6]);
+        assert.deepStrictEqual(array, [2, 4]);
         return lo.sum(array);
       })
-      .then(result => assert.strictEqual(result, 12));
+      .thru(value => value + 10)
+      .then(result => assert.strictEqual(result, 16));
   });
 
   it('should override Aigle functions', () => {
