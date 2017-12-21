@@ -4,7 +4,7 @@
 require('setimmediate');
 module.exports = require('./lib/aigle');
 
-},{"./lib/aigle":2,"setimmediate":80}],2:[function(require,module,exports){
+},{"./lib/aigle":2,"setimmediate":82}],2:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -3230,6 +3230,35 @@ var Aigle = (function (AigleCore) {
   };
 
   /**
+   * @param {Function} onFulfilled
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * Aigle.resolve(3)
+   *   .thru(value => ++value)
+   *   .then(value => {
+   *     console.log(value); // 4;
+   *   });
+   */
+  Aigle.prototype.thru = function thru$1 (onFulfilled) {
+    return this.then(function (value) { return thru(value, onFulfilled); });
+  };
+
+  /**
+   * @param {Function} onFulfilled
+   * @return {Aigle} Returns an Aigle instance
+   * @example
+   * Aigle.resolve([1, 4, 2])
+   *   .tap(array => array.pop()
+   *   .then(array => {
+   *     console.log(array); // [1, 4]
+   *   });
+   */
+  Aigle.prototype.tap = function tap$1 (onFulfilled) {
+    return this.then(function (value) { return tap(value, onFulfilled); });
+  };
+
+
+  /**
    * @param {Function} iterator
    * @return {Aigle} Returns an Aigle instance
    * @example
@@ -3603,6 +3632,8 @@ var GroupByLimit = ref$54.GroupByLimit;
 var ref$55 = require('./join');
 var join = ref$55.join;
 var Spread = ref$55.Spread;
+var promisify = require('./promisify');
+var promisifyAll = require('./promisifyAll');
 var ref$56 = require('./delay');
 var delay = ref$56.delay;
 var Delay = ref$56.Delay;
@@ -3615,6 +3646,8 @@ var ref$59 = require('./until');
 var until = ref$59.until;
 var doUntil = require('./doUntil');
 var retry = require('./retry');
+var thru = require('./thru');
+var tap = require('./tap');
 var ref$60 = require('./times');
 var times = ref$60.times;
 var Times = ref$60.Times;
@@ -3702,14 +3735,16 @@ Aigle.groupByLimit = groupByLimit;
 Aigle.attempt = attempt;
 Aigle.try = attempt;
 Aigle.join = join;
-Aigle.promisify = require('./promisify');
-Aigle.promisifyAll = require('./promisifyAll');
+Aigle.promisify = promisify;
+Aigle.promisifyAll = promisifyAll;
 Aigle.delay = delay;
 Aigle.whilst = whilst;
 Aigle.doWhilst = doWhilst;
 Aigle.until = until;
 Aigle.doUntil = doUntil;
 Aigle.retry = retry;
+Aigle.thru = thru;
+Aigle.tap = tap;
 Aigle.times = times;
 Aigle.timesSeries = timesSeries;
 Aigle.timesLimit = timesLimit;
@@ -3987,7 +4022,7 @@ function mixin(sources, opts) {
 }
 
 }).call(this,require('_process'))
-},{"./all":3,"./attempt":4,"./concat":5,"./concatLimit":6,"./concatSeries":7,"./debug":8,"./delay":9,"./doUntil":10,"./doWhilst":11,"./each":12,"./eachLimit":13,"./eachSeries":14,"./error":15,"./every":16,"./everyLimit":17,"./everySeries":18,"./filter":19,"./filterLimit":20,"./filterSeries":21,"./find":22,"./findIndex":23,"./findIndexLimit":24,"./findIndexSeries":25,"./findKey":26,"./findKeyLimit":27,"./findKeySeries":28,"./findLimit":29,"./findSeries":30,"./groupBy":31,"./groupByLimit":32,"./groupBySeries":33,"./internal/async":34,"./internal/mixin":36,"./internal/queue":37,"./internal/util":38,"./join":39,"./map":40,"./mapLimit":41,"./mapSeries":42,"./mapValues":43,"./mapValuesLimit":44,"./mapValuesSeries":45,"./omit":46,"./omitLimit":47,"./omitSeries":48,"./parallel":49,"./pick":50,"./pickLimit":51,"./pickSeries":52,"./promisify":53,"./promisifyAll":54,"./props":55,"./race":56,"./reduce":57,"./reject":58,"./rejectLimit":59,"./rejectSeries":60,"./retry":61,"./some":62,"./someLimit":63,"./someSeries":64,"./sortBy":65,"./sortByLimit":66,"./sortBySeries":67,"./timeout":68,"./times":69,"./timesLimit":70,"./timesSeries":71,"./transform":72,"./transformLimit":73,"./transformSeries":74,"./until":75,"./using":76,"./whilst":77,"_process":79,"aigle-core":78}],3:[function(require,module,exports){
+},{"./all":3,"./attempt":4,"./concat":5,"./concatLimit":6,"./concatSeries":7,"./debug":8,"./delay":9,"./doUntil":10,"./doWhilst":11,"./each":12,"./eachLimit":13,"./eachSeries":14,"./error":15,"./every":16,"./everyLimit":17,"./everySeries":18,"./filter":19,"./filterLimit":20,"./filterSeries":21,"./find":22,"./findIndex":23,"./findIndexLimit":24,"./findIndexSeries":25,"./findKey":26,"./findKeyLimit":27,"./findKeySeries":28,"./findLimit":29,"./findSeries":30,"./groupBy":31,"./groupByLimit":32,"./groupBySeries":33,"./internal/async":34,"./internal/mixin":36,"./internal/queue":37,"./internal/util":38,"./join":39,"./map":40,"./mapLimit":41,"./mapSeries":42,"./mapValues":43,"./mapValuesLimit":44,"./mapValuesSeries":45,"./omit":46,"./omitLimit":47,"./omitSeries":48,"./parallel":49,"./pick":50,"./pickLimit":51,"./pickSeries":52,"./promisify":53,"./promisifyAll":54,"./props":55,"./race":56,"./reduce":57,"./reject":58,"./rejectLimit":59,"./rejectSeries":60,"./retry":61,"./some":62,"./someLimit":63,"./someSeries":64,"./sortBy":65,"./sortByLimit":66,"./sortBySeries":67,"./tap":68,"./thru":69,"./timeout":70,"./times":71,"./timesLimit":72,"./timesSeries":73,"./transform":74,"./transformLimit":75,"./transformSeries":76,"./until":77,"./using":78,"./whilst":79,"_process":81,"aigle-core":80}],3:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -4086,7 +4121,7 @@ function all(array) {
 }
 
 
-},{"./aigle":2,"./internal/util":38,"aigle-core":78}],4:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":38,"aigle-core":80}],4:[function(require,module,exports){
 'use strict';
 
 var Aigle = require('./aigle');
@@ -4526,7 +4561,7 @@ function doUntil(value, iterator, tester) {
   return new DoWhilst(new UntilTester(tester), iterator)._iterate(value);
 }
 
-},{"./doWhilst":11,"./until":75}],11:[function(require,module,exports){
+},{"./doWhilst":11,"./until":77}],11:[function(require,module,exports){
 'use strict';
 
 var ref = require('./whilst');
@@ -4606,7 +4641,7 @@ function doWhilst(value, iterator, tester) {
   return new DoWhilst(new WhilstTester(tester), iterator)._iterate(value);
 }
 
-},{"./whilst":77}],12:[function(require,module,exports){
+},{"./whilst":79}],12:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -4724,7 +4759,7 @@ function each(collection, iterator) {
   return new Each(collection, iterator)._execute();
 }
 
-},{"./aigle":2,"./internal/collection":35,"./internal/util":38,"aigle-core":78}],13:[function(require,module,exports){
+},{"./aigle":2,"./internal/collection":35,"./internal/util":38,"aigle-core":80}],13:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -4890,7 +4925,7 @@ function eachLimit(collection, limit, iterator) {
 }
 
 
-},{"./aigle":2,"./internal/collection":35,"./internal/util":38,"aigle-core":78}],14:[function(require,module,exports){
+},{"./aigle":2,"./internal/collection":35,"./internal/util":38,"aigle-core":80}],14:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -5008,7 +5043,7 @@ function eachSeries(collection, iterator) {
   return new EachSeries(collection, iterator)._execute();
 }
 
-},{"./aigle":2,"./internal/collection":35,"./internal/util":38,"aigle-core":78}],15:[function(require,module,exports){
+},{"./aigle":2,"./internal/collection":35,"./internal/util":38,"aigle-core":80}],15:[function(require,module,exports){
 'use strict';
 
 var types = [
@@ -7244,7 +7279,7 @@ function createProxy(func, promisify) {
   }(MixinProxy));
 }
 
-},{"../aigle":2,"../map":40,"../mapValues":43,"./util":38,"aigle-core":78}],37:[function(require,module,exports){
+},{"../aigle":2,"../map":40,"../mapValues":43,"./util":38,"aigle-core":80}],37:[function(require,module,exports){
 'use strict';
 
 var Queue = function Queue(size) {
@@ -7269,6 +7304,7 @@ var ref$1 = require('../../package.json');
 var VERSION = ref$1.version;
 var DEFAULT_LIMIT = 8;
 var errorObj = { e: undefined };
+var iteratorSymbol = typeof Symbol === 'function' && Symbol.iterator;
 
 module.exports = {
   VERSION: VERSION,
@@ -7278,6 +7314,7 @@ module.exports = {
   UNHANDLED: UNHANDLED,
   defaultIterator: defaultIterator,
   errorObj: errorObj,
+  iteratorSymbol: iteratorSymbol,
   call0: call0,
   call1: call1,
   call3: call3,
@@ -7289,6 +7326,7 @@ module.exports = {
   callProxyReciever: callProxyReciever,
   promiseArrayEach: promiseArrayEach,
   promiseObjectEach: promiseObjectEach,
+  promiseSymbolEach: promiseSymbolEach,
   compactArray: compactArray,
   concatArray: concatArray,
   clone: clone,
@@ -7510,6 +7548,37 @@ function promiseObjectEach(receiver) {
   }
 }
 
+function promiseSymbolEach(receiver) {
+  var _result = receiver._result;
+  var iter = receiver._coll[iteratorSymbol]();
+  var item;
+  while ((item = iter.next()).done === false) {
+    var ref = item.value;
+    var key = ref[0];
+    var promise = ref[1];
+    _result.set(key, promise);
+    if (promise instanceof AigleCore) {
+      switch (promise._resolved) {
+      case 0:
+        promise._addReceiver(receiver, key);
+        continue;
+      case 1:
+        receiver._callResolve(promise._value, key);
+        continue;
+      case 2:
+        promise.suppressUnhandledRejections();
+        receiver._callReject(promise._value);
+        return;
+      }
+    }
+    if (promise && promise.then) {
+      callProxyThen(promise, receiver, key);
+    } else {
+      receiver._callResolve(promise, key);
+    }
+  }
+}
+
 function compactArray(array) {
   var i = -1;
   var l = array.length;
@@ -7654,7 +7723,7 @@ function quickSort(array, i, j, indices) {
 }
 
 
-},{"../../package.json":81,"aigle-core":78}],39:[function(require,module,exports){
+},{"../../package.json":83,"aigle-core":80}],39:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -7788,7 +7857,7 @@ function spread(proxy, array) {
   callProxyReciever(apply(_handler, array), proxy, INTERNAL);
 }
 
-},{"./aigle":2,"./internal/util":38,"aigle-core":78}],40:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":38,"aigle-core":80}],40:[function(require,module,exports){
 'use strict';
 
 var ref = require('./each');
@@ -8813,7 +8882,7 @@ function parallel(collection) {
   return new Parallel(collection)._execute();
 }
 
-},{"./aigle":2,"./internal/util":38,"aigle-core":78}],50:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":38,"aigle-core":80}],50:[function(require,module,exports){
 'use strict';
 
 var ref = require('./each');
@@ -9296,7 +9365,7 @@ module.exports = promisifyAll;
  * @param {Object} [opts]
  * @param {String} [opts.suffix=Async]
  * @param {Function} [opts.filter]
- * @param {Function} [opts.depth=2]
+ * @param {Integer} [opts.depth=2]
  * @example
  * const redis = require('redis');
  * Aigle.promisifyAll(redis);
@@ -9316,7 +9385,7 @@ function promisifyAll(target, opts) {
 }
 
 function defaultFilter(name) {
-  return /^_/.test(name);
+  return /^(?!_).*/.test(name);
 }
 
 function _promisifyAll(suffix, filter, obj, key, target, depth) {
@@ -9337,9 +9406,11 @@ function _promisifyAll(suffix, filter, obj, key, target, depth) {
     iterate(suffix, filter, obj.prototype, obj.prototype, depth, memo);
     break;
   case 'object':
+    if (!obj) {
+      break;
+    }
     iterate(suffix, filter, obj, obj, depth, memo);
     iterate(suffix, filter, Object.getPrototypeOf(obj), obj, depth, memo);
-    break;
   }
 }
 
@@ -9355,7 +9426,7 @@ function iterate(suffix, filter, obj, target, depth, memo) {
   var l = keys.length;
   while (l--) {
     var key = keys[l];
-    if (skipMap[key] === true || memo[key] === true || filter(key)) {
+    if (skipMap[key] === true || memo[key] === true || !filter(key)) {
       continue;
     }
     var desc = Object.getOwnPropertyDescriptor(obj, key);
@@ -9378,24 +9449,21 @@ var ref$1 = require('./internal/util');
 var INTERNAL = ref$1.INTERNAL;
 var PENDING = ref$1.PENDING;
 var promiseObjectEach = ref$1.promiseObjectEach;
+var promiseSymbolEach = ref$1.promiseSymbolEach;
+var iteratorSymbol = ref$1.iteratorSymbol;
 
 var Props = (function (AigleProxy) {
   function Props(object) {
     AigleProxy.call(this);
     this._promise = new Aigle(INTERNAL);
     this._result = {};
-    if (object === PENDING) {
-      this._rest = undefined;
-      this._coll = undefined;
-      this._keys = undefined;
-      this._execute = this._callResolve;
-      this._callResolve = set;
-    } else {
-      var keys = Object.keys(object);
-      this._rest = keys.length;
-      this._coll = object;
-      this._keys = keys;
-      this._execute = execute;
+    this._rest = 0;
+    this._coll = undefined;
+    this._keys = undefined;
+    this._execute = undefined;
+    this._callResolve = set;
+    if (object !== PENDING) {
+      this._set(object);
     }
   }
 
@@ -9403,11 +9471,23 @@ var Props = (function (AigleProxy) {
   Props.prototype = Object.create( AigleProxy && AigleProxy.prototype );
   Props.prototype.constructor = Props;
 
-  Props.prototype._callResolve = function _callResolve (value, key) {
-    this._result[key] = value;
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
+  Props.prototype._set = function _set (object) {
+    if (iteratorSymbol && object[iteratorSymbol]) {
+      this._result = new Map();
+      this._rest = object.size;
+      this._coll = object;
+      this._keys = undefined;
+      this._execute = executeMap;
+      this._callResolve = callResolveMap;
+    } else {
+      var keys = Object.keys(object);
+      this._rest = keys.length;
+      this._coll = object;
+      this._keys = keys;
+      this._execute = execute;
+      this._callResolve = callResolve;
     }
+    return this;
   };
 
   Props.prototype._callReject = function _callReject (reason) {
@@ -9420,13 +9500,7 @@ var Props = (function (AigleProxy) {
 module.exports = { props: props, Props: Props };
 
 function set(object) {
-  var keys = Object.keys(object);
-  this._rest = keys.length;
-  this._coll = object;
-  this._keys = keys;
-  this._callResolve = this._execute;
-  execute.call(this);
-  return this;
+  return this._set(object)._execute();
 }
 
 function execute() {
@@ -9436,6 +9510,29 @@ function execute() {
     promiseObjectEach(this);
   }
   return this._promise;
+}
+
+function executeMap() {
+  if (this._rest === 0) {
+    this._promise._resolve(this._result);
+  } else {
+    promiseSymbolEach(this);
+  }
+  return this._promise;
+}
+
+function callResolve(value, key) {
+  this._result[key] = value;
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
+  }
+}
+
+function callResolveMap(value, key) {
+  this._result.set(key, value);
+  if (--this._rest === 0) {
+    this._promise._resolve(this._result);
+  }
 }
 
 module.exports = { props: props, Props: Props };
@@ -9467,7 +9564,7 @@ function props(object) {
   return new Props(object)._execute();
 }
 
-},{"./aigle":2,"./internal/util":38,"aigle-core":78}],56:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":38,"aigle-core":80}],56:[function(require,module,exports){
 'use strict';
 
 var ref = require('./parallel');
@@ -9644,7 +9741,7 @@ function reduce(collection, iterator, result) {
   return new Reduce(collection, iterator, result)._execute();
 }
 
-},{"./aigle":2,"./internal/collection":35,"./internal/util":38,"aigle-core":78}],58:[function(require,module,exports){
+},{"./aigle":2,"./internal/collection":35,"./internal/util":38,"aigle-core":80}],58:[function(require,module,exports){
 'use strict';
 
 var ref = require('./each');
@@ -10057,7 +10154,7 @@ function retry(times, handler) {
   return new Retry(handler, times)._promise;
 }
 
-},{"./aigle":2,"./internal/util":38,"aigle-core":78}],62:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":38,"aigle-core":80}],62:[function(require,module,exports){
 'use strict';
 
 var ref = require('./each');
@@ -10664,6 +10761,39 @@ function sortBySeries(collection, iterator) {
 },{"./eachSeries":14,"./internal/collection":35,"./internal/util":38}],68:[function(require,module,exports){
 'use strict';
 
+var Aigle = require('./aigle');
+var ref = require('./internal/util');
+var INTERNAL = ref.INTERNAL;
+var callResolve = ref.callResolve;
+
+// TODO refactor
+function tap(value, onFulfilled) {
+  var promise = new Aigle(INTERNAL);
+  callResolve(promise, onFulfilled, value);
+  return promise.then(function () { return value; });
+}
+
+module.exports = tap;
+
+},{"./aigle":2,"./internal/util":38}],69:[function(require,module,exports){
+'use strict';
+
+var Aigle = require('./aigle');
+var ref = require('./internal/util');
+var INTERNAL = ref.INTERNAL;
+var callResolve = ref.callResolve;
+
+function thru(value, onFulfilled) {
+  var promise = new Aigle(INTERNAL);
+  callResolve(promise, onFulfilled, value);
+  return promise;
+}
+
+module.exports = thru;
+
+},{"./aigle":2,"./internal/util":38}],70:[function(require,module,exports){
+'use strict';
+
 var ref = require('aigle-core');
 var AigleProxy = ref.AigleProxy;
 
@@ -10708,7 +10838,7 @@ var Timeout = (function (AigleProxy) {
 
 module.exports = Timeout;
 
-},{"./aigle":2,"./error":15,"./internal/util":38,"aigle-core":78}],69:[function(require,module,exports){
+},{"./aigle":2,"./error":15,"./internal/util":38,"aigle-core":80}],71:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -10811,7 +10941,7 @@ function times(times, iterator) {
   return new Times(times, iterator)._execute();
 }
 
-},{"./aigle":2,"./internal/util":38,"aigle-core":78}],70:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":38,"aigle-core":80}],72:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -10952,7 +11082,7 @@ function timesLimit(times, limit, iterator) {
   return new TimesLimit(times, limit, iterator)._execute();
 }
 
-},{"./aigle":2,"./internal/util":38,"aigle-core":78}],71:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":38,"aigle-core":80}],73:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -11045,7 +11175,7 @@ function timesSeries(times, iterator) {
   return new TimesSeries(times, iterator)._execute();
 }
 
-},{"./aigle":2,"./internal/util":38,"./times":69,"aigle-core":78}],72:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":38,"./times":71,"aigle-core":80}],74:[function(require,module,exports){
 'use strict';
 
 var ref = require('./each');
@@ -11184,7 +11314,7 @@ function transform(collection, iterator, accumulator) {
   return new Transform(collection, iterator, accumulator)._execute();
 }
 
-},{"./each":12,"./internal/collection":35,"./internal/util":38}],73:[function(require,module,exports){
+},{"./each":12,"./internal/collection":35,"./internal/util":38}],75:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachLimit');
@@ -11331,7 +11461,7 @@ function transformLimit(collection, limit, iterator, accumulator) {
   return new TransformLimit(collection, limit, iterator, accumulator)._execute();
 }
 
-},{"./eachLimit":13,"./internal/collection":35,"./internal/util":38}],74:[function(require,module,exports){
+},{"./eachLimit":13,"./internal/collection":35,"./internal/util":38}],76:[function(require,module,exports){
 'use strict';
 
 var ref = require('./eachSeries');
@@ -11455,7 +11585,7 @@ function transformSeries(collection, iterator, accumulator) {
   return new TransformSeries(collection, iterator, accumulator)._execute();
 }
 
-},{"./eachSeries":14,"./internal/collection":35,"./internal/util":38}],75:[function(require,module,exports){
+},{"./eachSeries":14,"./internal/collection":35,"./internal/util":38}],77:[function(require,module,exports){
 'use strict';
 
 var ref = require('./whilst');
@@ -11498,7 +11628,7 @@ function until(value, tester, iterator) {
   return new AigleWhilst(new UntilTester(tester), iterator)._iterate(value);
 }
 
-},{"./whilst":77}],76:[function(require,module,exports){
+},{"./whilst":79}],78:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -11631,7 +11761,7 @@ function using() {
   return new Using(array, handler)._promise;
 }
 
-},{"./aigle":2,"./internal/util":38,"aigle-core":78}],77:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":38,"aigle-core":80}],79:[function(require,module,exports){
 'use strict';
 
 var ref = require('aigle-core');
@@ -11724,7 +11854,7 @@ function whilst(value, tester, iterator) {
   return new AigleWhilst(new WhilstTester(tester), iterator)._iterate(value);
 }
 
-},{"./aigle":2,"./internal/util":38,"aigle-core":78}],78:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":38,"aigle-core":80}],80:[function(require,module,exports){
 'use strict';
 
 var AigleCore = function AigleCore() {};
@@ -11733,7 +11863,7 @@ var AigleProxy = function AigleProxy() {};
 
 module.exports = { AigleCore: AigleCore, AigleProxy: AigleProxy };
 
-},{}],79:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -11921,7 +12051,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],80:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 (function (process,global){
 (function (global, undefined) {
     "use strict";
@@ -12113,10 +12243,10 @@ process.umask = function() { return 0; };
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":79}],81:[function(require,module,exports){
+},{"_process":81}],83:[function(require,module,exports){
 module.exports={
   "name": "aigle",
-  "version": "1.9.2",
+  "version": "1.10.0",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "private": true,
