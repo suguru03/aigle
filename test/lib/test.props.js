@@ -85,7 +85,6 @@ parallel('props', () => {
   });
 
   it('should work a Map instance', () => {
-
     const order = [];
     const delay = util.makeDelayTask(order);
     const tasks = new Map([
@@ -100,6 +99,30 @@ parallel('props', () => {
         assert.strictEqual(res.get('task2'), 2);
         assert.strictEqual(res.get('task3'), 3);
         assert.deepStrictEqual(order, [3, 2, 1]);
+      });
+  });
+
+  it('should work a Map instnce which has Aigle instances', () => {
+    const tasks = new Map([
+      ['task1', Aigle.delay(DELAY * 3, 1)],
+      ['task2', Aigle.resolve(2)],
+      ['task3', 3]
+    ]);
+    return Aigle.props(tasks)
+      .then(res => {
+        assert.ok(res instanceof Map);
+        assert.strictEqual(res.get('task1'), 1);
+        assert.strictEqual(res.get('task2'), 2);
+        assert.strictEqual(res.get('task3'), 3);
+      });
+  });
+
+  it('should work with an empty Map', () => {
+    const tasks = new Map();
+    return Aigle.props(tasks)
+      .then(res => {
+        assert.ok(res instanceof Map);
+        assert.notStrictEqual(res, tasks);
       });
   });
 
@@ -120,6 +143,17 @@ parallel('props', () => {
     })
     .then(() => assert(false))
     .catch(TypeError, error => assert.ok(error));
+  });
+
+  it('should throw an error with a Map instance', () => {
+    const error1 = new TypeError('error1');
+    const tasks = new Map([
+      ['e1', Aigle.reject(error1)],
+      ['e2', Aigle.reject(new TypeError('error2'))]
+    ]);
+    return Aigle.props(tasks)
+      .then(() => assert(false))
+      .catch(TypeError, error => assert.strictEqual(error, error1));
   });
 });
 
