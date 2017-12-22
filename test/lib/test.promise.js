@@ -6,6 +6,14 @@ const parallel = require('mocha.parallel');
 const Aigle = require('../../');
 const { DELAY } = require('../config');
 
+parallel('VERSION', () => {
+
+  it('should get the latest version', () => {
+    const { version } = require('../../package');
+    assert.strictEqual(Aigle.VERSION, version);
+  });
+});
+
 parallel('resolve', () => {
 
   it('should resolve', done => {
