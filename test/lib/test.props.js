@@ -184,6 +184,12 @@ parallel('#props', () => {
       });
   });
 
+  it('should return an empty object even if previous value is null', () => {
+    return Aigle.resolve(null)
+      .props()
+      .then(res => assert.deepStrictEqual(res, {}));
+  });
+
   it('should catch an error', () => {
 
     const order = [];
