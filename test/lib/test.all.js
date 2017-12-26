@@ -201,6 +201,13 @@ parallel('#all', () => {
     .then(value => assert.deepStrictEqual(value, [4, 5, 6]));
   });
 
+  it('should return an empty array if the previous value is not array', () => {
+
+    return Aigle.resolve(1)
+      .all()
+      .then(res => assert.deepStrictEqual(res, []));
+  });
+
   it('should catch error with multiple receivers on asynchronous', () => {
 
     const error = new TypeError('error');
