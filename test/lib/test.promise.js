@@ -39,6 +39,29 @@ parallel('resolve', () => {
     ])
     .then(() => assert.strictEqual(count, 3));
   });
+
+  it('should resolve even if the value is an Aigle instnace', () => {
+
+    const value = 1;
+    const promise = new Aigle(resolve => setTimeout(resolve, DELAY, value));
+    return Aigle.resolve(promise)
+      .then(res => assert.strictEqual(res, value));
+  });
+
+  it('should resolve even if the value is a Promise instance', () => {
+
+    const value = 1;
+    const promise = new Promise(resolve => setTimeout(resolve, DELAY, value));
+    return Aigle.resolve(promise)
+      .then(res => assert.strictEqual(res, value));
+  });
+
+  it('should be the same insntace', () => {
+
+    const promise1 = new Aigle(resolve => setTimeout(resolve, DELAY));
+    const promise2 = Aigle.resolve(promise1);
+    assert.strictEqual(promise1, promise2);
+  });
 });
 
 parallel('reject', () => {
