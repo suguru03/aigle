@@ -3639,9 +3639,11 @@ Aigle.CancellationError = CancellationError;
 Aigle.TimeoutError = TimeoutError;
 
 function _resolve(value) {
+  if (value instanceof AigleCore) {
+    return value;
+  }
   const promise = new Aigle(INTERNAL);
-  promise._resolved = 1;
-  promise._value = value;
+  callReceiver(promise, value);
   return promise;
 }
 
@@ -3897,32 +3899,44 @@ const { AigleProxy } = require('aigle-core');
 
 const Aigle = require('./aigle');
 const { INTERNAL, PENDING, promiseArrayEach } = require('./internal/util');
+const { callResolve } = require('./props');
 
 class All extends AigleProxy {
 
   constructor(array) {
     super();
     this._promise = new Aigle(INTERNAL);
+    this._rest = undefined;
+    this._coll = undefined;
+    this._result = undefined;
     if (array === PENDING) {
-      this._rest = undefined;
-      this._coll = undefined;
-      this._result = undefined;
-      this._execute = this._callResolve;
-      this._callResolve = set;
+      this._callResolve = this._set;
     } else {
+      this._callResolve = undefined;
+      this._set(array);
+    }
+  }
+
+  _set(array) {
+    if (Array.isArray(array)) {
       const size = array.length;
       this._rest = size;
       this._coll = array;
       this._result = Array(size);
-      this._execute = execute;
+      this._callResolve = callResolve;
+      promiseArrayEach(this);
+    } else {
+      this._rest = 0;
+      this._result = [];
     }
-  }
-
-  _callResolve(value, index) {
-    this._result[index] = value;
-    if (--this._rest === 0) {
+    if (this._rest === 0) {
       this._promise._resolve(this._result);
     }
+    return this;
+  }
+
+  _execute() {
+    return this._promise;
   }
 
   _callReject(reason) {
@@ -3931,25 +3945,6 @@ class All extends AigleProxy {
 }
 
 module.exports = { all, All };
-
-function set(array) {
-  const size = array.length;
-  this._rest = size;
-  this._coll = array;
-  this._result = Array(size);
-  this._callResolve = this._execute;
-  execute.call(this);
-  return this;
-}
-
-function execute() {
-  if (this._rest === 0) {
-    this._promise._resolve(this._result);
-  } else {
-    promiseArrayEach(this);
-  }
-  return this._promise;
-}
 
 /**
  * `Aigle.all` is almost the same functionality as `Promise.all`.
@@ -3976,11 +3971,11 @@ function execute() {
  * });
  */
 function all(array) {
-  return new All(array)._execute();
+  return new All(array)._promise;
 }
 
 
-},{"./aigle":2,"./internal/util":38,"aigle-core":80}],4:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":38,"./props":55,"aigle-core":80}],4:[function(require,module,exports){
 'use strict';
 
 const Aigle = require('./aigle');
@@ -6867,7 +6862,7 @@ const { AigleCore } = require('aigle-core');
 const { version: VERSION } = require('../../package.json');
 const DEFAULT_LIMIT = 8;
 const errorObj = { e: undefined };
-const iteratorSymbol = typeof Symbol === 'function' && Symbol.iterator;
+const iteratorSymbol = typeof Symbol === 'function' ? Symbol.iterator : function SYMBOL() {};
 
 module.exports = {
   VERSION,
@@ -8239,8 +8234,14 @@ const {
   INTERNAL,
   PENDING,
   promiseArrayEach,
-  promiseObjectEach
+  promiseObjectEach,
+  promiseSymbolEach,
+  iteratorSymbol
 } = require('./internal/util');
+const {
+  callResolve,
+  callResolveMap
+} = require('./props');
 
 class Parallel extends AigleProxy {
 
@@ -8252,29 +8253,45 @@ class Parallel extends AigleProxy {
     this._keys = undefined;
     this._result = undefined;
     if (collection === PENDING) {
-      this._result = this._callResolve;
-      this._callResolve = execute;
+      this._callResolve = this._set;
     } else {
-      set.call(this, collection);
+      this._callResolve = undefined;
+      this._set(collection);
     }
+  }
+
+  _set(collection) {
+    this._coll = collection;
+    if (Array.isArray(collection)) {
+      const size = collection.length;
+      this._rest = size;
+      this._result = Array(size);
+      this._callResolve = callResolve;
+      promiseArrayEach(this);
+    } else if (!collection || typeof collection !== 'object') {
+      this._rest = 0;
+      this._result = {};
+    } else if (collection[iteratorSymbol]) {
+      this._result = new Map();
+      this._rest = collection.size;
+      this._callResolve = callResolveMap;
+      promiseSymbolEach(this);
+    } else {
+      const keys = Object.keys(collection);
+      this._rest = keys.length;
+      this._keys = keys;
+      this._result = {};
+      this._callResolve = callResolve;
+      promiseObjectEach(this);
+    }
+    if (this._rest === 0) {
+      this._promise._resolve(this._result);
+    }
+    return this;
   }
 
   _execute() {
-    if (this._rest === 0) {
-      this._promise._resolve(this._result);
-    } else if (this._keys === undefined) {
-      promiseArrayEach(this);
-    } else {
-      promiseObjectEach(this);
-    }
     return this._promise;
-  }
-
-  _callResolve(value, index) {
-    this._result[index] = value;
-    if (--this._rest === 0) {
-      this._promise._resolve(this._result);
-    }
   }
 
   _callReject(reason) {
@@ -8283,33 +8300,6 @@ class Parallel extends AigleProxy {
 }
 
 module.exports = { parallel, Parallel };
-
-function execute(collection) {
-  this._callResolve = this._result;
-  set.call(this, collection);
-  this._execute();
-}
-
-function set(collection) {
-  if (Array.isArray(collection)) {
-    const size = collection.length;
-    this._rest = size;
-    this._coll = collection;
-    this._result = Array(size);
-    this._iterate = promiseArrayEach;
-  } else if (collection && typeof collection === 'object') {
-    const keys = Object.keys(collection);
-    this._rest = keys.length;
-    this._coll = collection;
-    this._keys = keys;
-    this._result = {};
-    this._iterate = promiseObjectEach;
-  } else {
-    this._rest = 0;
-    this._result = {};
-  }
-  return this;
-}
 
 /**
  * `Aigle.parallel` functionality is [`Aigle.all`](https://suguru03.github.io/aigle/docs/global.html#all) plus [`Aigle.props`](https://suguru03.github.io/aigle/docs/global.html#props).
@@ -8354,10 +8344,10 @@ function set(collection) {
  * });
  */
 function parallel(collection) {
-  return new Parallel(collection)._execute();
+  return new Parallel(collection)._promise;
 }
 
-},{"./aigle":2,"./internal/util":38,"aigle-core":80}],50:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":38,"./props":55,"aigle-core":80}],50:[function(require,module,exports){
 'use strict';
 
 const { Each } = require('./each');
@@ -8903,34 +8893,44 @@ class Props extends AigleProxy {
   constructor(object) {
     super();
     this._promise = new Aigle(INTERNAL);
-    this._result = {};
-    this._rest = 0;
+    this._rest = undefined;
+    this._result = undefined;
     this._coll = undefined;
     this._keys = undefined;
-    this._execute = undefined;
-    this._callResolve = set;
-    if (object !== PENDING) {
+    if (object === PENDING) {
+      this._callResolve = this._set;
+    } else {
+      this._callResolve = undefined;
       this._set(object);
     }
   }
 
   _set(object) {
-    if (iteratorSymbol && object[iteratorSymbol]) {
+    this._coll = object;
+    if (!object || typeof object !== 'object') {
+      this._rest = 0;
+      this._result = {};
+    } else if (object[iteratorSymbol]) {
       this._result = new Map();
       this._rest = object.size;
-      this._coll = object;
-      this._keys = undefined;
-      this._execute = executeMap;
       this._callResolve = callResolveMap;
+      promiseSymbolEach(this);
     } else {
       const keys = Object.keys(object);
+      this._result = {};
       this._rest = keys.length;
-      this._coll = object;
       this._keys = keys;
-      this._execute = execute;
       this._callResolve = callResolve;
+      promiseObjectEach(this);
+    }
+    if (this._rest === 0) {
+      this._promise._resolve(this._result);
     }
     return this;
+  }
+
+  _execute() {
+    return this._promise;
   }
 
   _callReject(reason) {
@@ -8938,29 +8938,7 @@ class Props extends AigleProxy {
   }
 }
 
-module.exports = { props, Props };
-
-function set(object) {
-  return this._set(object)._execute();
-}
-
-function execute() {
-  if (this._rest === 0) {
-    this._promise._resolve(this._result);
-  } else {
-    promiseObjectEach(this);
-  }
-  return this._promise;
-}
-
-function executeMap() {
-  if (this._rest === 0) {
-    this._promise._resolve(this._result);
-  } else {
-    promiseSymbolEach(this);
-  }
-  return this._promise;
-}
+module.exports = { props, Props, callResolve, callResolveMap };
 
 function callResolve(value, key) {
   this._result[key] = value;
@@ -8975,8 +8953,6 @@ function callResolveMap(value, key) {
     this._promise._resolve(this._result);
   }
 }
-
-module.exports = { props, Props };
 
 /**
  * `Aigle.props` is almost the same functionality as [`Aigle.all`](https://suguru03.github.io/aigle/docs/global.html#all)
@@ -9002,30 +8978,77 @@ module.exports = { props, Props };
  * });
  */
 function props(object) {
-  return new Props(object)._execute();
+  return new Props(object)._promise;
 }
 
 },{"./aigle":2,"./internal/util":38,"aigle-core":80}],56:[function(require,module,exports){
 'use strict';
 
-const { Parallel } = require('./parallel');
+const { AigleProxy } = require('aigle-core');
 
-class Race extends Parallel {
+const Aigle = require('./aigle');
+const {
+  INTERNAL,
+  PENDING,
+  promiseArrayEach,
+  promiseObjectEach,
+  promiseSymbolEach,
+  iteratorSymbol
+} = require('./internal/util');
+
+class Race extends AigleProxy {
 
   constructor(collection) {
-    super(collection);
+    super();
+    this._promise = new Aigle(INTERNAL);
+    this._rest = undefined;
+    this._coll = undefined;
+    this._keys = undefined;
     this._result = undefined;
-    if (this._rest === 0) {
-      this._rest = -1;
+    if (collection === PENDING) {
+      this._callResolve = this._set;
+    } else {
+      this._callResolve = undefined;
+      this._set(collection);
     }
   }
 
-  _callResolve(value) {
-    this._promise._resolve(value);
+  _set(collection) {
+    this._coll = collection;
+    this._callResolve = callResolve;
+    if (Array.isArray(collection)) {
+      const size = collection.length;
+      this._rest = size;
+      promiseArrayEach(this);
+    } else if (!collection || typeof collection !== 'object') {
+      this._rest = 0;
+    } else if (collection[iteratorSymbol]) {
+      this._rest = collection.size;
+      this._result = new Map();
+      promiseSymbolEach(this);
+    } else {
+      const keys = Object.keys(collection);
+      this._rest = keys.length;
+      this._keys = keys;
+      promiseObjectEach(this);
+    }
+    return this;
+  }
+
+  _execute() {
+    return this._promise;
+  }
+
+  _callReject(reason) {
+    this._promise._reject(reason);
   }
 }
 
 module.exports = { race, Race };
+
+function callResolve(value) {
+  this._promise._resolve(value);
+}
 
 /**
  * @param {Object|Array} collection
@@ -9046,10 +9069,10 @@ module.exports = { race, Race };
  * .then(value => console.log(value)); // 3
  */
 function race(collection) {
-  return new Race(collection)._execute();
+  return new Race(collection)._promise;
 }
 
-},{"./parallel":49}],57:[function(require,module,exports){
+},{"./aigle":2,"./internal/util":38,"aigle-core":80}],57:[function(require,module,exports){
 'use strict';
 
 const { AigleProxy } = require('aigle-core');
@@ -11463,7 +11486,7 @@ process.umask = function() { return 0; };
 },{"_process":81}],83:[function(require,module,exports){
 module.exports={
   "name": "aigle",
-  "version": "1.10.0",
+  "version": "1.10.1",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "private": true,
