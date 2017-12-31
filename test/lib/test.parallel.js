@@ -57,7 +57,22 @@ parallel('parallel', () => {
       });
   });
 
-  it('should work a Map instance', () => {
+  it('should work with a Set instance', () => {
+    const order = [];
+    const delay = util.makeDelayTask(order);
+    const tasks = new Set([
+      delay(1, DELAY * 3),
+      delay(2, DELAY * 2),
+      delay(3, DELAY * 1)
+    ]);
+    return Aigle.parallel(tasks)
+      .then(res => {
+        assert.deepStrictEqual(res, [1, 2, 3]);
+        assert.deepStrictEqual(order, [3, 2, 1]);
+      });
+  });
+
+  it('should work with a Map instance', () => {
     const order = [];
     const delay = util.makeDelayTask(order);
     const tasks = new Map([
