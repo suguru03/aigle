@@ -44,7 +44,7 @@
     "jsdoc": "^3.5.5",
     "lodash": "^4.15.0",
     "minimist": "^1.2.0",
-    "mocha": "^3.5.3",
+    "mocha": "^4.1.0",
     "mocha.parallel": "^0.15.3",
     "neo-async": "^2.5.0",
     "require-dir": "^0.3.1",
