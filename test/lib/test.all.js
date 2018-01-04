@@ -58,6 +58,16 @@ parallel('all', () => {
       });
   });
 
+  it('should work with a Set instnce which has Aigle instances', () => {
+    const tasks = new Set([
+      Aigle.delay(DELAY * 3, 1),
+      Aigle.resolve(2),
+      3
+    ]);
+    return Aigle.all(tasks)
+      .then(res => assert.deepStrictEqual(res, [1, 2, 3]));
+  });
+
   it('should catch an error', () => {
 
     const order = [];
@@ -77,6 +87,17 @@ parallel('all', () => {
           'test2'
         ]);
       });
+  });
+
+  it('should throw an error with a Set instance', () => {
+    const error1 = new TypeError('error1');
+    const tasks = new Set([
+      Aigle.reject(error1),
+      Aigle.reject(new TypeError('error2'))
+    ]);
+    return Aigle.all(tasks)
+      .then(() => assert(false))
+      .catch(TypeError, error => assert.strictEqual(error, error1));
   });
 
   it('should execute on native promise', () => {
