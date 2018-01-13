@@ -20,9 +20,9 @@ describe('asyncHook', () => {
   const map = _.mapValues(hooks, () => new Map());
   const hook = createHook(hooks);
 
-  before(() => Aigle.config({ asyncResource: true }));
+  before(() => Aigle.config({ asyncHooks: true }));
 
-  after(() => Aigle.config({ asyncResource: false }));
+  after(() => Aigle.config({ asyncHooks: false }));
 
   afterEach(() => {
     hook.disable();
