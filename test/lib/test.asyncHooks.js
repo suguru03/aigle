@@ -12,6 +12,10 @@ const describe = supportAsyncHook ? global.describe : global.describe.skip;
 
 describe('asyncHook', () => {
 
+  if (!supportAsyncHook) {
+    return;
+  }
+
   const { createHook, executionAsyncId, AsyncResource } = require('async_hooks');
 
   const hooks = {};
