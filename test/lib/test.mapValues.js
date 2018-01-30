@@ -57,6 +57,7 @@ parallel('mapValues', () => {
           task2: 8,
           task3: 4
         });
+        assert.deepStrictEqual(Object.keys(res), ['task1', 'task2', 'task3']);
         assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 2],
