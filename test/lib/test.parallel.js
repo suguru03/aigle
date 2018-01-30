@@ -49,6 +49,11 @@ parallel('parallel', () => {
           task2: 'test2',
           task3: 'test3'
         });
+        assert.deepStrictEqual(Object.keys(res), [
+          'task1',
+          'task2',
+          'task3'
+        ]);
         assert.deepStrictEqual(order, [
           'test3',
           'test2',
