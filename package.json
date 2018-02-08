@@ -10,7 +10,8 @@
     "eslint": "eslint . --ext .js",
     "test:only": "mocha test/**/*.js",
     "test:cov": "nyc npm run test:only",
-    "test": "npm-run-all -p eslint test:cov && codecov"
+    "codecov": "nyc report --reporter=lcovonly && codecov",
+    "test": "DELAY=50 npm-run-all -p eslint test:cov -s codecov"
   },
   "homepage": "https://github.com/suguru03/aigle",
   "keywords": [
