@@ -11,7 +11,7 @@
     "test:only": "mocha test/**/*.js",
     "test:cov": "nyc npm run test:only",
     "codecov": "nyc report --reporter=lcovonly && codecov",
-    "test": "DELAY=50 npm-run-all -p eslint test:cov -s codecov"
+    "test": "npm-run-all -p eslint test:cov"
   },
   "homepage": "https://github.com/suguru03/aigle",
   "keywords": [
