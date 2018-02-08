@@ -30,7 +30,7 @@
     "babili": "0.1.4",
     "benchmark": "^2.1.1",
     "bluebird": "^3.5.1",
-    "browserify": "^15.0.0",
+    "browserify": "^16.0.0",
     "buble": "^0.18.0",
     "codecov": "^3.0.0",
     "docdash": "^0.4.0",
