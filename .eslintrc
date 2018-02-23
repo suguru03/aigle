@@ -37,7 +37,7 @@ rules:
   indent:
     - error
     - 2
-    - MemberExpression: off
+    - { MemberExpression: off, SwitchCase: 1 }
   new-cap: error
   quotes:
     - error
