@@ -66,6 +66,29 @@ parallel('mapValues', () => {
       });
   });
 
+  it('should ensure object property order', () => {
+
+    const collection = {
+      task1: 1,
+      task2: 4,
+      task3: 2
+    };
+    const iterator = value => {
+      return new Aigle(resolve => setTimeout(() => {
+        resolve(value * 2);
+      }, DELAY * value));
+    };
+    return Aigle.mapValues(collection, iterator)
+      .then(res => {
+        assert.deepStrictEqual(res, {
+          task1: 2,
+          task2: 8,
+          task3: 4
+        });
+        assert.deepStrictEqual(Object.keys(res), ['task1', 'task2', 'task3']);
+      });
+  });
+
   it('should return an empty object if collection is an empty array', () => {
 
     const iterator = value => {

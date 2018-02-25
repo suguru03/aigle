@@ -76,6 +76,32 @@ parallel('mapValuesLimit', () => {
       });
   });
 
+  it('should ensure object object property order', () => {
+    const collection = {
+      task1: 1,
+      task2: 5,
+      task3: 3,
+      task4: 4,
+      task5: 2
+    };
+    const iterator = value => {
+      return new Aigle(resolve => setTimeout(() => {
+        resolve(value * 2);
+      }, DELAY * value));
+    };
+    return Aigle.mapValuesLimit(collection, 2, iterator)
+      .then(res => {
+        assert.deepStrictEqual(Object.keys(res), ['task1', 'task2', 'task3', 'task4', 'task5']);
+        assert.deepStrictEqual(res, {
+          task1: 2,
+          task2: 10,
+          task3: 6,
+          task4: 8,
+          task5: 4
+        });
+      });
+  });
+
   it('should execute with default concurrency which is 8', () => {
 
     const collection = _.times(10);
