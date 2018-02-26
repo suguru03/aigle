@@ -114,6 +114,21 @@ parallel('reject', () => {
   });
 });
 
+parallel('config', () => {
+
+  it('should set conifg', () => {
+    const execute = Aigle.prototype._execute;
+    Aigle.config({ cancellation: true });
+    assert.notStrictEqual(Aigle.prototype._execute, execute);
+    Aigle.config({ cancellation: false });
+    assert.strictEqual(Aigle.prototype._execute, execute);
+  });
+
+  it('should not throw any errors even if config is empty', () => {
+    Aigle.config();
+  });
+});
+
 parallel('#then', () => {
 
   it('should resolve on synchronous', done => {

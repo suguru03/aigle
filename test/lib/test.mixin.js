@@ -4,17 +4,23 @@ const path = require('path');
 const assert = require('assert');
 
 const _ = require('lodash');
-const parallel = require('mocha.parallel');
 
 const { DELAY } = require('../config');
 
-parallel('mixin', () => {
+describe('mixin', () => {
 
   let Aigle;
-  const aiglepath = path.resolve(__dirname, '../../lib/aigle.js');
+  const dirpath = path.resolve(__dirname, '../../lib');
+  const aiglepath = path.resolve(dirpath, 'aigle.js');
+  const re = new RegExp(dirpath);
   beforeEach(() => {
+    delete require.cache[aiglepath];
+    _.forOwn(require.cache, (cache, filepath) => {
+      if (re.test(filepath)) {
+        delete require.cache[filepath];
+      }
+    });
     Aigle = require(aiglepath);
-    _.forOwn(require.cache, (v, key) => delete require.cache[key]);
   });
 
   it('should execute with function', () => {
@@ -127,5 +133,18 @@ parallel('mixin', () => {
     })
     .then(assert.fail)
     .catch(err => assert.strictEqual(err, error));
+  });
+
+  it('should not override `value` function if it is not lodash function', () => {
+
+    const chain = _.noop;
+    Aigle.mixin({ chain });
+
+    const val = { a: 1 };
+    const promise = Aigle.resolve(val);
+    return promise.then(v => {
+      assert.strictEqual(v, val);
+      assert.strictEqual(promise.value(), val);
+    });
   });
 });

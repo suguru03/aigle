@@ -49,15 +49,31 @@ parallel('parallel', () => {
           task2: 'test2',
           task3: 'test3'
         });
-        assert.deepStrictEqual(Object.keys(res), [
-          'task1',
-          'task2',
-          'task3'
-        ]);
         assert.deepStrictEqual(order, [
           'test3',
           'test2',
           'test1'
+        ]);
+      });
+  });
+
+  it('should ensure object property order', () => {
+    const tasks = {
+      task1: Aigle.delay(DELAY * 3, 'test1'),
+      task2: Aigle.delay(DELAY * 2, 'test2'),
+      task3: Aigle.delay(DELAY * 1, 'test3')
+    };
+    return Aigle.parallel(tasks)
+      .then(res => {
+        assert.deepStrictEqual(res, {
+          task1: 'test1',
+          task2: 'test2',
+          task3: 'test3'
+        });
+        assert.deepStrictEqual(Object.keys(res), [
+          'task1',
+          'task2',
+          'task3'
         ]);
       });
   });
