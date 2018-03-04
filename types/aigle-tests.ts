@@ -34,6 +34,8 @@ let duckThen: PromiseLike<Duck>;
 
 /* core functions */
 
+//-- instances --//
+
 hawkProm = new Aigle((resolve: (value: Hawk) => void, reject: (reason: any) => void) => bool ? resolve(hawk) : reject(err));
 
 hawkProm = new Aigle((resolve: (value: Hawk) => void) => resolve(hawk));
@@ -41,3 +43,27 @@ hawkProm = new Aigle((resolve: (value: Hawk) => void) => resolve(hawk));
 hawkProm = new Aigle<Hawk>((resolve, reject) => bool ? resolve(hawkThen) : reject(err));
 
 hawkProm = new Aigle<Hawk>((resolve) => resolve(hawkThen));
+
+//-- then --//
+
+hawkProm.then((value: Hawk) => swan, (reason: any) => err);
+
+hawkProm.then((value: Hawk) => swanProm, (reason: any) => duckProm);
+
+hawkProm.then((value: Hawk) => swan)
+  .then((value: Swan) => duck);
+
+hawkProm.then((value: Hawk) => swanProm)
+  .then((value: Swan) => duck);
+
+hawkProm.then((value: Hawk) => swanProm)
+  .then((value: Swan) => duckProm)
+  .then((value: Duck) => null);
+
+//-- resolve --//
+
+Aigle.resolve(hawk)
+  .then((value: Hawk) => swan);
+
+Aigle.resolve(hawkProm)
+  .then((value: Hawk) => swan);
