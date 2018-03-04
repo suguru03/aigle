@@ -34,4 +34,5 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
 
       # run tests!
-      - run: DELAY=50 npm test && npm run codecov
+      - run: yarn test:type
+      - run: DELAY=50 yarn test && yarn codecov

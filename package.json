@@ -8,11 +8,11 @@
   "scripts": {
     "bench": "node --expose_gc ./benchmark -d",
     "eslint": "eslint . --ext .js",
+    "test": "npm-run-all -p eslint test:cov",
     "test:only": "mocha test/**/*.js",
     "test:cov": "nyc npm run test:only",
-    "codecov": "nyc report --reporter=lcovonly && codecov",
-    "test": "npm-run-all -p eslint test:cov",
-    "test:type": "cd types && tsc"
+    "test:type": "cd types && tsc",
+    "codecov": "nyc report --reporter=lcovonly && codecov"
   },
   "homepage": "https://github.com/suguru03/aigle",
   "keywords": [
