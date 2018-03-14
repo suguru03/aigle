@@ -620,6 +620,21 @@ describe('#catch', () => {
     .delay(DELAY)
     .then(done);
   });
+
+  it('should catch with a filter', done => {
+    let called = 0;
+    const error = new Error('error');
+    Aigle.reject(error)
+      .catch(err => {
+        called++;
+        assert.strictEqual(err, error);
+        return true;
+      }, err => {
+        assert.strictEqual(err, error);
+        assert.strictEqual(called, 1);
+        done();
+      });
+  });
 });
 
 describe('#finally', () => {
