@@ -12,6 +12,12 @@ interface Duck {
     duck(): string;
 }
 
+class Crow extends Error {
+    crow(): string {
+        return 'crow';
+    }
+}
+
 /* variables */
 
 let obj: object;
@@ -59,6 +65,13 @@ hawkProm.then((value: Hawk) => swanProm)
 hawkProm.then((value: Hawk) => swanProm)
   .then((value: Swan) => duckProm)
   .then((value: Duck) => null);
+
+//-- catch --//
+
+hawkProm.catch((reason: any) => {});
+hawkProm.catch((error: any) => true, (reason: any) => {});
+hawkProm.catch(Crow, (reason: any) => {});
+hawkProm.catch(Crow, Crow, Crow, (reason: any) => {});
 
 //-- resolve --//
 
