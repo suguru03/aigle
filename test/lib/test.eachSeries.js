@@ -21,7 +21,7 @@ parallel('eachSeries', () => {
     };
     return Aigle.eachSeries(collection, iterator)
       .then(res => {
-        assert.deepStrictEqual(res, undefined);
+        assert.deepStrictEqual(res, collection);
         assert.deepStrictEqual(order, [
           [0, 1],
           [1, 4],
@@ -46,7 +46,7 @@ parallel('eachSeries', () => {
     };
     return Aigle.eachSeries(collection, iterator)
       .then(res => {
-        assert.deepStrictEqual(res, undefined);
+        assert.deepStrictEqual(res, collection);
         assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task2', 4],
@@ -67,7 +67,7 @@ parallel('eachSeries', () => {
     };
     return Aigle.eachSeries(collection, iterator)
       .then(res => {
-        assert.strictEqual(res, undefined);
+        assert.strictEqual(res, collection);
         assert.deepStrictEqual(order, [
           [0, 1],
           [1, 4]
@@ -91,7 +91,7 @@ parallel('eachSeries', () => {
     };
     return Aigle.eachSeries(collection, iterator)
       .then(res => {
-        assert.strictEqual(res, undefined);
+        assert.strictEqual(res, collection);
         assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task2', 4]
@@ -99,25 +99,28 @@ parallel('eachSeries', () => {
       });
   });
 
-  it('should return undefined if collection is an empty array', () => {
+  it('should return the first argument if collection is an empty array', () => {
 
+    const collection = [];
     const iterator = value => value;
-    return Aigle.eachSeries([], iterator)
-      .then(res => assert.strictEqual(res, undefined));
+    return Aigle.eachSeries(collection, iterator)
+      .then(res => assert.strictEqual(res, collection));
   });
 
-  it('should return undefined if collection is an empty object', () => {
+  it('should return the first argument if collection is an empty object', () => {
 
+    const collection = {};
     const iterator = value => value;
-    return Aigle.eachSeries({}, iterator)
-      .then(res => assert.strictEqual(res, undefined));
+    return Aigle.eachSeries(collection, iterator)
+      .then(res => assert.strictEqual(res, collection));
   });
 
-  it('should return undefined if collection is an empty string', () => {
+  it('should return the first argument if collection is an empty string', () => {
 
+    const collection = '';
     const iterator = value => value;
-    return Aigle.eachSeries('', iterator)
-      .then(res => assert.strictEqual(res, undefined));
+    return Aigle.eachSeries(collection, iterator)
+      .then(res => assert.strictEqual(res, collection));
   });
 
   it('should catch a Error', () => {
@@ -149,7 +152,7 @@ parallel('forEachSeries', () => {
     };
     return Aigle.forEachSeries(collection, iterator)
       .then(res => {
-        assert.deepStrictEqual(res, undefined);
+        assert.deepStrictEqual(res, collection);
         assert.deepStrictEqual(order, [
           [0, 1],
           [1, 4],
@@ -175,7 +178,7 @@ parallel('#eachSeries', () => {
     return Aigle.resolve(collection)
       .eachSeries(iterator)
       .then(res => {
-        assert.deepStrictEqual(res, undefined);
+        assert.deepStrictEqual(res, collection);
         assert.deepStrictEqual(order, [
           [0, 1],
           [1, 4],
@@ -201,7 +204,7 @@ parallel('#eachSeries', () => {
     return Aigle.resolve(collection)
       .eachSeries(iterator)
       .then(res => {
-        assert.deepStrictEqual(res, undefined);
+        assert.deepStrictEqual(res, collection);
         assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task2', 4],
@@ -273,7 +276,7 @@ parallel('#forEachSeries', () => {
     return Aigle.resolve(collection)
       .forEachSeries(iterator)
       .then(res => {
-        assert.deepStrictEqual(res, undefined);
+        assert.deepStrictEqual(res, collection);
         assert.deepStrictEqual(order, [
           [0, 1],
           [1, 4],

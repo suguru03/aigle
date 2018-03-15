@@ -20,7 +20,7 @@ parallel('each', () => {
     };
     return Aigle.each(collection, iterator)
       .then(res => {
-        assert.strictEqual(res, undefined);
+        assert.strictEqual(res, collection);
         assert.deepStrictEqual(order, [
           [0, 1],
           [2, 2],
@@ -34,9 +34,7 @@ parallel('each', () => {
     const collection = [1, 4, 2];
     const iterator = value => value;
     return Aigle.each(collection, iterator)
-      .then(res => {
-        assert.strictEqual(res, undefined);
-      });
+      .then(res => assert.strictEqual(res, collection));
   });
 
   it('should execute with object collection in parallel', () => {
@@ -56,7 +54,7 @@ parallel('each', () => {
     };
     return Aigle.each(collection, iterator)
       .then(res => {
-        assert.strictEqual(res, undefined);
+        assert.strictEqual(res, collection);
         assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 2],
@@ -77,7 +75,7 @@ parallel('each', () => {
     };
     return Aigle.each(collection, iterator)
       .then(res => {
-        assert.strictEqual(res, undefined);
+        assert.strictEqual(res, collection);
         assert.deepStrictEqual(order, [
           [0, 1],
           [2, 2]
@@ -101,7 +99,7 @@ parallel('each', () => {
     };
     return Aigle.each(collection, iterator)
       .then(res => {
-        assert.strictEqual(res, undefined);
+        assert.strictEqual(res, collection);
         assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 2]
@@ -109,25 +107,28 @@ parallel('each', () => {
       });
   });
 
-  it('should return undefined if collection is an empty array', () => {
+  it('should return the first argument if collection is an empty array', () => {
 
+    const collection = [];
     const iterator = value => value;
-    return Aigle.each([], iterator)
-      .then(res => assert.strictEqual(res, undefined));
+    return Aigle.each(collection, iterator)
+      .then(res => assert.strictEqual(res, collection));
   });
 
-  it('should return undefined if collection is an empty object', () => {
+  it('should return the first argument if collection is an empty object', () => {
 
+    const collection = {};
     const iterator = value => value;
-    return Aigle.each({}, iterator)
-      .then(res => assert.strictEqual(res, undefined));
+    return Aigle.each(collection, iterator)
+      .then(res => assert.strictEqual(res, collection));
   });
 
-  it('should return undefined if collection is an empty string', () => {
+  it('should return the first argument if collection is an empty string', () => {
 
+    const collection = '';
     const iterator = value => value;
-    return Aigle.each('', iterator)
-      .then(res => assert.strictEqual(res, undefined));
+    return Aigle.each(collection, iterator)
+      .then(res => assert.strictEqual(res, collection));
   });
 
   it('should throw TypeError', () => {
@@ -186,7 +187,7 @@ parallel('forEach', () => {
     };
     return Aigle.forEach(collection, iterator)
       .then(res => {
-        assert.strictEqual(res, undefined);
+        assert.strictEqual(res, collection);
         assert.deepStrictEqual(order, [
           [0, 1],
           [2, 2],
@@ -212,7 +213,7 @@ parallel('#each', () => {
     return Aigle.resolve(collection)
       .each(iterator)
       .then(res => {
-        assert.strictEqual(res, undefined);
+        assert.strictEqual(res, collection);
         assert.deepStrictEqual(order, [
           [0, 1],
           [2, 2],
@@ -238,7 +239,7 @@ parallel('#each', () => {
     return Aigle.resolve(collection)
       .each(iterator)
       .then(res => {
-        assert.strictEqual(res, undefined);
+        assert.strictEqual(res, collection);
         assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 2],
@@ -325,7 +326,7 @@ parallel('#forEach', () => {
     return Aigle.resolve(collection)
       .forEach(iterator)
       .then(res => {
-        assert.strictEqual(res, undefined);
+        assert.strictEqual(res, collection);
         assert.deepStrictEqual(order, [
           [0, 1],
           [2, 2],

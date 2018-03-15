@@ -24,7 +24,7 @@ parallel('eachLimit', () => {
     };
     return Aigle.eachLimit(collection, 2, iterator)
       .then(res => {
-        assert.deepStrictEqual(res, undefined);
+        assert.deepStrictEqual(res, collection);
         assert.deepStrictEqual(order, [
           [0, 1],
           [2, 3],
@@ -53,7 +53,7 @@ parallel('eachLimit', () => {
     };
     return Aigle.eachLimit(collection, 2, iterator)
       .then(res => {
-        assert.deepStrictEqual(res, undefined);
+        assert.deepStrictEqual(res, collection);
         assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 3],
@@ -91,7 +91,7 @@ parallel('eachLimit', () => {
     };
     return Aigle.eachLimit(collection, 2, iterator)
       .then(res => {
-        assert.deepStrictEqual(res, undefined);
+        assert.deepStrictEqual(res, collection);
         assert.deepStrictEqual(order, [
           [0, 1],
           [2, 3],
@@ -117,7 +117,7 @@ parallel('eachLimit', () => {
     };
     return Aigle.eachLimit(collection, 2, iterator)
       .then(res => {
-        assert.deepStrictEqual(res, undefined);
+        assert.deepStrictEqual(res, collection);
         assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 3],
@@ -178,25 +178,28 @@ parallel('eachLimit', () => {
       });
   });
 
-  it('should return undefined if collection is an empty array', () => {
+  it('should return the first argument if collection is an empty array', () => {
 
+    const collection = [];
     const iterator = value => value;
-    return Aigle.eachLimit([], iterator)
-      .then(res => assert.strictEqual(res, undefined));
+    return Aigle.eachLimit(collection, iterator)
+      .then(res => assert.strictEqual(res, collection));
   });
 
-  it('should return undefined if collection is an empty object', () => {
+  it('should return collection if collection is an empty object', () => {
 
+    const collection = {};
     const iterator = value => value;
-    return Aigle.eachLimit({}, iterator)
-      .then(res => assert.strictEqual(res, undefined));
+    return Aigle.eachLimit(collection, iterator)
+      .then(res => assert.strictEqual(res, collection));
   });
 
-  it('should return undefined if collection is an empty string', () => {
+  it('should return collection if collection is an empty string', () => {
 
+    const collection = '';
     const iterator = value => value;
-    return Aigle.eachLimit('', iterator)
-      .then(res => assert.strictEqual(res, undefined));
+    return Aigle.eachLimit(collection, iterator)
+      .then(res => assert.strictEqual(res, collection));
   });
 });
 
@@ -214,7 +217,7 @@ parallel('forEachLimit', () => {
     };
     return Aigle.forEachLimit(collection, 2, iterator)
       .then(res => {
-        assert.deepStrictEqual(res, undefined);
+        assert.deepStrictEqual(res, collection);
         assert.deepStrictEqual(order, [
           [0, 1],
           [2, 3],
@@ -242,7 +245,7 @@ parallel('#eachLimit', () => {
     return Aigle.resolve(collection)
       .eachLimit(2, iterator)
       .then(res => {
-        assert.deepStrictEqual(res, undefined);
+        assert.deepStrictEqual(res, collection);
         assert.deepStrictEqual(order, [
           [0, 1],
           [2, 3],
@@ -261,7 +264,7 @@ parallel('#eachLimit', () => {
     return Aigle.resolve(collection)
       .eachLimit(2, iterator)
       .then(res => {
-        assert.deepStrictEqual(res, undefined);
+        assert.deepStrictEqual(res, collection);
         assert.deepStrictEqual(order, [
           [0, 1],
           [1, 5],
@@ -291,7 +294,7 @@ parallel('#eachLimit', () => {
     return Aigle.resolve(collection)
       .eachLimit(2, iterator)
       .then(res => {
-        assert.deepStrictEqual(res, undefined);
+        assert.deepStrictEqual(res, collection);
         assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 3],
@@ -366,7 +369,7 @@ parallel('#forEachLimit', () => {
     return Aigle.resolve(collection)
       .forEachLimit(2, iterator)
       .then(res => {
-        assert.deepStrictEqual(res, undefined);
+        assert.deepStrictEqual(res, collection);
         assert.deepStrictEqual(order, [
           [0, 1],
           [2, 3],
