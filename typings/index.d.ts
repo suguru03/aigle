@@ -91,12 +91,48 @@ declare class Aigle<R> implements PromiseLike<R> {
 
   finally<U>(handler: () => U | PromiseLike<U>): Aigle<R>;
 
+  /* each */
+
+  each<R>(
+    this: Aigle<R[]>,
+    iterator?: ArrayIterator<R, any>,
+  ): Aigle<R[]>;
+
+  each<R>(
+    this: Aigle<List<R>>,
+    iterator?: ListIterator<R, any>,
+  ): Aigle<List<R>>;
+
+  each<R extends object>(
+    this: Aigle<R>,
+    iterator?: ObjectIterator<R, any>,
+  ): Aigle<R>;
+
+  forEach<R>(
+    this: Aigle<R[]>,
+    iterator?: ArrayIterator<R, any>,
+  ): Aigle<R[]>;
+
+  forEach<R>(
+    this: Aigle<List<R>>,
+    iterator?: ListIterator<R, any>,
+  ): Aigle<List<R>>;
+
+  forEach<R extends object>(
+    this: Aigle<R>,
+    iterator?: ObjectIterator<R, any>,
+  ): Aigle<R>;
+
+  /** static **/
+
+  /* core functions */
+
   static resolve(): Aigle<void>;
   static resolve<R>(value: R | PromiseLike<R>): Aigle<R>;
 
   static reject(reason: any): Aigle<never>;
 
-  /* each */
+  /* each/forEach */
 
   static each<R>(
     collection: R[],
@@ -109,6 +145,21 @@ declare class Aigle<R> implements PromiseLike<R> {
   ): Aigle<List<R>>;
 
   static each<R extends object>(
+    collection: R,
+    iterator?: ObjectIterator<R, any>,
+  ): Aigle<R>;
+
+  static forEach<R>(
+    collection: R[],
+    iterator?: ArrayIterator<R, any>,
+  ): Aigle<R[]>;
+
+  static forEach<R>(
+    collection: List<R>,
+    iterator?: ListIterator<R, any>,
+  ): Aigle<List<R>>;
+
+  static forEach<R extends object>(
     collection: R,
     iterator?: ObjectIterator<R, any>,
   ): Aigle<R>;
