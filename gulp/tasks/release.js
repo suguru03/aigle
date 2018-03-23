@@ -5,12 +5,13 @@ const path = require('path');
 const _ = require('lodash');
 const gulp = require('gulp');
 const git = require('gulp-git');
+const semver = require('semver');
 const bump = require('gulp-bump');
 const runSequence = require('run-sequence');
 const tagVersion = require('gulp-tag-version');
 
-const packagepath = './package.json';
-const types = ['patch', 'prepatch', 'minor', 'preminor', 'major', 'premajor', 'prerelease'];
+const packagepath = path.resolve(__dirname, '../..', 'package.json');
+const types = ['patch', 'minor', 'preminor-alpha', 'preminor-beta', 'major', 'premajor-alpha', 'premajor-beta'];
 
 _.forEach(types, type => {
   gulp.task(`release:package:${type}`, updateVersion(type));
@@ -29,7 +30,6 @@ gulp.task('release:tag', () => {
 });
 
 gulp.task('release:commit', () => {
-  const packagepath = path.resolve(__dirname, '../..', 'package.json');
   delete require.cache[packagepath];
   const { version } = require(packagepath);
   return gulp.src(['./dist/*', packagepath])
@@ -38,8 +38,10 @@ gulp.task('release:commit', () => {
 
 function updateVersion(type) {
   return () => {
+    const [release, identifier] = type.split('-');
+    const version = semver.inc(require(packagepath).version, release, identifier);
     return gulp.src(packagepath)
-        .pipe(bump({ type }))
+        .pipe(bump({ version }))
         .pipe(gulp.dest('./'));
   };
 }
