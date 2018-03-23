@@ -46,5 +46,8 @@ async function publish() {
     fs.writeFileSync(path.resolve(buildpath, `${key}.js`), file, 'utf8');
   });
 
+  // copy type files
+  fs.copySync(path.resolve(rootpath, 'typings', 'aigle.d.ts'), path.resolve(buildpath, 'aigle.d.ts'));
+
   await exec(`cd ${buildpath} && npm publish`);
 }

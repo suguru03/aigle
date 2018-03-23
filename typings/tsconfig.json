@@ -17,7 +17,7 @@
         "forceConsistentCasingInFileNames": true
     },
     "files": [
-        "index.d.ts",
+        "aigle.d.ts",
         "aigle-tests.ts"
     ]
 }

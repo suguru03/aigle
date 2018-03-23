@@ -19,7 +19,7 @@ Also it has a lot of [async](https://github.com/caolan/async) style functions, y
 Usage
 --
 
-### node
+### Node.js
 ```sh
 npm install --save aigle
 ```
@@ -30,6 +30,16 @@ const Aigle = require('aigle');
 
 ```js
 const each = require('aigle/each');
+```
+
+### TypeScript
+
+```ts
+import Aigle from 'aigle';
+```
+
+```ts
+import { Aigle } from 'aigle';
 ```
 
 #### Async/Await

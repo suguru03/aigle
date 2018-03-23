@@ -1,4 +1,4 @@
-export = Aigle;
+export default Aigle;
 export as namespace Aigle;
 
 type List<T> = ArrayLike<T>;
@@ -9,7 +9,7 @@ type ArrayIterator<T, TResult> = (value: T, index: number, collection: T[]) => T
 type ListIterator<T, TResult> = (value: T, index: number, collection: List<T>) => TResult | PromiseLike<TResult>;
 type ObjectIterator<TObject, TResult> = (value: TObject[keyof TObject], key: string, collection: TObject) => TResult | PromiseLike<TResult>;
 
-declare class Aigle<R> implements PromiseLike<R> {
+export declare class Aigle<R> implements PromiseLike<R> {
 
   /* core functions */
 

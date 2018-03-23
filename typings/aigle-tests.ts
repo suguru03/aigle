@@ -1,3 +1,5 @@
+import Aigle from '../';
+
 /* interface */
 
 interface Hawk {

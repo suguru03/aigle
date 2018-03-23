@@ -3,6 +3,7 @@
   "version": "1.11.0",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "lib/aigle.js",
+  "typings": "aigle.d.ts",
   "private": true,
   "browser": "browser.js",
   "scripts": {
