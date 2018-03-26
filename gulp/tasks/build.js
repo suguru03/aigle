@@ -8,10 +8,10 @@ const gulp = require('gulp');
 const Aigle = require('../../');
 
 const builds = [
-  ['browserify', './browser.js -s Promise',                    './dist/aigle.js'        ],
-  ['babili',     './dist/aigle.js',                            './dist/aigle.min.js'    ],
-  ['buble',      './dist/aigle.js',                            './dist/aigle-es5.js'    ],
-  ['uglifyjs',   '--compress --mangle -- ./dist/aigle-es5.js', './dist/aigle-es5.min.js']
+  ['browserify', './browser.js -s Promise', './dist/aigle.js'],
+  ['babili', './dist/aigle.js', './dist/aigle.min.js'],
+  ['buble', './dist/aigle.js', './dist/aigle-es5.js'],
+  ['uglifyjs', '--compress --mangle -- ./dist/aigle-es5.js', './dist/aigle-es5.min.js']
 ];
 
 gulp.task('build', () => {
@@ -22,8 +22,7 @@ gulp.task('build', () => {
           console.log(`built: \x1b[32m${output}\x1b[0m`);
           resolve();
         })
-        .stdout
-        .pipe(fs.createWriteStream(output));
+        .stdout.pipe(fs.createWriteStream(output));
     });
   });
 });

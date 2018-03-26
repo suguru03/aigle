@@ -3,9 +3,8 @@
 const _ = require('lodash');
 
 module.exports = ({ Aigle, Bluebird, neoAsync }) => {
-
   return {
-    'mapSeries': {
+    mapSeries: {
       doc: true,
       setup: config => {
         this.array = _.times(config.count);

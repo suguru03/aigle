@@ -7,20 +7,15 @@ const Aigle = require('../../');
 const { DELAY } = require('../config');
 
 parallel('attempt', () => {
-
   it('should execute', () => {
-
     const value = 1;
     const handler = () => {
-      return Aigle.delay(DELAY)
-        .then(() => value);
+      return Aigle.delay(DELAY).then(() => value);
     };
-    return Aigle.attempt(handler)
-      .then(res => assert.strictEqual(res, value));
+    return Aigle.attempt(handler).then(res => assert.strictEqual(res, value));
   });
 
   it('should throw an error on synchronous', () => {
-
     const error = new Error('error');
     const handler = () => {
       throw error;
@@ -31,13 +26,11 @@ parallel('attempt', () => {
   });
 
   it('should throw an error on asynchronous', () => {
-
     const error = new Error('error');
     const handler = () => {
-      return Aigle.delay(DELAY)
-        .then(() => {
-          throw error;
-        });
+      return Aigle.delay(DELAY).then(() => {
+        throw error;
+      });
     };
     return Aigle.attempt(handler)
       .then(() => assert(false))
@@ -46,15 +39,11 @@ parallel('attempt', () => {
 });
 
 parallel('try', () => {
-
   it('should execute', () => {
-
     const value = 1;
     const handler = () => {
-      return Aigle.delay(DELAY)
-        .then(() => value);
+      return Aigle.delay(DELAY).then(() => value);
     };
-    return Aigle.try(handler)
-      .then(res => assert.strictEqual(res, value));
+    return Aigle.try(handler).then(res => assert.strictEqual(res, value));
   });
 });

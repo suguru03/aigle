@@ -7,18 +7,27 @@ type CatchFilter<E> = (new (...args: any[]) => E) | ((error: E) => boolean) | (o
 
 type ArrayIterator<T, TResult> = (value: T, index: number, collection: T[]) => TResult | PromiseLike<TResult>;
 type ListIterator<T, TResult> = (value: T, index: number, collection: List<T>) => TResult | PromiseLike<TResult>;
-type ObjectIterator<TObject, TResult> = (value: TObject[keyof TObject], key: string, collection: TObject) => TResult | PromiseLike<TResult>;
+type ObjectIterator<TObject, TResult> = (
+  value: TObject[keyof TObject],
+  key: string,
+  collection: TObject
+) => TResult | PromiseLike<TResult>;
 
 declare class Aigle<R> implements PromiseLike<R> {
-
   /* core functions */
 
-  new <R>(executor: (resolve: (thenableOrResult?: R | PromiseLike<R>) => void, reject: (error?: any) => void, onCancel?: (callback: () => void) => void) => void);
+  new<R>(
+    executor: (
+      resolve: (thenableOrResult?: R | PromiseLike<R>) => void,
+      reject: (error?: any) => void,
+      onCancel?: (callback: () => void) => void
+    ) => void
+  );
 
   then<U>(onFulfill?: (value: R) => U | PromiseLike<U>, onReject?: (error: any) => U | PromiseLike<U>): Aigle<U>;
   then<TResult1 = R, TResult2 = never>(
     onfulfilled?: ((value: R) => TResult1 | PromiseLike<TResult1>) | null,
-    onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null,
+    onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null
   ): Aigle<TResult1 | TResult2>;
 
   catch(onReject: (error: any) => R | PromiseLike<R>): Aigle<R>;
@@ -29,7 +38,7 @@ declare class Aigle<R> implements PromiseLike<R> {
     filter3: CatchFilter<E3>,
     filter4: CatchFilter<E4>,
     filter5: CatchFilter<E5>,
-    onReject: (error: E1 | E2 | E3 | E4 | E5) => R | PromiseLike<R>,
+    onReject: (error: E1 | E2 | E3 | E4 | E5) => R | PromiseLike<R>
   ): Aigle<R>;
   catch<U, E1, E2, E3, E4, E5>(
     filter1: CatchFilter<E1>,
@@ -37,7 +46,7 @@ declare class Aigle<R> implements PromiseLike<R> {
     filter3: CatchFilter<E3>,
     filter4: CatchFilter<E4>,
     filter5: CatchFilter<E5>,
-    onReject: (error: E1 | E2 | E3 | E4 | E5) => U | PromiseLike<U>,
+    onReject: (error: E1 | E2 | E3 | E4 | E5) => U | PromiseLike<U>
   ): Aigle<U | R>;
 
   catch<E1, E2, E3, E4>(
@@ -45,7 +54,7 @@ declare class Aigle<R> implements PromiseLike<R> {
     filter2: CatchFilter<E2>,
     filter3: CatchFilter<E3>,
     filter4: CatchFilter<E4>,
-    onReject: (error: E1 | E2 | E3 | E4) => R | PromiseLike<R>,
+    onReject: (error: E1 | E2 | E3 | E4) => R | PromiseLike<R>
   ): Aigle<R>;
 
   catch<U, E1, E2, E3, E4>(
@@ -53,75 +62,51 @@ declare class Aigle<R> implements PromiseLike<R> {
     filter2: CatchFilter<E2>,
     filter3: CatchFilter<E3>,
     filter4: CatchFilter<E4>,
-    onReject: (error: E1 | E2 | E3 | E4) => U | PromiseLike<U>,
+    onReject: (error: E1 | E2 | E3 | E4) => U | PromiseLike<U>
   ): Aigle<U | R>;
 
   catch<E1, E2, E3>(
     filter1: CatchFilter<E1>,
     filter2: CatchFilter<E2>,
     filter3: CatchFilter<E3>,
-    onReject: (error: E1 | E2 | E3) => R | PromiseLike<R>,
+    onReject: (error: E1 | E2 | E3) => R | PromiseLike<R>
   ): Aigle<R>;
   catch<U, E1, E2, E3>(
     filter1: CatchFilter<E1>,
     filter2: CatchFilter<E2>,
     filter3: CatchFilter<E3>,
-    onReject: (error: E1 | E2 | E3) => U | PromiseLike<U>,
+    onReject: (error: E1 | E2 | E3) => U | PromiseLike<U>
   ): Aigle<U | R>;
 
   catch<E1, E2>(
     filter1: CatchFilter<E1>,
     filter2: CatchFilter<E2>,
-    onReject: (error: E1 | E2) => R | PromiseLike<R>,
+    onReject: (error: E1 | E2) => R | PromiseLike<R>
   ): Aigle<R>;
   catch<U, E1, E2>(
     filter1: CatchFilter<E1>,
     filter2: CatchFilter<E2>,
-    onReject: (error: E1 | E2) => U | PromiseLike<U>,
+    onReject: (error: E1 | E2) => U | PromiseLike<U>
   ): Aigle<U | R>;
 
-  catch<E1>(
-    filter1: CatchFilter<E1>,
-    onReject: (error: E1) => R | PromiseLike<R>,
-  ): Aigle<R>;
-  catch<U, E1>(
-    filter1: CatchFilter<E1>,
-    onReject: (error: E1) => U | PromiseLike<U>,
-  ): Aigle<U | R>;
+  catch<E1>(filter1: CatchFilter<E1>, onReject: (error: E1) => R | PromiseLike<R>): Aigle<R>;
+  catch<U, E1>(filter1: CatchFilter<E1>, onReject: (error: E1) => U | PromiseLike<U>): Aigle<U | R>;
 
   finally<U>(handler: () => U | PromiseLike<U>): Aigle<R>;
 
   /* each */
 
-  each<R>(
-    this: Aigle<R[]>,
-    iterator?: ArrayIterator<R, any>,
-  ): Aigle<R[]>;
+  each<R>(this: Aigle<R[]>, iterator?: ArrayIterator<R, any>): Aigle<R[]>;
 
-  each<R>(
-    this: Aigle<List<R>>,
-    iterator?: ListIterator<R, any>,
-  ): Aigle<List<R>>;
+  each<R>(this: Aigle<List<R>>, iterator?: ListIterator<R, any>): Aigle<List<R>>;
 
-  each<R extends object>(
-    this: Aigle<R>,
-    iterator?: ObjectIterator<R, any>,
-  ): Aigle<R>;
+  each<R extends object>(this: Aigle<R>, iterator?: ObjectIterator<R, any>): Aigle<R>;
 
-  forEach<R>(
-    this: Aigle<R[]>,
-    iterator?: ArrayIterator<R, any>,
-  ): Aigle<R[]>;
+  forEach<R>(this: Aigle<R[]>, iterator?: ArrayIterator<R, any>): Aigle<R[]>;
 
-  forEach<R>(
-    this: Aigle<List<R>>,
-    iterator?: ListIterator<R, any>,
-  ): Aigle<List<R>>;
+  forEach<R>(this: Aigle<List<R>>, iterator?: ListIterator<R, any>): Aigle<List<R>>;
 
-  forEach<R extends object>(
-    this: Aigle<R>,
-    iterator?: ObjectIterator<R, any>,
-  ): Aigle<R>;
+  forEach<R extends object>(this: Aigle<R>, iterator?: ObjectIterator<R, any>): Aigle<R>;
 
   /** TODO work in progress **/
 
@@ -290,7 +275,20 @@ declare class Aigle<R> implements PromiseLike<R> {
    * @param values An array of Promises.
    * @returns A new Promise.
    */
-  static all<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike <T4>, T5 | PromiseLike<T5>, T6 | PromiseLike<T6>, T7 | PromiseLike<T7>, T8 | PromiseLike<T8>, T9 | PromiseLike<T9>, T10 | PromiseLike<T10>]): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10]>;
+  static all<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
+    values: [
+      T1 | PromiseLike<T1>,
+      T2 | PromiseLike<T2>,
+      T3 | PromiseLike<T3>,
+      T4 | PromiseLike<T4>,
+      T5 | PromiseLike<T5>,
+      T6 | PromiseLike<T6>,
+      T7 | PromiseLike<T7>,
+      T8 | PromiseLike<T8>,
+      T9 | PromiseLike<T9>,
+      T10 | PromiseLike<T10>
+    ]
+  ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10]>;
 
   /**
    * Creates a Promise that is resolved with an array of results when all of the provided Promises
@@ -298,7 +296,19 @@ declare class Aigle<R> implements PromiseLike<R> {
    * @param values An array of Promises.
    * @returns A new Promise.
    */
-  static all<T1, T2, T3, T4, T5, T6, T7, T8, T9>(values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike <T4>, T5 | PromiseLike<T5>, T6 | PromiseLike<T6>, T7 | PromiseLike<T7>, T8 | PromiseLike<T8>, T9 | PromiseLike<T9>]): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8, T9]>;
+  static all<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
+    values: [
+      T1 | PromiseLike<T1>,
+      T2 | PromiseLike<T2>,
+      T3 | PromiseLike<T3>,
+      T4 | PromiseLike<T4>,
+      T5 | PromiseLike<T5>,
+      T6 | PromiseLike<T6>,
+      T7 | PromiseLike<T7>,
+      T8 | PromiseLike<T8>,
+      T9 | PromiseLike<T9>
+    ]
+  ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8, T9]>;
 
   /**
    * Creates a Promise that is resolved with an array of results when all of the provided Promises
@@ -306,7 +316,18 @@ declare class Aigle<R> implements PromiseLike<R> {
    * @param values An array of Promises.
    * @returns A new Promise.
    */
-  static all<T1, T2, T3, T4, T5, T6, T7, T8>(values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike <T4>, T5 | PromiseLike<T5>, T6 | PromiseLike<T6>, T7 | PromiseLike<T7>, T8 | PromiseLike<T8>]): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8]>;
+  static all<T1, T2, T3, T4, T5, T6, T7, T8>(
+    values: [
+      T1 | PromiseLike<T1>,
+      T2 | PromiseLike<T2>,
+      T3 | PromiseLike<T3>,
+      T4 | PromiseLike<T4>,
+      T5 | PromiseLike<T5>,
+      T6 | PromiseLike<T6>,
+      T7 | PromiseLike<T7>,
+      T8 | PromiseLike<T8>
+    ]
+  ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8]>;
 
   /**
    * Creates a Promise that is resolved with an array of results when all of the provided Promises
@@ -314,7 +335,17 @@ declare class Aigle<R> implements PromiseLike<R> {
    * @param values An array of Promises.
    * @returns A new Promise.
    */
-  static all<T1, T2, T3, T4, T5, T6, T7>(values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike <T4>, T5 | PromiseLike<T5>, T6 | PromiseLike<T6>, T7 | PromiseLike<T7>]): Aigle<[T1, T2, T3, T4, T5, T6, T7]>;
+  static all<T1, T2, T3, T4, T5, T6, T7>(
+    values: [
+      T1 | PromiseLike<T1>,
+      T2 | PromiseLike<T2>,
+      T3 | PromiseLike<T3>,
+      T4 | PromiseLike<T4>,
+      T5 | PromiseLike<T5>,
+      T6 | PromiseLike<T6>,
+      T7 | PromiseLike<T7>
+    ]
+  ): Aigle<[T1, T2, T3, T4, T5, T6, T7]>;
 
   /**
    * Creates a Promise that is resolved with an array of results when all of the provided Promises
@@ -322,7 +353,16 @@ declare class Aigle<R> implements PromiseLike<R> {
    * @param values An array of Promises.
    * @returns A new Promise.
    */
-  static all<T1, T2, T3, T4, T5, T6>(values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike <T4>, T5 | PromiseLike<T5>, T6 | PromiseLike<T6>]): Aigle<[T1, T2, T3, T4, T5, T6]>;
+  static all<T1, T2, T3, T4, T5, T6>(
+    values: [
+      T1 | PromiseLike<T1>,
+      T2 | PromiseLike<T2>,
+      T3 | PromiseLike<T3>,
+      T4 | PromiseLike<T4>,
+      T5 | PromiseLike<T5>,
+      T6 | PromiseLike<T6>
+    ]
+  ): Aigle<[T1, T2, T3, T4, T5, T6]>;
 
   /**
    * Creates a Promise that is resolved with an array of results when all of the provided Promises
@@ -330,7 +370,15 @@ declare class Aigle<R> implements PromiseLike<R> {
    * @param values An array of Promises.
    * @returns A new Promise.
    */
-  static all<T1, T2, T3, T4, T5>(values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike <T4>, T5 | PromiseLike<T5>]): Aigle<[T1, T2, T3, T4, T5]>;
+  static all<T1, T2, T3, T4, T5>(
+    values: [
+      T1 | PromiseLike<T1>,
+      T2 | PromiseLike<T2>,
+      T3 | PromiseLike<T3>,
+      T4 | PromiseLike<T4>,
+      T5 | PromiseLike<T5>
+    ]
+  ): Aigle<[T1, T2, T3, T4, T5]>;
 
   /**
    * Creates a Promise that is resolved with an array of results when all of the provided Promises
@@ -338,7 +386,9 @@ declare class Aigle<R> implements PromiseLike<R> {
    * @param values An array of Promises.
    * @returns A new Promise.
    */
-  static all<T1, T2, T3, T4>(values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike <T4>]): Aigle<[T1, T2, T3, T4]>;
+  static all<T1, T2, T3, T4>(
+    values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike<T4>]
+  ): Aigle<[T1, T2, T3, T4]>;
 
   /**
    * Creates a Promise that is resolved with an array of results when all of the provided Promises
@@ -346,7 +396,9 @@ declare class Aigle<R> implements PromiseLike<R> {
    * @param values An array of Promises.
    * @returns A new Promise.
    */
-  static all<T1, T2, T3>(values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>]): Aigle<[T1, T2, T3]>;
+  static all<T1, T2, T3>(
+    values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>]
+  ): Aigle<[T1, T2, T3]>;
 
   /**
    * Creates a Promise that is resolved with an array of results when all of the provided Promises
@@ -366,35 +418,17 @@ declare class Aigle<R> implements PromiseLike<R> {
 
   /* each/forEach */
 
-  static each<R>(
-    collection: R[],
-    iterator?: ArrayIterator<R, any>,
-  ): Aigle<R[]>;
+  static each<R>(collection: R[], iterator?: ArrayIterator<R, any>): Aigle<R[]>;
 
-  static each<R>(
-    collection: List<R>,
-    iterator?: ListIterator<R, any>,
-  ): Aigle<List<R>>;
+  static each<R>(collection: List<R>, iterator?: ListIterator<R, any>): Aigle<List<R>>;
 
-  static each<R extends object>(
-    collection: R,
-    iterator?: ObjectIterator<R, any>,
-  ): Aigle<R>;
+  static each<R extends object>(collection: R, iterator?: ObjectIterator<R, any>): Aigle<R>;
 
-  static forEach<R>(
-    collection: R[],
-    iterator?: ArrayIterator<R, any>,
-  ): Aigle<R[]>;
+  static forEach<R>(collection: R[], iterator?: ArrayIterator<R, any>): Aigle<R[]>;
 
-  static forEach<R>(
-    collection: List<R>,
-    iterator?: ListIterator<R, any>,
-  ): Aigle<List<R>>;
+  static forEach<R>(collection: List<R>, iterator?: ListIterator<R, any>): Aigle<List<R>>;
 
-  static forEach<R extends object>(
-    collection: R,
-    iterator?: ObjectIterator<R, any>,
-  ): Aigle<R>;
+  static forEach<R extends object>(collection: R, iterator?: ObjectIterator<R, any>): Aigle<R>;
 
   /** TODO work in progress **/
 

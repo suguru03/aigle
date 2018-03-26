@@ -15,33 +15,28 @@ const types = ['patch', 'minor', 'preminor-alpha', 'preminor-beta', 'major', 'pr
 
 _.forEach(types, type => {
   gulp.task(`release:package:${type}`, updateVersion(type));
-  gulp.task(`release:${type}`, () => runSequence(
-    `release:package:${type}`,
-    'build',
-    'release:commit',
-    'gh-pages',
-    'release:tag'
-  ));
+  gulp.task(`release:${type}`, () =>
+    runSequence(`release:package:${type}`, 'build', 'release:commit', 'gh-pages', 'release:tag')
+  );
 });
 
 gulp.task('release:tag', () => {
-  return gulp.src(packagepath)
-    .pipe(tagVersion());
+  return gulp.src(packagepath).pipe(tagVersion());
 });
 
 gulp.task('release:commit', () => {
   delete require.cache[packagepath];
   const { version } = require(packagepath);
-  return gulp.src(['./dist/*', packagepath])
-    .pipe(git.commit(version));
+  return gulp.src(['./dist/*', packagepath]).pipe(git.commit(version));
 });
 
 function updateVersion(type) {
   return () => {
     const [release, identifier] = type.split('-');
     const version = semver.inc(require(packagepath).version, release, identifier);
-    return gulp.src(packagepath)
-        .pipe(bump({ version }))
-        .pipe(gulp.dest('./'));
+    return gulp
+      .src(packagepath)
+      .pipe(bump({ version }))
+      .pipe(gulp.dest('./'));
   };
 }

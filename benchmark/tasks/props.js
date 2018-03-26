@@ -3,13 +3,12 @@
 const _ = require('lodash');
 
 module.exports = ({ Aigle, Bluebird }) => {
-
   let count;
 
   return {
-    'props': {
+    props: {
       doc: true,
-      setup: config => count = config.count,
+      setup: config => (count = config.count),
       aigle: () => {
         const tasks = _.chain(count)
           .times()
@@ -30,7 +29,7 @@ module.exports = ({ Aigle, Bluebird }) => {
       }
     },
     'props:sync': {
-      setup: config => count = config.count,
+      setup: config => (count = config.count),
       aigle: () => {
         const tasks = _.chain(count)
           .times()

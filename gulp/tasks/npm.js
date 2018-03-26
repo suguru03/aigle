@@ -36,7 +36,7 @@ async function publish() {
 
   // create all function files
   const template = fs.readFileSync(path.resolve(__dirname, '../template'), 'utf8');
-  const aiglefile = template.replace(/require.*/, 'require(\'./lib/aigle\');');
+  const aiglefile = template.replace(/require.*/, "require('./lib/aigle');");
   fs.writeFileSync(path.resolve(buildpath, 'aigle.js'), aiglefile, 'utf8');
   _.forOwn(Aigle, (func, key) => {
     if (!_.isFunction(func) || /Error$/.test(key)) {

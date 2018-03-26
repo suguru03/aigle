@@ -5,7 +5,6 @@ const _ = require('lodash');
 let count = 0;
 
 module.exports = ({ Aigle, Bluebird }) => {
-
   return {
     'promise:then': {
       doc: true,
@@ -26,7 +25,7 @@ module.exports = ({ Aigle, Bluebird }) => {
         });
         return p;
       },
-      'native': () => {
+      native: () => {
         let p = new Promise(resolve => setImmediate(resolve, 0));
         _.times(count, () => {
           p = p.then(value => new Promise(resolve => setImmediate(resolve, value)));
@@ -37,7 +36,7 @@ module.exports = ({ Aigle, Bluebird }) => {
     'promise:resolve': {
       aigle: () => Aigle.resolve(),
       bluebird: () => Bluebird.resolve(),
-      'native': () => Promise.resolve()
+      native: () => Promise.resolve()
     },
     'promise:resume': {
       setup: () => {
@@ -69,12 +68,12 @@ module.exports = ({ Aigle, Bluebird }) => {
       },
       aigle: () => {
         let p = new Aigle(resolve => resolve(0));
-        _.times(count, () => p = p.then(value => ++value));
+        _.times(count, () => (p = p.then(value => ++value)));
         return p;
       },
       bluebird: () => {
         let p = new Bluebird(resolve => resolve(0));
-        _.times(count, () => p = p.then(value => ++value));
+        _.times(count, () => (p = p.then(value => ++value)));
         return p;
       }
     },

@@ -3,7 +3,6 @@
 const _ = require('lodash');
 
 module.exports = ({ Aigle, neoAsync }) => {
-
   return {
     'each:array': {
       setup: config => {

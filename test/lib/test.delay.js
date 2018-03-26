@@ -7,45 +7,35 @@ const Aigle = require('../../');
 const { DELAY } = require('../config');
 
 parallel('delay', () => {
-
   it('should be delay', () => {
-
     const start = Date.now();
-    return Aigle.delay(DELAY)
-      .then(() => {
-        const diff = Date.now() - start + 1;
-        assert.ok(diff >= DELAY, `diff: ${diff}ms, DELAY: ${DELAY}ms`);
-      });
+    return Aigle.delay(DELAY).then(() => {
+      const diff = Date.now() - start + 1;
+      assert.ok(diff >= DELAY, `diff: ${diff}ms, DELAY: ${DELAY}ms`);
+    });
   });
 
   it('should be delay with value', () => {
-
     const start = Date.now();
     const str = 'test';
-    return Aigle.delay(DELAY, str)
-      .then(value => {
-        const diff = Date.now() - start + 1;
-        assert.ok(diff >= DELAY, `diff: ${diff}ms, DELAY: ${DELAY}ms`);
-        assert.strictEqual(value, str);
-      });
+    return Aigle.delay(DELAY, str).then(value => {
+      const diff = Date.now() - start + 1;
+      assert.ok(diff >= DELAY, `diff: ${diff}ms, DELAY: ${DELAY}ms`);
+      assert.strictEqual(value, str);
+    });
   });
 });
 
 parallel('#delay', () => {
-
   it('should be delay', () => {
-
     const start = Date.now();
-    return new Aigle(resolve => resolve())
-      .delay(DELAY)
-      .then(() => {
-        const diff = Date.now() - start + 1;
-        assert.ok(diff >= DELAY, `diff: ${diff}ms, DELAY: ${DELAY}ms`);
-      });
+    return new Aigle(resolve => resolve()).delay(DELAY).then(() => {
+      const diff = Date.now() - start + 1;
+      assert.ok(diff >= DELAY, `diff: ${diff}ms, DELAY: ${DELAY}ms`);
+    });
   });
 
   it('should be delay multiple times', () => {
-
     const start = Date.now();
     return new Aigle(resolve => resolve())
       .delay(DELAY)
@@ -58,7 +48,6 @@ parallel('#delay', () => {
   });
 
   it('should be delay with value', () => {
-
     const start = Date.now();
     const str = 'test';
     return Aigle.resolve(str)
@@ -71,7 +60,6 @@ parallel('#delay', () => {
   });
 
   it('should not delay if error is caused', () => {
-
     const start = Date.now();
     const str = 'test';
     return Aigle.reject(str)
@@ -84,14 +72,14 @@ parallel('#delay', () => {
   });
 
   it('should not delay with a rejected promise', done => {
-
     process.on('unhandledRejection', done);
     const error = new Error('error');
     const promise = Aigle.reject(error);
     promise.catch(error => assert(error));
     setTimeout(() => {
       const start = Date.now();
-      promise.delay(DELAY)
+      promise
+        .delay(DELAY)
         .then(() => assert(false))
         .catch(err => {
           const diff = Date.now() - start + 1;

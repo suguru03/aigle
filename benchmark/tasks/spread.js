@@ -3,7 +3,6 @@
 const _ = require('lodash');
 
 module.exports = ({ Aigle, Bluebird }) => {
-
   return {
     'spread:10': {
       setup: () => {

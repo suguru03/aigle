@@ -1,9 +1,7 @@
 'use strict';
 
 module.exports = ({ Aigle, Bluebird }) => {
-
   class Resource {
-
     constructor() {
       this.closed = false;
       this._count = 0;
@@ -26,7 +24,7 @@ module.exports = ({ Aigle, Bluebird }) => {
   }
 
   return {
-    'using': {
+    using: {
       doc: true,
       setup: () => {
         this.getAigleResorce = () => new Aigle(create).disposer(dispose);

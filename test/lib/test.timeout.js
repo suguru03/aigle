@@ -8,9 +8,7 @@ const { TimeoutError } = Aigle;
 const { DELAY } = require('../config');
 
 parallel('#timeout', () => {
-
   it('should time out', () => {
-
     const value = 10;
     return Aigle.delay(DELAY * 3, value)
       .timeout(DELAY)
@@ -23,7 +21,6 @@ parallel('#timeout', () => {
   });
 
   it('should not time out', () => {
-
     const value = 10;
     return Aigle.delay(DELAY, value)
       .timeout(DELAY * 3)
@@ -33,7 +30,6 @@ parallel('#timeout', () => {
   });
 
   it('should time out with message', () => {
-
     const message = 'timeout';
     return Aigle.delay(DELAY * 3, 'delay')
       .timeout(DELAY, message)

@@ -3,16 +3,15 @@
 const util = require('util');
 
 module.exports = ({ Aigle, Bluebird }) => {
-
   return {
-    'promisify': {
+    promisify: {
       doc: true,
       setup: () => {
         this.func = callback => setImmediate(callback);
       },
       aigle: () => Aigle.promisify(this.func)(),
       bluebird: () => Bluebird.promisify(this.func)(),
-      'native': () => util.promisify(this.func)()
+      native: () => util.promisify(this.func)()
     },
     'promisify:promisified': {
       doc: true,
@@ -24,7 +23,7 @@ module.exports = ({ Aigle, Bluebird }) => {
       },
       aigle: () => this.aiglePromisifed(),
       bluebird: () => this.bluebirdPromisifed(),
-      'native': () => this.nativePromisified()
+      native: () => this.nativePromisified()
     },
     'promisify:multiple': {
       setup: () => {
@@ -33,7 +32,7 @@ module.exports = ({ Aigle, Bluebird }) => {
       aigle: () => Aigle.promisify(this.func)(1, 2, 3),
       bluebird: () => Bluebird.promisify(this.func)(1, 2, 3)
     },
-    'promisifyAll': {
+    promisifyAll: {
       doc: true,
       setup: () => {
         this.makeRedis = () => {

@@ -5,9 +5,7 @@ const assert = require('assert');
 const parallel = require('mocha.parallel');
 const Aigle = require('../../');
 parallel('promisifyAll', () => {
-
   it('should extend an instance', () => {
-
     class Test {
       constructor() {
         this._value = undefined;
@@ -30,13 +28,13 @@ parallel('promisifyAll', () => {
     assert.ok(test.putAsync);
 
     const str = 'test';
-    return test.setAsync(str)
+    return test
+      .setAsync(str)
       .then(() => test.getAsync())
       .then(value => assert.strictEqual(value, str));
   });
 
   it('should extend redis sample', () => {
-
     const test = 'test';
     function RedisClient() {}
     RedisClient.prototype.get = function(key, callback) {
@@ -52,12 +50,10 @@ parallel('promisifyAll', () => {
     assert.strictEqual(typeof redis.RedisClient.testAsync, 'function');
     const client = new RedisClient();
     const key = 'key';
-    return client.getAsync(key)
-      .then(value => assert.strictEqual(value, `${key}_${test}`));
+    return client.getAsync(key).then(value => assert.strictEqual(value, `${key}_${test}`));
   });
 
   it('should throw an error if suffix is invalid', () => {
-
     let error;
     const obj = {
       get: () => {},
@@ -89,7 +85,6 @@ parallel('promisifyAll', () => {
   });
 
   it('should not cause error even if object is promisified twice', () => {
-
     class Test {
       constructor() {
         this._value = undefined;
@@ -125,8 +120,7 @@ parallel('promisifyAll', () => {
       getAsync() {
         return this;
       }
-      set() {
-      }
+      set() {}
     }
     Aigle.promisifyAll(Test, {
       filter(name) {

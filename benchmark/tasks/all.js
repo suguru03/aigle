@@ -3,11 +3,10 @@
 const _ = require('lodash');
 
 module.exports = ({ Aigle, Bluebird }) => {
-
   let count;
 
   return {
-    'all': {
+    all: {
       doc: true,
       setup: config => {
         count = config.count;
@@ -24,7 +23,7 @@ module.exports = ({ Aigle, Bluebird }) => {
         });
         return Bluebird.all(tasks);
       },
-      'native': () => {
+      native: () => {
         const tasks = _.times(count, n => {
           return new Promise(resolve => setImmediate(resolve, n));
         });

@@ -74,17 +74,19 @@ async function executeTasks(config, tasks, name) {
   setup(config);
 
   // validate all results
-  const obj = await Aigle.mapValuesSeries(tasks, func => !func.length ? func() : Aigle.promisify(func)());
+  const obj = await Aigle.mapValuesSeries(tasks, func => (!func.length ? func() : Aigle.promisify(func)()));
   const keys = Object.keys(obj);
-  _.forOwn(keys, (key1, index) => _.forEach(keys.slice(index + 1), key2 => {
-    const value1 = obj[key1];
-    const value2 = obj[key2];
-    if (!_.isEqual(value1, value2)) {
-      console.error(`[${key1}]`, value1);
-      console.error(`[${key2}]`, value2);
-      throw new Error(`Validation is failed ${key1}, ${key2}`);
-    }
-  }));
+  _.forOwn(keys, (key1, index) =>
+    _.forEach(keys.slice(index + 1), key2 => {
+      const value1 = obj[key1];
+      const value2 = obj[key2];
+      if (!_.isEqual(value1, value2)) {
+        console.error(`[${key1}]`, value1);
+        console.error(`[${key2}]`, value2);
+        throw new Error(`Validation is failed ${key1}, ${key2}`);
+      }
+    })
+  );
 
   console.log('--------------------------------------');
   console.log(`[${name}] Executing...`);
@@ -92,14 +94,18 @@ async function executeTasks(config, tasks, name) {
     .config(config)
     .tasks(tasks)
     .execute();
-  return _.transform(result, (memo, { name, mean }, index) => {
-    const diff = (_.first(result).mean) / mean;
-    const rate = mean / (_.first(result).mean);
-    mean *= Math.pow(10, 6);
-    ++index;
-    memo[name] = { index, mean, diff, rate };
-    console.log(`[${index}] "${name}" ${mean.toPrecision(3)}μs[${diff.toPrecision(3)}][${rate.toPrecision(3)}]`);
-  }, {});
+  return _.transform(
+    result,
+    (memo, { name, mean }, index) => {
+      const diff = _.first(result).mean / mean;
+      const rate = mean / _.first(result).mean;
+      mean *= Math.pow(10, 6);
+      ++index;
+      memo[name] = { index, mean, diff, rate };
+      console.log(`[${index}] "${name}" ${mean.toPrecision(3)}μs[${diff.toPrecision(3)}][${rate.toPrecision(3)}]`);
+    },
+    {}
+  );
 }
 
 function makeDocs(result) {
@@ -120,18 +126,22 @@ function makeDocs(result) {
   doc += '\n### Results\n';
   doc += `|benchmark|${names.join('|')}|\n`;
   doc += `|---|${_.times(names.length, _.constant('---')).join('|')}|\n`;
-  doc += _.reduce(result, (memo, obj, key) => {
-    const array = _.map(names, key => {
-      const { index, mean, diff } = obj[key] || {};
-      if (!index) {
-        return '';
-      }
-      if (index === 1) {
-        return `**${mean.toPrecision(3)}μs**`;
-      }
-      return `${mean.toPrecision(3)}μs [${diff.toPrecision(3)}]`;
-    });
-    return `${memo}|${key}|${array.join('|')}|\n`;
-  }, '');
+  doc += _.reduce(
+    result,
+    (memo, obj, key) => {
+      const array = _.map(names, key => {
+        const { index, mean, diff } = obj[key] || {};
+        if (!index) {
+          return '';
+        }
+        if (index === 1) {
+          return `**${mean.toPrecision(3)}μs**`;
+        }
+        return `${mean.toPrecision(3)}μs [${diff.toPrecision(3)}]`;
+      });
+      return `${memo}|${key}|${array.join('|')}|\n`;
+    },
+    ''
+  );
   fs.writeFileSync(path.resolve(__dirname, 'README.md'), doc, 'utf8');
 }

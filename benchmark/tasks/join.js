@@ -1,12 +1,11 @@
 'use strict';
 
 module.exports = ({ Aigle, Bluebird }) => {
-
   function callResolve(resolve) {
     setImmediate(resolve);
   }
   return {
-    'join': {
+    join: {
       doc: true,
       setup: () => {
         this._f0 = () => new Promise(callResolve);
@@ -33,7 +32,8 @@ module.exports = ({ Aigle, Bluebird }) => {
           this._f7(),
           this._f8(),
           this._f9(),
-          this._fn);
+          this._fn
+        );
       },
       bluebird: () => {
         return Bluebird.join(
@@ -47,7 +47,8 @@ module.exports = ({ Aigle, Bluebird }) => {
           this._f7(),
           this._f8(),
           this._f9(),
-          this._fn);
+          this._fn
+        );
       }
     },
     'join:1': {
@@ -72,22 +73,10 @@ module.exports = ({ Aigle, Bluebird }) => {
         this._fn = () => {};
       },
       aigle: () => {
-        return Aigle.join(
-          this._f0(),
-          this._f1(),
-          this._f2(),
-          this._f3(),
-          this._f4(),
-          this._fn);
+        return Aigle.join(this._f0(), this._f1(), this._f2(), this._f3(), this._f4(), this._fn);
       },
       bluebird: () => {
-        return Bluebird.join(
-          this._f0(),
-          this._f1(),
-          this._f2(),
-          this._f3(),
-          this._f4(),
-          this._fn);
+        return Bluebird.join(this._f0(), this._f1(), this._f2(), this._f3(), this._f4(), this._fn);
       }
     }
   };

@@ -3,13 +3,12 @@
 const _ = require('lodash');
 
 module.exports = ({ Aigle, Bluebird }) => {
-
   let count;
 
   return {
-    'race': {
+    race: {
       doc: true,
-      setup: config => count = config.count,
+      setup: config => (count = config.count),
       aigle: () => {
         const tasks = _.times(count, () => {
           return new Aigle(resolve => setImmediate(resolve));
@@ -24,7 +23,7 @@ module.exports = ({ Aigle, Bluebird }) => {
       }
     },
     'race:sync': {
-      setup: config => count = config.count,
+      setup: config => (count = config.count),
       aigle: () => {
         const tasks = _.times(count, n => {
           return new Aigle(resolve => resolve(n));

@@ -4,7 +4,6 @@ const _ = require('lodash');
 const { Suite } = require('benchmark');
 
 class Benchmark {
-
   constructor() {
     this._tasks = undefined;
   }
