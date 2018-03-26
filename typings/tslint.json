@@ -1,6 +1,7 @@
 {
   "extends": "tslint:recommended",
   "rules": {
+      "array-type": false,
       "comment-format": false,
       "interface-name": false,
       "jsdoc-format": false,
