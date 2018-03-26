@@ -26,9 +26,6 @@ rules:
 
   # Stylistic Issues
   camelcase: error
-  comma-dangle:
-    - error
-    - never
   comma-spacing: error
   key-spacing: error
   linebreak-style:
@@ -39,9 +36,6 @@ rules:
     - 2
     - { MemberExpression: off, SwitchCase: 1 }
   new-cap: error
-  quotes:
-    - error
-    - single
   semi:
     - error
     - always
