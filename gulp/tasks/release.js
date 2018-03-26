@@ -33,7 +33,8 @@ gulp.task('release:commit', () => {
 function updateVersion(type) {
   return () => {
     const [release, identifier] = type.split('-');
-    const version = semver.inc(require(packagepath).version, release, identifier);
+    const prev = require(packagepath).version;
+    const version = semver.inc(prev, new RegExp(identifier).test(prev) ? 'prerelease' : release, identifier);
     return gulp
       .src(packagepath)
       .pipe(bump({ version }))
