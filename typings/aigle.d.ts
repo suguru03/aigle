@@ -532,9 +532,9 @@ declare class Aigle<R> implements PromiseLike<R> {
 
   static pickSeries(collection: any, iterator: any): Aigle<any>;
 
-  static promisify(fn: any, opts: any): Aigle<any>;
+  static promisify(fn: any, opts?: any): Aigle<any>;
 
-  static promisifyAll(target: any, opts: any): Aigle<any>;
+  static promisifyAll<T extends object>(target: T, options?: any): T;
 
   static props(object: any): Aigle<any>;
 
