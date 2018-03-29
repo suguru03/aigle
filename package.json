@@ -1,6 +1,6 @@
 {
   "name": "aigle",
-  "version": "1.12.0-alpha.1",
+  "version": "1.12.0-alpha.2",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "lib/aigle.js",
   "typings": "aigle.d.ts",
