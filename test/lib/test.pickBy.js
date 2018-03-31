@@ -6,7 +6,7 @@ const parallel = require('mocha.parallel');
 const Aigle = require('../../');
 const { DELAY } = require('../config');
 
-parallel('pick', () => {
+parallel('pickBy', () => {
   it('should execute in parallel', () => {
     const order = [];
     const collection = [1, 4, 2];
@@ -18,7 +18,7 @@ parallel('pick', () => {
         }, DELAY * value)
       );
     };
-    return Aigle.pick(collection, iterator).then(res => {
+    return Aigle.pickBy(collection, iterator).then(res => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {
         '0': 1
@@ -42,7 +42,7 @@ parallel('pick', () => {
         }, DELAY * value)
       );
     };
-    return Aigle.pick(collection, iterator).then(res => {
+    return Aigle.pickBy(collection, iterator).then(res => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {
         task1: 1
@@ -55,7 +55,7 @@ parallel('pick', () => {
     const iterator = value => {
       value.test();
     };
-    return Aigle.pick([], iterator).then(res => {
+    return Aigle.pickBy([], iterator).then(res => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {});
     });
@@ -65,7 +65,7 @@ parallel('pick', () => {
     const iterator = value => {
       value.test();
     };
-    return Aigle.pick({}, iterator).then(res => {
+    return Aigle.pickBy({}, iterator).then(res => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {});
     });
@@ -75,7 +75,7 @@ parallel('pick', () => {
     const iterator = value => {
       value.test();
     };
-    return Aigle.pick('test', iterator).then(res => {
+    return Aigle.pickBy('test', iterator).then(res => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {});
     });
@@ -86,7 +86,7 @@ parallel('pick', () => {
     const iterator = value => {
       value.test();
     };
-    return Aigle.pick(collection, iterator)
+    return Aigle.pickBy(collection, iterator)
       .then(() => assert.ok(false))
       .catch(TypeError, error => {
         assert.ok(error);
@@ -95,7 +95,7 @@ parallel('pick', () => {
   });
 });
 
-parallel('#pick', () => {
+parallel('#pickBy', () => {
   it('should execute in parallel', () => {
     const order = [];
     const collection = [1, 4, 2];
@@ -108,7 +108,7 @@ parallel('#pick', () => {
       );
     };
     return Aigle.resolve(collection)
-      .pick(iterator)
+      .pickBy(iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepStrictEqual(res, {
@@ -134,7 +134,7 @@ parallel('#pick', () => {
       );
     };
     return Aigle.resolve(collection)
-      .pick(iterator)
+      .pickBy(iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepStrictEqual(res, {
@@ -156,7 +156,7 @@ parallel('#pick', () => {
       );
     };
     return Aigle.delay(DELAY, collection)
-      .pick(iterator)
+      .pickBy(iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepStrictEqual(res, {
@@ -183,7 +183,7 @@ parallel('#pick', () => {
     ];
     let sync = true;
     const promise = Aigle.resolve(collection)
-      .pick('bool')
+      .pickBy('bool')
       .then(object => {
         assert.deepStrictEqual(object, {
           '1': {
@@ -209,7 +209,7 @@ parallel('#pick', () => {
     };
     let sync = true;
     const promise = Aigle.resolve(collection)
-      .pick('bool')
+      .pickBy('bool')
       .then(object => {
         assert.deepStrictEqual(object, {
           task2: {
@@ -244,7 +244,7 @@ parallel('#pick', () => {
       null
     ];
     return Aigle.resolve(collection)
-      .pick(['uid', 4])
+      .pickBy(['uid', 4])
       .then(object =>
         assert.deepStrictEqual(object, {
           '1': {
@@ -263,7 +263,7 @@ parallel('#pick', () => {
       task4: null
     };
     return Aigle.resolve(collection)
-      .pick(['uid', 4])
+      .pickBy(['uid', 4])
       .then(object =>
         assert.deepStrictEqual(object, {
           task2: {
@@ -291,7 +291,7 @@ parallel('#pick', () => {
       null
     ];
     return Aigle.resolve(collection)
-      .pick({ uid: 4 })
+      .pickBy({ uid: 4 })
       .then(object =>
         assert.deepStrictEqual(object, {
           '1': {
@@ -310,7 +310,7 @@ parallel('#pick', () => {
       task4: null
     };
     return Aigle.resolve(collection)
-      .pick({ uid: 4 })
+      .pickBy({ uid: 4 })
       .then(object =>
         assert.deepStrictEqual(object, {
           task2: {
@@ -327,7 +327,7 @@ parallel('#pick', () => {
       value.test();
     };
     return Aigle.resolve(collection)
-      .pick(iterator)
+      .pickBy(iterator)
       .then(() => assert.ok(false))
       .catch(TypeError, error => {
         assert.ok(error);

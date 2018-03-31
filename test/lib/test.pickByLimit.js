@@ -8,7 +8,7 @@ const Aigle = require('../../');
 const { DELAY } = require('../config');
 const { TimeoutError } = Aigle;
 
-parallel('pickLimit', () => {
+parallel('pickByLimit', () => {
   it('should execute', () => {
     const order = [];
     const collection = [1, 5, 3, 4, 2];
@@ -20,7 +20,7 @@ parallel('pickLimit', () => {
         }, DELAY * value)
       );
     };
-    return Aigle.pickLimit(collection, 2, iterator).then(res => {
+    return Aigle.pickByLimit(collection, 2, iterator).then(res => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {
         '0': 1,
@@ -48,7 +48,7 @@ parallel('pickLimit', () => {
         }, DELAY * value)
       );
     };
-    return Aigle.pickLimit(collection, 2, iterator).then(res => {
+    return Aigle.pickByLimit(collection, 2, iterator).then(res => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {
         task1: 1,
@@ -66,7 +66,7 @@ parallel('pickLimit', () => {
       order.push(value);
       return new Aigle(_.noop);
     };
-    Aigle.pickLimit(collection, iterator);
+    Aigle.pickByLimit(collection, iterator);
     return Aigle.delay(DELAY).then(() => {
       assert.deepStrictEqual(order, _.times(8));
     });
@@ -76,7 +76,7 @@ parallel('pickLimit', () => {
     const iterator = value => {
       value.test();
     };
-    return Aigle.pickLimit([], iterator).then(res => {
+    return Aigle.pickByLimit([], iterator).then(res => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {});
     });
@@ -86,7 +86,7 @@ parallel('pickLimit', () => {
     const iterator = value => {
       value.test();
     };
-    return Aigle.pickLimit({}, iterator).then(res => {
+    return Aigle.pickByLimit({}, iterator).then(res => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {});
     });
@@ -96,7 +96,7 @@ parallel('pickLimit', () => {
     const iterator = value => {
       value.test();
     };
-    return Aigle.pickLimit('test', iterator).then(res => {
+    return Aigle.pickByLimit('test', iterator).then(res => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {});
     });
@@ -113,7 +113,7 @@ parallel('pickLimit', () => {
         }, DELAY * value)
       );
     };
-    return Aigle.pickLimit(collection, 2, iterator)
+    return Aigle.pickByLimit(collection, 2, iterator)
       .catch(error => error)
       .delay(DELAY * 5)
       .then(res => {
@@ -139,7 +139,7 @@ parallel('pickLimit', () => {
         }, DELAY * value)
       );
     };
-    return Aigle.pickLimit(collection, 2, iterator)
+    return Aigle.pickByLimit(collection, 2, iterator)
       .catch(error => error)
       .delay(DELAY * 5)
       .then(res => {
@@ -149,7 +149,7 @@ parallel('pickLimit', () => {
   });
 });
 
-parallel('#pickLimit', () => {
+parallel('#pickByLimit', () => {
   it('should execute', () => {
     const order = [];
     const collection = [1, 5, 3, 4, 2];
@@ -162,7 +162,7 @@ parallel('#pickLimit', () => {
       );
     };
     return Aigle.resolve(collection)
-      .pickLimit(2, iterator)
+      .pickByLimit(2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepStrictEqual(res, {
@@ -192,7 +192,7 @@ parallel('#pickLimit', () => {
       );
     };
     return Aigle.resolve(collection)
-      .pickLimit(2, iterator)
+      .pickByLimit(2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepStrictEqual(res, {
@@ -216,7 +216,7 @@ parallel('#pickLimit', () => {
       );
     };
     return Aigle.delay(DELAY, collection)
-      .pickLimit(2, iterator)
+      .pickByLimit(2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepStrictEqual(res, {
@@ -236,7 +236,7 @@ parallel('#pickLimit', () => {
       return new Aigle(_.noop);
     };
     return Aigle.resolve(collection)
-      .pickLimit(iterator)
+      .pickByLimit(iterator)
       .timeout(DELAY)
       .catch(TimeoutError, error => error)
       .then(error => {
