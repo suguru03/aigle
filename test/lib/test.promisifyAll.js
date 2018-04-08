@@ -1,5 +1,6 @@
 'use strict';
 
+const fs = require('fs');
 const assert = require('assert');
 
 const parallel = require('mocha.parallel');
@@ -133,5 +134,11 @@ parallel('promisifyAll', () => {
     assert.ok(!test.getAsyncAsync);
     assert.ok(test.set);
     assert.ok(test.setAsync);
+  });
+
+  it('should not promisify promisified functions', () => {
+    Aigle.promisifyAll(fs);
+    Aigle.promisifyAll(fs);
+    assert.ok(!fs.readFileAsyncAsync);
   });
 });
