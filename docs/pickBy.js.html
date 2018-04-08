@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>reject.js - Documentation</title>
+    <title>pickBy.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,7 +27,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">reject.js</h1>
+    <h1 class="page-title">pickBy.js</h1>
     
 
     
@@ -41,83 +41,77 @@
 
 const { Each } = require('./each');
 const { setShorthand } = require('./internal/collection');
-const { INTERNAL, compactArray } = require('./internal/util');
 
-class Reject extends Each {
+class PickBy extends Each {
   constructor(collection, iterator) {
     super(collection, iterator, set);
+    this._result = {};
   }
 }
 
-module.exports = { reject, Reject };
+module.exports = { pickBy, PickBy };
 
 function set(collection) {
   setShorthand.call(this, collection);
-  this._result = Array(this._rest);
   this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
   return this;
 }
 
 function callResolveArray(value, index) {
-  this._result[index] = value ? INTERNAL : this._coll[index];
+  if (value) {
+    this._result[index] = this._coll[index];
+  }
   if (--this._rest === 0) {
-    this._promise._resolve(compactArray(this._result));
+    this._promise._resolve(this._result);
   }
 }
 
 function callResolveObject(value, index) {
-  this._result[index] = value ? INTERNAL : this._coll[this._keys[index]];
+  if (value) {
+    const key = this._keys[index];
+    this._result[key] = this._coll[key];
+  }
   if (--this._rest === 0) {
-    this._promise._resolve(compactArray(this._result));
+    this._promise._resolve(this._result);
   }
 }
 
 /**
- * Aigle reject has two features.
- * One of them is basic [`Promise.reject`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise/reject) function, it returns a rejected Aigle instance.
- * The other is a collection function, it requires an iterator function. It is the opposite of [`filter`](https://suguru03.github.io/aigle/docs/Aigle.html#filter).
- * If the iterator function is not defined, the function works as a first one.
- *
- * @param {Function|Array|Object} collection
- * @param {Function|Array|Object|string} [iterator]
+ * `Aigle.pickBy` has almost the same functionality as [`Aigle.filter`](https://suguru03.github.io/aigle/docs/global.html#filter).
+ * It will return an object as a result.
+ * @param {Array|Object} collection
+ * @param {Function|Array|Object|string} iterator
  * @return {Aigle} Returns an Aigle instance
- * @example
- * const error = new Error('error');
- * Aigle.reject(error)
- *   .catch(error => {
- *     console.log(error); // error
- *   });
- *
  * @example
  * const order = [];
  * const collection = [1, 4, 2];
- * const iterator = (num, index) => {
+ * const iterator = num => {
  *   return Aigle.delay(num * 10)
  *     .then(() => {
  *       order.push(num);
  *       return num % 2;
  *     });
  * };
- * Aigle.reject(collection, iterator)
- *   .then(array => {
- *     console.log(array); // [4, 2];
- *     console.log(order); // [1, 2, 4];
+ * Aigle.pickBy(collection, iterator)
+ *   .then(object => {
+ *     console.log(object); // { '0': 1 }
+ *     console.log(order); // [1, 2, 4]
  *   });
  *
  * @example
  * const order = [];
  * const collection = { a: 1, b: 4, c: 2 };
- * const iterator = (num, key) => {
+ * const iterator = num => {
  *   return Aigle.delay(num * 10)
  *     .then(() => {
  *       order.push(num);
- *       return num % 2;
+ *       return num * 2;
  *     });
  * };
- * Aigle.reject(collection, iterator)
- *   .then(array => {
- *     console.log(array); // [4, 2];
- *     console.log(order); // [1, 2, 4];
+ * Aigle.pickBy(collection, iterator)
+ *   .then(object => {
+ *     console.log(object); // { a: 1 }
+ *     console.log(order); // [1, 2, 4]
  *   });
  *
  * @example
@@ -127,9 +121,9 @@ function callResolveObject(value, index) {
  * }, {
  *   name: 'fread', active: true
  * }];
- * Aigle.reject(collection, 'active')
- *   .then(array => {
- *     console.log(array); // [{ name: 'fread', active: false }]
+ * Aigle.pickBy(collection, 'active')
+ *   .then(object => {
+ *     console.log(object); // { '1': { name: 'fread', active: true } }
  *   });
  *
  * @example
@@ -139,9 +133,9 @@ function callResolveObject(value, index) {
  * }, {
  *   name: 'fread', active: true
  * }];
- * Aigle.reject(collection, ['name', 'bargey'])
- *   .then(array => {
- *     console.log(array); // [{ name: 'fread', active: false }]
+ * Aigle.pickBy(collection, ['name', 'fread'])
+ *   .then(object => {
+ *     console.log(object); // { '1': { name: 'fread', active: true } }
  *   });
  *
  * @example
@@ -151,13 +145,13 @@ function callResolveObject(value, index) {
  * }, {
  *   name: 'fread', active: true
  * }];
- * Aigle.reject(collection, { name: 'bargey', active: false })
- *   .then(array => {
- *     console.log(array); // [{ name: 'fread', active: false }]
+ * Aigle.pickBy(collection, { name: 'fread', active: true })
+ *   .then(object => {
+ *     console.log(object); // { '1': { name: 'fread', active: true } }
  *   });
  */
-function reject(collection, iterator) {
-  return new Reject(collection, iterator)._execute();
+function pickBy(collection, iterator) {
+  return new PickBy(collection, iterator)._execute();
 }
 </code></pre>
         </article>

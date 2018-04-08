@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>reject.js - Documentation</title>
+    <title>pickByLimit.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,7 +27,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">reject.js</h1>
+    <h1 class="page-title">pickByLimit.js</h1>
     
 
     
@@ -39,58 +39,57 @@
         <article>
             <pre class="prettyprint source linenums"><code>'use strict';
 
-const { Each } = require('./each');
-const { setShorthand } = require('./internal/collection');
-const { INTERNAL, compactArray } = require('./internal/util');
+const { EachLimit } = require('./eachLimit');
+const { setLimit } = require('./internal/collection');
 
-class Reject extends Each {
-  constructor(collection, iterator) {
-    super(collection, iterator, set);
+class PickByLimit extends EachLimit {
+  constructor(collection, limit, iterator) {
+    super(collection, limit, iterator, set);
+    this._result = {};
   }
 }
 
-module.exports = { reject, Reject };
+module.exports = { pickByLimit, PickByLimit };
 
 function set(collection) {
-  setShorthand.call(this, collection);
-  this._result = Array(this._rest);
+  setLimit.call(this, collection);
   this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
   return this;
 }
 
 function callResolveArray(value, index) {
-  this._result[index] = value ? INTERNAL : this._coll[index];
+  if (value) {
+    this._result[index] = this._coll[index];
+  }
   if (--this._rest === 0) {
-    this._promise._resolve(compactArray(this._result));
+    this._promise._resolve(this._result);
+  } else if (this._callRest-- > 0) {
+    this._iterate();
   }
 }
 
 function callResolveObject(value, index) {
-  this._result[index] = value ? INTERNAL : this._coll[this._keys[index]];
+  if (value) {
+    const key = this._keys[index];
+    this._result[key] = this._coll[key];
+  }
   if (--this._rest === 0) {
-    this._promise._resolve(compactArray(this._result));
+    this._promise._resolve(this._result);
+  } else if (this._callRest-- > 0) {
+    this._iterate();
   }
 }
 
 /**
- * Aigle reject has two features.
- * One of them is basic [`Promise.reject`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise/reject) function, it returns a rejected Aigle instance.
- * The other is a collection function, it requires an iterator function. It is the opposite of [`filter`](https://suguru03.github.io/aigle/docs/Aigle.html#filter).
- * If the iterator function is not defined, the function works as a first one.
- *
- * @param {Function|Array|Object} collection
- * @param {Function|Array|Object|string} [iterator]
+ * `Aigle.pickByLimit` is almost the as [`Aigle.pickBy`](https://suguru03.github.io/aigle/docs/Aigle.html#pickBy) and
+ * [`Aigle.pickBySeries`](https://suguru03.github.io/aigle/docs/Aigle.html#pickBySeries), but it will work with concurrency.
+ * @param {Array|Object} collection
+ * @param {integer} [limit=8]
+ * @param {Function} iterator
  * @return {Aigle} Returns an Aigle instance
  * @example
- * const error = new Error('error');
- * Aigle.reject(error)
- *   .catch(error => {
- *     console.log(error); // error
- *   });
- *
- * @example
  * const order = [];
- * const collection = [1, 4, 2];
+ * const collection = [1, 5, 3, 4, 2];
  * const iterator = (num, index) => {
  *   return Aigle.delay(num * 10)
  *     .then(() => {
@@ -98,15 +97,15 @@ function callResolveObject(value, index) {
  *       return num % 2;
  *     });
  * };
- * Aigle.reject(collection, iterator)
- *   .then(array => {
- *     console.log(array); // [4, 2];
- *     console.log(order); // [1, 2, 4];
+ * Aigle.pickByLimit(collection, 2, iterator)
+ *   .then(object => {
+ *     console.log(object); // { '0': 1, '1': 5, '2': 3 }
+ *     console.log(order); // [1, 3, 5, 2, 4]
  *   });
  *
  * @example
  * const order = [];
- * const collection = { a: 1, b: 4, c: 2 };
+ * const collection = { a: 1, b: 5, c: 3, d: 4, e: 2 };
  * const iterator = (num, key) => {
  *   return Aigle.delay(num * 10)
  *     .then(() => {
@@ -114,50 +113,30 @@ function callResolveObject(value, index) {
  *       return num % 2;
  *     });
  * };
- * Aigle.reject(collection, iterator)
- *   .then(array => {
- *     console.log(array); // [4, 2];
- *     console.log(order); // [1, 2, 4];
+ * Aigle.pickByLimit(collection, 2, iterator)
+ *   .then(object => {
+ *     console.log(object); // { a: 1, b: 5, c: 3 }
+ *     console.log(order); // [1, 3, 5, 2, 4]
  *   });
  *
  * @example
  * const order = [];
- * const collection = [{
- *   name: 'bargey', active: false
- * }, {
- *   name: 'fread', active: true
- * }];
- * Aigle.reject(collection, 'active')
- *   .then(array => {
- *     console.log(array); // [{ name: 'fread', active: false }]
- *   });
- *
- * @example
- * const order = [];
- * const collection = [{
- *   name: 'bargey', active: false
- * }, {
- *   name: 'fread', active: true
- * }];
- * Aigle.reject(collection, ['name', 'bargey'])
- *   .then(array => {
- *     console.log(array); // [{ name: 'fread', active: false }]
- *   });
- *
- * @example
- * const order = [];
- * const collection = [{
- *   name: 'bargey', active: false
- * }, {
- *   name: 'fread', active: true
- * }];
- * Aigle.reject(collection, { name: 'bargey', active: false })
- *   .then(array => {
- *     console.log(array); // [{ name: 'fread', active: false }]
+ * const collection = [1, 5, 3, 4, 2];
+ * const iterator = num => {
+ *   return Aigle.delay(num * 10)
+ *     .then(() => {
+ *       order.push(num);
+ *       return num % 2;
+ *     });
+ * };
+ * Aigle.pickByLimit(collection, iterator)
+ *   .then(object => {
+ *     console.log(object); // { '0': 1, '1': 5, '2': 3 }
+ *     console.log(order); // [1, 2, 3, 4, 5]
  *   });
  */
-function reject(collection, iterator) {
-  return new Reject(collection, iterator)._execute();
+function pickByLimit(collection, limit, iterator) {
+  return new PickByLimit(collection, limit, iterator)._execute();
 }
 </code></pre>
         </article>
