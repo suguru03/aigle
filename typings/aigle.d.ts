@@ -1,3 +1,4 @@
+export { Aigle };
 export default Aigle;
 export as namespace Aigle;
 
@@ -16,7 +17,7 @@ type ObjectIterator<TObject, TResult> = (
 declare class Aigle<R> implements PromiseLike<R> {
   /* core functions */
 
-  new<R>(
+  constructor(
     executor: (
       resolve: (thenableOrResult?: R | PromiseLike<R>) => void,
       reject: (error?: any) => void,

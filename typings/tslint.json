@@ -2,6 +2,7 @@
   "extends": "tslint:recommended",
   "rules": {
       "array-type": false,
+      "arrow-parens": false,
       "comment-format": false,
       "interface-name": false,
       "jsdoc-format": false,
@@ -12,6 +13,7 @@
       "no-empty": false,
       "no-namespace": false,
       "no-shadowed-variable": false,
-      "quotemark": false
+      "quotemark": false,
+      "trailing-comma": false
   }
 }

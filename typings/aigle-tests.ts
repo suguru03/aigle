@@ -1,4 +1,4 @@
-import Aigle from '../';
+import Aigle from './aigle';
 
 /* interface */
 
