@@ -95,7 +95,7 @@ declare class Aigle<R> implements PromiseLike<R> {
 
   finally<T>(handler: () => T | PromiseLike<T>): Aigle<R>;
 
-  /* each */
+  /* each/forEach */
 
   each<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, any>): Aigle<T[]>;
 
@@ -109,6 +109,10 @@ declare class Aigle<R> implements PromiseLike<R> {
 
   forEach<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, any>): Aigle<T>;
 
+  /* delay */
+
+  delay(ms: number): Aigle<R>;
+
   /** TODO work in progress **/
 
   cancel(...args: any[]): Aigle<any>;
@@ -118,8 +122,6 @@ declare class Aigle<R> implements PromiseLike<R> {
   concatLimit(...args: any[]): Aigle<any>;
 
   concatSeries(...args: any[]): Aigle<any>;
-
-  delay(...args: any[]): Aigle<any>;
 
   disposer(...args: any[]): Aigle<any>;
 
@@ -431,6 +433,10 @@ declare class Aigle<R> implements PromiseLike<R> {
 
   static forEach<T extends object>(collection: T, iterator?: ObjectIterator<T, any>): Aigle<T>;
 
+  /* delay */
+
+  static delay<T>(ms: number, value?: T): Aigle<T>;
+
   /** TODO work in progress **/
 
   static attempt(handler: any): Aigle<any>;
@@ -444,8 +450,6 @@ declare class Aigle<R> implements PromiseLike<R> {
   static config(opts: any): void;
 
   static default: any;
-
-  static delay(ms: any, value: any): Aigle<any>;
 
   static detect(collection: any, iterator: any): Aigle<any>;
 
