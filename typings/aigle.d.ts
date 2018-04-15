@@ -25,14 +25,14 @@ declare class Aigle<R> implements PromiseLike<R> {
     ) => void
   );
 
-  then<U>(onFulfill?: (value: R) => U | PromiseLike<U>, onReject?: (error: any) => U | PromiseLike<U>): Aigle<U>;
+  then<T>(onFulfill?: (value: R) => T | PromiseLike<T>, onReject?: (error: any) => T | PromiseLike<T>): Aigle<T>;
   then<TResult1 = R, TResult2 = never>(
     onfulfilled?: ((value: R) => TResult1 | PromiseLike<TResult1>) | null,
     onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null
   ): Aigle<TResult1 | TResult2>;
 
   catch(onReject: (error: any) => R | PromiseLike<R>): Aigle<R>;
-  catch<U>(onReject: ((error: any) => U | PromiseLike<U>) | undefined | null): Aigle<U | R>;
+  catch<T>(onReject: ((error: any) => T | PromiseLike<T>) | undefined | null): Aigle<T | R>;
   catch<E1, E2, E3, E4, E5>(
     filter1: CatchFilter<E1>,
     filter2: CatchFilter<E2>,
@@ -41,14 +41,14 @@ declare class Aigle<R> implements PromiseLike<R> {
     filter5: CatchFilter<E5>,
     onReject: (error: E1 | E2 | E3 | E4 | E5) => R | PromiseLike<R>
   ): Aigle<R>;
-  catch<U, E1, E2, E3, E4, E5>(
+  catch<T, E1, E2, E3, E4, E5>(
     filter1: CatchFilter<E1>,
     filter2: CatchFilter<E2>,
     filter3: CatchFilter<E3>,
     filter4: CatchFilter<E4>,
     filter5: CatchFilter<E5>,
-    onReject: (error: E1 | E2 | E3 | E4 | E5) => U | PromiseLike<U>
-  ): Aigle<U | R>;
+    onReject: (error: E1 | E2 | E3 | E4 | E5) => T | PromiseLike<T>
+  ): Aigle<T | R>;
 
   catch<E1, E2, E3, E4>(
     filter1: CatchFilter<E1>,
@@ -58,13 +58,13 @@ declare class Aigle<R> implements PromiseLike<R> {
     onReject: (error: E1 | E2 | E3 | E4) => R | PromiseLike<R>
   ): Aigle<R>;
 
-  catch<U, E1, E2, E3, E4>(
+  catch<T, E1, E2, E3, E4>(
     filter1: CatchFilter<E1>,
     filter2: CatchFilter<E2>,
     filter3: CatchFilter<E3>,
     filter4: CatchFilter<E4>,
-    onReject: (error: E1 | E2 | E3 | E4) => U | PromiseLike<U>
-  ): Aigle<U | R>;
+    onReject: (error: E1 | E2 | E3 | E4) => T | PromiseLike<T>
+  ): Aigle<T | R>;
 
   catch<E1, E2, E3>(
     filter1: CatchFilter<E1>,
@@ -72,42 +72,42 @@ declare class Aigle<R> implements PromiseLike<R> {
     filter3: CatchFilter<E3>,
     onReject: (error: E1 | E2 | E3) => R | PromiseLike<R>
   ): Aigle<R>;
-  catch<U, E1, E2, E3>(
+  catch<T, E1, E2, E3>(
     filter1: CatchFilter<E1>,
     filter2: CatchFilter<E2>,
     filter3: CatchFilter<E3>,
-    onReject: (error: E1 | E2 | E3) => U | PromiseLike<U>
-  ): Aigle<U | R>;
+    onReject: (error: E1 | E2 | E3) => T | PromiseLike<T>
+  ): Aigle<T | R>;
 
   catch<E1, E2>(
     filter1: CatchFilter<E1>,
     filter2: CatchFilter<E2>,
     onReject: (error: E1 | E2) => R | PromiseLike<R>
   ): Aigle<R>;
-  catch<U, E1, E2>(
+  catch<T, E1, E2>(
     filter1: CatchFilter<E1>,
     filter2: CatchFilter<E2>,
-    onReject: (error: E1 | E2) => U | PromiseLike<U>
-  ): Aigle<U | R>;
+    onReject: (error: E1 | E2) => T | PromiseLike<T>
+  ): Aigle<T | R>;
 
-  catch<E1>(filter1: CatchFilter<E1>, onReject: (error: E1) => R | PromiseLike<R>): Aigle<R>;
-  catch<U, E1>(filter1: CatchFilter<E1>, onReject: (error: E1) => U | PromiseLike<U>): Aigle<U | R>;
+  catch<E>(filter1: CatchFilter<E>, onReject: (error: E) => R | PromiseLike<R>): Aigle<R>;
+  catch<T, E>(filter1: CatchFilter<E>, onReject: (error: E) => T | PromiseLike<T>): Aigle<T | R>;
 
-  finally<U>(handler: () => U | PromiseLike<U>): Aigle<R>;
+  finally<T>(handler: () => T | PromiseLike<T>): Aigle<R>;
 
   /* each */
 
-  each<R>(this: Aigle<R[]>, iterator?: ArrayIterator<R, any>): Aigle<R[]>;
+  each<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, any>): Aigle<T[]>;
 
-  each<R>(this: Aigle<List<R>>, iterator?: ListIterator<R, any>): Aigle<List<R>>;
+  each<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, any>): Aigle<List<T>>;
 
-  each<R extends object>(this: Aigle<R>, iterator?: ObjectIterator<R, any>): Aigle<R>;
+  each<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, any>): Aigle<T>;
 
-  forEach<R>(this: Aigle<R[]>, iterator?: ArrayIterator<R, any>): Aigle<R[]>;
+  forEach<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, any>): Aigle<T[]>;
 
-  forEach<R>(this: Aigle<List<R>>, iterator?: ListIterator<R, any>): Aigle<List<R>>;
+  forEach<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, any>): Aigle<List<T>>;
 
-  forEach<R extends object>(this: Aigle<R>, iterator?: ObjectIterator<R, any>): Aigle<R>;
+  forEach<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, any>): Aigle<T>;
 
   /** TODO work in progress **/
 
@@ -266,7 +266,7 @@ declare class Aigle<R> implements PromiseLike<R> {
   /* core functions */
 
   static resolve(): Aigle<void>;
-  static resolve<R>(value: R | PromiseLike<R>): Aigle<R>;
+  static resolve<T>(value: T | PromiseLike<T>): Aigle<T>;
 
   static reject(reason: any): Aigle<never>;
 
@@ -419,17 +419,17 @@ declare class Aigle<R> implements PromiseLike<R> {
 
   /* each/forEach */
 
-  static each<R>(collection: R[], iterator?: ArrayIterator<R, any>): Aigle<R[]>;
+  static each<T>(collection: T[], iterator?: ArrayIterator<T, any>): Aigle<T[]>;
 
-  static each<R>(collection: List<R>, iterator?: ListIterator<R, any>): Aigle<List<R>>;
+  static each<T>(collection: List<T>, iterator?: ListIterator<T, any>): Aigle<List<T>>;
 
-  static each<R extends object>(collection: R, iterator?: ObjectIterator<R, any>): Aigle<R>;
+  static each<T extends object>(collection: T, iterator?: ObjectIterator<T, any>): Aigle<T>;
 
-  static forEach<R>(collection: R[], iterator?: ArrayIterator<R, any>): Aigle<R[]>;
+  static forEach<T>(collection: T[], iterator?: ArrayIterator<T, any>): Aigle<T[]>;
 
-  static forEach<R>(collection: List<R>, iterator?: ListIterator<R, any>): Aigle<List<R>>;
+  static forEach<T>(collection: List<T>, iterator?: ListIterator<T, any>): Aigle<List<T>>;
 
-  static forEach<R extends object>(collection: R, iterator?: ObjectIterator<R, any>): Aigle<R>;
+  static forEach<T extends object>(collection: T, iterator?: ObjectIterator<T, any>): Aigle<T>;
 
   /** TODO work in progress **/
 
