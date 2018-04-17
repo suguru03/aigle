@@ -109,6 +109,14 @@ declare class Aigle<R> implements PromiseLike<R> {
 
   forEach<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, any>): Aigle<T>;
 
+  /* map */
+
+  map<T, R>(this: Aigle<T[]>, iterator?: ArrayIterator<T, R>): Aigle<R[]>;
+
+  map<T, R>(this: Aigle<List<T>>, iterator?: ListIterator<T, R>): Aigle<R[]>;
+
+  map<T extends object, R>(this: Aigle<T>, iterator?: ObjectIterator<T, R>): Aigle<R[]>;
+
   /* delay */
 
   delay(ms: number): Aigle<R>;
@@ -180,8 +188,6 @@ declare class Aigle<R> implements PromiseLike<R> {
   isPending(...args: any[]): Aigle<any>;
 
   isRejected(...args: any[]): Aigle<any>;
-
-  map(...args: any[]): Aigle<any>;
 
   mapLimit(...args: any[]): Aigle<any>;
 
@@ -433,6 +439,14 @@ declare class Aigle<R> implements PromiseLike<R> {
 
   static forEach<T extends object>(collection: T, iterator?: ObjectIterator<T, any>): Aigle<T>;
 
+  /* map */
+
+  static map<T, R>(collection: T[], iterator?: ArrayIterator<T, R>): Aigle<R[]>;
+
+  static map<T, R>(collection: List<T>, iterator?: ListIterator<T, R>): Aigle<R[]>;
+
+  static map<T extends object, R>(collection: T, iterator?: ObjectIterator<T, R>): Aigle<R[]>;
+
   /* delay */
 
   static delay<T>(ms: number, value?: T): Aigle<T>;
@@ -508,8 +522,6 @@ declare class Aigle<R> implements PromiseLike<R> {
   static join(...args: any[]): Aigle<any>;
 
   static longStackTraces(): void;
-
-  static map(collection: any, iterator: any): Aigle<any>;
 
   static mapLimit(collection: any, limit: any, iterator: any): Aigle<any>;
 
