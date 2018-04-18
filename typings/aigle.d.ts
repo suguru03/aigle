@@ -95,6 +95,12 @@ declare class Aigle<R> implements PromiseLike<R> {
 
   finally<T>(handler: () => T | PromiseLike<T>): Aigle<R>;
 
+  /* prpps */
+
+  props<K, V>(this: PromiseLike<Map<K, PromiseLike<V> | V>>): Aigle<Map<K, V>>;
+
+  props<T>(this: PromiseLike<Aigle.ResolvableProps<T>>): Aigle<T>;
+
   /* each/forEach */
 
   each<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, any>): Aigle<T[]>;
@@ -212,8 +218,6 @@ declare class Aigle<R> implements PromiseLike<R> {
   pickLimit(...args: any[]): Aigle<any>;
 
   pickSeries(...args: any[]): Aigle<any>;
-
-  props(...args: any[]): Aigle<any>;
 
   race(...args: any[]): Aigle<any>;
 
@@ -425,6 +429,12 @@ declare class Aigle<R> implements PromiseLike<R> {
    */
   static all<T>(values: (T | PromiseLike<T>)[]): Aigle<T[]>;
 
+  /* props */
+
+  static props<K, V>(map: PromiseLike<Map<K, PromiseLike<V> | V>> | Map<K, PromiseLike<V> | V>): Aigle<Map<K, V>>;
+
+  static props<T>(object: Aigle.ResolvableProps<T> | PromiseLike<Aigle.ResolvableProps<T>>): Aigle<T>;
+
   /* each/forEach */
 
   static each<T>(collection: T[], iterator?: ArrayIterator<T, any>): Aigle<T[]>;
@@ -553,8 +563,6 @@ declare class Aigle<R> implements PromiseLike<R> {
 
   static promisifyAll<T extends object>(target: T, options?: any): T;
 
-  static props(object: any): Aigle<any>;
-
   static race(collection: any): Aigle<any>;
 
   static reduce(collection: any, iterator: any, result: any): Aigle<any>;
@@ -603,4 +611,5 @@ declare class Aigle<R> implements PromiseLike<R> {
 declare namespace Aigle {
   class CancellationError extends Error {}
   class TimeoutError extends Error {}
+  type ResolvableProps<T> = object & { [K in keyof T]: T[K] | PromiseLike<T[K]> };
 }
