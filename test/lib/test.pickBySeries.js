@@ -190,3 +190,27 @@ parallel('#pickBySeries', () => {
       });
   });
 });
+
+parallel('#pickSeries', () => {
+  it('should execute in series', () => {
+    const order = [];
+    const collection = [1, 4, 2];
+    const iterator = (value, key) => {
+      return new Aigle(resolve =>
+        setTimeout(() => {
+          order.push([key, value]);
+          resolve(value % 2);
+        }, DELAY * value)
+      );
+    };
+    return Aigle.resolve(collection)
+      .pickSeries(iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
+        assert.deepStrictEqual(res, {
+          '0': 1
+        });
+        assert.deepStrictEqual(order, [[0, 1], [1, 4], [2, 2]]);
+      });
+  });
+});

@@ -245,3 +245,29 @@ parallel('#pickByLimit', () => {
       });
   });
 });
+
+parallel('#pickLimit', () => {
+  it('should execute', () => {
+    const order = [];
+    const collection = [1, 5, 3, 4, 2];
+    const iterator = (value, key) => {
+      return new Aigle(resolve =>
+        setTimeout(() => {
+          order.push([key, value]);
+          resolve(value % 2);
+        }, DELAY * value)
+      );
+    };
+    return Aigle.resolve(collection)
+      .pickLimit(2, iterator)
+      .then(res => {
+        assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
+        assert.deepStrictEqual(res, {
+          '0': 1,
+          '1': 5,
+          '2': 3
+        });
+        assert.deepStrictEqual(order, [[0, 1], [2, 3], [1, 5], [4, 2], [3, 4]]);
+      });
+  });
+});
