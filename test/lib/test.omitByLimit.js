@@ -8,7 +8,7 @@ const Aigle = require('../../');
 const { DELAY } = require('../config');
 const { TimeoutError } = Aigle;
 
-parallel('omitLimit', () => {
+parallel('omitByLimit', () => {
   it('should execute', () => {
     const order = [];
     const collection = [1, 5, 3, 4, 2];
@@ -20,7 +20,7 @@ parallel('omitLimit', () => {
         }, DELAY * value)
       );
     };
-    return Aigle.omitLimit(collection, 2, iterator).then(res => {
+    return Aigle.omitByLimit(collection, 2, iterator).then(res => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {
         '3': 4,
@@ -47,7 +47,7 @@ parallel('omitLimit', () => {
         }, DELAY * value)
       );
     };
-    return Aigle.omitLimit(collection, 2, iterator).then(res => {
+    return Aigle.omitByLimit(collection, 2, iterator).then(res => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {
         task4: 4,
@@ -64,7 +64,7 @@ parallel('omitLimit', () => {
       order.push(value);
       return new Aigle(_.noop);
     };
-    Aigle.omitLimit(collection, iterator);
+    Aigle.omitByLimit(collection, iterator);
     return Aigle.delay(DELAY).then(() => {
       assert.deepStrictEqual(order, _.times(8));
     });
@@ -74,7 +74,7 @@ parallel('omitLimit', () => {
     const iterator = value => {
       value.test();
     };
-    return Aigle.omitLimit([], iterator).then(res => {
+    return Aigle.omitByLimit([], iterator).then(res => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {});
     });
@@ -84,7 +84,7 @@ parallel('omitLimit', () => {
     const iterator = value => {
       value.test();
     };
-    return Aigle.omitLimit({}, iterator).then(res => {
+    return Aigle.omitByLimit({}, iterator).then(res => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {});
     });
@@ -94,7 +94,7 @@ parallel('omitLimit', () => {
     const iterator = value => {
       value.test();
     };
-    return Aigle.omitLimit('test', iterator).then(res => {
+    return Aigle.omitByLimit('test', iterator).then(res => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {});
     });
@@ -111,7 +111,7 @@ parallel('omitLimit', () => {
         }, DELAY * value)
       );
     };
-    return Aigle.omitLimit(collection, 2, iterator)
+    return Aigle.omitByLimit(collection, 2, iterator)
       .catch(error => error)
       .delay(DELAY * 5)
       .then(res => {
@@ -137,7 +137,7 @@ parallel('omitLimit', () => {
         }, DELAY * value)
       );
     };
-    return Aigle.omitLimit(collection, 2, iterator)
+    return Aigle.omitByLimit(collection, 2, iterator)
       .catch(error => error)
       .delay(DELAY * 5)
       .then(res => {
@@ -147,7 +147,7 @@ parallel('omitLimit', () => {
   });
 });
 
-parallel('#omitLimit', () => {
+parallel('#omitByLimit', () => {
   it('should execute', () => {
     const order = [];
     const collection = [1, 5, 3, 4, 2];
@@ -160,7 +160,7 @@ parallel('#omitLimit', () => {
       );
     };
     return Aigle.resolve(collection)
-      .omitLimit(2, iterator)
+      .omitByLimit(2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepStrictEqual(res, {
@@ -189,7 +189,7 @@ parallel('#omitLimit', () => {
       );
     };
     return Aigle.resolve(collection)
-      .omitLimit(2, iterator)
+      .omitByLimit(2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepStrictEqual(res, {
@@ -212,7 +212,7 @@ parallel('#omitLimit', () => {
       );
     };
     return Aigle.delay(DELAY, collection)
-      .omitLimit(2, iterator)
+      .omitByLimit(2, iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepStrictEqual(res, {
@@ -231,7 +231,7 @@ parallel('#omitLimit', () => {
       return new Aigle(_.noop);
     };
     return Aigle.resolve(collection)
-      .omitLimit(iterator)
+      .omitByLimit(iterator)
       .timeout(DELAY)
       .catch(TimeoutError, error => error)
       .then(error => {

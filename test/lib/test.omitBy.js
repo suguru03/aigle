@@ -6,7 +6,7 @@ const parallel = require('mocha.parallel');
 const Aigle = require('../../');
 const { DELAY } = require('../config');
 
-parallel('omit', () => {
+parallel('omitBy', () => {
   it('should execute in parallel', () => {
     const order = [];
     const collection = [1, 4, 2];
@@ -18,7 +18,7 @@ parallel('omit', () => {
         }, DELAY * value)
       );
     };
-    return Aigle.omit(collection, iterator).then(res => {
+    return Aigle.omitBy(collection, iterator).then(res => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {
         '1': 4,
@@ -43,7 +43,7 @@ parallel('omit', () => {
         }, DELAY * value)
       );
     };
-    return Aigle.omit(collection, iterator).then(res => {
+    return Aigle.omitBy(collection, iterator).then(res => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {
         task2: 4,
@@ -57,7 +57,7 @@ parallel('omit', () => {
     const iterator = value => {
       value.test();
     };
-    return Aigle.omit([], iterator).then(res => {
+    return Aigle.omitBy([], iterator).then(res => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {});
     });
@@ -67,7 +67,7 @@ parallel('omit', () => {
     const iterator = value => {
       value.test();
     };
-    return Aigle.omit({}, iterator).then(res => {
+    return Aigle.omitBy({}, iterator).then(res => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {});
     });
@@ -77,7 +77,7 @@ parallel('omit', () => {
     const iterator = value => {
       value.test();
     };
-    return Aigle.omit('test', iterator).then(res => {
+    return Aigle.omitBy('test', iterator).then(res => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {});
     });
@@ -88,7 +88,7 @@ parallel('omit', () => {
     const iterator = value => {
       value.test();
     };
-    return Aigle.omit(collection, iterator)
+    return Aigle.omitBy(collection, iterator)
       .then(() => assert.ok(false))
       .catch(TypeError, error => {
         assert.ok(error);
@@ -97,7 +97,7 @@ parallel('omit', () => {
   });
 });
 
-parallel('#omit', () => {
+parallel('#omitBy', () => {
   it('should execute in parallel', () => {
     const order = [];
     const collection = [1, 4, 2];
@@ -110,7 +110,7 @@ parallel('#omit', () => {
       );
     };
     return Aigle.resolve(collection)
-      .omit(iterator)
+      .omitBy(iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepStrictEqual(res, {
@@ -137,7 +137,7 @@ parallel('#omit', () => {
       );
     };
     return Aigle.resolve(collection)
-      .omit(iterator)
+      .omitBy(iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepStrictEqual(res, {
@@ -160,7 +160,7 @@ parallel('#omit', () => {
       );
     };
     return Aigle.delay(DELAY, collection)
-      .omit(iterator)
+      .omitBy(iterator)
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepStrictEqual(res, {
@@ -189,7 +189,7 @@ parallel('#omit', () => {
     ];
     let sync = true;
     const promise = Aigle.resolve(collection)
-      .omit('bool')
+      .omitBy('bool')
       .then(object => {
         assert.deepStrictEqual(object, {
           '0': {
@@ -213,7 +213,7 @@ parallel('#omit', () => {
     };
     let sync = true;
     const promise = Aigle.resolve(collection)
-      .omit('bool')
+      .omitBy('bool')
       .then(object => {
         assert.deepStrictEqual(object, {
           task1: {
@@ -245,7 +245,7 @@ parallel('#omit', () => {
       null
     ];
     return Aigle.resolve(collection)
-      .omit(['uid', 4])
+      .omitBy(['uid', 4])
       .then(object =>
         assert.deepStrictEqual(object, {
           '0': {
@@ -269,7 +269,7 @@ parallel('#omit', () => {
       task4: null
     };
     return Aigle.resolve(collection)
-      .omit(['uid', 4])
+      .omitBy(['uid', 4])
       .then(object =>
         assert.deepStrictEqual(object, {
           task1: {
@@ -302,7 +302,7 @@ parallel('#omit', () => {
       null
     ];
     return Aigle.resolve(collection)
-      .omit({ uid: 4 })
+      .omitBy({ uid: 4 })
       .then(object =>
         assert.deepStrictEqual(object, {
           '0': {
@@ -326,7 +326,7 @@ parallel('#omit', () => {
       task4: null
     };
     return Aigle.resolve(collection)
-      .omit({ uid: 4 })
+      .omitBy({ uid: 4 })
       .then(object =>
         assert.deepStrictEqual(object, {
           task1: {
@@ -348,7 +348,7 @@ parallel('#omit', () => {
       value.test();
     };
     return Aigle.resolve(collection)
-      .omit(iterator)
+      .omitBy(iterator)
       .then(() => assert.ok(false))
       .catch(TypeError, error => {
         assert.ok(error);
