@@ -60,7 +60,7 @@
           require('setimmediate');
           module.exports = require('./lib/aigle');
         },
-        { './lib/aigle': 2, setimmediate: 82 }
+        { './lib/aigle': 2, setimmediate: 84 }
       ],
       2: [
         function(require, module, exports) {
@@ -1680,19 +1680,30 @@
                 return addProxy(this, FindKeyLimit, limit, iterator);
               }
 
-              // TODO: imeplement
-              pick(iterator) {
-                return addProxy(this, PickBy, iterator);
+              /**
+               * @param {*} iterator
+               * @param {*} [args]
+               * @return {Aigle} Returns an Aigle instance
+               */
+              pick(iterator, ...args) {
+                return addProxy(this, Pick, iterator, args);
               }
 
-              // TODO: imeplement
+              /**
+               * @alias pickBySeries
+               * @param {Function} iterator
+               */
               pickSeries(iterator) {
-                return addProxy(this, PickBySeries, iterator);
+                return this.pickBySeries(iterator);
               }
 
-              // TODO: imeplement
+              /**
+               * @alias pickByLimit
+               * @param {number} [limit=8]
+               * @param {Function} iterator
+               */
               pickLimit(limit, iterator) {
-                return addProxy(this, PickByLimit, limit, iterator);
+                return this.pickByLimit(limit, iterator);
               }
 
               /**
@@ -1882,8 +1893,34 @@
               }
 
               /**
-               * `Aigle#omit` will execute [`Aigle.omit`](https://suguru03.github.io/aigle/docs/global.html#omit) using a previous promise value and a defined iterator.
-               * The value will be assigned as the first argument to [`Aigle.omit`](https://suguru03.github.io/aigle/docs/global.html#omit) and
+               * @param {*} iterator
+               * @param {*} [args]
+               * @return {Aigle} Returns an Aigle instance
+               */
+              omit(iterator, ...args) {
+                return addProxy(this, Omit, iterator, args);
+              }
+
+              /**
+               * @alias omitBySeries
+               * @param {Function} iterator
+               */
+              omitSeries(iterator) {
+                return this.omitBySeries(iterator);
+              }
+
+              /**
+               * @alias omitByLimit
+               * @param {number} [limit=8]
+               * @param {Function} iterator
+               */
+              omitLimit(limit, iterator) {
+                return this.omitByLimit(limit, iterator);
+              }
+
+              /**
+               * `Aigle#omitBy` will execute [`Aigle.omitBy`](https://suguru03.github.io/aigle/docs/global.html#omitBy) using a previous promise value and a defined iterator.
+               * The value will be assigned as the first argument to [`Aigle.omitBy`](https://suguru03.github.io/aigle/docs/global.html#omitBy) and
                * the iterator will be assigned as the second argument.
                * @param {Function|Array|Object|string} iterator
                * @return {Aigle} Returns an Aigle instance
@@ -1898,7 +1935,7 @@
                *     });
                * };
                * Aigle.resolve(collection)
-               *   .omit(iterator)
+               *   .omitBy(iterator)
                *   .then(object => {
                *     console.log(object); // { '1': 4, '2': 4 }
                *     console.log(order); // [1, 2, 4]
@@ -1915,7 +1952,7 @@
                *     });
                * };
                * Aigle.resolve(collection)
-               *   .omit(iterator)
+               *   .omitBy(iterator)
                *   .then(object => {
                *     console.log(object); // { b: 4, c: 2 }
                *     console.log(order); // [1, 2, 4]
@@ -1929,7 +1966,7 @@
                *   name: 'fread', active: true
                * }];
                * Aigle.resolve(collection)
-               *   .omit('active')
+               *   .omitBy('active')
                *   .then(object => {
                *     console.log(object); // { '0': { name: 'bargey', active: false } }
                *   });
@@ -1942,7 +1979,7 @@
                *   name: 'fread', active: true
                * }];
                * Aigle.resolve(collection)
-               *   .omit(['name', 'fread'])
+               *   .omitBy(['name', 'fread'])
                *   .then(object => {
                *     console.log(object); // { '0': { name: 'bargey', active: false } }
                *   });
@@ -1955,17 +1992,17 @@
                *   name: 'fread', active: true
                * }];
                * Aigle.resolve(collection)
-               *   .omit({ name: 'fread', active: true })
+               *   .omitBy({ name: 'fread', active: true })
                *   .then(object => {
                *     console.log(object); // { '0': { name: 'bargey', active: false } }
                *   });
                */
-              omit(iterator) {
-                return addProxy(this, Omit, iterator);
+              omitBy(iterator) {
+                return addProxy(this, OmitBy, iterator);
               }
 
               /**
-               * `Aigle#omitSeries` is almost the same as [`Aigle#omit`](https://suguru03.github.io/aigle/docs/global.html#omit), but it will work in series.
+               * `Aigle#omitBySeries` is almost the same as [`Aigle#omitBy`](https://suguru03.github.io/aigle/docs/global.html#omitBy), but it will work in series.
                * @param {Function} iterator
                * @return {Aigle} Returns an Aigle instance
                * @example
@@ -1979,7 +2016,7 @@
                *     });
                * };
                * Aigle.resolve(collection)
-               *   .omitSeries(iterator)
+               *   .omitBySeries(iterator)
                *   .then(object => {
                *     console.log(object); // { '1': 4, '2': 4 }
                *     console.log(order); // [1, 4, 2]
@@ -1996,19 +2033,19 @@
                *     });
                * };
                * Aigle.resolve(collection)
-               *   .omitSeries(iterator)
+               *   .omitBySeries(iterator)
                *   .then(object => {
                *     console.log(object); // { b: 4, c: 2 }
                *     console.log(order); // [1, 4, 2]
                *   });
                */
-              omitSeries(iterator) {
-                return addProxy(this, OmitSeries, iterator);
+              omitBySeries(iterator) {
+                return addProxy(this, OmitBySeries, iterator);
               }
 
               /**
-               * `Aigle#omitLimit` is almost the same as [`Aigle#omit`](https://suguru03.github.io/aigle/docs/global.html#omit)
-               * and [`Aigle#omitSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#omitSeries)), but it will work with concurrency.
+               * `Aigle#omitByLimit` is almost the same as [`Aigle#omitBy`](https://suguru03.github.io/aigle/docs/global.html#omitBy)
+               * and [`Aigle#omitBySeries`](https://suguru03.github.io/aigle/docs/Aigle.html#omitBySeries)), but it will work with concurrency.
                * @param {number} [limit=8]
                * @param {Function} iterator
                * @return {Aigle} Returns an Aigle instance
@@ -2023,7 +2060,7 @@
                *     });
                * };
                * Aigle.resolve(collection)
-               *   .omitLimit(2, iterator)
+               *   .omitByLimit(2, iterator)
                *   .then(object => {
                *     console.log(object); // { '3': 4, '4': 2 }
                *     console.log(order); // [1, 3, 5, 2, 4]
@@ -2040,7 +2077,7 @@
                *     });
                * };
                * Aigle.resolve(collection)
-               *   .omitLimit(2, iterator)
+               *   .omitByLimit(2, iterator)
                *   .then(object => {
                *     console.log(object); // { d: 4, e: 2 }
                *     console.log(order); // [1, 3, 5, 2, 4]
@@ -2057,14 +2094,14 @@
                *     });
                * };
                * Aigle.resolve(collection)
-               *   .omitLimit(iterator)
+               *   .omitByLimit(iterator)
                *   .then(object => {
                *     console.log(object); // { '3': 4, '4': 2 }
                *     console.log(order); // [1, 2, 3, 4, 5]
                *   });
                */
-              omitLimit(limit, iterator) {
-                return addProxy(this, OmitLimit, limit, iterator);
+              omitByLimit(limit, iterator) {
+                return addProxy(this, OmitByLimit, limit, iterator);
               }
 
               /**
@@ -3570,12 +3607,14 @@
             const { findKey, FindKey } = require('./findKey');
             const { findKeySeries, FindKeySeries } = require('./findKeySeries');
             const { findKeyLimit, FindKeyLimit } = require('./findKeyLimit');
+            const { pick, Pick } = require('./pick');
             const { pickBy, PickBy } = require('./pickBy');
             const { pickBySeries, PickBySeries } = require('./pickBySeries');
             const { pickByLimit, PickByLimit } = require('./pickByLimit');
             const { omit, Omit } = require('./omit');
-            const { omitSeries, OmitSeries } = require('./omitSeries');
-            const { omitLimit, OmitLimit } = require('./omitLimit');
+            const { omitBy, OmitBy } = require('./omitBy');
+            const { omitBySeries, OmitBySeries } = require('./omitBySeries');
+            const { omitByLimit, OmitByLimit } = require('./omitByLimit');
             const { reduce, Reduce } = require('./reduce');
             const { transform, Transform } = require('./transform');
             const { transformSeries, TransformSeries } = require('./transformSeries');
@@ -3654,15 +3693,18 @@
             Aigle.detect = find;
             Aigle.detectSeries = findSeries;
             Aigle.detectLimit = findLimit;
-            Aigle.pick = pickBy;
+            Aigle.pick = pick;
             Aigle.pickSeries = pickBySeries;
             Aigle.pickLimit = pickByLimit;
             Aigle.pickBy = pickBy;
             Aigle.pickBySeries = pickBySeries;
             Aigle.pickByLimit = pickByLimit;
             Aigle.omit = omit;
-            Aigle.omitSeries = omitSeries;
-            Aigle.omitLimit = omitLimit;
+            Aigle.omitSeries = omitBySeries;
+            Aigle.omitLimit = omitByLimit;
+            Aigle.omitBy = omitBy;
+            Aigle.omitBySeries = omitBySeries;
+            Aigle.omitByLimit = omitByLimit;
             Aigle.reduce = reduce;
             Aigle.transform = transform;
             Aigle.transformSeries = transformSeries;
@@ -4021,41 +4063,43 @@
           './mapValuesLimit': 44,
           './mapValuesSeries': 45,
           './omit': 46,
-          './omitLimit': 47,
-          './omitSeries': 48,
-          './parallel': 49,
-          './pickBy': 50,
-          './pickByLimit': 51,
-          './pickBySeries': 52,
-          './promisify': 53,
-          './promisifyAll': 54,
-          './props': 55,
-          './race': 56,
-          './reduce': 57,
-          './reject': 58,
-          './rejectLimit': 59,
-          './rejectSeries': 60,
-          './retry': 61,
-          './some': 62,
-          './someLimit': 63,
-          './someSeries': 64,
-          './sortBy': 65,
-          './sortByLimit': 66,
-          './sortBySeries': 67,
-          './tap': 68,
-          './thru': 69,
-          './timeout': 70,
-          './times': 71,
-          './timesLimit': 72,
-          './timesSeries': 73,
-          './transform': 74,
-          './transformLimit': 75,
-          './transformSeries': 76,
-          './until': 77,
-          './using': 78,
-          './whilst': 79,
-          _process: 81,
-          'aigle-core': 80
+          './omitBy': 47,
+          './omitByLimit': 48,
+          './omitBySeries': 49,
+          './parallel': 50,
+          './pick': 51,
+          './pickBy': 52,
+          './pickByLimit': 53,
+          './pickBySeries': 54,
+          './promisify': 55,
+          './promisifyAll': 56,
+          './props': 57,
+          './race': 58,
+          './reduce': 59,
+          './reject': 60,
+          './rejectLimit': 61,
+          './rejectSeries': 62,
+          './retry': 63,
+          './some': 64,
+          './someLimit': 65,
+          './someSeries': 66,
+          './sortBy': 67,
+          './sortByLimit': 68,
+          './sortBySeries': 69,
+          './tap': 70,
+          './thru': 71,
+          './timeout': 72,
+          './times': 73,
+          './timesLimit': 74,
+          './timesSeries': 75,
+          './transform': 76,
+          './transformLimit': 77,
+          './transformSeries': 78,
+          './until': 79,
+          './using': 80,
+          './whilst': 81,
+          _process: 83,
+          'aigle-core': 82
         }
       ],
       3: [
@@ -4147,7 +4191,7 @@
             return new All(array)._promise;
           }
         },
-        { './aigle': 2, './internal/util': 38, './props': 55, 'aigle-core': 80 }
+        { './aigle': 2, './internal/util': 38, './props': 57, 'aigle-core': 82 }
       ],
       4: [
         function(require, module, exports) {
@@ -4566,7 +4610,7 @@
             return new DoWhilst(new UntilTester(tester), iterator)._iterate(value);
           }
         },
-        { './doWhilst': 11, './until': 77 }
+        { './doWhilst': 11, './until': 79 }
       ],
       11: [
         function(require, module, exports) {
@@ -4641,7 +4685,7 @@
             return new DoWhilst(new WhilstTester(tester), iterator)._iterate(value);
           }
         },
-        { './whilst': 79 }
+        { './whilst': 81 }
       ],
       12: [
         function(require, module, exports) {
@@ -4755,7 +4799,7 @@
             return new Each(collection, iterator)._execute();
           }
         },
-        { './aigle': 2, './internal/collection': 35, './internal/util': 38, 'aigle-core': 80 }
+        { './aigle': 2, './internal/collection': 35, './internal/util': 38, 'aigle-core': 82 }
       ],
       13: [
         function(require, module, exports) {
@@ -4913,7 +4957,7 @@
             return new EachLimit(collection, limit, iterator)._execute();
           }
         },
-        { './aigle': 2, './internal/collection': 35, './internal/util': 38, 'aigle-core': 80 }
+        { './aigle': 2, './internal/collection': 35, './internal/util': 38, 'aigle-core': 82 }
       ],
       14: [
         function(require, module, exports) {
@@ -5027,7 +5071,7 @@
             return new EachSeries(collection, iterator)._execute();
           }
         },
-        { './aigle': 2, './internal/collection': 35, './internal/util': 38, 'aigle-core': 80 }
+        { './aigle': 2, './internal/collection': 35, './internal/util': 38, 'aigle-core': 82 }
       ],
       15: [
         function(require, module, exports) {
@@ -6778,6 +6822,8 @@
         function(require, module, exports) {
           'use strict';
 
+          // TODO: refactor
+
           const { call3, callProxyReciever } = require('./util');
 
           const [setParallel, setParallelWithOrder, setSeries] = [
@@ -6786,9 +6832,29 @@
             [iterateArraySeries, iterateObjectSeries]
           ].map(createSet);
 
-          const [setShorthand, setShorthandWithOrder] = [
-            [iterateArrayParallel, iterateObjectParallel],
-            [iterateArrayParallel, iterateObjectParallelWithOrder]
+          const iteratorMap = {
+            iterateArrayParallel,
+            iterateArrayWithString,
+            iterateArrayWithArray,
+            iterateArrayWithObject,
+            iterateObjectParallel,
+            iterateObjectWithString,
+            iterateObjectWithArray,
+            iterateObjectWithObject
+          };
+          const [setShorthand, setShorthandWithOrder, setPickShorthand, setOmitShorthand] = [
+            iteratorMap,
+            Object.assign({}, iteratorMap, {
+              iterateObjectParallel: iterateObjectParallelWithOrder
+            }),
+            Object.assign({}, iteratorMap, {
+              iterateArrayWithArray: iteratePickWithArray,
+              iterateObjectWithArray: iteratePickWithArray
+            }),
+            Object.assign({}, iteratorMap, {
+              iterateArrayWithArray: iterateOmitWithArray,
+              iterateObjectWithArray: iterateOmitWithArray
+            })
           ].map(createSetShorthand);
 
           module.exports = {
@@ -6797,6 +6863,8 @@
             setParallelWithOrder,
             setShorthand,
             setShorthandWithOrder,
+            setPickShorthand,
+            setOmitShorthand,
             setSeries,
             setLimit
           };
@@ -6827,7 +6895,16 @@
             };
           }
 
-          function createSetShorthand([iterateArrayParallel, iterateObjectParallel]) {
+          function createSetShorthand({
+            iterateArrayParallel,
+            iterateArrayWithString,
+            iterateArrayWithArray,
+            iterateArrayWithObject,
+            iterateObjectParallel,
+            iterateObjectWithString,
+            iterateObjectWithArray,
+            iterateObjectWithObject
+          }) {
             return function set(collection) {
               if (Array.isArray(collection)) {
                 this._coll = collection;
@@ -7013,6 +7090,50 @@
               this._callResolve(true, i);
             }
           }
+
+          function iteratePickWithArray() {
+            const { _coll, _result } = this;
+            pick(this._iterator);
+            this._promise._resolve(_result);
+
+            function pick(array) {
+              let i = -1;
+              while (++i < array.length) {
+                const key = array[i];
+                if (Array.isArray(key)) {
+                  pick(key);
+                  continue;
+                }
+                if (_coll.hasOwnProperty(key)) {
+                  _result[key] = _coll[key];
+                }
+              }
+            }
+          }
+
+          function iterateOmitWithArray() {
+            const { _coll, _result } = this;
+            const map = {};
+            createMap(this._iterator);
+            Object.keys(_coll).forEach(key => {
+              if (map.hasOwnProperty(key) === false) {
+                _result[key] = _coll[key];
+              }
+            });
+            this._promise._resolve(_result);
+
+            function createMap(array) {
+              let i = -1;
+              while (++i < array.length) {
+                const key = array[i];
+                if (Array.isArray(key)) {
+                  createMap(key);
+                  continue;
+                }
+                map[key] = true;
+              }
+            }
+          }
         },
         { './util': 38 }
       ],
@@ -7110,7 +7231,7 @@
             };
           }
         },
-        { '../aigle': 2, '../map': 40, '../mapValues': 43, './util': 38, 'aigle-core': 80 }
+        { '../aigle': 2, '../map': 40, '../mapValues': 43, './util': 38, 'aigle-core': 82 }
       ],
       37: [
         function(require, module, exports) {
@@ -7593,7 +7714,7 @@
             quickSort(array, k, j, indices);
           }
         },
-        { '../../package.json': 83, 'aigle-core': 80 }
+        { '../../package.json': 88, 'aigle-core': 82 }
       ],
       39: [
         function(require, module, exports) {
@@ -7709,7 +7830,7 @@
             callProxyReciever(apply(_handler, array), proxy, INTERNAL);
           }
         },
-        { './aigle': 2, './internal/util': 38, 'aigle-core': 80 }
+        { './aigle': 2, './internal/util': 38, 'aigle-core': 82 }
       ],
       40: [
         function(require, module, exports) {
@@ -8245,16 +8366,106 @@
           'use strict';
 
           const { Each } = require('./each');
-          const { setShorthand } = require('./internal/collection');
+          const { setOmitShorthand } = require('./internal/collection');
 
           class Omit extends Each {
-            constructor(collection, iterator) {
+            constructor(collection, iterator, args) {
+              if (typeof iterator !== 'function') {
+                iterator = [iterator, ...args];
+              }
               super(collection, iterator, set);
               this._result = {};
             }
           }
 
           module.exports = { omit, Omit };
+
+          function set(collection) {
+            setOmitShorthand.call(this, collection);
+            this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+            return this;
+          }
+
+          function callResolveArray(value, index) {
+            if (!value) {
+              this._result[index] = this._coll[index];
+            }
+            if (--this._rest === 0) {
+              this._promise._resolve(this._result);
+            }
+          }
+
+          function callResolveObject(value, index) {
+            if (!value) {
+              const key = this._keys[index];
+              this._result[key] = this._coll[key];
+            }
+            if (--this._rest === 0) {
+              this._promise._resolve(this._result);
+            }
+          }
+
+          /**
+           * `Aigle.omit` has almost the same functionality as [`Aigle.filter`](https://suguru03.github.io/aigle/docs/global.html#filter).
+           * It will return an object as a result.
+           * @param {Array|Object} collection
+           * @param {Function|Array|Object|string} iterator
+           * @param {*} [args]
+           * @return {Aigle} Returns an Aigle instance
+           * @example
+           * const order = [];
+           * const collection = [1, 4, 2];
+           * const iterator = num => {
+           *   return Aigle.delay(num * 10)
+           *     .then(() => {
+           *       order.push(num);
+           *       return num % 2;
+           *     });
+           * };
+           * Aigle.omit(collection, iterator)
+           *   .then(object => {
+           *     console.log(object); // { '0': 1 }
+           *     console.log(order); // [1, 2, 4]
+           *   });
+           *
+           * @example
+           * const order = [];
+           * const collection = { a: 1, b: 4, c: 2 };
+           * const iterator = num => {
+           *   return Aigle.delay(num * 10)
+           *     .then(() => {
+           *       order.push(num);
+           *       return num * 2;
+           *     });
+           * };
+           * Aigle.omit(collection, iterator)
+           *   .then(object => {
+           *     console.log(object); // { a: 1 }
+           *     console.log(order); // [1, 2, 4]
+           *   });
+           *
+           */
+          function omit(collection, iterator, ...args) {
+            return new Omit(collection, iterator, args)._execute();
+          }
+        },
+        { './each': 12, './internal/collection': 35 }
+      ],
+      47: [
+        function(require, module, exports) {
+          'use strict';
+
+          const { Each } = require('./each');
+          const { setShorthand } = require('./internal/collection');
+
+          class OmitBy extends Each {
+            constructor(collection, iterator) {
+              super(collection, iterator, set);
+              this._result = {};
+            }
+          }
+
+          module.exports = { omitBy, OmitBy };
 
           function set(collection) {
             setShorthand.call(this, collection);
@@ -8282,7 +8493,7 @@
           }
 
           /**
-           * `Aigle.omit` has almost the same functionality as [`Aigle.reject`](https://suguru03.github.io/aigle/docs/global.html#reject).
+           * `Aigle.omitBy` has almost the same functionality as [`Aigle.reject`](https://suguru03.github.io/aigle/docs/global.html#reject).
            * It will return an object as a result.
            * @param {Array|Object} collection
            * @param {Function|Array|Object|string} iterator
@@ -8297,7 +8508,7 @@
            *       return num % 2;
            *     });
            * };
-           * Aigle.omit(collection, iterator)
+           * Aigle.omitBy(collection, iterator)
            *   .then(object => {
            *     console.log(object); // { '1': 4, '2': 4 }
            *     console.log(order); // [1, 2, 4]
@@ -8313,7 +8524,7 @@
            *       return num * 2;
            *     });
            * };
-           * Aigle.omit(collection, iterator)
+           * Aigle.omitBy(collection, iterator)
            *   .then(object => {
            *     console.log(object); // { b: 4, c: 2 }
            *     console.log(order); // [1, 2, 4]
@@ -8326,7 +8537,7 @@
            * }, {
            *   name: 'fread', active: true
            * }];
-           * Aigle.omit(collection, 'active')
+           * Aigle.omitBy(collection, 'active')
            *   .then(object => {
            *     console.log(object); // { '0': { name: 'bargey', active: false } }
            *   });
@@ -8338,7 +8549,7 @@
            * }, {
            *   name: 'fread', active: true
            * }];
-           * Aigle.omit(collection, ['name', 'fread'])
+           * Aigle.omitBy(collection, ['name', 'fread'])
            *   .then(object => {
            *     console.log(object); // { '0': { name: 'bargey', active: false } }
            *   });
@@ -8350,32 +8561,32 @@
            * }, {
            *   name: 'fread', active: true
            * }];
-           * Aigle.omit(collection, { name: 'fread', active: true })
+           * Aigle.omitBy(collection, { name: 'fread', active: true })
            *   .then(object => {
            *     console.log(object); // { '0': { name: 'bargey', active: false } }
            *   });
            */
-          function omit(collection, iterator) {
-            return new Omit(collection, iterator)._execute();
+          function omitBy(collection, iterator) {
+            return new OmitBy(collection, iterator)._execute();
           }
         },
         { './each': 12, './internal/collection': 35 }
       ],
-      47: [
+      48: [
         function(require, module, exports) {
           'use strict';
 
           const { EachLimit } = require('./eachLimit');
           const { setLimit } = require('./internal/collection');
 
-          class OmitLimit extends EachLimit {
+          class OmitByLimit extends EachLimit {
             constructor(collection, limit, iterator) {
               super(collection, limit, iterator, set);
               this._result = {};
             }
           }
 
-          module.exports = { omitLimit, OmitLimit };
+          module.exports = { omitByLimit, OmitByLimit };
 
           function set(collection) {
             setLimit.call(this, collection);
@@ -8407,8 +8618,8 @@
           }
 
           /**
-           * `Aigle.omitLimit` is almost the as [`Aigle.omit`](https://suguru03.github.io/aigle/docs/Aigle.html#omit) and
-           * [`Aigle.omitSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#omitSeries), but it will work with concurrency.
+           * `Aigle.omitByLimit` is almost the as [`Aigle.omitBy`](https://suguru03.github.io/aigle/docs/Aigle.html#omitBy) and
+           * [`Aigle.omitBySeries`](https://suguru03.github.io/aigle/docs/Aigle.html#omitBySeries), but it will work with concurrency.
            * @param {Array|Object} collection
            * @param {integer} [limit=8]
            * @param {Function} iterator
@@ -8423,7 +8634,7 @@
            *       return num % 2;
            *     });
            * };
-           * Aigle.omitLimit(collection, 2, iterator)
+           * Aigle.omitByLimit(collection, 2, iterator)
            *   .then(object => {
            *     console.log(object); // { '3': 4, '4': 2 }
            *     console.log(order); // [1, 3, 5, 2, 4]
@@ -8439,7 +8650,7 @@
            *       return num % 2;
            *     });
            * };
-           * Aigle.omitLimit(collection, 2, iterator)
+           * Aigle.omitByLimit(collection, 2, iterator)
            *   .then(object => {
            *     console.log(object); // { d: 4, e: 2 }
            *     console.log(order); // [1, 3, 5, 2, 4]
@@ -8455,19 +8666,19 @@
            *       return num % 2;
            *     });
            * };
-           * Aigle.omitLimit(collection, iterator)
+           * Aigle.omitByLimit(collection, iterator)
            *   .then(object => {
            *     console.log(object); // { '3': 4, '4': 2 }
            *     console.log(order); // [1, 2, 3, 4, 5]
            *   });
            */
-          function omitLimit(collection, limit, iterator) {
-            return new OmitLimit(collection, limit, iterator)._execute();
+          function omitByLimit(collection, limit, iterator) {
+            return new OmitByLimit(collection, limit, iterator)._execute();
           }
         },
         { './eachLimit': 13, './internal/collection': 35 }
       ],
-      48: [
+      49: [
         function(require, module, exports) {
           'use strict';
 
@@ -8475,7 +8686,7 @@
           const { PENDING } = require('./internal/util');
           const { setSeries } = require('./internal/collection');
 
-          class OmitSeries extends EachSeries {
+          class OmitBySeries extends EachSeries {
             constructor(collection, iterator) {
               super(collection, iterator);
               this._result = {};
@@ -8487,7 +8698,7 @@
             }
           }
 
-          module.exports = { omitSeries, OmitSeries };
+          module.exports = { omitBySeries, OmitBySeries };
 
           function set(collection) {
             setSeries.call(this, collection);
@@ -8519,7 +8730,7 @@
           }
 
           /**
-           * `Aigle.omitSeries` is almost the as [`Aigle.omit`](https://suguru03.github.io/aigle/docs/Aigle.html#omit), but it will work in series.
+           * `Aigle.omitBySeries` is almost the as [`Aigle.omitBy`](https://suguru03.github.io/aigle/docs/Aigle.html#omitBy), but it will work in series.
            * @param {Array|Object} collection
            * @param {Function} iterator
            * @return {Aigle} Returns an Aigle instance
@@ -8533,7 +8744,7 @@
            *       return num % 2;
            *     });
            * };
-           * Aigle.OmitSeriesSeries(collection, iterator)
+           * Aigle.omitBySeriesSeries(collection, iterator)
            *   .then(object => {
            *     console.log(object); // { '1': 4, '2': 2 }
            *     console.log(order); // [1, 4, 2]
@@ -8549,19 +8760,19 @@
            *       return num % 2;
            *     });
            * };
-           * Aigle.OmitSeriesSeries(collection, iterator)
+           * Aigle.omitBySeriesSeries(collection, iterator)
            *   .then(object => {
            *     console.log(object); // { b: 4, c: 2 }
            *     console.log(order); // [1, 4, 2]
            *   });
            */
-          function omitSeries(collection, iterator) {
-            return new OmitSeries(collection, iterator)._execute();
+          function omitBySeries(collection, iterator) {
+            return new OmitBySeries(collection, iterator)._execute();
           }
         },
         { './eachSeries': 14, './internal/collection': 35, './internal/util': 38 }
       ],
-      49: [
+      50: [
         function(require, module, exports) {
           'use strict';
 
@@ -8688,9 +8899,99 @@
             return new Parallel(collection)._promise;
           }
         },
-        { './aigle': 2, './internal/util': 38, './props': 55, 'aigle-core': 80 }
+        { './aigle': 2, './internal/util': 38, './props': 57, 'aigle-core': 82 }
       ],
-      50: [
+      51: [
+        function(require, module, exports) {
+          'use strict';
+
+          const { Each } = require('./each');
+          const { setPickShorthand } = require('./internal/collection');
+
+          class Pick extends Each {
+            constructor(collection, iterator, args) {
+              if (typeof iterator !== 'function') {
+                iterator = [iterator, ...args];
+              }
+              super(collection, iterator, set);
+              this._result = {};
+            }
+          }
+
+          module.exports = { pick, Pick };
+
+          function set(collection) {
+            setPickShorthand.call(this, collection);
+            this._callResolve = this._keys === undefined ? callResolveArray : callResolveObject;
+            return this;
+          }
+
+          function callResolveArray(value, index) {
+            if (value) {
+              this._result[index] = this._coll[index];
+            }
+            if (--this._rest === 0) {
+              this._promise._resolve(this._result);
+            }
+          }
+
+          function callResolveObject(value, index) {
+            if (value) {
+              const key = this._keys[index];
+              this._result[key] = this._coll[key];
+            }
+            if (--this._rest === 0) {
+              this._promise._resolve(this._result);
+            }
+          }
+
+          /**
+           * `Aigle.pick` has almost the same functionality as [`Aigle.filter`](https://suguru03.github.io/aigle/docs/global.html#filter).
+           * It will return an object as a result.
+           * @param {Array|Object} collection
+           * @param {Function|Array|Object|string} iterator
+           * @param {*} [args]
+           * @return {Aigle} Returns an Aigle instance
+           * @example
+           * const order = [];
+           * const collection = [1, 4, 2];
+           * const iterator = num => {
+           *   return Aigle.delay(num * 10)
+           *     .then(() => {
+           *       order.push(num);
+           *       return num % 2;
+           *     });
+           * };
+           * Aigle.pick(collection, iterator)
+           *   .then(object => {
+           *     console.log(object); // { '0': 1 }
+           *     console.log(order); // [1, 2, 4]
+           *   });
+           *
+           * @example
+           * const order = [];
+           * const collection = { a: 1, b: 4, c: 2 };
+           * const iterator = num => {
+           *   return Aigle.delay(num * 10)
+           *     .then(() => {
+           *       order.push(num);
+           *       return num * 2;
+           *     });
+           * };
+           * Aigle.pick(collection, iterator)
+           *   .then(object => {
+           *     console.log(object); // { a: 1 }
+           *     console.log(order); // [1, 2, 4]
+           *   });
+           *
+           */
+          function pick(collection, iterator, ...args) {
+            return new Pick(collection, iterator, args)._execute();
+          }
+        },
+        { './each': 12, './internal/collection': 35 }
+      ],
+      52: [
         function(require, module, exports) {
           'use strict';
 
@@ -8811,7 +9112,7 @@
         },
         { './each': 12, './internal/collection': 35 }
       ],
-      51: [
+      53: [
         function(require, module, exports) {
           'use strict';
 
@@ -8917,7 +9218,7 @@
         },
         { './eachLimit': 13, './internal/collection': 35 }
       ],
-      52: [
+      54: [
         function(require, module, exports) {
           'use strict';
 
@@ -9005,7 +9306,7 @@
         },
         { './eachSeries': 14, './internal/collection': 35 }
       ],
-      53: [
+      55: [
         function(require, module, exports) {
           'use strict';
 
@@ -9013,6 +9314,14 @@
           const { INTERNAL } = require('./internal/util');
 
           const globalSetImmediate = typeof setImmediate === 'function' ? setImmediate : {};
+          const custom =
+            (() => {
+              try {
+                return require('util').promisify.custom;
+              } catch (e) {
+                return;
+              }
+            })() || {};
 
           module.exports = promisify;
 
@@ -9041,6 +9350,10 @@
               case 'function':
                 if (fn.__isPromisified__) {
                   return fn;
+                }
+                const func = fn[custom];
+                if (func) {
+                  return func;
                 }
                 switch (fn) {
                   case setTimeout:
@@ -9129,9 +9442,9 @@
             }
           }
         },
-        { './aigle': 2, './internal/util': 38 }
+        { './aigle': 2, './internal/util': 38, util: 87 }
       ],
-      54: [
+      56: [
         function(require, module, exports) {
           'use strict';
 
@@ -9184,12 +9497,17 @@
                     return;
                   }
                   const _key = `${key}${suffix}`;
+                  const promisified = promisify(obj);
                   if (target[_key]) {
+                    // it is for native promisified functions
+                    if (target[_key] === promisified) {
+                      break;
+                    }
                     if (!target[_key].__isPromisified__) {
                       throw new TypeError(`Cannot promisify an API that has normal methods with '${suffix}'-suffix`);
                     }
                   } else {
-                    target[_key] = promisify(obj);
+                    target[_key] = promisified;
                   }
                 }
                 iterate(suffix, filter, obj, obj, depth, memo);
@@ -9228,9 +9546,9 @@
             }
           }
         },
-        { './promisify': 53 }
+        { './promisify': 55 }
       ],
-      55: [
+      57: [
         function(require, module, exports) {
           'use strict';
 
@@ -9331,9 +9649,9 @@
             return new Props(object)._promise;
           }
         },
-        { './aigle': 2, './internal/util': 38, 'aigle-core': 80 }
+        { './aigle': 2, './internal/util': 38, 'aigle-core': 82 }
       ],
-      56: [
+      58: [
         function(require, module, exports) {
           'use strict';
 
@@ -9430,9 +9748,9 @@
             return new Race(collection)._promise;
           }
         },
-        { './aigle': 2, './internal/util': 38, 'aigle-core': 80 }
+        { './aigle': 2, './internal/util': 38, 'aigle-core': 82 }
       ],
-      57: [
+      59: [
         function(require, module, exports) {
           'use strict';
 
@@ -9547,9 +9865,9 @@
             return new Reduce(collection, iterator, result)._execute();
           }
         },
-        { './aigle': 2, './internal/collection': 35, './internal/util': 38, 'aigle-core': 80 }
+        { './aigle': 2, './internal/collection': 35, './internal/util': 38, 'aigle-core': 82 }
       ],
-      58: [
+      60: [
         function(require, module, exports) {
           'use strict';
 
@@ -9676,7 +9994,7 @@
         },
         { './each': 12, './internal/collection': 35, './internal/util': 38 }
       ],
-      59: [
+      61: [
         function(require, module, exports) {
           'use strict';
 
@@ -9776,7 +10094,7 @@
         },
         { './eachLimit': 13, './internal/collection': 35, './internal/util': 38 }
       ],
-      60: [
+      62: [
         function(require, module, exports) {
           'use strict';
 
@@ -9859,7 +10177,7 @@
         },
         { './eachSeries': 14, './internal/collection': 35, './internal/util': 38 }
       ],
-      61: [
+      63: [
         function(require, module, exports) {
           'use strict';
 
@@ -9932,9 +10250,9 @@
             return new Retry(handler, times)._promise;
           }
         },
-        { './aigle': 2, './internal/util': 38, 'aigle-core': 80 }
+        { './aigle': 2, './internal/util': 38, 'aigle-core': 82 }
       ],
-      62: [
+      64: [
         function(require, module, exports) {
           'use strict';
 
@@ -10054,7 +10372,7 @@
         },
         { './each': 12, './internal/collection': 35 }
       ],
-      63: [
+      65: [
         function(require, module, exports) {
           'use strict';
 
@@ -10140,7 +10458,7 @@
         },
         { './eachLimit': 13 }
       ],
-      64: [
+      66: [
         function(require, module, exports) {
           'use strict';
 
@@ -10224,7 +10542,7 @@
         },
         { './eachSeries.js': 14 }
       ],
-      65: [
+      67: [
         function(require, module, exports) {
           'use strict';
 
@@ -10317,7 +10635,7 @@
         },
         { './each': 12, './internal/collection': 35, './internal/util': 38 }
       ],
-      66: [
+      68: [
         function(require, module, exports) {
           'use strict';
 
@@ -10419,7 +10737,7 @@
         },
         { './eachLimit': 13, './internal/collection': 35, './internal/util': 38 }
       ],
-      67: [
+      69: [
         function(require, module, exports) {
           'use strict';
 
@@ -10504,7 +10822,7 @@
         },
         { './eachSeries': 14, './internal/collection': 35, './internal/util': 38 }
       ],
-      68: [
+      70: [
         function(require, module, exports) {
           'use strict';
 
@@ -10522,7 +10840,7 @@
         },
         { './aigle': 2, './internal/util': 38 }
       ],
-      69: [
+      71: [
         function(require, module, exports) {
           'use strict';
 
@@ -10539,7 +10857,7 @@
         },
         { './aigle': 2, './internal/util': 38 }
       ],
-      70: [
+      72: [
         function(require, module, exports) {
           'use strict';
 
@@ -10576,9 +10894,9 @@
 
           module.exports = Timeout;
         },
-        { './aigle': 2, './error': 15, './internal/util': 38, 'aigle-core': 80 }
+        { './aigle': 2, './error': 15, './internal/util': 38, 'aigle-core': 82 }
       ],
-      71: [
+      73: [
         function(require, module, exports) {
           'use strict';
 
@@ -10668,9 +10986,9 @@
             return new Times(times, iterator)._execute();
           }
         },
-        { './aigle': 2, './internal/util': 38, 'aigle-core': 80 }
+        { './aigle': 2, './internal/util': 38, 'aigle-core': 82 }
       ],
-      72: [
+      74: [
         function(require, module, exports) {
           'use strict';
 
@@ -10802,9 +11120,9 @@
             return new TimesLimit(times, limit, iterator)._execute();
           }
         },
-        { './aigle': 2, './internal/util': 38, 'aigle-core': 80 }
+        { './aigle': 2, './internal/util': 38, 'aigle-core': 82 }
       ],
-      73: [
+      75: [
         function(require, module, exports) {
           'use strict';
 
@@ -10884,9 +11202,9 @@
             return new TimesSeries(times, iterator)._execute();
           }
         },
-        { './aigle': 2, './internal/util': 38, './times': 71, 'aigle-core': 80 }
+        { './aigle': 2, './internal/util': 38, './times': 73, 'aigle-core': 82 }
       ],
-      74: [
+      76: [
         function(require, module, exports) {
           'use strict';
 
@@ -11006,7 +11324,7 @@
         },
         { './each': 12, './internal/collection': 35, './internal/util': 38 }
       ],
-      75: [
+      77: [
         function(require, module, exports) {
           'use strict';
 
@@ -11144,7 +11462,7 @@
         },
         { './eachLimit': 13, './internal/collection': 35, './internal/util': 38 }
       ],
-      76: [
+      78: [
         function(require, module, exports) {
           'use strict';
 
@@ -11260,7 +11578,7 @@
         },
         { './eachSeries': 14, './internal/collection': 35, './internal/util': 38 }
       ],
-      77: [
+      79: [
         function(require, module, exports) {
           'use strict';
 
@@ -11296,9 +11614,9 @@
             return new AigleWhilst(new UntilTester(tester), iterator)._iterate(value);
           }
         },
-        { './whilst': 79 }
+        { './whilst': 81 }
       ],
-      78: [
+      80: [
         function(require, module, exports) {
           'use strict';
 
@@ -11411,9 +11729,9 @@
             return new Using(array, handler)._promise;
           }
         },
-        { './aigle': 2, './internal/util': 38, 'aigle-core': 80 }
+        { './aigle': 2, './internal/util': 38, 'aigle-core': 82 }
       ],
-      79: [
+      81: [
         function(require, module, exports) {
           'use strict';
 
@@ -11491,9 +11809,9 @@
             return new AigleWhilst(new WhilstTester(tester), iterator)._iterate(value);
           }
         },
-        { './aigle': 2, './internal/util': 38, 'aigle-core': 80 }
+        { './aigle': 2, './internal/util': 38, 'aigle-core': 82 }
       ],
-      80: [
+      82: [
         function(require, module, exports) {
           'use strict';
 
@@ -11509,7 +11827,7 @@
         },
         {}
       ],
-      81: [
+      83: [
         function(require, module, exports) {
           // shim for using process in browser
           var process = (module.exports = {});
@@ -11699,7 +12017,7 @@
         },
         {}
       ],
-      82: [
+      84: [
         function(require, module, exports) {
           (function(process, global) {
             (function(global, undefined) {
@@ -11896,13 +12214,640 @@
               : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}
           ));
         },
-        { _process: 81 }
+        { _process: 83 }
       ],
-      83: [
+      85: [
+        function(require, module, exports) {
+          if (typeof Object.create === 'function') {
+            // implementation from standard node.js 'util' module
+            module.exports = function inherits(ctor, superCtor) {
+              ctor.super_ = superCtor;
+              ctor.prototype = Object.create(superCtor.prototype, {
+                constructor: {
+                  value: ctor,
+                  enumerable: false,
+                  writable: true,
+                  configurable: true
+                }
+              });
+            };
+          } else {
+            // old school shim for old browsers
+            module.exports = function inherits(ctor, superCtor) {
+              ctor.super_ = superCtor;
+              var TempCtor = function() {};
+              TempCtor.prototype = superCtor.prototype;
+              ctor.prototype = new TempCtor();
+              ctor.prototype.constructor = ctor;
+            };
+          }
+        },
+        {}
+      ],
+      86: [
+        function(require, module, exports) {
+          module.exports = function isBuffer(arg) {
+            return (
+              arg &&
+              typeof arg === 'object' &&
+              typeof arg.copy === 'function' &&
+              typeof arg.fill === 'function' &&
+              typeof arg.readUInt8 === 'function'
+            );
+          };
+        },
+        {}
+      ],
+      87: [
+        function(require, module, exports) {
+          (function(process, global) {
+            // Copyright Joyent, Inc. and other Node contributors.
+            //
+            // Permission is hereby granted, free of charge, to any person obtaining a
+            // copy of this software and associated documentation files (the
+            // "Software"), to deal in the Software without restriction, including
+            // without limitation the rights to use, copy, modify, merge, publish,
+            // distribute, sublicense, and/or sell copies of the Software, and to permit
+            // persons to whom the Software is furnished to do so, subject to the
+            // following conditions:
+            //
+            // The above copyright notice and this permission notice shall be included
+            // in all copies or substantial portions of the Software.
+            //
+            // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+            // OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+            // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+            // NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+            // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+            // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+            // USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+            var formatRegExp = /%[sdj%]/g;
+            exports.format = function(f) {
+              if (!isString(f)) {
+                var objects = [];
+                for (var i = 0; i < arguments.length; i++) {
+                  objects.push(inspect(arguments[i]));
+                }
+                return objects.join(' ');
+              }
+
+              var i = 1;
+              var args = arguments;
+              var len = args.length;
+              var str = String(f).replace(formatRegExp, function(x) {
+                if (x === '%%') return '%';
+                if (i >= len) return x;
+                switch (x) {
+                  case '%s':
+                    return String(args[i++]);
+                  case '%d':
+                    return Number(args[i++]);
+                  case '%j':
+                    try {
+                      return JSON.stringify(args[i++]);
+                    } catch (_) {
+                      return '[Circular]';
+                    }
+                  default:
+                    return x;
+                }
+              });
+              for (var x = args[i]; i < len; x = args[++i]) {
+                if (isNull(x) || !isObject(x)) {
+                  str += ' ' + x;
+                } else {
+                  str += ' ' + inspect(x);
+                }
+              }
+              return str;
+            };
+
+            // Mark that a method should not be used.
+            // Returns a modified function which warns once by default.
+            // If --no-deprecation is set, then it is a no-op.
+            exports.deprecate = function(fn, msg) {
+              // Allow for deprecating things in the process of starting up.
+              if (isUndefined(global.process)) {
+                return function() {
+                  return exports.deprecate(fn, msg).apply(this, arguments);
+                };
+              }
+
+              if (process.noDeprecation === true) {
+                return fn;
+              }
+
+              var warned = false;
+              function deprecated() {
+                if (!warned) {
+                  if (process.throwDeprecation) {
+                    throw new Error(msg);
+                  } else if (process.traceDeprecation) {
+                    console.trace(msg);
+                  } else {
+                    console.error(msg);
+                  }
+                  warned = true;
+                }
+                return fn.apply(this, arguments);
+              }
+
+              return deprecated;
+            };
+
+            var debugs = {};
+            var debugEnviron;
+            exports.debuglog = function(set) {
+              if (isUndefined(debugEnviron)) debugEnviron = process.env.NODE_DEBUG || '';
+              set = set.toUpperCase();
+              if (!debugs[set]) {
+                if (new RegExp('\\b' + set + '\\b', 'i').test(debugEnviron)) {
+                  var pid = process.pid;
+                  debugs[set] = function() {
+                    var msg = exports.format.apply(exports, arguments);
+                    console.error('%s %d: %s', set, pid, msg);
+                  };
+                } else {
+                  debugs[set] = function() {};
+                }
+              }
+              return debugs[set];
+            };
+
+            /**
+             * Echos the value of a value. Trys to print the value out
+             * in the best way possible given the different types.
+             *
+             * @param {Object} obj The object to print out.
+             * @param {Object} opts Optional options object that alters the output.
+             */
+            /* legacy: obj, showHidden, depth, colors*/
+            function inspect(obj, opts) {
+              // default options
+              var ctx = {
+                seen: [],
+                stylize: stylizeNoColor
+              };
+              // legacy...
+              if (arguments.length >= 3) ctx.depth = arguments[2];
+              if (arguments.length >= 4) ctx.colors = arguments[3];
+              if (isBoolean(opts)) {
+                // legacy...
+                ctx.showHidden = opts;
+              } else if (opts) {
+                // got an "options" object
+                exports._extend(ctx, opts);
+              }
+              // set default options
+              if (isUndefined(ctx.showHidden)) ctx.showHidden = false;
+              if (isUndefined(ctx.depth)) ctx.depth = 2;
+              if (isUndefined(ctx.colors)) ctx.colors = false;
+              if (isUndefined(ctx.customInspect)) ctx.customInspect = true;
+              if (ctx.colors) ctx.stylize = stylizeWithColor;
+              return formatValue(ctx, obj, ctx.depth);
+            }
+            exports.inspect = inspect;
+
+            // http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
+            inspect.colors = {
+              bold: [1, 22],
+              italic: [3, 23],
+              underline: [4, 24],
+              inverse: [7, 27],
+              white: [37, 39],
+              grey: [90, 39],
+              black: [30, 39],
+              blue: [34, 39],
+              cyan: [36, 39],
+              green: [32, 39],
+              magenta: [35, 39],
+              red: [31, 39],
+              yellow: [33, 39]
+            };
+
+            // Don't use 'blue' not visible on cmd.exe
+            inspect.styles = {
+              special: 'cyan',
+              number: 'yellow',
+              boolean: 'yellow',
+              undefined: 'grey',
+              null: 'bold',
+              string: 'green',
+              date: 'magenta',
+              // "name": intentionally not styling
+              regexp: 'red'
+            };
+
+            function stylizeWithColor(str, styleType) {
+              var style = inspect.styles[styleType];
+
+              if (style) {
+                return '\u001b[' + inspect.colors[style][0] + 'm' + str + '\u001b[' + inspect.colors[style][1] + 'm';
+              } else {
+                return str;
+              }
+            }
+
+            function stylizeNoColor(str, styleType) {
+              return str;
+            }
+
+            function arrayToHash(array) {
+              var hash = {};
+
+              array.forEach(function(val, idx) {
+                hash[val] = true;
+              });
+
+              return hash;
+            }
+
+            function formatValue(ctx, value, recurseTimes) {
+              // Provide a hook for user-specified inspect functions.
+              // Check that value is an object with an inspect function on it
+              if (
+                ctx.customInspect &&
+                value &&
+                isFunction(value.inspect) &&
+                // Filter out the util module, it's inspect function is special
+                value.inspect !== exports.inspect &&
+                // Also filter out any prototype objects using the circular check.
+                !(value.constructor && value.constructor.prototype === value)
+              ) {
+                var ret = value.inspect(recurseTimes, ctx);
+                if (!isString(ret)) {
+                  ret = formatValue(ctx, ret, recurseTimes);
+                }
+                return ret;
+              }
+
+              // Primitive types cannot have properties
+              var primitive = formatPrimitive(ctx, value);
+              if (primitive) {
+                return primitive;
+              }
+
+              // Look up the keys of the object.
+              var keys = Object.keys(value);
+              var visibleKeys = arrayToHash(keys);
+
+              if (ctx.showHidden) {
+                keys = Object.getOwnPropertyNames(value);
+              }
+
+              // IE doesn't make error fields non-enumerable
+              // http://msdn.microsoft.com/en-us/library/ie/dww52sbt(v=vs.94).aspx
+              if (isError(value) && (keys.indexOf('message') >= 0 || keys.indexOf('description') >= 0)) {
+                return formatError(value);
+              }
+
+              // Some type of object without properties can be shortcutted.
+              if (keys.length === 0) {
+                if (isFunction(value)) {
+                  var name = value.name ? ': ' + value.name : '';
+                  return ctx.stylize('[Function' + name + ']', 'special');
+                }
+                if (isRegExp(value)) {
+                  return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
+                }
+                if (isDate(value)) {
+                  return ctx.stylize(Date.prototype.toString.call(value), 'date');
+                }
+                if (isError(value)) {
+                  return formatError(value);
+                }
+              }
+
+              var base = '',
+                array = false,
+                braces = ['{', '}'];
+
+              // Make Array say that they are Array
+              if (isArray(value)) {
+                array = true;
+                braces = ['[', ']'];
+              }
+
+              // Make functions say that they are functions
+              if (isFunction(value)) {
+                var n = value.name ? ': ' + value.name : '';
+                base = ' [Function' + n + ']';
+              }
+
+              // Make RegExps say that they are RegExps
+              if (isRegExp(value)) {
+                base = ' ' + RegExp.prototype.toString.call(value);
+              }
+
+              // Make dates with properties first say the date
+              if (isDate(value)) {
+                base = ' ' + Date.prototype.toUTCString.call(value);
+              }
+
+              // Make error with message first say the error
+              if (isError(value)) {
+                base = ' ' + formatError(value);
+              }
+
+              if (keys.length === 0 && (!array || value.length == 0)) {
+                return braces[0] + base + braces[1];
+              }
+
+              if (recurseTimes < 0) {
+                if (isRegExp(value)) {
+                  return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
+                } else {
+                  return ctx.stylize('[Object]', 'special');
+                }
+              }
+
+              ctx.seen.push(value);
+
+              var output;
+              if (array) {
+                output = formatArray(ctx, value, recurseTimes, visibleKeys, keys);
+              } else {
+                output = keys.map(function(key) {
+                  return formatProperty(ctx, value, recurseTimes, visibleKeys, key, array);
+                });
+              }
+
+              ctx.seen.pop();
+
+              return reduceToSingleString(output, base, braces);
+            }
+
+            function formatPrimitive(ctx, value) {
+              if (isUndefined(value)) return ctx.stylize('undefined', 'undefined');
+              if (isString(value)) {
+                var simple =
+                  "'" +
+                  JSON.stringify(value)
+                    .replace(/^"|"$/g, '')
+                    .replace(/'/g, "\\'")
+                    .replace(/\\"/g, '"') +
+                  "'";
+                return ctx.stylize(simple, 'string');
+              }
+              if (isNumber(value)) return ctx.stylize('' + value, 'number');
+              if (isBoolean(value)) return ctx.stylize('' + value, 'boolean');
+              // For some reason typeof null is "object", so special case here.
+              if (isNull(value)) return ctx.stylize('null', 'null');
+            }
+
+            function formatError(value) {
+              return '[' + Error.prototype.toString.call(value) + ']';
+            }
+
+            function formatArray(ctx, value, recurseTimes, visibleKeys, keys) {
+              var output = [];
+              for (var i = 0, l = value.length; i < l; ++i) {
+                if (hasOwnProperty(value, String(i))) {
+                  output.push(formatProperty(ctx, value, recurseTimes, visibleKeys, String(i), true));
+                } else {
+                  output.push('');
+                }
+              }
+              keys.forEach(function(key) {
+                if (!key.match(/^\d+$/)) {
+                  output.push(formatProperty(ctx, value, recurseTimes, visibleKeys, key, true));
+                }
+              });
+              return output;
+            }
+
+            function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
+              var name, str, desc;
+              desc = Object.getOwnPropertyDescriptor(value, key) || { value: value[key] };
+              if (desc.get) {
+                if (desc.set) {
+                  str = ctx.stylize('[Getter/Setter]', 'special');
+                } else {
+                  str = ctx.stylize('[Getter]', 'special');
+                }
+              } else {
+                if (desc.set) {
+                  str = ctx.stylize('[Setter]', 'special');
+                }
+              }
+              if (!hasOwnProperty(visibleKeys, key)) {
+                name = '[' + key + ']';
+              }
+              if (!str) {
+                if (ctx.seen.indexOf(desc.value) < 0) {
+                  if (isNull(recurseTimes)) {
+                    str = formatValue(ctx, desc.value, null);
+                  } else {
+                    str = formatValue(ctx, desc.value, recurseTimes - 1);
+                  }
+                  if (str.indexOf('\n') > -1) {
+                    if (array) {
+                      str = str
+                        .split('\n')
+                        .map(function(line) {
+                          return '  ' + line;
+                        })
+                        .join('\n')
+                        .substr(2);
+                    } else {
+                      str =
+                        '\n' +
+                        str
+                          .split('\n')
+                          .map(function(line) {
+                            return '   ' + line;
+                          })
+                          .join('\n');
+                    }
+                  }
+                } else {
+                  str = ctx.stylize('[Circular]', 'special');
+                }
+              }
+              if (isUndefined(name)) {
+                if (array && key.match(/^\d+$/)) {
+                  return str;
+                }
+                name = JSON.stringify('' + key);
+                if (name.match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
+                  name = name.substr(1, name.length - 2);
+                  name = ctx.stylize(name, 'name');
+                } else {
+                  name = name
+                    .replace(/'/g, "\\'")
+                    .replace(/\\"/g, '"')
+                    .replace(/(^"|"$)/g, "'");
+                  name = ctx.stylize(name, 'string');
+                }
+              }
+
+              return name + ': ' + str;
+            }
+
+            function reduceToSingleString(output, base, braces) {
+              var numLinesEst = 0;
+              var length = output.reduce(function(prev, cur) {
+                numLinesEst++;
+                if (cur.indexOf('\n') >= 0) numLinesEst++;
+                return prev + cur.replace(/\u001b\[\d\d?m/g, '').length + 1;
+              }, 0);
+
+              if (length > 60) {
+                return braces[0] + (base === '' ? '' : base + '\n ') + ' ' + output.join(',\n  ') + ' ' + braces[1];
+              }
+
+              return braces[0] + base + ' ' + output.join(', ') + ' ' + braces[1];
+            }
+
+            // NOTE: These type checking functions intentionally don't use `instanceof`
+            // because it is fragile and can be easily faked with `Object.create()`.
+            function isArray(ar) {
+              return Array.isArray(ar);
+            }
+            exports.isArray = isArray;
+
+            function isBoolean(arg) {
+              return typeof arg === 'boolean';
+            }
+            exports.isBoolean = isBoolean;
+
+            function isNull(arg) {
+              return arg === null;
+            }
+            exports.isNull = isNull;
+
+            function isNullOrUndefined(arg) {
+              return arg == null;
+            }
+            exports.isNullOrUndefined = isNullOrUndefined;
+
+            function isNumber(arg) {
+              return typeof arg === 'number';
+            }
+            exports.isNumber = isNumber;
+
+            function isString(arg) {
+              return typeof arg === 'string';
+            }
+            exports.isString = isString;
+
+            function isSymbol(arg) {
+              return typeof arg === 'symbol';
+            }
+            exports.isSymbol = isSymbol;
+
+            function isUndefined(arg) {
+              return arg === void 0;
+            }
+            exports.isUndefined = isUndefined;
+
+            function isRegExp(re) {
+              return isObject(re) && objectToString(re) === '[object RegExp]';
+            }
+            exports.isRegExp = isRegExp;
+
+            function isObject(arg) {
+              return typeof arg === 'object' && arg !== null;
+            }
+            exports.isObject = isObject;
+
+            function isDate(d) {
+              return isObject(d) && objectToString(d) === '[object Date]';
+            }
+            exports.isDate = isDate;
+
+            function isError(e) {
+              return isObject(e) && (objectToString(e) === '[object Error]' || e instanceof Error);
+            }
+            exports.isError = isError;
+
+            function isFunction(arg) {
+              return typeof arg === 'function';
+            }
+            exports.isFunction = isFunction;
+
+            function isPrimitive(arg) {
+              return (
+                arg === null ||
+                typeof arg === 'boolean' ||
+                typeof arg === 'number' ||
+                typeof arg === 'string' ||
+                typeof arg === 'symbol' || // ES6 symbol
+                typeof arg === 'undefined'
+              );
+            }
+            exports.isPrimitive = isPrimitive;
+
+            exports.isBuffer = require('./support/isBuffer');
+
+            function objectToString(o) {
+              return Object.prototype.toString.call(o);
+            }
+
+            function pad(n) {
+              return n < 10 ? '0' + n.toString(10) : n.toString(10);
+            }
+
+            var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+            // 26 Feb 16:19:34
+            function timestamp() {
+              var d = new Date();
+              var time = [pad(d.getHours()), pad(d.getMinutes()), pad(d.getSeconds())].join(':');
+              return [d.getDate(), months[d.getMonth()], time].join(' ');
+            }
+
+            // log is just a thin wrapper to console.log that prepends a timestamp
+            exports.log = function() {
+              console.log('%s - %s', timestamp(), exports.format.apply(exports, arguments));
+            };
+
+            /**
+             * Inherit the prototype methods from one constructor into another.
+             *
+             * The Function.prototype.inherits from lang.js rewritten as a standalone
+             * function (not on Function.prototype). NOTE: If this file is to be loaded
+             * during bootstrapping this function needs to be rewritten using some native
+             * functions as prototype setup using normal JavaScript does not work as
+             * expected during bootstrapping (see mirror.js in r114903).
+             *
+             * @param {function} ctor Constructor function which needs to inherit the
+             *     prototype.
+             * @param {function} superCtor Constructor function to inherit prototype from.
+             */
+            exports.inherits = require('inherits');
+
+            exports._extend = function(origin, add) {
+              // Don't do anything if add isn't an object
+              if (!add || !isObject(add)) return origin;
+
+              var keys = Object.keys(add);
+              var i = keys.length;
+              while (i--) {
+                origin[keys[i]] = add[keys[i]];
+              }
+              return origin;
+            };
+
+            function hasOwnProperty(obj, prop) {
+              return Object.prototype.hasOwnProperty.call(obj, prop);
+            }
+          }.call(
+            this,
+            require('_process'),
+            typeof global !== 'undefined'
+              ? global
+              : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}
+          ));
+        },
+        { './support/isBuffer': 86, _process: 83, inherits: 85 }
+      ],
+      88: [
         function(require, module, exports) {
           module.exports = {
             name: 'aigle',
-            version: '1.12.0-alpha.6',
+            version: '1.12.0-alpha.7',
             description: 'Aigle is an ideal Promise library, faster and more functional than other Promise libraries',
             main: 'index.js',
             typings: 'aigle.d.ts',
