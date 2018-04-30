@@ -1,8 +1,14 @@
 'use strict';
 
+const util = require('util');
+const path = require('path');
 const assert = require('assert');
+const { exec } = require('child_process');
 
+const _ = require('lodash');
 const parallel = require('mocha.parallel');
+
+const { custom } = util.promisify;
 const Aigle = require('../../');
 const { DELAY } = require('../config');
 
@@ -162,11 +168,38 @@ parallel('promisify', () => {
   it('should work setTimeout the same functionality as util.promisify', () => {
     const setTimeoutPromise = Aigle.promisify(setTimeout);
     const str = 'foobar';
+    assert.strictEqual(setTimeoutPromise, setTimeout[custom]);
     return setTimeoutPromise(DELAY, str).then(value => assert.strictEqual(value, str));
   });
 
   it('should work setImmediate the same functionality as util.promisify', () => {
     const setImmedidatePromise = Aigle.promisify(setImmediate);
+    const str = 'foobar';
+    assert.strictEqual(setImmedidatePromise, setImmediate[custom]);
+    return setImmedidatePromise(str).then(value => assert.strictEqual(value, str));
+  });
+
+  it('should get the native promisified exec', () => {
+    const promisified = Aigle.promisify(exec);
+    assert.ok(promisified);
+    assert.strictEqual(promisified, exec[custom]);
+  });
+
+  it('should work even if util promisify does not exist', () => {
+    util.promisify = null;
+    const dirpath = path.resolve(__dirname, '../../lib');
+    const aiglepath = path.resolve(dirpath, 'aigle.js');
+    const re = new RegExp(dirpath);
+    delete require.cache[aiglepath];
+    _.forOwn(require.cache, (cache, filepath) => {
+      if (re.test(filepath)) {
+        delete require.cache[filepath];
+      }
+    });
+    const Aigle = require(aiglepath);
+
+    const setImmedidatePromise = Aigle.promisify(setImmediate);
+    assert.notStrictEqual(setImmedidatePromise, setImmediate[custom]);
     const str = 'foobar';
     return setImmedidatePromise(str).then(value => assert.strictEqual(value, str));
   });
