@@ -8,7 +8,9 @@ const { exec } = require('child_process');
 const _ = require('lodash');
 const parallel = require('mocha.parallel');
 
-const { custom } = util.promisify;
+const [major] = process.versions.node.split('.').map(Number);
+const custom = major >= 8 && util.promisify.custom;
+
 const Aigle = require('../../');
 const { DELAY } = require('../config');
 
@@ -168,21 +170,27 @@ parallel('promisify', () => {
   it('should work setTimeout the same functionality as util.promisify', () => {
     const setTimeoutPromise = Aigle.promisify(setTimeout);
     const str = 'foobar';
-    assert.strictEqual(setTimeoutPromise, setTimeout[custom]);
+    if (custom) {
+      assert.strictEqual(setTimeoutPromise, setTimeout[custom]);
+    }
     return setTimeoutPromise(DELAY, str).then(value => assert.strictEqual(value, str));
   });
 
   it('should work setImmediate the same functionality as util.promisify', () => {
     const setImmedidatePromise = Aigle.promisify(setImmediate);
     const str = 'foobar';
-    assert.strictEqual(setImmedidatePromise, setImmediate[custom]);
+    if (custom) {
+      assert.strictEqual(setImmedidatePromise, setImmediate[custom]);
+    }
     return setImmedidatePromise(str).then(value => assert.strictEqual(value, str));
   });
 
   it('should get the native promisified exec', () => {
     const promisified = Aigle.promisify(exec);
     assert.ok(promisified);
-    assert.strictEqual(promisified, exec[custom]);
+    if (custom) {
+      assert.strictEqual(promisified, exec[custom]);
+    }
   });
 
   it('should work even if util promisify does not exist', () => {
