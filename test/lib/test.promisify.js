@@ -131,26 +131,21 @@ parallel('promisify', () => {
   });
 
   it('should throw an error if second argument is boolean', () => {
-    let error;
     const obj = {
       fn: callback => callback()
     };
-    try {
-      Aigle.promisify(obj, true);
-    } catch (e) {
-      error = e;
-    }
-    assert.ok(error);
+    assert.throws(() => Aigle.promisify(obj, true), TypeError);
+  });
+
+  it('should throw an error if second argument is boolean', () => {
+    const obj = {
+      fn: callback => callback()
+    };
+    assert.throws(() => Aigle.promisify(obj, 'func'), TypeError);
   });
 
   it('should throw an error if first argument is invalid', () => {
-    let error;
-    try {
-      Aigle.promisify('test');
-    } catch (e) {
-      error = e;
-    }
-    assert.ok(error);
+    assert.throws(() => Aigle.promisify('test'), TypeError);
   });
 
   it('should throw an error if error is caused', () => {
