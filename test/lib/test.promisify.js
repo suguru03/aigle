@@ -15,6 +15,18 @@ const Aigle = require('../../');
 const { DELAY } = require('../config');
 
 parallel('promisify', () => {
+  const dirpath = path.resolve(__dirname, '../../lib');
+  const aiglepath = path.resolve(dirpath, 'aigle.js');
+  beforeEach(() => {
+    const re = new RegExp(dirpath);
+    delete require.cache[aiglepath];
+    _.forOwn(require.cache, (cache, filepath) => {
+      if (re.test(filepath)) {
+        delete require.cache[filepath];
+      }
+    });
+  });
+
   it('should execute', () => {
     const fn = callback => {
       setTimeout(() => callback(null, 1), 10);
@@ -170,45 +182,52 @@ parallel('promisify', () => {
   it('should work setTimeout the same functionality as util.promisify', () => {
     const setTimeoutPromise = Aigle.promisify(setTimeout);
     const str = 'foobar';
-    if (custom) {
-      assert.strictEqual(setTimeoutPromise, setTimeout[custom]);
-    }
-    return setTimeoutPromise(DELAY, str).then(value => assert.strictEqual(value, str));
+    assert.notStrictEqual(setTimeoutPromise, setTimeout[custom]);
+    const promise = setTimeoutPromise(DELAY, str).then(value => assert.strictEqual(value, str));
+    assert.ok(promise instanceof Aigle);
+    return promise;
   });
 
   it('should work setImmediate the same functionality as util.promisify', () => {
-    const setImmedidatePromise = Aigle.promisify(setImmediate);
+    const setImmediatePromise = Aigle.promisify(setImmediate);
     const str = 'foobar';
-    if (custom) {
-      assert.strictEqual(setImmedidatePromise, setImmediate[custom]);
-    }
-    return setImmedidatePromise(str).then(value => assert.strictEqual(value, str));
+    assert.notStrictEqual(setImmediatePromise, setImmediate[custom]);
+    const promise = setImmediatePromise(str).then(value => assert.strictEqual(value, str));
+    assert.ok(promise instanceof Aigle);
+    return promise;
   });
 
   it('should get the native promisified exec', () => {
     const promisified = Aigle.promisify(exec);
     assert.ok(promisified);
-    if (custom) {
-      assert.strictEqual(promisified, exec[custom]);
-    }
+    assert.notStrictEqual(promisified, exec[custom]);
   });
 
-  it('should work even if util promisify does not exist', () => {
-    util.promisify = null;
-    const dirpath = path.resolve(__dirname, '../../lib');
-    const aiglepath = path.resolve(dirpath, 'aigle.js');
-    const re = new RegExp(dirpath);
-    delete require.cache[aiglepath];
-    _.forOwn(require.cache, (cache, filepath) => {
-      if (re.test(filepath)) {
-        delete require.cache[filepath];
-      }
-    });
-    const Aigle = require(aiglepath);
+  it('should return aigle promisified native function', () => {
+    const setImmediatePromise = Aigle.promisify(setImmediate);
+    return setImmediatePromise()
+      .then(() => setImmediatePromise([1, 2, 3]))
+      .map(v => v * 2)
+      .then(arr => assert.deepStrictEqual(arr, [2, 4, 6]));
+  });
 
-    const setImmedidatePromise = Aigle.promisify(setImmediate);
-    assert.notStrictEqual(setImmedidatePromise, setImmediate[custom]);
+  it('should work with setImmediate even if util promisify does not exist', () => {
+    util.promisify = null;
+    const Aigle = require(aiglepath);
+    const setImmediatePromise = Aigle.promisify(setImmediate);
+    assert.notStrictEqual(setImmediatePromise, setImmediate[custom]);
     const str = 'foobar';
-    return setImmedidatePromise(str).then(value => assert.strictEqual(value, str));
+    const promise = setImmediatePromise(str).then(value => assert.strictEqual(value, str));
+    assert.ok(promise instanceof Aigle);
+    return promise;
+  });
+
+  it('should work with setImmediate even if util promisify does not exist', () => {
+    util.promisify = null;
+    const Aigle = require(aiglepath);
+    const setTimeoutPromise = Aigle.promisify(setTimeout);
+    assert.notStrictEqual(setTimeoutPromise, setTimeout[custom]);
+    const str = 'foobar';
+    return setTimeoutPromise(DELAY, str).then(value => assert.strictEqual(value, str));
   });
 });
