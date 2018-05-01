@@ -41,7 +41,7 @@
     "codecov": "^3.0.0",
     "docdash": "^0.4.0",
     "eslint": "^4.19.1",
-    "fs-extra": "^4.0.2",
+    "fs-extra": "^6.0.0",
     "gulp": "^3.9.1",
     "gulp-bump": "^3.0.0",
     "gulp-git": "^2.4.2",
