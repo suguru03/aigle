@@ -34,7 +34,11 @@ function updateVersion(type) {
   return () => {
     const [release, identifier] = type.split('-');
     const prev = require(packagepath).version;
-    const version = semver.inc(prev, new RegExp(identifier).test(prev) ? 'prerelease' : release, identifier);
+    const version = semver.inc(
+      prev,
+      identifier && new RegExp(identifier).test(prev) ? 'prerelease' : release,
+      identifier
+    );
     return gulp
       .src(packagepath)
       .pipe(bump({ version }))
