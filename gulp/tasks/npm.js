@@ -47,11 +47,9 @@ async function publish() {
   });
 
   // copy type files
-  fs.copySync(path.resolve(rootpath, 'typings', 'aigle.d.ts'), path.resolve(buildpath, 'aigle.d.ts'));
+  // fs.copySync(path.resolve(rootpath, 'typings', 'aigle.d.ts'), path.resolve(buildpath, 'aigle.d.ts'));
 
-  // TODO: enable tag from v1.13-alpha
-  // const tag = /alpha|beta/.test(json.version) ? '--tag next' : '';
-  const tag = '';
+  const tag = /alpha|beta/.test(json.version) ? '--tag next' : '';
 
   await exec(`cd ${buildpath} && npm publish ${tag}`);
 }
