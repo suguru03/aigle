@@ -19,38 +19,37 @@
 })(function() {
   var define, module, exports;
   return (function() {
-    function e(t, n, r) {
-      function s(o, u) {
-        if (!n[o]) {
-          if (!t[o]) {
-            var a = typeof require == 'function' && require;
-            if (!u && a) return a(o, !0);
-            if (i) return i(o, !0);
-            var f = new Error("Cannot find module '" + o + "'");
-            throw ((f.code = 'MODULE_NOT_FOUND'), f);
+    function r(e, n, t) {
+      function o(i, f) {
+        if (!n[i]) {
+          if (!e[i]) {
+            var c = 'function' == typeof require && require;
+            if (!f && c) return c(i, !0);
+            if (u) return u(i, !0);
+            var a = new Error("Cannot find module '" + i + "'");
+            throw ((a.code = 'MODULE_NOT_FOUND'), a);
           }
-          var l = (n[o] = { exports: {} });
-          t[o][0].call(
-            l.exports,
-            function(e) {
-              var n = t[o][1][e];
-              return s(n ? n : e);
+          var p = (n[i] = { exports: {} });
+          e[i][0].call(
+            p.exports,
+            function(r) {
+              var n = e[i][1][r];
+              return o(n || r);
             },
-            l,
-            l.exports,
+            p,
+            p.exports,
+            r,
             e,
-            t,
             n,
-            r
+            t
           );
         }
-        return n[o].exports;
+        return n[i].exports;
       }
-      var i = typeof require == 'function' && require;
-      for (var o = 0; o < r.length; o++) s(r[o]);
-      return s;
+      for (var u = 'function' == typeof require && require, i = 0; i < t.length; i++) o(t[i]);
+      return o;
     }
-    return e;
+    return r;
   })()(
     {
       1: [
@@ -9311,7 +9310,7 @@
           'use strict';
 
           const Aigle = require('./aigle');
-          const { INTERNAL } = require('./internal/util');
+          const { INTERNAL, callThen } = require('./internal/util');
 
           const globalSetImmediate = typeof setImmediate === 'function' ? setImmediate : {};
           const custom =
@@ -9340,6 +9339,9 @@
                 switch (typeof opts) {
                   case 'string':
                   case 'number':
+                    if (typeof fn[opts] !== 'function') {
+                      throw new TypeError('Function not found key: ' + opts);
+                    }
                     if (fn[opts].__isPromisified__) {
                       return fn[opts];
                     }
@@ -9350,16 +9352,6 @@
               case 'function':
                 if (fn.__isPromisified__) {
                   return fn;
-                }
-                const func = fn[custom];
-                if (func) {
-                  return func;
-                }
-                switch (fn) {
-                  case setTimeout:
-                    return Aigle.delay;
-                  case globalSetImmediate:
-                    return Aigle.resolve;
                 }
                 const ctx = opts && opts.context !== undefined ? opts.context : undefined;
                 return makeFunction(fn, ctx);
@@ -9415,8 +9407,42 @@
            * @param {*} [ctx]
            */
           function makeFunction(fn, ctx) {
+            const func = fn[custom];
+            if (func) {
+              nativePromisified.__isPromisified__ = true;
+              return nativePromisified;
+            }
+            switch (fn) {
+              case setTimeout:
+                return Aigle.delay;
+              case globalSetImmediate:
+                return Aigle.resolve;
+            }
             promisified.__isPromisified__ = true;
             return promisified;
+
+            function nativePromisified(arg) {
+              const promise = new Aigle(INTERNAL);
+              let l = arguments.length;
+              let p;
+              switch (l) {
+                case 0:
+                  p = func.call(ctx || this);
+                  break;
+                case 1:
+                  p = func.call(ctx || this, arg);
+                  break;
+                default:
+                  const args = Array(l);
+                  while (l--) {
+                    args[l] = arguments[l];
+                  }
+                  p = func.apply(ctx || this, args);
+                  break;
+              }
+              callThen(p, promise);
+              return promise;
+            }
 
             function promisified(arg) {
               const promise = new Aigle(INTERNAL);
@@ -9497,17 +9523,12 @@
                     return;
                   }
                   const _key = `${key}${suffix}`;
-                  const promisified = promisify(obj);
                   if (target[_key]) {
-                    // it is for native promisified functions
-                    if (target[_key] === promisified) {
-                      break;
-                    }
                     if (!target[_key].__isPromisified__) {
                       throw new TypeError(`Cannot promisify an API that has normal methods with '${suffix}'-suffix`);
                     }
                   } else {
-                    target[_key] = promisified;
+                    target[_key] = promisify(obj);
                   }
                 }
                 iterate(suffix, filter, obj, obj, depth, memo);
@@ -12211,7 +12232,11 @@
             require('_process'),
             typeof global !== 'undefined'
               ? global
-              : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}
+              : typeof self !== 'undefined'
+                ? self
+                : typeof window !== 'undefined'
+                  ? window
+                  : {}
           ));
         },
         { _process: 83 }
@@ -12838,7 +12863,11 @@
             require('_process'),
             typeof global !== 'undefined'
               ? global
-              : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}
+              : typeof self !== 'undefined'
+                ? self
+                : typeof window !== 'undefined'
+                  ? window
+                  : {}
           ));
         },
         { './support/isBuffer': 86, _process: 83, inherits: 85 }
@@ -12847,7 +12876,7 @@
         function(require, module, exports) {
           module.exports = {
             name: 'aigle',
-            version: '1.12.0-alpha.7',
+            version: '1.12.0',
             description: 'Aigle is an ideal Promise library, faster and more functional than other Promise libraries',
             main: 'index.js',
             typings: 'aigle.d.ts',
@@ -12879,7 +12908,7 @@
               codecov: '^3.0.0',
               docdash: '^0.4.0',
               eslint: '^4.19.1',
-              'fs-extra': '^4.0.2',
+              'fs-extra': '^6.0.0',
               gulp: '^3.9.1',
               'gulp-bump': '^3.0.0',
               'gulp-git': '^2.4.2',
