@@ -155,6 +155,32 @@ hawkProm.forEach((val: Hawk[keyof Hawk], key: string) => swan).then((hawk: Hawk)
 
 hawkProm.forEach((val: Hawk[keyof Hawk]) => duck).then((hawk: Hawk) => {});
 
+/* concat */
+
+//-- concat:array --//
+
+hawkArrProm.concat((hawk: Hawk, index: number, arr: Hawks) => [hawk]).then((arr: Hawks) => {});
+
+hawkArrProm.concat((hawk: Hawk, index: number) => [swan]).then((arr: Swans) => {});
+
+hawkArrProm.concat((hawk: Hawk) => duck).then((arr: Ducks) => {});
+
+//-- concat:list --//
+
+hawkListProm.concat((hawk: Hawk, index: number, list: List<Hawk>) => [hawk]).then((arr: Hawks) => {});
+
+hawkListProm.concat((hawk: Hawk, index: number) => [swan]).then((arr: Swans) => {});
+
+hawkListProm.concat((hawk: Hawk) => duck).then((arr: Ducks) => {});
+
+//-- concat:object --//
+
+hawkProm.concat((val: Hawk[keyof Hawk], key: string, hawk: Hawk) => [hawk]).then((arr: Hawks) => {});
+
+hawkProm.concat((val: Hawk[keyof Hawk], key: string) => [swan]).then((arr: Swans) => {});
+
+hawkProm.concat((val: Hawk[keyof Hawk]) => duck).then((arr: Ducks) => {});
+
 /** static **/
 
 /* core functions */
@@ -222,3 +248,29 @@ Aigle.forEach(hawk, (val: Hawk[keyof Hawk], key: string, hawk: Hawk) => hawk).th
 Aigle.forEach(hawk, (val: Hawk[keyof Hawk], key: string) => swan).then((hawk: Hawk) => {});
 
 Aigle.forEach(hawk, (val: Hawk[keyof Hawk]) => duck).then((hawk: Hawk) => {});
+
+/* concat */
+
+//-- concat:array --//
+
+Aigle.concat(hawkArr, (hawk: Hawk, index: number, arr: Hawks) => [hawk]).then((arr: Hawks) => {});
+
+Aigle.concat(hawkArr, (hawk: Hawk, index: number) => [swan]).then((arr: Swans) => {});
+
+Aigle.concat(hawkArr, (hawk: Hawk) => duck).then((arr: Ducks) => {});
+
+//-- concat:list --//
+
+Aigle.concat(hawkList, (hawk: Hawk, index: number, arr: List<Hawk>) => [hawk]).then((arr: Hawks) => {});
+
+Aigle.concat(hawkList, (hawk: Hawk, index: number) => [swan]).then((arr: Swans) => {});
+
+Aigle.concat(hawkList, (hawk: Hawk) => duck).then((arr: Ducks) => {});
+
+//-- concat:object --//
+
+Aigle.concat(hawk, (val: Hawk[keyof Hawk], key: string, hawk: Hawk) => [hawk]).then((arr: Hawks) => {});
+
+Aigle.concat(hawk, (val: Hawk[keyof Hawk], key: string) => [swan]).then((arr: Swans) => {});
+
+Aigle.concat(hawk, (val: Hawk[keyof Hawk]) => duck).then((arr: Ducks) => {});
