@@ -115,6 +115,20 @@ declare class Aigle<R> implements PromiseLike<R> {
 
   forEach<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, any>): Aigle<T>;
 
+  /* eachSeries/forEachSeries */
+
+  eachSeries<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, any>): Aigle<T[]>;
+
+  eachSeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, any>): Aigle<List<T>>;
+
+  eachSeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, any>): Aigle<T>;
+
+  forEachSeries<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, any>): Aigle<T[]>;
+
+  forEachSeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, any>): Aigle<List<T>>;
+
+  forEachSeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, any>): Aigle<T>;
+
   /* map */
 
   map<T, R>(this: Aigle<T[]>, iterator?: ArrayIterator<T, R>): Aigle<R[]>;
@@ -151,8 +165,6 @@ declare class Aigle<R> implements PromiseLike<R> {
 
   eachLimit(...args: any[]): Aigle<any>;
 
-  eachSeries(...args: any[]): Aigle<any>;
-
   every(...args: any[]): Aigle<any>;
 
   everyLimit(...args: any[]): Aigle<any>;
@@ -184,8 +196,6 @@ declare class Aigle<R> implements PromiseLike<R> {
   findSeries(...args: any[]): Aigle<any>;
 
   forEachLimit(...args: any[]): Aigle<any>;
-
-  forEachSeries(...args: any[]): Aigle<any>;
 
   groupBy(...args: any[]): Aigle<any>;
 
@@ -455,6 +465,20 @@ declare class Aigle<R> implements PromiseLike<R> {
 
   static forEach<T extends object>(collection: T, iterator?: ObjectIterator<T, any>): Aigle<T>;
 
+  /* eachSeries/forEachSeries */
+
+  static eachSeries<T>(collection: T[], iterator?: ArrayIterator<T, any>): Aigle<T[]>;
+
+  static eachSeries<T>(collection: List<T>, iterator?: ListIterator<T, any>): Aigle<List<T>>;
+
+  static eachSeries<T extends object>(collection: T, iterator?: ObjectIterator<T, any>): Aigle<T>;
+
+  static forEachSeries<T>(collection: T[], iterator?: ArrayIterator<T, any>): Aigle<T[]>;
+
+  static forEachSeries<T>(collection: List<T>, iterator?: ListIterator<T, any>): Aigle<List<T>>;
+
+  static forEachSeries<T extends object>(collection: T, iterator?: ObjectIterator<T, any>): Aigle<T>;
+
   /* map */
 
   static map<T, R>(collection: T[], iterator?: ArrayIterator<T, R>): Aigle<R[]>;
@@ -499,8 +523,6 @@ declare class Aigle<R> implements PromiseLike<R> {
 
   static eachLimit(collection: any, limit: any, iterator: any): Aigle<any>;
 
-  static eachSeries(collection: any, iterator: any): Aigle<any>;
-
   static every(collection: any, iterator: any): Aigle<any>;
 
   static everyLimit(collection: any, limit: any, iterator: any): Aigle<any>;
@@ -532,8 +554,6 @@ declare class Aigle<R> implements PromiseLike<R> {
   static findSeries(collection: any, iterator: any): Aigle<any>;
 
   static forEachLimit(collection: any, limit: any, iterator: any): Aigle<any>;
-
-  static forEachSeries(collection: any, iterator: any): Aigle<any>;
 
   static groupBy(collection: any, iterator: any): Aigle<any>;
 

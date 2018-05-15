@@ -155,6 +155,56 @@ hawkProm.forEach((val: Hawk[keyof Hawk], key: string) => swan).then((hawk: Hawk)
 
 hawkProm.forEach((val: Hawk[keyof Hawk]) => duck).then((hawk: Hawk) => {});
 
+/* eachSeries/forEachSeries */
+
+//-- eachSeries:array --//
+
+hawkArrProm.eachSeries((hawk: Hawk, index: number, arr: Hawks) => hawk).then((arr: Hawks) => {});
+
+hawkArrProm.eachSeries((hawk: Hawk, index: number) => swan).then((arr: Hawks) => {});
+
+hawkArrProm.eachSeries((hawk: Hawk) => duck).then((arr: Hawks) => {});
+
+//-- eachSeries:list --//
+
+hawkListProm.eachSeries((hawk: Hawk, index: number, list: List<Hawk>) => hawk).then((list: List<Hawk>) => {});
+
+hawkListProm.eachSeries((hawk: Hawk, index: number) => swan).then((list: List<Hawk>) => {});
+
+hawkListProm.eachSeries((hawk: Hawk) => duck).then((list: List<Hawk>) => {});
+
+//-- eachSeries:object --//
+
+hawkProm.eachSeries((val: Hawk[keyof Hawk], key: string, hawk: Hawk) => hawk).then((hawk: Hawk) => {});
+
+hawkProm.eachSeries((val: Hawk[keyof Hawk], key: string) => swan).then((hawk: Hawk) => {});
+
+hawkProm.eachSeries((val: Hawk[keyof Hawk]) => duck).then((hawk: Hawk) => {});
+
+//-- forEachSeries:array --//
+
+hawkArrProm.forEachSeries((hawk: Hawk, index: number, arr: Hawks) => hawk).then((arr: Hawks) => {});
+
+hawkArrProm.forEachSeries((hawk: Hawk, index: number) => swan).then((arr: Hawks) => {});
+
+hawkArrProm.forEachSeries((hawk: Hawk) => duck).then((arr: Hawks) => {});
+
+//-- forEachSeries:list --//
+
+hawkListProm.forEachSeries((hawk: Hawk, index: number, list: List<Hawk>) => hawk).then((list: List<Hawk>) => {});
+
+hawkListProm.forEachSeries((hawk: Hawk, index: number) => swan).then((list: List<Hawk>) => {});
+
+hawkListProm.forEachSeries((hawk: Hawk) => duck).then((list: List<Hawk>) => {});
+
+//-- forEachSeries:object --//
+
+hawkProm.forEachSeries((val: Hawk[keyof Hawk], key: string, hawk: Hawk) => hawk).then((hawk: Hawk) => {});
+
+hawkProm.forEachSeries((val: Hawk[keyof Hawk], key: string) => swan).then((hawk: Hawk) => {});
+
+hawkProm.forEachSeries((val: Hawk[keyof Hawk]) => duck).then((hawk: Hawk) => {});
+
 /* concat */
 
 //-- concat:array --//
