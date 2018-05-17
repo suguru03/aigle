@@ -205,6 +205,74 @@ hawkProm.forEachSeries((val: Hawk[keyof Hawk], key: string) => swan).then((hawk:
 
 hawkProm.forEachSeries((val: Hawk[keyof Hawk]) => duck).then((hawk: Hawk) => {});
 
+/* eachLimit/forEachLimit */
+
+//-- eachLimit:array --//
+
+hawkArrProm.eachLimit((hawk: Hawk, index: number, arr: Hawks) => hawk).then((arr: Hawks) => {});
+hawkArrProm.eachLimit(2, (hawk: Hawk, index: number, arr: Hawks) => hawk).then((arr: Hawks) => {});
+
+hawkArrProm.eachLimit((hawk: Hawk, index: number) => swan).then((arr: Hawks) => {});
+hawkArrProm.eachLimit(2, (hawk: Hawk, index: number) => swan).then((arr: Hawks) => {});
+
+hawkArrProm.eachLimit((hawk: Hawk) => duck).then((arr: Hawks) => {});
+hawkArrProm.eachLimit(2, (hawk: Hawk) => duck).then((arr: Hawks) => {});
+
+//-- eachLimit:list --//
+
+hawkListProm.eachLimit((hawk: Hawk, index: number, list: List<Hawk>) => hawk).then((list: List<Hawk>) => {});
+hawkListProm.eachLimit(2, (hawk: Hawk, index: number, list: List<Hawk>) => hawk).then((list: List<Hawk>) => {});
+
+hawkListProm.eachLimit((hawk: Hawk, index: number) => swan).then((list: List<Hawk>) => {});
+hawkListProm.eachLimit(2, (hawk: Hawk, index: number) => swan).then((list: List<Hawk>) => {});
+
+hawkListProm.eachLimit((hawk: Hawk) => duck).then((list: List<Hawk>) => {});
+hawkListProm.eachLimit(2, (hawk: Hawk) => duck).then((list: List<Hawk>) => {});
+
+//-- eachLimit:object --//
+
+hawkProm.eachLimit((val: Hawk[keyof Hawk], key: string, hawk: Hawk) => hawk).then((hawk: Hawk) => {});
+hawkProm.eachLimit(2, (val: Hawk[keyof Hawk], key: string, hawk: Hawk) => hawk).then((hawk: Hawk) => {});
+
+hawkProm.eachLimit((val: Hawk[keyof Hawk], key: string) => swan).then((hawk: Hawk) => {});
+hawkProm.eachLimit(2, (val: Hawk[keyof Hawk], key: string) => swan).then((hawk: Hawk) => {});
+
+hawkProm.eachLimit((val: Hawk[keyof Hawk]) => duck).then((hawk: Hawk) => {});
+hawkProm.eachLimit(2, (val: Hawk[keyof Hawk]) => duck).then((hawk: Hawk) => {});
+
+//-- forEachLimit:array --//
+
+hawkArrProm.forEachLimit((hawk: Hawk, index: number, arr: Hawks) => hawk).then((arr: Hawks) => {});
+hawkArrProm.forEachLimit(2, (hawk: Hawk, index: number, arr: Hawks) => hawk).then((arr: Hawks) => {});
+
+hawkArrProm.forEachLimit((hawk: Hawk, index: number) => swan).then((arr: Hawks) => {});
+hawkArrProm.forEachLimit(2, (hawk: Hawk, index: number) => swan).then((arr: Hawks) => {});
+
+hawkArrProm.forEachLimit((hawk: Hawk) => duck).then((arr: Hawks) => {});
+hawkArrProm.forEachLimit(2, (hawk: Hawk) => duck).then((arr: Hawks) => {});
+
+//-- foreachLimit:list --//
+
+hawkListProm.forEachLimit((hawk: Hawk, index: number, list: List<Hawk>) => hawk).then((list: List<Hawk>) => {});
+hawkListProm.forEachLimit(2, (hawk: Hawk, index: number, list: List<Hawk>) => hawk).then((list: List<Hawk>) => {});
+
+hawkListProm.forEachLimit((hawk: Hawk, index: number) => swan).then((list: List<Hawk>) => {});
+hawkListProm.forEachLimit(2, (hawk: Hawk, index: number) => swan).then((list: List<Hawk>) => {});
+
+hawkListProm.forEachLimit((hawk: Hawk) => duck).then((list: List<Hawk>) => {});
+hawkListProm.forEachLimit(2, (hawk: Hawk) => duck).then((list: List<Hawk>) => {});
+
+//-- foreachLimit:object --//
+
+hawkProm.forEachLimit((val: Hawk[keyof Hawk], key: string, hawk: Hawk) => hawk).then((hawk: Hawk) => {});
+hawkProm.forEachLimit(2, (val: Hawk[keyof Hawk], key: string, hawk: Hawk) => hawk).then((hawk: Hawk) => {});
+
+hawkProm.forEachLimit((val: Hawk[keyof Hawk], key: string) => swan).then((hawk: Hawk) => {});
+hawkProm.forEachLimit(2, (val: Hawk[keyof Hawk], key: string) => swan).then((hawk: Hawk) => {});
+
+hawkProm.forEachLimit((val: Hawk[keyof Hawk]) => duck).then((hawk: Hawk) => {});
+hawkProm.forEachLimit(2, (val: Hawk[keyof Hawk]) => duck).then((hawk: Hawk) => {});
+
 /* concat */
 
 //-- concat:array --//

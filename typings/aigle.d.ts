@@ -129,6 +129,26 @@ declare class Aigle<R> implements PromiseLike<R> {
 
   forEachSeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, any>): Aigle<T>;
 
+  /* eachLimit/forEachLimit */
+
+  eachLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, any>): Aigle<T[]>;
+  eachLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T, any>): Aigle<T[]>;
+
+  eachLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, any>): Aigle<List<T>>;
+  eachLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T, any>): Aigle<List<T>>;
+
+  eachLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, any>): Aigle<T>;
+  eachLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T, any>): Aigle<T>;
+
+  forEachLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, any>): Aigle<T[]>;
+  forEachLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T, any>): Aigle<T[]>;
+
+  forEachLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, any>): Aigle<List<T>>;
+  forEachLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T, any>): Aigle<List<T>>;
+
+  forEachLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, any>): Aigle<T>;
+  forEachLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T, any>): Aigle<T>;
+
   /* map */
 
   map<T, R>(this: Aigle<T[]>, iterator?: ArrayIterator<T, R>): Aigle<R[]>;
@@ -163,8 +183,6 @@ declare class Aigle<R> implements PromiseLike<R> {
 
   doWhilst(...args: any[]): Aigle<any>;
 
-  eachLimit(...args: any[]): Aigle<any>;
-
   every(...args: any[]): Aigle<any>;
 
   everyLimit(...args: any[]): Aigle<any>;
@@ -194,8 +212,6 @@ declare class Aigle<R> implements PromiseLike<R> {
   findLimit(...args: any[]): Aigle<any>;
 
   findSeries(...args: any[]): Aigle<any>;
-
-  forEachLimit(...args: any[]): Aigle<any>;
 
   groupBy(...args: any[]): Aigle<any>;
 
@@ -479,6 +495,26 @@ declare class Aigle<R> implements PromiseLike<R> {
 
   static forEachSeries<T extends object>(collection: T, iterator?: ObjectIterator<T, any>): Aigle<T>;
 
+  /* eachLimit/forEachLimit */
+
+  static eachLimit<T>(collection: T[], iterator?: ArrayIterator<T, any>): Aigle<T[]>;
+  static eachLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T, any>): Aigle<T[]>;
+
+  static eachLimit<T>(collection: List<T>, iterator?: ListIterator<T, any>): Aigle<List<T>>;
+  static eachLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, any>): Aigle<List<T>>;
+
+  static eachLimit<T extends object>(collection: T, iterator?: ObjectIterator<T, any>): Aigle<T>;
+  static eachLimit<T extends object>(collection: T, limit: number, iterator: ObjectIterator<T, any>): Aigle<T>;
+
+  static forEachLimit<T>(collection: T[], iterator?: ArrayIterator<T, any>): Aigle<T[]>;
+  static forEachLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T, any>): Aigle<T[]>;
+
+  static forEachLimit<T>(collection: List<T>, iterator?: ListIterator<T, any>): Aigle<List<T>>;
+  static forEachLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, any>): Aigle<List<T>>;
+
+  static forEachLimit<T extends object>(collection: T, iterator?: ObjectIterator<T, any>): Aigle<T>;
+  static forEachLimit<T extends object>(collection: T, limit: number, iterator: ObjectIterator<T, any>): Aigle<T>;
+
   /* map */
 
   static map<T, R>(collection: T[], iterator?: ArrayIterator<T, R>): Aigle<R[]>;
@@ -521,8 +557,6 @@ declare class Aigle<R> implements PromiseLike<R> {
 
   static doWhilst(value: any, iterator: any, tester: any): Aigle<any>;
 
-  static eachLimit(collection: any, limit: any, iterator: any): Aigle<any>;
-
   static every(collection: any, iterator: any): Aigle<any>;
 
   static everyLimit(collection: any, limit: any, iterator: any): Aigle<any>;
@@ -552,8 +586,6 @@ declare class Aigle<R> implements PromiseLike<R> {
   static findLimit(collection: any, limit: any, iterator: any): Aigle<any>;
 
   static findSeries(collection: any, iterator: any): Aigle<any>;
-
-  static forEachLimit(collection: any, limit: any, iterator: any): Aigle<any>;
 
   static groupBy(collection: any, iterator: any): Aigle<any>;
 
