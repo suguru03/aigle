@@ -157,6 +157,25 @@ declare class Aigle<R> implements PromiseLike<R> {
 
   map<T extends object, R>(this: Aigle<T>, iterator?: ObjectIterator<T, R>): Aigle<R[]>;
 
+  /* mapSeries */
+
+  mapSeries<T, R>(this: Aigle<T[]>, iterator?: ArrayIterator<T, R>): Aigle<R[]>;
+
+  mapSeries<T, R>(this: Aigle<List<T>>, iterator?: ListIterator<T, R>): Aigle<R[]>;
+
+  mapSeries<T extends object, R>(this: Aigle<T>, iterator?: ObjectIterator<T, R>): Aigle<R[]>;
+
+  /* mapLimit */
+
+  mapLimit<T, R>(this: Aigle<T[]>, iterator?: ArrayIterator<T, R>): Aigle<R[]>;
+  mapLimit<T, R>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T, R>): Aigle<R[]>;
+
+  mapLimit<T, R>(this: Aigle<List<T>>, iterator?: ListIterator<T, R>): Aigle<R[]>;
+  mapLimit<T, R>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T, R>): Aigle<R[]>;
+
+  mapLimit<T extends object, R>(this: Aigle<T>, iterator?: ObjectIterator<T, R>): Aigle<R[]>;
+  mapLimit<T extends object, R>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T, R>): Aigle<R[]>;
+
   /* concat */
 
   concat<T, R>(this: Aigle<T[]>, iterator?: ArrayIterator<T, R | R[]>): Aigle<R[]>;
@@ -226,10 +245,6 @@ declare class Aigle<R> implements PromiseLike<R> {
   isPending(...args: any[]): Aigle<any>;
 
   isRejected(...args: any[]): Aigle<any>;
-
-  mapLimit(...args: any[]): Aigle<any>;
-
-  mapSeries(...args: any[]): Aigle<any>;
 
   mapValues(...args: any[]): Aigle<any>;
 
@@ -523,6 +538,25 @@ declare class Aigle<R> implements PromiseLike<R> {
 
   static map<T extends object, R>(collection: T, iterator?: ObjectIterator<T, R>): Aigle<R[]>;
 
+  /* mapSeries */
+
+  static mapSeries<T, R>(collection: T[], iterator?: ArrayIterator<T, R>): Aigle<R[]>;
+
+  static mapSeries<T, R>(collection: List<T>, iterator?: ListIterator<T, R>): Aigle<R[]>;
+
+  static mapSeries<T extends object, R>(collection: T, iterator?: ObjectIterator<T, R>): Aigle<R[]>;
+
+  /* mapLimit */
+
+  static mapLimit<T, R>(collection: T[], iterator?: ArrayIterator<T, R>): Aigle<R[]>;
+  static mapLimit<T, R>(collection: T[], limit: number, iterator: ArrayIterator<T, R>): Aigle<R[]>;
+
+  static mapLimit<T, R>(collection: List<T>, iterator?: ListIterator<T, R>): Aigle<R[]>;
+  static mapLimit<T, R>(collection: List<T>, limit: number, iterator: ListIterator<T, R>): Aigle<R[]>;
+
+  static mapLimit<T extends object, R>(collection: T, iterator?: ObjectIterator<T, R>): Aigle<R[]>;
+  static mapLimit<T extends object, R>(collection: T, limit: number, iterator: ObjectIterator<T, R>): Aigle<R[]>;
+
   /* concat */
 
   static concat<T, R>(collection: T[], iterator?: ArrayIterator<T, R | R[]>): Aigle<R[]>;
@@ -596,10 +630,6 @@ declare class Aigle<R> implements PromiseLike<R> {
   static join(...args: any[]): Aigle<any>;
 
   static longStackTraces(): void;
-
-  static mapLimit(collection: any, limit: any, iterator: any): Aigle<any>;
-
-  static mapSeries(collection: any, iterator: any): Aigle<any>;
 
   static mapValues(collection: any, iterator: any): Aigle<any>;
 
