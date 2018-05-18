@@ -299,6 +299,32 @@ hawkProm.concat((val: Hawk[keyof Hawk], key: string) => [swan]).then((arr: Swans
 
 hawkProm.concat((val: Hawk[keyof Hawk]) => duck).then((arr: Ducks) => {});
 
+/* every */
+
+//-- every:array --//
+
+hawkArrProm.every((hawk: Hawk, index: number, arr: Hawks) => bool).then((bool: boolean) => {});
+
+hawkArrProm.every((hawk: Hawk, index: number) => bool).then((bool: boolean) => {});
+
+hawkArrProm.every((hawk: Hawk) => bool).then((bool: boolean) => {});
+
+//-- every:list --//
+
+hawkListProm.every((hawk: Hawk, index: number, list: List<Hawk>) => bool).then((bool: boolean) => {});
+
+hawkListProm.every((hawk: Hawk, index: number) => bool).then((bool: boolean) => {});
+
+hawkListProm.every((hawk: Hawk) => bool).then((bool: boolean) => {});
+
+//-- every:object --//
+
+hawkProm.every((val: Hawk[keyof Hawk], key: string, hawk: Hawk) => bool).then((bool: boolean) => {});
+
+hawkProm.every((val: Hawk[keyof Hawk], key: string) => bool).then((bool: boolean) => {});
+
+hawkProm.every((val: Hawk[keyof Hawk]) => bool).then((bool: boolean) => {});
+
 /** static **/
 
 /* core functions */
@@ -392,3 +418,29 @@ Aigle.concat(hawk, (val: Hawk[keyof Hawk], key: string, hawk: Hawk) => [hawk]).t
 Aigle.concat(hawk, (val: Hawk[keyof Hawk], key: string) => [swan]).then((arr: Swans) => {});
 
 Aigle.concat(hawk, (val: Hawk[keyof Hawk]) => duck).then((arr: Ducks) => {});
+
+/* every */
+
+//-- every:array --//
+
+Aigle.every(hawkArr, (hawk: Hawk, index: number, arr: Hawks) => bool).then((bool: boolean) => {});
+
+Aigle.every(hawkArr, (hawk: Hawk, index: number) => bool).then((bool: boolean) => {});
+
+Aigle.every(hawkArr, (hawk: Hawk) => bool).then((bool: boolean) => {});
+
+//-- every:list --//
+
+Aigle.every(hawkList, (hawk: Hawk, index: number, arr: List<Hawk>) => bool).then((bool: boolean) => {});
+
+Aigle.every(hawkList, (hawk: Hawk, index: number) => bool).then((bool: boolean) => {});
+
+Aigle.every(hawkList, (hawk: Hawk) => bool).then((bool: boolean) => {});
+
+//-- every:object --//
+
+Aigle.every(hawk, (val: Hawk[keyof Hawk], key: string, hawk: Hawk) => bool).then((bool: boolean) => {});
+
+Aigle.every(hawk, (val: Hawk[keyof Hawk], key: string) => bool).then((bool: boolean) => {});
+
+Aigle.every(hawk, (val: Hawk[keyof Hawk]) => bool).then((bool: boolean) => {});
