@@ -230,6 +230,37 @@ declare class Aigle<R> implements PromiseLike<R> {
   everyLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<boolean>;
   everyLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T, boolean>): Aigle<boolean>;
 
+  /* filter */
+
+  filter<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<T[]>;
+
+  filter<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<T[]>;
+
+  filter<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<Array<T[keyof T]>>;
+
+  /* filterSeries */
+
+  filterSeries<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<T[]>;
+
+  filterSeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<T[]>;
+
+  filterSeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<Array<T[keyof T]>>;
+
+  /* filterLimit */
+
+  filterLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<T[]>;
+  filterLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T, boolean>): Aigle<T[]>;
+
+  filterLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<T[]>;
+  filterLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T, boolean>): Aigle<T[]>;
+
+  filterLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<Array<T[keyof T]>>;
+  filterLimit<T extends object>(
+    this: Aigle<T>,
+    limit: number,
+    iterator: ObjectIterator<T, boolean>
+  ): Aigle<Array<T[keyof T]>>;
+
   /* delay */
 
   delay(ms: number): Aigle<R>;
@@ -243,12 +274,6 @@ declare class Aigle<R> implements PromiseLike<R> {
   doUntil(...args: any[]): Aigle<any>;
 
   doWhilst(...args: any[]): Aigle<any>;
-
-  filter(...args: any[]): Aigle<any>;
-
-  filterLimit(...args: any[]): Aigle<any>;
-
-  filterSeries(...args: any[]): Aigle<any>;
 
   find(...args: any[]): Aigle<any>;
 
@@ -655,6 +680,37 @@ declare class Aigle<R> implements PromiseLike<R> {
     iterator: ObjectIterator<T, boolean>
   ): Aigle<boolean>;
 
+  /* filter */
+
+  static filter<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<T[]>;
+
+  static filter<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<T[]>;
+
+  static filter<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Array<T[keyof T]>>;
+
+  /* filterSeries */
+
+  static filterSeries<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<T[]>;
+
+  static filterSeries<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<T[]>;
+
+  static filterSeries<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Array<T[keyof T]>>;
+
+  /* filterLimit */
+
+  static filterLimit<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<T[]>;
+  static filterLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T, boolean>): Aigle<T[]>;
+
+  static filterLimit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<T[]>;
+  static filterLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, boolean>): Aigle<T[]>;
+
+  static filterLimit<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Array<T[keyof T]>>;
+  static filterLimit<T extends object>(
+    collection: T,
+    limit: number,
+    iterator: ObjectIterator<T, boolean>
+  ): Aigle<Array<T[keyof T]>>;
+
   /* delay */
 
   static delay<T>(ms: number, value?: T): Aigle<T>;
@@ -676,12 +732,6 @@ declare class Aigle<R> implements PromiseLike<R> {
   static doUntil(value: any, iterator: any, tester: any): Aigle<any>;
 
   static doWhilst(value: any, iterator: any, tester: any): Aigle<any>;
-
-  static filter(collection: any, iterator: any): Aigle<any>;
-
-  static filterLimit(collection: any, limit: any, iterator: any): Aigle<any>;
-
-  static filterSeries(collection: any, iterator: any): Aigle<any>;
 
   static find(collection: any, iterator: any): Aigle<any>;
 
