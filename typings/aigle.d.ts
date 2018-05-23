@@ -261,6 +261,33 @@ declare class Aigle<R> implements PromiseLike<R> {
     iterator: ObjectIterator<T, boolean>
   ): Aigle<Array<T[keyof T]>>;
 
+  /* find */
+
+  find<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<T>;
+
+  find<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<T>;
+
+  find<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<T[keyof T]>;
+
+  /* findSeries */
+
+  findSeries<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<T>;
+
+  findSeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<T>;
+
+  findSeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<T[keyof T]>;
+
+  /* findLimit */
+
+  findLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<T>;
+  findLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T, boolean>): Aigle<T>;
+
+  findLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<T>;
+  findLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T, boolean>): Aigle<T>;
+
+  findLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<T[keyof T]>;
+  findLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T, boolean>): Aigle<T[keyof T]>;
+
   /* delay */
 
   delay(ms: number): Aigle<R>;
@@ -275,8 +302,6 @@ declare class Aigle<R> implements PromiseLike<R> {
 
   doWhilst(...args: any[]): Aigle<any>;
 
-  find(...args: any[]): Aigle<any>;
-
   findIndex(...args: any[]): Aigle<any>;
 
   findIndexLimit(...args: any[]): Aigle<any>;
@@ -288,10 +313,6 @@ declare class Aigle<R> implements PromiseLike<R> {
   findKeyLimit(...args: any[]): Aigle<any>;
 
   findKeySeries(...args: any[]): Aigle<any>;
-
-  findLimit(...args: any[]): Aigle<any>;
-
-  findSeries(...args: any[]): Aigle<any>;
 
   groupBy(...args: any[]): Aigle<any>;
 
@@ -711,6 +732,37 @@ declare class Aigle<R> implements PromiseLike<R> {
     iterator: ObjectIterator<T, boolean>
   ): Aigle<Array<T[keyof T]>>;
 
+  /* find */
+
+  static find<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<T>;
+
+  static find<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<T>;
+
+  static find<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<T[keyof T]>;
+
+  /* findSeries */
+
+  static findSeries<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<T>;
+
+  static findSeries<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<T>;
+
+  static findSeries<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<T[keyof T]>;
+
+  /* findLimit */
+
+  static findLimit<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<T>;
+  static findLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T, boolean>): Aigle<T>;
+
+  static findLimit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<T>;
+  static findLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, boolean>): Aigle<T>;
+
+  static findLimit<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<T[keyof T]>;
+  static findLimit<T extends object>(
+    collection: T,
+    limit: number,
+    iterator: ObjectIterator<T, boolean>
+  ): Aigle<T[keyof T]>;
+
   /* delay */
 
   static delay<T>(ms: number, value?: T): Aigle<T>;
@@ -733,8 +785,6 @@ declare class Aigle<R> implements PromiseLike<R> {
 
   static doWhilst(value: any, iterator: any, tester: any): Aigle<any>;
 
-  static find(collection: any, iterator: any): Aigle<any>;
-
   static findIndex(collection: any, iterator: any): Aigle<any>;
 
   static findIndexLimit(collection: any, limit: any, iterator: any): Aigle<any>;
@@ -746,10 +796,6 @@ declare class Aigle<R> implements PromiseLike<R> {
   static findKeyLimit(collection: any, limit: any, iterator: any): Aigle<any>;
 
   static findKeySeries(collection: any, iterator: any): Aigle<any>;
-
-  static findLimit(collection: any, limit: any, iterator: any): Aigle<any>;
-
-  static findSeries(collection: any, iterator: any): Aigle<any>;
 
   static groupBy(collection: any, iterator: any): Aigle<any>;
 
