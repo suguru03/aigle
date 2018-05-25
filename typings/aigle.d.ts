@@ -288,6 +288,33 @@ declare class Aigle<R> implements PromiseLike<R> {
   findLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<T[keyof T]>;
   findLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T, boolean>): Aigle<T[keyof T]>;
 
+  /* findIndex */
+
+  findIndex<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<number>;
+
+  findIndex<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<number>;
+
+  findIndex<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<number>;
+
+  /* findIndexSeries */
+
+  findIndexSeries<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<number>;
+
+  findIndexSeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<number>;
+
+  findIndexSeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<number>;
+
+  /* findIndexLimit */
+
+  findIndexLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<number>;
+  findIndexLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T, boolean>): Aigle<number>;
+
+  findIndexLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<number>;
+  findIndexLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T, boolean>): Aigle<number>;
+
+  findIndexLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<number>;
+  findIndexLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T, boolean>): Aigle<number>;
+
   /* delay */
 
   delay(ms: number): Aigle<R>;
@@ -301,12 +328,6 @@ declare class Aigle<R> implements PromiseLike<R> {
   doUntil(...args: any[]): Aigle<any>;
 
   doWhilst(...args: any[]): Aigle<any>;
-
-  findIndex(...args: any[]): Aigle<any>;
-
-  findIndexLimit(...args: any[]): Aigle<any>;
-
-  findIndexSeries(...args: any[]): Aigle<any>;
 
   findKey(...args: any[]): Aigle<any>;
 
@@ -763,6 +784,37 @@ declare class Aigle<R> implements PromiseLike<R> {
     iterator: ObjectIterator<T, boolean>
   ): Aigle<T[keyof T]>;
 
+  /* findIndex */
+
+  static findIndex<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<number>;
+
+  static findIndex<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<number>;
+
+  static findIndex<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<number>;
+
+  /* findIndexSeries */
+
+  static findIndexSeries<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<number>;
+
+  static findIndexSeries<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<number>;
+
+  static findIndexSeries<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<number>;
+
+  /* findIndexLimit */
+
+  static findIndexLimit<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<number>;
+  static findIndexLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T, boolean>): Aigle<number>;
+
+  static findIndexLimit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<number>;
+  static findIndexLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, boolean>): Aigle<number>;
+
+  static findIndexLimit<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<number>;
+  static findIndexLimit<T extends object>(
+    collection: T,
+    limit: number,
+    iterator: ObjectIterator<T, boolean>
+  ): Aigle<number>;
+
   /* delay */
 
   static delay<T>(ms: number, value?: T): Aigle<T>;
@@ -784,12 +836,6 @@ declare class Aigle<R> implements PromiseLike<R> {
   static doUntil(value: any, iterator: any, tester: any): Aigle<any>;
 
   static doWhilst(value: any, iterator: any, tester: any): Aigle<any>;
-
-  static findIndex(collection: any, iterator: any): Aigle<any>;
-
-  static findIndexLimit(collection: any, limit: any, iterator: any): Aigle<any>;
-
-  static findIndexSeries(collection: any, iterator: any): Aigle<any>;
 
   static findKey(collection: any, iterator: any): Aigle<any>;
 
