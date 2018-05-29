@@ -25,6 +25,11 @@ type Swans = Swan[];
 type Ducks = Duck[];
 type Crows = Crow[];
 
+type HawkMap<T extends string = string> = Record<T, Hawk>;
+type SwanMap<T extends string = string> = Record<T, Swan>;
+type DuckMap<T extends string = string> = Record<T, Duck>;
+type CrowMap<T extends string = string> = Record<T, Crow>;
+
 type List<T> = ArrayLike<T>;
 
 /* variables */
@@ -392,6 +397,32 @@ Aigle.forEach(hawk, (val: Hawk[keyof Hawk], key: string, hawk: Hawk) => hawk).th
 Aigle.forEach(hawk, (val: Hawk[keyof Hawk], key: string) => swan).then((hawk: Hawk) => {});
 
 Aigle.forEach(hawk, (val: Hawk[keyof Hawk]) => duck).then((hawk: Hawk) => {});
+
+/* mapValues */
+
+//-- mapValues:array --//
+
+Aigle.mapValues(hawkArr, (hawk: Hawk, index: number, arr: Hawks) => hawk).then((map: HawkMap) => {});
+
+Aigle.mapValues(hawkArr, (hawk: Hawk, index: number) => swan).then((map: SwanMap) => {});
+
+Aigle.mapValues(hawkArr, (hawk: Hawk) => duck).then((map: DuckMap) => {});
+
+//-- mapValues:list --//
+
+Aigle.mapValues(hawkList, (hawk: Hawk, index: number, arr: List<Hawk>) => hawk).then((map: HawkMap) => {});
+
+Aigle.mapValues(hawkList, (hawk: Hawk, index: number) => swan).then((map: SwanMap) => {});
+
+Aigle.mapValues(hawkList, (hawk: Hawk) => duck).then((map: DuckMap) => {});
+
+//-- mapValues:object --//
+
+Aigle.mapValues(hawk, (val: Hawk[keyof Hawk], key: string, hawk: Hawk) => hawk).then((map: HawkMap<keyof Hawk>) => {});
+
+Aigle.mapValues(hawk, (val: Hawk[keyof Hawk], key: string) => swan).then((map: SwanMap<keyof Hawk>) => {});
+
+Aigle.mapValues(hawk, (val: Hawk[keyof Hawk]) => duck).then((map: DuckMap<keyof Hawk>) => {});
 
 /* concat */
 
