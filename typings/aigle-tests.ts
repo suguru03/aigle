@@ -25,6 +25,11 @@ type Swans = Swan[];
 type Ducks = Duck[];
 type Crows = Crow[];
 
+type HawkMap<T extends string = string> = Record<T, Hawk>;
+type SwanMap<T extends string = string> = Record<T, Swan>;
+type DuckMap<T extends string = string> = Record<T, Duck>;
+type CrowMap<T extends string = string> = Record<T, Crow>;
+
 type List<T> = ArrayLike<T>;
 
 /* variables */
@@ -155,6 +160,176 @@ hawkProm.forEach((val: Hawk[keyof Hawk], key: string) => swan).then((hawk: Hawk)
 
 hawkProm.forEach((val: Hawk[keyof Hawk]) => duck).then((hawk: Hawk) => {});
 
+/* eachSeries/forEachSeries */
+
+//-- eachSeries:array --//
+
+hawkArrProm.eachSeries((hawk: Hawk, index: number, arr: Hawks) => hawk).then((arr: Hawks) => {});
+
+hawkArrProm.eachSeries((hawk: Hawk, index: number) => swan).then((arr: Hawks) => {});
+
+hawkArrProm.eachSeries((hawk: Hawk) => duck).then((arr: Hawks) => {});
+
+//-- eachSeries:list --//
+
+hawkListProm.eachSeries((hawk: Hawk, index: number, list: List<Hawk>) => hawk).then((list: List<Hawk>) => {});
+
+hawkListProm.eachSeries((hawk: Hawk, index: number) => swan).then((list: List<Hawk>) => {});
+
+hawkListProm.eachSeries((hawk: Hawk) => duck).then((list: List<Hawk>) => {});
+
+//-- eachSeries:object --//
+
+hawkProm.eachSeries((val: Hawk[keyof Hawk], key: string, hawk: Hawk) => hawk).then((hawk: Hawk) => {});
+
+hawkProm.eachSeries((val: Hawk[keyof Hawk], key: string) => swan).then((hawk: Hawk) => {});
+
+hawkProm.eachSeries((val: Hawk[keyof Hawk]) => duck).then((hawk: Hawk) => {});
+
+//-- forEachSeries:array --//
+
+hawkArrProm.forEachSeries((hawk: Hawk, index: number, arr: Hawks) => hawk).then((arr: Hawks) => {});
+
+hawkArrProm.forEachSeries((hawk: Hawk, index: number) => swan).then((arr: Hawks) => {});
+
+hawkArrProm.forEachSeries((hawk: Hawk) => duck).then((arr: Hawks) => {});
+
+//-- forEachSeries:list --//
+
+hawkListProm.forEachSeries((hawk: Hawk, index: number, list: List<Hawk>) => hawk).then((list: List<Hawk>) => {});
+
+hawkListProm.forEachSeries((hawk: Hawk, index: number) => swan).then((list: List<Hawk>) => {});
+
+hawkListProm.forEachSeries((hawk: Hawk) => duck).then((list: List<Hawk>) => {});
+
+//-- forEachSeries:object --//
+
+hawkProm.forEachSeries((val: Hawk[keyof Hawk], key: string, hawk: Hawk) => hawk).then((hawk: Hawk) => {});
+
+hawkProm.forEachSeries((val: Hawk[keyof Hawk], key: string) => swan).then((hawk: Hawk) => {});
+
+hawkProm.forEachSeries((val: Hawk[keyof Hawk]) => duck).then((hawk: Hawk) => {});
+
+/* eachLimit/forEachLimit */
+
+//-- eachLimit:array --//
+
+hawkArrProm.eachLimit((hawk: Hawk, index: number, arr: Hawks) => hawk).then((arr: Hawks) => {});
+hawkArrProm.eachLimit(2, (hawk: Hawk, index: number, arr: Hawks) => hawk).then((arr: Hawks) => {});
+
+hawkArrProm.eachLimit((hawk: Hawk, index: number) => swan).then((arr: Hawks) => {});
+hawkArrProm.eachLimit(2, (hawk: Hawk, index: number) => swan).then((arr: Hawks) => {});
+
+hawkArrProm.eachLimit((hawk: Hawk) => duck).then((arr: Hawks) => {});
+hawkArrProm.eachLimit(2, (hawk: Hawk) => duck).then((arr: Hawks) => {});
+
+//-- eachLimit:list --//
+
+hawkListProm.eachLimit((hawk: Hawk, index: number, list: List<Hawk>) => hawk).then((list: List<Hawk>) => {});
+hawkListProm.eachLimit(2, (hawk: Hawk, index: number, list: List<Hawk>) => hawk).then((list: List<Hawk>) => {});
+
+hawkListProm.eachLimit((hawk: Hawk, index: number) => swan).then((list: List<Hawk>) => {});
+hawkListProm.eachLimit(2, (hawk: Hawk, index: number) => swan).then((list: List<Hawk>) => {});
+
+hawkListProm.eachLimit((hawk: Hawk) => duck).then((list: List<Hawk>) => {});
+hawkListProm.eachLimit(2, (hawk: Hawk) => duck).then((list: List<Hawk>) => {});
+
+//-- eachLimit:object --//
+
+hawkProm.eachLimit((val: Hawk[keyof Hawk], key: string, hawk: Hawk) => hawk).then((hawk: Hawk) => {});
+hawkProm.eachLimit(2, (val: Hawk[keyof Hawk], key: string, hawk: Hawk) => hawk).then((hawk: Hawk) => {});
+
+hawkProm.eachLimit((val: Hawk[keyof Hawk], key: string) => swan).then((hawk: Hawk) => {});
+hawkProm.eachLimit(2, (val: Hawk[keyof Hawk], key: string) => swan).then((hawk: Hawk) => {});
+
+hawkProm.eachLimit((val: Hawk[keyof Hawk]) => duck).then((hawk: Hawk) => {});
+hawkProm.eachLimit(2, (val: Hawk[keyof Hawk]) => duck).then((hawk: Hawk) => {});
+
+//-- forEachLimit:array --//
+
+hawkArrProm.forEachLimit((hawk: Hawk, index: number, arr: Hawks) => hawk).then((arr: Hawks) => {});
+hawkArrProm.forEachLimit(2, (hawk: Hawk, index: number, arr: Hawks) => hawk).then((arr: Hawks) => {});
+
+hawkArrProm.forEachLimit((hawk: Hawk, index: number) => swan).then((arr: Hawks) => {});
+hawkArrProm.forEachLimit(2, (hawk: Hawk, index: number) => swan).then((arr: Hawks) => {});
+
+hawkArrProm.forEachLimit((hawk: Hawk) => duck).then((arr: Hawks) => {});
+hawkArrProm.forEachLimit(2, (hawk: Hawk) => duck).then((arr: Hawks) => {});
+
+//-- foreachLimit:list --//
+
+hawkListProm.forEachLimit((hawk: Hawk, index: number, list: List<Hawk>) => hawk).then((list: List<Hawk>) => {});
+hawkListProm.forEachLimit(2, (hawk: Hawk, index: number, list: List<Hawk>) => hawk).then((list: List<Hawk>) => {});
+
+hawkListProm.forEachLimit((hawk: Hawk, index: number) => swan).then((list: List<Hawk>) => {});
+hawkListProm.forEachLimit(2, (hawk: Hawk, index: number) => swan).then((list: List<Hawk>) => {});
+
+hawkListProm.forEachLimit((hawk: Hawk) => duck).then((list: List<Hawk>) => {});
+hawkListProm.forEachLimit(2, (hawk: Hawk) => duck).then((list: List<Hawk>) => {});
+
+//-- foreachLimit:object --//
+
+hawkProm.forEachLimit((val: Hawk[keyof Hawk], key: string, hawk: Hawk) => hawk).then((hawk: Hawk) => {});
+hawkProm.forEachLimit(2, (val: Hawk[keyof Hawk], key: string, hawk: Hawk) => hawk).then((hawk: Hawk) => {});
+
+hawkProm.forEachLimit((val: Hawk[keyof Hawk], key: string) => swan).then((hawk: Hawk) => {});
+hawkProm.forEachLimit(2, (val: Hawk[keyof Hawk], key: string) => swan).then((hawk: Hawk) => {});
+
+hawkProm.forEachLimit((val: Hawk[keyof Hawk]) => duck).then((hawk: Hawk) => {});
+hawkProm.forEachLimit(2, (val: Hawk[keyof Hawk]) => duck).then((hawk: Hawk) => {});
+
+/* concat */
+
+//-- concat:array --//
+
+hawkArrProm.concat((hawk: Hawk, index: number, arr: Hawks) => [hawk]).then((arr: Hawks) => {});
+
+hawkArrProm.concat((hawk: Hawk, index: number) => [swan]).then((arr: Swans) => {});
+
+hawkArrProm.concat((hawk: Hawk) => duck).then((arr: Ducks) => {});
+
+//-- concat:list --//
+
+hawkListProm.concat((hawk: Hawk, index: number, list: List<Hawk>) => [hawk]).then((arr: Hawks) => {});
+
+hawkListProm.concat((hawk: Hawk, index: number) => [swan]).then((arr: Swans) => {});
+
+hawkListProm.concat((hawk: Hawk) => duck).then((arr: Ducks) => {});
+
+//-- concat:object --//
+
+hawkProm.concat((val: Hawk[keyof Hawk], key: string, hawk: Hawk) => [hawk]).then((arr: Hawks) => {});
+
+hawkProm.concat((val: Hawk[keyof Hawk], key: string) => [swan]).then((arr: Swans) => {});
+
+hawkProm.concat((val: Hawk[keyof Hawk]) => duck).then((arr: Ducks) => {});
+
+/* every */
+
+//-- every:array --//
+
+hawkArrProm.every((hawk: Hawk, index: number, arr: Hawks) => bool).then((bool: boolean) => {});
+
+hawkArrProm.every((hawk: Hawk, index: number) => bool).then((bool: boolean) => {});
+
+hawkArrProm.every((hawk: Hawk) => bool).then((bool: boolean) => {});
+
+//-- every:list --//
+
+hawkListProm.every((hawk: Hawk, index: number, list: List<Hawk>) => bool).then((bool: boolean) => {});
+
+hawkListProm.every((hawk: Hawk, index: number) => bool).then((bool: boolean) => {});
+
+hawkListProm.every((hawk: Hawk) => bool).then((bool: boolean) => {});
+
+//-- every:object --//
+
+hawkProm.every((val: Hawk[keyof Hawk], key: string, hawk: Hawk) => bool).then((bool: boolean) => {});
+
+hawkProm.every((val: Hawk[keyof Hawk], key: string) => bool).then((bool: boolean) => {});
+
+hawkProm.every((val: Hawk[keyof Hawk]) => bool).then((bool: boolean) => {});
+
 /** static **/
 
 /* core functions */
@@ -222,3 +397,81 @@ Aigle.forEach(hawk, (val: Hawk[keyof Hawk], key: string, hawk: Hawk) => hawk).th
 Aigle.forEach(hawk, (val: Hawk[keyof Hawk], key: string) => swan).then((hawk: Hawk) => {});
 
 Aigle.forEach(hawk, (val: Hawk[keyof Hawk]) => duck).then((hawk: Hawk) => {});
+
+/* mapValues */
+
+//-- mapValues:array --//
+
+Aigle.mapValues(hawkArr, (hawk: Hawk, index: number, arr: Hawks) => hawk).then((map: HawkMap) => {});
+
+Aigle.mapValues(hawkArr, (hawk: Hawk, index: number) => swan).then((map: SwanMap) => {});
+
+Aigle.mapValues(hawkArr, (hawk: Hawk) => duck).then((map: DuckMap) => {});
+
+//-- mapValues:list --//
+
+Aigle.mapValues(hawkList, (hawk: Hawk, index: number, arr: List<Hawk>) => hawk).then((map: HawkMap) => {});
+
+Aigle.mapValues(hawkList, (hawk: Hawk, index: number) => swan).then((map: SwanMap) => {});
+
+Aigle.mapValues(hawkList, (hawk: Hawk) => duck).then((map: DuckMap) => {});
+
+//-- mapValues:object --//
+
+Aigle.mapValues(hawk, (val: Hawk[keyof Hawk], key: string, hawk: Hawk) => hawk).then((map: HawkMap<keyof Hawk>) => {});
+
+Aigle.mapValues(hawk, (val: Hawk[keyof Hawk], key: string) => swan).then((map: SwanMap<keyof Hawk>) => {});
+
+Aigle.mapValues(hawk, (val: Hawk[keyof Hawk]) => duck).then((map: DuckMap<keyof Hawk>) => {});
+
+/* concat */
+
+//-- concat:array --//
+
+Aigle.concat(hawkArr, (hawk: Hawk, index: number, arr: Hawks) => [hawk]).then((arr: Hawks) => {});
+
+Aigle.concat(hawkArr, (hawk: Hawk, index: number) => [swan]).then((arr: Swans) => {});
+
+Aigle.concat(hawkArr, (hawk: Hawk) => duck).then((arr: Ducks) => {});
+
+//-- concat:list --//
+
+Aigle.concat(hawkList, (hawk: Hawk, index: number, arr: List<Hawk>) => [hawk]).then((arr: Hawks) => {});
+
+Aigle.concat(hawkList, (hawk: Hawk, index: number) => [swan]).then((arr: Swans) => {});
+
+Aigle.concat(hawkList, (hawk: Hawk) => duck).then((arr: Ducks) => {});
+
+//-- concat:object --//
+
+Aigle.concat(hawk, (val: Hawk[keyof Hawk], key: string, hawk: Hawk) => [hawk]).then((arr: Hawks) => {});
+
+Aigle.concat(hawk, (val: Hawk[keyof Hawk], key: string) => [swan]).then((arr: Swans) => {});
+
+Aigle.concat(hawk, (val: Hawk[keyof Hawk]) => duck).then((arr: Ducks) => {});
+
+/* every */
+
+//-- every:array --//
+
+Aigle.every(hawkArr, (hawk: Hawk, index: number, arr: Hawks) => bool).then((bool: boolean) => {});
+
+Aigle.every(hawkArr, (hawk: Hawk, index: number) => bool).then((bool: boolean) => {});
+
+Aigle.every(hawkArr, (hawk: Hawk) => bool).then((bool: boolean) => {});
+
+//-- every:list --//
+
+Aigle.every(hawkList, (hawk: Hawk, index: number, arr: List<Hawk>) => bool).then((bool: boolean) => {});
+
+Aigle.every(hawkList, (hawk: Hawk, index: number) => bool).then((bool: boolean) => {});
+
+Aigle.every(hawkList, (hawk: Hawk) => bool).then((bool: boolean) => {});
+
+//-- every:object --//
+
+Aigle.every(hawk, (val: Hawk[keyof Hawk], key: string, hawk: Hawk) => bool).then((bool: boolean) => {});
+
+Aigle.every(hawk, (val: Hawk[keyof Hawk], key: string) => bool).then((bool: boolean) => {});
+
+Aigle.every(hawk, (val: Hawk[keyof Hawk]) => bool).then((bool: boolean) => {});
