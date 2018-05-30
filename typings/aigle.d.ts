@@ -7,9 +7,14 @@ type Dictionary<T> = Record<string, T>;
 
 type CatchFilter<E> = (new (...args: any[]) => E) | ((error: E) => boolean) | (object & E);
 
-type ArrayIterator<T, TResult> = (value: T, index: number, collection: T[]) => TResult | PromiseLike<TResult>;
-type ListIterator<T, TResult> = (value: T, index: number, collection: List<T>) => TResult | PromiseLike<TResult>;
-type ObjectIterator<TObject, TResult> = (
+type NotVoid = {} | null | undefined;
+type ArrayIterator<T, TResult = NotVoid> = (value: T, index: number, collection: T[]) => TResult | PromiseLike<TResult>;
+type ListIterator<T, TResult = NotVoid> = (
+  value: T,
+  index: number,
+  collection: List<T>
+) => TResult | PromiseLike<TResult>;
+type ObjectIterator<TObject, TResult = NotVoid> = (
   value: TObject[keyof TObject],
   key: string,
   collection: TObject
@@ -378,6 +383,33 @@ declare class Aigle<R> implements PromiseLike<R> {
     iterator: ObjectIterator<T, boolean>
   ): Aigle<string | undefined>;
 
+  /* groupBy */
+
+  groupBy<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T[]>>;
+
+  groupBy<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T[]>>;
+
+  groupBy<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T[]>>;
+
+  /* groupBySeries */
+
+  groupBySeries<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T[]>>;
+
+  groupBySeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T[]>>;
+
+  groupBySeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T[]>>;
+
+  /* groupByLimit */
+
+  groupByLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T[]>>;
+  groupByLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T>): Aigle<Dictionary<T[]>>;
+
+  groupByLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T[]>>;
+  groupByLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T>): Aigle<Dictionary<T[]>>;
+
+  groupByLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T[]>>;
+  groupByLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T>): Aigle<Dictionary<T[]>>;
+
   /* delay */
 
   delay(ms: number): Aigle<R>;
@@ -391,12 +423,6 @@ declare class Aigle<R> implements PromiseLike<R> {
   doUntil(...args: any[]): Aigle<any>;
 
   doWhilst(...args: any[]): Aigle<any>;
-
-  groupBy(...args: any[]): Aigle<any>;
-
-  groupByLimit(...args: any[]): Aigle<any>;
-
-  groupBySeries(...args: any[]): Aigle<any>;
 
   isCancelled(...args: any[]): Aigle<any>;
 
@@ -945,6 +971,37 @@ declare class Aigle<R> implements PromiseLike<R> {
     iterator: ObjectIterator<T, boolean>
   ): Aigle<string | undefined>;
 
+  /* groupBy */
+
+  static groupBy<T>(collection: T[], iterator?: ArrayIterator<T>): Aigle<Dictionary<T[]>>;
+
+  static groupBy<T>(collection: List<T>, iterator?: ListIterator<T>): Aigle<Dictionary<T[]>>;
+
+  static groupBy<T extends object>(collection: T, iterator?: ObjectIterator<T>): Aigle<Dictionary<T[]>>;
+
+  /* groupBySeries */
+
+  static groupBySeries<T>(collection: T[], iterator?: ArrayIterator<T>): Aigle<Dictionary<T[]>>;
+
+  static groupBySeries<T>(collection: List<T>, iterator?: ListIterator<T>): Aigle<Dictionary<T[]>>;
+
+  static groupBySeries<T extends object>(collection: T, iterator?: ObjectIterator<T>): Aigle<Dictionary<T[]>>;
+
+  /* groupByLimit */
+
+  static groupByLimit<T>(collection: T[], iterator?: ArrayIterator<T>): Aigle<Dictionary<T[]>>;
+  static groupByLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T>): Aigle<Dictionary<T[]>>;
+
+  static groupByLimit<T>(collection: List<T>, iterator?: ListIterator<T>): Aigle<Dictionary<T[]>>;
+  static groupByLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T>): Aigle<Dictionary<T[]>>;
+
+  static groupByLimit<T extends object>(collection: T, iterator?: ObjectIterator<T>): Aigle<Dictionary<T[]>>;
+  static groupByLimit<T extends object>(
+    collection: T,
+    limit: number,
+    iterator: ObjectIterator<T>
+  ): Aigle<Dictionary<T[]>>;
+
   /* delay */
 
   static delay<T>(ms: number, value?: T): Aigle<T>;
@@ -966,12 +1023,6 @@ declare class Aigle<R> implements PromiseLike<R> {
   static doUntil(value: any, iterator: any, tester: any): Aigle<any>;
 
   static doWhilst(value: any, iterator: any, tester: any): Aigle<any>;
-
-  static groupBy(collection: any, iterator: any): Aigle<any>;
-
-  static groupByLimit(collection: any, limit: any, iterator: any): Aigle<any>;
-
-  static groupBySeries(collection: any, iterator: any): Aigle<any>;
 
   static join(...args: any[]): Aigle<any>;
 
