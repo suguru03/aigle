@@ -363,6 +363,33 @@ declare namespace AigleCore {
       iterator: ObjectIterator<T, boolean>
     ): Aigle<Array<T[keyof T]>>;
 
+    /* sortBy */
+
+    sortBy<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<T[]>;
+
+    sortBy<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<T[]>;
+
+    sortBy<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Array<T[keyof T]>>;
+
+    /* sortBySeries */
+
+    sortBySeries<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<T[]>;
+
+    sortBySeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<T[]>;
+
+    sortBySeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Array<T[keyof T]>>;
+
+    /* sortByLimit */
+
+    sortByLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<T[]>;
+    sortByLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T>): Aigle<T[]>;
+
+    sortByLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<T[]>;
+    sortByLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T>): Aigle<T[]>;
+
+    sortByLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Array<T[keyof T]>>;
+    sortByLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T>): Aigle<Array<T[keyof T]>>;
+
     /* find / detect */
 
     find<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<T>;
@@ -633,12 +660,6 @@ declare namespace AigleCore {
     reason(...args: any[]): Aigle<any>;
 
     reduce(...args: any[]): Aigle<any>;
-
-    sortBy(...args: any[]): Aigle<any>;
-
-    sortByLimit(...args: any[]): Aigle<any>;
-
-    sortBySeries(...args: any[]): Aigle<any>;
 
     spread(...args: any[]): Aigle<any>;
 
@@ -1111,6 +1132,37 @@ declare namespace AigleCore {
       iterator: ObjectIterator<T, boolean>
     ): Aigle<Array<T[keyof T]>>;
 
+    /* sortBy */
+
+    static sortBy<T>(collection: T[], iterator?: ArrayIterator<T>): Aigle<T[]>;
+
+    static sortBy<T>(collection: List<T>, iterator?: ListIterator<T>): Aigle<T[]>;
+
+    static sortBy<T extends object>(collection: T, iterator?: ObjectIterator<T>): Aigle<Array<T[keyof T]>>;
+
+    /* sortBySeries */
+
+    static sortBySeries<T>(collection: T[], iterator?: ArrayIterator<T>): Aigle<T[]>;
+
+    static sortBySeries<T>(collection: List<T>, iterator?: ListIterator<T>): Aigle<T[]>;
+
+    static sortBySeries<T extends object>(collection: T, iterator?: ObjectIterator<T>): Aigle<Array<T[keyof T]>>;
+
+    /* sortByLimit */
+
+    static sortByLimit<T>(collection: T[], iterator?: ArrayIterator<T>): Aigle<T[]>;
+    static sortByLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T>): Aigle<T[]>;
+
+    static sortByLimit<T>(collection: List<T>, iterator?: ListIterator<T>): Aigle<T[]>;
+    static sortByLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T>): Aigle<T[]>;
+
+    static sortByLimit<T extends object>(collection: T, iterator?: ObjectIterator<T>): Aigle<Array<T[keyof T]>>;
+    static sortByLimit<T extends object>(
+      collection: T,
+      limit: number,
+      iterator: ObjectIterator<T>
+    ): Aigle<Array<T[keyof T]>>;
+
     /* find / detect */
 
     static find<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<T>;
@@ -1423,12 +1475,6 @@ declare namespace AigleCore {
     static reduce(collection: any, iterator: any, result: any): Aigle<any>;
 
     static retry(times: any, handler: any): Aigle<any>;
-
-    static sortBy(collection: any, iterator: any): Aigle<any>;
-
-    static sortByLimit(collection: any, limit: any, iterator: any): Aigle<any>;
-
-    static sortBySeries(collection: any, iterator: any): Aigle<any>;
 
     static tap(value: any, onFulfilled: any): Aigle<any>;
 
