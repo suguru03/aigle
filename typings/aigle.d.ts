@@ -274,6 +274,33 @@ declare namespace AigleCore {
     everyLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<boolean>;
     everyLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T, boolean>): Aigle<boolean>;
 
+    /* some */
+
+    some<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<boolean>;
+
+    some<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<boolean>;
+
+    some<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<boolean>;
+
+    /* someSeries */
+
+    someSeries<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<boolean>;
+
+    someSeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<boolean>;
+
+    someSeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<boolean>;
+
+    /* someLimit */
+
+    someLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<boolean>;
+    someLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T, boolean>): Aigle<boolean>;
+
+    someLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<boolean>;
+    someLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T, boolean>): Aigle<boolean>;
+
+    someLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<boolean>;
+    someLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T, boolean>): Aigle<boolean>;
+
     /* filter */
 
     filter<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<T[]>;
@@ -545,6 +572,7 @@ declare namespace AigleCore {
 
     pickByLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T>>;
     pickByLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T>): Aigle<Dictionary<T>>;
+
     /* delay */
 
     delay(ms: number): Aigle<R>;
@@ -580,12 +608,6 @@ declare namespace AigleCore {
     rejectLimit(...args: any[]): Aigle<any>;
 
     rejectSeries(...args: any[]): Aigle<any>;
-
-    some(...args: any[]): Aigle<any>;
-
-    someLimit(...args: any[]): Aigle<any>;
-
-    someSeries(...args: any[]): Aigle<any>;
 
     sortBy(...args: any[]): Aigle<any>;
 
@@ -959,6 +981,37 @@ declare namespace AigleCore {
       iterator: ObjectIterator<T, boolean>
     ): Aigle<boolean>;
 
+    /* some */
+
+    static some<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<boolean>;
+
+    static some<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<boolean>;
+
+    static some<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<boolean>;
+
+    /* someSeries */
+
+    static someSeries<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<boolean>;
+
+    static someSeries<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<boolean>;
+
+    static someSeries<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<boolean>;
+
+    /* someLimit */
+
+    static someLimit<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<boolean>;
+    static someLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T, boolean>): Aigle<boolean>;
+
+    static someLimit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<boolean>;
+    static someLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, boolean>): Aigle<boolean>;
+
+    static someLimit<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<boolean>;
+    static someLimit<T extends object>(
+      collection: T,
+      limit: number,
+      iterator: ObjectIterator<T, boolean>
+    ): Aigle<boolean>;
+
     /* filter */
 
     static filter<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<T[]>;
@@ -1312,12 +1365,6 @@ declare namespace AigleCore {
     static rejectSeries(collection: any, iterator: any): Aigle<any>;
 
     static retry(times: any, handler: any): Aigle<any>;
-
-    static some(collection: any, iterator: any): Aigle<any>;
-
-    static someLimit(collection: any, limit: any, iterator: any): Aigle<any>;
-
-    static someSeries(collection: any, iterator: any): Aigle<any>;
 
     static sortBy(collection: any, iterator: any): Aigle<any>;
 
