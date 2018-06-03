@@ -332,6 +332,37 @@ declare namespace AigleCore {
       iterator: ObjectIterator<T, boolean>
     ): Aigle<Array<T[keyof T]>>;
 
+    /* reject */
+
+    reject<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<T[]>;
+
+    reject<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<T[]>;
+
+    reject<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<Array<T[keyof T]>>;
+
+    /* rejectSeries */
+
+    rejectSeries<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<T[]>;
+
+    rejectSeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<T[]>;
+
+    rejectSeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<Array<T[keyof T]>>;
+
+    /* rejectLimit */
+
+    rejectLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<T[]>;
+    rejectLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T, boolean>): Aigle<T[]>;
+
+    rejectLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<T[]>;
+    rejectLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T, boolean>): Aigle<T[]>;
+
+    rejectLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<Array<T[keyof T]>>;
+    rejectLimit<T extends object>(
+      this: Aigle<T>,
+      limit: number,
+      iterator: ObjectIterator<T, boolean>
+    ): Aigle<Array<T[keyof T]>>;
+
     /* find / detect */
 
     find<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<T>;
@@ -602,12 +633,6 @@ declare namespace AigleCore {
     reason(...args: any[]): Aigle<any>;
 
     reduce(...args: any[]): Aigle<any>;
-
-    reject(...args: any[]): Aigle<any>;
-
-    rejectLimit(...args: any[]): Aigle<any>;
-
-    rejectSeries(...args: any[]): Aigle<any>;
 
     sortBy(...args: any[]): Aigle<any>;
 
@@ -1049,6 +1074,43 @@ declare namespace AigleCore {
       iterator: ObjectIterator<T, boolean>
     ): Aigle<Array<T[keyof T]>>;
 
+    /* reject */
+
+    static reject<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<T[]>; // tslint:disable-line:adjacent-overload-signatures
+
+    static reject<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<T[]>;
+
+    static reject<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Array<T[keyof T]>>;
+
+    /* rejectSeries */
+
+    static rejectSeries<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<T[]>;
+
+    static rejectSeries<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<T[]>;
+
+    static rejectSeries<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<Array<T[keyof T]>>;
+
+    /* rejectLimit */
+
+    static rejectLimit<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<T[]>;
+    static rejectLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T, boolean>): Aigle<T[]>;
+
+    static rejectLimit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<T[]>;
+    static rejectLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, boolean>): Aigle<T[]>;
+
+    static rejectLimit<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<Array<T[keyof T]>>;
+    static rejectLimit<T extends object>(
+      collection: T,
+      limit: number,
+      iterator: ObjectIterator<T, boolean>
+    ): Aigle<Array<T[keyof T]>>;
+
     /* find / detect */
 
     static find<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<T>;
@@ -1359,10 +1421,6 @@ declare namespace AigleCore {
     static race(collection: any): Aigle<any>;
 
     static reduce(collection: any, iterator: any, result: any): Aigle<any>;
-
-    static rejectLimit(collection: any, limit: any, iterator: any): Aigle<any>;
-
-    static rejectSeries(collection: any, iterator: any): Aigle<any>;
 
     static retry(times: any, handler: any): Aigle<any>;
 
