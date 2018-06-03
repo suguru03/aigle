@@ -446,6 +446,56 @@ declare namespace AigleCore {
     groupByLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T[]>>;
     groupByLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T>): Aigle<Dictionary<T[]>>;
 
+    /* omit */
+
+    omit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T>>;
+
+    omit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
+
+    omit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T>>;
+
+    /* omitBy */
+
+    omitBy<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T>>;
+
+    omitBy<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
+
+    omitBy<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T>>;
+
+    /* omitSeries / omitBySeries */
+
+    omitSeries<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T>>;
+
+    omitSeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
+
+    omitSeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T>>;
+
+    omitBySeries<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T>>;
+
+    omitBySeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
+
+    omitBySeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T>>;
+
+    /* omitLimit / omitByLimit */
+
+    omitLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T>>;
+    omitLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T>): Aigle<Dictionary<T>>;
+
+    omitLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
+    omitLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T>): Aigle<Dictionary<T>>;
+
+    omitLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T>>;
+    omitLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T>): Aigle<Dictionary<T>>;
+
+    omitByLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T>>;
+    omitByLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T>): Aigle<Dictionary<T>>;
+
+    omitByLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
+    omitByLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T>): Aigle<Dictionary<T>>;
+
+    omitByLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T>>;
+    omitByLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T>): Aigle<Dictionary<T>>;
+
     /* delay */
 
     delay(ms: number): Aigle<R>;
@@ -467,12 +517,6 @@ declare namespace AigleCore {
     isPending(...args: any[]): Aigle<any>;
 
     isRejected(...args: any[]): Aigle<any>;
-
-    omit(...args: any[]): Aigle<any>;
-
-    omitLimit(...args: any[]): Aigle<any>;
-
-    omitSeries(...args: any[]): Aigle<any>;
 
     parallel(...args: any[]): Aigle<any>;
 
@@ -1072,6 +1116,64 @@ declare namespace AigleCore {
       iterator: ObjectIterator<T>
     ): Aigle<Dictionary<T[]>>;
 
+    /* omit */
+
+    static omit<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static omit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static omit<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    /* omitBy */
+
+    static omitBy<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static omitBy<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static omitBy<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    /* omitSeries / omitBySeries */
+
+    static omitSeries<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static omitSeries<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static omitSeries<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static omitBySeries<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static omitBySeries<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static omitBySeries<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    /* omitLimit / omitByLimit */
+
+    static omitLimit<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static omitLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static omitLimit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static omitLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static omitLimit<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static omitLimit<T extends object>(
+      collection: T,
+      limit: number,
+      iterator: ObjectIterator<T, boolean>
+    ): Aigle<Dictionary<T[]>>;
+
+    static omitByLimit<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static omitByLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static omitByLimit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static omitByLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static omitByLimit<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static omitByLimit<T extends object>(
+      collection: T,
+      limit: number,
+      iterator: ObjectIterator<T, boolean>
+    ): Aigle<Dictionary<T[]>>;
+
     /* delay */
 
     static delay<T>(ms: number, value?: T): Aigle<T>;
@@ -1093,12 +1195,6 @@ declare namespace AigleCore {
     static longStackTraces(): void;
 
     static mixin(sources: any, opts: any): any;
-
-    static omit(collection: any, iterator: any): Aigle<any>;
-
-    static omitLimit(collection: any, limit: any, iterator: any): Aigle<any>;
-
-    static omitSeries(collection: any, iterator: any): Aigle<any>;
 
     static parallel(collection: any): Aigle<any>;
 
