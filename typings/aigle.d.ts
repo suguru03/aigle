@@ -496,6 +496,55 @@ declare namespace AigleCore {
     omitByLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T>>;
     omitByLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T>): Aigle<Dictionary<T>>;
 
+    /* pick */
+
+    pick<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T>>;
+
+    pick<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
+
+    pick<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T>>;
+
+    /* pickBy */
+
+    pickBy<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T>>;
+
+    pickBy<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
+
+    pickBy<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T>>;
+
+    /* pickSeries / pickBySeries */
+
+    pickSeries<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T>>;
+
+    pickSeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
+
+    pickSeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T>>;
+
+    pickBySeries<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T>>;
+
+    pickBySeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
+
+    pickBySeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T>>;
+
+    /* pickLimit / pickByLimit */
+
+    pickLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T>>;
+    pickLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T>): Aigle<Dictionary<T>>;
+
+    pickLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
+    pickLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T>): Aigle<Dictionary<T>>;
+
+    pickLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T>>;
+    pickLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T>): Aigle<Dictionary<T>>;
+
+    pickByLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T>>;
+    pickByLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T>): Aigle<Dictionary<T>>;
+
+    pickByLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
+    pickByLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T>): Aigle<Dictionary<T>>;
+
+    pickByLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T>>;
+    pickByLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T>): Aigle<Dictionary<T>>;
     /* delay */
 
     delay(ms: number): Aigle<R>;
@@ -519,12 +568,6 @@ declare namespace AigleCore {
     isRejected(...args: any[]): Aigle<any>;
 
     parallel(...args: any[]): Aigle<any>;
-
-    pick(...args: any[]): Aigle<any>;
-
-    pickLimit(...args: any[]): Aigle<any>;
-
-    pickSeries(...args: any[]): Aigle<any>;
 
     race(...args: any[]): Aigle<any>;
 
@@ -1174,6 +1217,64 @@ declare namespace AigleCore {
       iterator: ObjectIterator<T, boolean>
     ): Aigle<Dictionary<T[]>>;
 
+    /* pick */
+
+    static pick<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static pick<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static pick<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    /* pickBy */
+
+    static pickBy<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static pickBy<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static pickBy<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    /* pickSeries / pickBySeries */
+
+    static pickSeries<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static pickSeries<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static pickSeries<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static pickBySeries<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static pickBySeries<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static pickBySeries<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    /* pickLimit / pickByLimit */
+
+    static pickLimit<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static pickLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static pickLimit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static pickLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static pickLimit<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static pickLimit<T extends object>(
+      collection: T,
+      limit: number,
+      iterator: ObjectIterator<T, boolean>
+    ): Aigle<Dictionary<T[]>>;
+
+    static pickByLimit<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static pickByLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static pickByLimit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static pickByLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+
+    static pickByLimit<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static pickByLimit<T extends object>(
+      collection: T,
+      limit: number,
+      iterator: ObjectIterator<T, boolean>
+    ): Aigle<Dictionary<T[]>>;
+
     /* delay */
 
     static delay<T>(ms: number, value?: T): Aigle<T>;
@@ -1197,12 +1298,6 @@ declare namespace AigleCore {
     static mixin(sources: any, opts: any): any;
 
     static parallel(collection: any): Aigle<any>;
-
-    static pick(collection: any, iterator: any): Aigle<any>;
-
-    static pickLimit(collection: any, limit: any, iterator: any): Aigle<any>;
-
-    static pickSeries(collection: any, iterator: any): Aigle<any>;
 
     static promisify(fn: any, opts?: any): Aigle<any>;
 
