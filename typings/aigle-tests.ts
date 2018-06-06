@@ -330,6 +330,36 @@ hawkProm.every((val: Hawk[keyof Hawk], key: string) => bool).then((bool: boolean
 
 hawkProm.every((val: Hawk[keyof Hawk]) => bool).then((bool: boolean) => {});
 
+/* transform */
+
+//-- transform:array --//
+
+hawkArrProm.transform((acc: Swans, hawk: Hawk, index: number, arr: Hawks) => acc.push(swan)).then((arr: Swans) => {});
+
+hawkArrProm.transform((acc: Swans, hawk: Hawk, index: number) => acc.push(swan)).then((arr: Swans) => {});
+
+hawkArrProm.transform((acc: SwanMap, hawk: Hawk) => (acc.a = swan), {}).then((swan: SwanMap) => {});
+
+//-- transform:list --//
+
+hawkListProm
+  .transform((acc: Swans, hawk: Hawk, index: number, list: List<Hawk>) => acc.push(swan))
+  .then((arr: Swans) => {});
+
+hawkListProm.transform((acc: Swans, hawk: Hawk, index: number) => acc.push(swan)).then((arr: Swans) => {});
+
+hawkListProm.transform((acc: SwanMap, hawk: Hawk) => (acc.a = swan), {}).then((map: SwanMap) => {});
+
+//-- transform:object --//
+
+hawkProm.transform((acc: SwanMap, val: Hawk[keyof Hawk], key: keyof Hawk, hawk: Hawk) => {}).then((map: SwanMap) => {});
+
+hawkProm
+  .transform((acc: Swans, hawk: Hawk[keyof Hawk], key: keyof Hawk) => acc.push(swan), [])
+  .then((arr: Swans) => {});
+
+hawkProm.transform((acc: SwanMap, hawk: Hawk[keyof Hawk]) => (acc.a = swan), {}).then((swan: SwanMap) => {});
+
 /** static **/
 
 /* core functions */

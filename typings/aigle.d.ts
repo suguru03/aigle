@@ -10,8 +10,8 @@ declare namespace AigleCore {
   type CatchFilter<E> = (new (...args: any[]) => E) | ((error: E) => boolean) | (object & E);
   type List<T> = ArrayLike<T>;
   type Dictionary<T> = Record<string, T>;
-
   type NotVoid = {} | null | undefined;
+
   type ArrayIterator<T, TResult = NotVoid> = (
     value: T,
     index: number,
@@ -22,11 +22,30 @@ declare namespace AigleCore {
     index: number,
     collection: List<T>
   ) => TResult | PromiseLike<TResult>;
-  type ObjectIterator<TObject, TResult = NotVoid> = (
-    value: TObject[keyof TObject],
-    key: string,
-    collection: TObject
+  type ObjectIterator<T, TResult = NotVoid> = (
+    value: T[keyof T],
+    key: keyof T,
+    collection: T
   ) => TResult | PromiseLike<TResult>;
+
+  type MemoArrayIterator<T, TResult, IResult = any> = (
+    accumulator: TResult,
+    value: T,
+    index: number,
+    collection: T[]
+  ) => IResult | Promise<IResult>;
+  type MemoListIterator<T, TResult, IResult = any> = (
+    accumulator: TResult,
+    value: T,
+    index: number,
+    collection: List<T>
+  ) => IResult | Promise<IResult>;
+  type MemoObjectIterator<T, TResult, IResult = any> = (
+    accumulator: TResult,
+    value: T[keyof T],
+    key: keyof T,
+    collection: T
+  ) => IResult | Promise<IResult>;
 
   export class Aigle<R> implements PromiseLike<R> {
     /* core functions */
@@ -631,6 +650,119 @@ declare namespace AigleCore {
     pickByLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T>>;
     pickByLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T>): Aigle<Dictionary<T>>;
 
+    /* transform */
+
+    transform<T, R>(this: Aigle<T[]>, iterator: MemoArrayIterator<T, R[]>, accumulator?: R[]): Aigle<R[]>;
+    transform<T, R>(
+      this: Aigle<T[]>,
+      iterator: MemoArrayIterator<T, Dictionary<R>>,
+      accumulator: Dictionary<R>
+    ): Aigle<Dictionary<R>>;
+
+    transform<T, R>(this: Aigle<List<T>>, iterator: MemoListIterator<T, R[]>, accumulator?: R[]): Aigle<R[]>;
+    transform<T, R>(
+      this: Aigle<List<T>>,
+      iterator: MemoListIterator<T, Dictionary<R>>,
+      accumulator?: Dictionary<R>
+    ): Aigle<Dictionary<R>>;
+
+    transform<T extends object, R>(
+      this: Aigle<T>,
+      iterator: MemoObjectIterator<T, Dictionary<R>>,
+      accumulator?: Dictionary<R>
+    ): Aigle<Dictionary<R>>;
+    transform<T extends object, R>(this: Aigle<T>, iterator: MemoObjectIterator<T, R[]>, accumulator: R[]): Aigle<R[]>;
+
+    /* transformSeries */
+
+    transformSeries<T, R>(this: Aigle<T[]>, iterator: MemoArrayIterator<T, R[]>, accumulator?: R[]): Aigle<R[]>;
+    transformSeries<T, R>(
+      this: Aigle<T[]>,
+      iterator: MemoArrayIterator<T, Dictionary<R>>,
+      accumulator: Dictionary<R>
+    ): Aigle<Dictionary<R>>;
+
+    transformSeries<T, R>(this: Aigle<List<T>>, iterator: MemoListIterator<T, R[]>, accumulator?: R[]): Aigle<R[]>;
+    transformSeries<T, R>(
+      this: Aigle<List<T>>,
+      iterator: MemoListIterator<T, Dictionary<R>>,
+      accumulator?: Dictionary<R>
+    ): Aigle<Dictionary<R>>;
+
+    transformSeries<T extends object, R>(
+      this: Aigle<T>,
+      iterator: MemoObjectIterator<T, Dictionary<R>>,
+      accumulator?: Dictionary<R>
+    ): Aigle<Dictionary<R>>;
+    transformSeries<T extends object, R>(
+      this: Aigle<T>,
+      iterator: MemoObjectIterator<T, R[]>,
+      accumulator: R[]
+    ): Aigle<R[]>;
+
+    /* transformLimit */
+
+    transformLimit<T, R>(this: Aigle<T[]>, iterator: MemoArrayIterator<T, R[]>, accumulator?: R[]): Aigle<R[]>;
+    transformLimit<T, R>(
+      this: Aigle<T[]>,
+      limit: number,
+      iterator: MemoArrayIterator<T, R[]>,
+      accumulator?: R[]
+    ): Aigle<R[]>;
+    transformLimit<T, R>(
+      this: Aigle<T[]>,
+      iterator: MemoArrayIterator<T, Dictionary<R>>,
+      accumulator: Dictionary<R>
+    ): Aigle<Dictionary<R>>;
+    transformLimit<T, R>(
+      this: Aigle<T[]>,
+      limit: number,
+      iterator: MemoArrayIterator<T, Dictionary<R>>,
+      accumulator: Dictionary<R>
+    ): Aigle<Dictionary<R>>;
+
+    transformLimit<T, R>(this: Aigle<List<T>>, iterator: MemoListIterator<T, R[]>, accumulator?: R[]): Aigle<R[]>;
+    transformLimit<T, R>(
+      this: Aigle<List<T>>,
+      limit: number,
+      iterator: MemoListIterator<T, R[]>,
+      accumulator?: R[]
+    ): Aigle<R[]>;
+    transformLimit<T, R>(
+      this: Aigle<List<T>>,
+      iterator: MemoListIterator<T, Dictionary<R>>,
+      accumulator?: Dictionary<R>
+    ): Aigle<Dictionary<R>>;
+    transformLimit<T, R>(
+      this: Aigle<List<T>>,
+      limit: number,
+      iterator: MemoListIterator<T, Dictionary<R>>,
+      accumulator?: Dictionary<R>
+    ): Aigle<Dictionary<R>>;
+
+    transformLimit<T extends object, R>(
+      this: Aigle<T>,
+      iterator: MemoObjectIterator<T, Dictionary<R>>,
+      accumulator?: Dictionary<R>
+    ): Aigle<Dictionary<R>>;
+    transformLimit<T extends object, R>(
+      this: Aigle<T>,
+      limit: number,
+      iterator: MemoObjectIterator<T, Dictionary<R>>,
+      accumulator?: Dictionary<R>
+    ): Aigle<Dictionary<R>>;
+    transformLimit<T extends object, R>(
+      this: Aigle<T>,
+      iterator: MemoObjectIterator<T, R[]>,
+      accumulator: R[]
+    ): Aigle<R[]>;
+    transformLimit<T extends object, R>(
+      this: Aigle<T>,
+      limit: number,
+      iterator: MemoObjectIterator<T, R[]>,
+      accumulator: R[]
+    ): Aigle<R[]>;
+
     /* delay */
 
     delay(ms: number): Aigle<R>;
@@ -678,12 +810,6 @@ declare namespace AigleCore {
     timesSeries(...args: any[]): Aigle<any>;
 
     toString(...args: any[]): Aigle<any>;
-
-    transform(...args: any[]): Aigle<any>;
-
-    transformLimit(...args: any[]): Aigle<any>;
-
-    transformSeries(...args: any[]): Aigle<any>;
 
     until(...args: any[]): Aigle<any>;
 
@@ -1442,6 +1568,127 @@ declare namespace AigleCore {
       iterator: ObjectIterator<T, boolean>
     ): Aigle<Dictionary<T[]>>;
 
+    /* transform */
+
+    static transform<T, R>(collection: T[], iterator: MemoArrayIterator<T, R[]>, accumulator?: R[]): Aigle<R[]>;
+    static transform<T, R>(
+      collection: T[],
+      iterator: MemoArrayIterator<T, Dictionary<R>>,
+      accumulator: Dictionary<R>
+    ): Aigle<Dictionary<R>>;
+
+    static transform<T, R>(collection: List<T>, iterator: MemoListIterator<T, R[]>, accumulator?: R[]): Aigle<R[]>;
+    static transform<T, R>(
+      collection: List<T>,
+      iterator: MemoListIterator<T, Dictionary<R>>,
+      accumulator?: Dictionary<R>
+    ): Aigle<Dictionary<R>>;
+
+    static transform<T extends object, R>(
+      collection: T,
+      iterator: MemoObjectIterator<T, Dictionary<R>>,
+      accumulator?: Dictionary<R>
+    ): Aigle<Dictionary<R>>;
+    static transform<T extends object, R>(
+      collection: T,
+      iterator: MemoObjectIterator<T, R[]>,
+      accumulator: R[]
+    ): Aigle<R[]>;
+
+    /* transformSeries */
+
+    static transformSeries<T, R>(collection: T[], iterator: MemoArrayIterator<T, R[]>, accumulator?: R[]): Aigle<R[]>;
+    static transformSeries<T, R>(
+      collection: T[],
+      iterator: MemoArrayIterator<T, Dictionary<R>>,
+      accumulator: Dictionary<R>
+    ): Aigle<Dictionary<R>>;
+
+    static transformSeries<T, R>(
+      collection: List<T>,
+      iterator: MemoListIterator<T, R[]>,
+      accumulator?: R[]
+    ): Aigle<R[]>;
+    static transformSeries<T, R>(
+      collection: List<T>,
+      iterator: MemoListIterator<T, Dictionary<R>>,
+      accumulator?: Dictionary<R>
+    ): Aigle<Dictionary<R>>;
+
+    static transformSeries<T extends object, R>(
+      collection: T,
+      iterator: MemoObjectIterator<T, Dictionary<R>>,
+      accumulator?: Dictionary<R>
+    ): Aigle<Dictionary<R>>;
+    static transformSeries<T extends object, R>(
+      collection: T,
+      iterator: MemoObjectIterator<T, R[]>,
+      accumulator: R[]
+    ): Aigle<R[]>;
+
+    /* transformLimit */
+
+    static transformLimit<T, R>(collection: T[], iterator: MemoArrayIterator<T, R[]>, accumulator?: R[]): Aigle<R[]>;
+    static transformLimit<T, R>(
+      collection: T[],
+      limit: number,
+      iterator: MemoArrayIterator<T, R[]>,
+      accumulator?: R[]
+    ): Aigle<R[]>;
+    static transformLimit<T, R>(
+      collection: T[],
+      iterator: MemoArrayIterator<T, Dictionary<R>>,
+      accumulator: Dictionary<R>
+    ): Aigle<Dictionary<R>>;
+    static transformLimit<T, R>(
+      collection: T[],
+      limit: number,
+      iterator: MemoArrayIterator<T, Dictionary<R>>,
+      accumulator: Dictionary<R>
+    ): Aigle<Dictionary<R>>;
+
+    static transformLimit<T, R>(collection: List<T>, iterator: MemoListIterator<T, R[]>, accumulator?: R[]): Aigle<R[]>;
+    static transformLimit<T, R>(
+      collection: List<T>,
+      limit: number,
+      iterator: MemoListIterator<T, R[]>,
+      accumulator?: R[]
+    ): Aigle<R[]>;
+    static transformLimit<T, R>(
+      collection: List<T>,
+      iterator: MemoListIterator<T, Dictionary<R>>,
+      accumulator?: Dictionary<R>
+    ): Aigle<Dictionary<R>>;
+    static transformLimit<T, R>(
+      collection: List<T>,
+      limit: number,
+      iterator: MemoListIterator<T, Dictionary<R>>,
+      accumulator?: Dictionary<R>
+    ): Aigle<Dictionary<R>>;
+
+    static transformLimit<T extends object, R>(
+      collection: T,
+      iterator: MemoObjectIterator<T, Dictionary<R>>,
+      accumulator?: Dictionary<R>
+    ): Aigle<Dictionary<R>>;
+    static transformLimit<T extends object, R>(
+      collection: T,
+      limit: number,
+      iterator: MemoObjectIterator<T, Dictionary<R>>,
+      accumulator?: Dictionary<R>
+    ): Aigle<Dictionary<R>>;
+    static transformLimit<T extends object, R>(
+      collection: T,
+      iterator: MemoObjectIterator<T, R[]>,
+      accumulator: R[]
+    ): Aigle<R[]>;
+    static transformLimit<T extends object, R>(
+      collection: T,
+      limit: number,
+      iterator: MemoObjectIterator<T, R[]>,
+      accumulator: R[]
+    ): Aigle<R[]>;
+
     /* delay */
 
     static delay<T>(ms: number, value?: T): Aigle<T>;
@@ -1485,12 +1732,6 @@ declare namespace AigleCore {
     static timesLimit(times: any, limit: any, iterator: any): Aigle<any>;
 
     static timesSeries(times: any, iterator: any): Aigle<any>;
-
-    static transform(collection: any, iterator: any, accumulator: any): Aigle<any>;
-
-    static transformLimit(collection: any, limit: any, iterator: any, accumulator: any): Aigle<any>;
-
-    static transformSeries(collection: any, iterator: any, accumulator: any): Aigle<any>;
 
     static until(value: any, tester: any, iterator: any): Aigle<any>;
 
