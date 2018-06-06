@@ -13906,7 +13906,7 @@
         function(require, module, exports) {
           module.exports = {
             name: 'aigle',
-            version: '1.13.0-alpha.1',
+            version: '1.13.0-alpha.2',
             description: 'Aigle is an ideal Promise library, faster and more functional than other Promise libraries',
             main: 'index.js',
             typings: 'aigle.d.ts',
@@ -13952,7 +13952,7 @@
               'mocha.parallel': '0.15.5',
               'neo-async': '^2.5.0',
               'npm-run-all': '^4.1.2',
-              nyc: '^11.4.1',
+              nyc: '^12.0.1',
               prettier: '^1.11.1',
               'require-dir': '^1.0.0',
               'run-sequence': '^2.0.0',
