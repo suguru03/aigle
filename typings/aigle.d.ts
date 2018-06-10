@@ -763,6 +763,13 @@ declare namespace AigleCore {
       accumulator: R[]
     ): Aigle<R[]>;
 
+    /* reduce */
+
+    reduce<T, R>(this: Aigle<T[]>, iterator: MemoArrayIterator<T, R, R>, accumulator?: R): Aigle<R>;
+
+    reduce<T, R>(this: Aigle<List<T>>, iterator: MemoListIterator<T, R, R>, accumulator?: R): Aigle<R>;
+
+    reduce<T extends object, R>(this: Aigle<T>, iterator: MemoObjectIterator<T, R, R>, accumulator?: R): Aigle<R>;
     /* delay */
 
     delay(ms: number): Aigle<R>;
@@ -790,8 +797,6 @@ declare namespace AigleCore {
     race(...args: any[]): Aigle<any>;
 
     reason(...args: any[]): Aigle<any>;
-
-    reduce(...args: any[]): Aigle<any>;
 
     spread(...args: any[]): Aigle<any>;
 
@@ -1689,6 +1694,14 @@ declare namespace AigleCore {
       accumulator: R[]
     ): Aigle<R[]>;
 
+    /* reduce */
+
+    static reduce<T, R>(collection: T[], iterator: MemoArrayIterator<T, R, R>, accumulator?: R): Aigle<R>;
+
+    static reduce<T, R>(collection: List<T>, iterator: MemoListIterator<T, R, R>, accumulator?: R): Aigle<R>;
+
+    static reduce<T extends object, R>(collection: T, iterator: MemoObjectIterator<T, R, R>, accumulator?: R): Aigle<R>;
+
     /* delay */
 
     static delay<T>(ms: number, value?: T): Aigle<T>;
@@ -1718,8 +1731,6 @@ declare namespace AigleCore {
     static promisifyAll<T extends object>(target: T, options?: any): T;
 
     static race(collection: any): Aigle<any>;
-
-    static reduce(collection: any, iterator: any, result: any): Aigle<any>;
 
     static retry(times: any, handler: any): Aigle<any>;
 
