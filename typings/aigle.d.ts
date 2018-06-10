@@ -774,6 +774,19 @@ declare namespace AigleCore {
 
     delay(ms: number): Aigle<R>;
 
+    /* times */
+
+    times<T>(this: Aigle<number>, iterator?: (num: number) => T): Aigle<T[]>;
+
+    /* timesSeries */
+
+    timesSeries<T>(this: Aigle<number>, iterator?: (num: number) => T): Aigle<T[]>;
+
+    /* timesLimit */
+
+    timesLimit<T>(this: Aigle<number>, iterator?: (num: number) => T): Aigle<T[]>;
+    timesLimit<T>(this: Aigle<number>, limit: number, iterator: (num: number) => T): Aigle<T[]>;
+
     /** TODO work in progress **/
 
     cancel(...args: any[]): Aigle<any>;
@@ -807,12 +820,6 @@ declare namespace AigleCore {
     thru(...args: any[]): Aigle<any>;
 
     timeout(...args: any[]): Aigle<any>;
-
-    times(...args: any[]): Aigle<any>;
-
-    timesLimit(...args: any[]): Aigle<any>;
-
-    timesSeries(...args: any[]): Aigle<any>;
 
     toString(...args: any[]): Aigle<any>;
 
@@ -1706,6 +1713,19 @@ declare namespace AigleCore {
 
     static delay<T>(ms: number, value?: T): Aigle<T>;
 
+    /* times */
+
+    static times<T>(n: number, iterator?: (num: number) => T): Aigle<T[]>;
+
+    /* timesSeries */
+
+    static timesSeries<T>(n: number, iterator?: (num: number) => T): Aigle<T[]>;
+
+    /* timesLimit */
+
+    static timesLimit<T>(n: number, iterator?: (num: number) => T): Aigle<T[]>;
+    static timesLimit<T>(n: number, limit: number, iterator: (num: number) => T): Aigle<T[]>;
+
     /** TODO work in progress **/
 
     static attempt(handler: any): Aigle<any>;
@@ -1737,12 +1757,6 @@ declare namespace AigleCore {
     static tap(value: any, onFulfilled: any): Aigle<any>;
 
     static thru(value: any, onFulfilled: any): Aigle<any>;
-
-    static times(times: any, iterator: any): Aigle<any>;
-
-    static timesLimit(times: any, limit: any, iterator: any): Aigle<any>;
-
-    static timesSeries(times: any, iterator: any): Aigle<any>;
 
     static until(value: any, tester: any, iterator: any): Aigle<any>;
 
