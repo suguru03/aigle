@@ -774,6 +774,10 @@ declare namespace AigleCore {
 
     delay(ms: number): Aigle<R>;
 
+    /* tap */
+
+    tap(intercepter: (value: R) => any): Aigle<R>;
+
     /* times */
 
     times<T>(this: Aigle<number>, iterator?: (num: number) => T): Aigle<T[]>;
@@ -814,8 +818,6 @@ declare namespace AigleCore {
     spread(...args: any[]): Aigle<any>;
 
     suppressUnhandledRejections(...args: any[]): Aigle<any>;
-
-    tap(...args: any[]): Aigle<any>;
 
     thru(...args: any[]): Aigle<any>;
 
@@ -1713,6 +1715,10 @@ declare namespace AigleCore {
 
     static delay<T>(ms: number, value?: T): Aigle<T>;
 
+    /* tap */
+
+    static tap<T>(value: T, intercepter: (value: T) => any): Aigle<T>;
+
     /* times */
 
     static times<T>(n: number, iterator?: (num: number) => T): Aigle<T[]>;
@@ -1753,8 +1759,6 @@ declare namespace AigleCore {
     static race(collection: any): Aigle<any>;
 
     static retry(times: any, handler: any): Aigle<any>;
-
-    static tap(value: any, onFulfilled: any): Aigle<any>;
 
     static thru(value: any, onFulfilled: any): Aigle<any>;
 
