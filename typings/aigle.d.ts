@@ -795,6 +795,22 @@ declare namespace AigleCore {
     timesLimit<T>(this: Aigle<number>, iterator?: (num: number) => T): Aigle<T[]>;
     timesLimit<T>(this: Aigle<number>, limit: number, iterator: (num: number) => T): Aigle<T[]>;
 
+    /* isCancelled */
+
+    isCancelled(): boolean;
+
+    /* isFulfilled */
+
+    isFulfilled(): boolean;
+
+    /* isPending */
+
+    isPending(): boolean;
+
+    /* isRejected */
+
+    isRejected(): boolean;
+
     /** TODO work in progress **/
 
     cancel(...args: any[]): Aigle<any>;
@@ -804,14 +820,6 @@ declare namespace AigleCore {
     doUntil(...args: any[]): Aigle<any>;
 
     doWhilst(...args: any[]): Aigle<any>;
-
-    isCancelled(...args: any[]): Aigle<any>;
-
-    isFulfilled(...args: any[]): Aigle<any>;
-
-    isPending(...args: any[]): Aigle<any>;
-
-    isRejected(...args: any[]): Aigle<any>;
 
     parallel(...args: any[]): Aigle<any>;
 
