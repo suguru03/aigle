@@ -795,6 +795,10 @@ declare namespace AigleCore {
     timesLimit<T>(this: Aigle<number>, iterator?: (num: number) => T): Aigle<T[]>;
     timesLimit<T>(this: Aigle<number>, limit: number, iterator: (num: number) => T): Aigle<T[]>;
 
+    /* doUntil */
+
+    doUntil<T>(this: Aigle<T>, iterator: (value: T) => T, tester: (value: T) => boolean): Aigle<T>;
+
     /* isCancelled */
 
     isCancelled(): boolean;
@@ -816,8 +820,6 @@ declare namespace AigleCore {
     cancel(...args: any[]): Aigle<any>;
 
     disposer(...args: any[]): Aigle<any>;
-
-    doUntil(...args: any[]): Aigle<any>;
 
     doWhilst(...args: any[]): Aigle<any>;
 
@@ -1746,6 +1748,11 @@ declare namespace AigleCore {
     static timesLimit<T>(n: number, iterator?: (num: number) => T): Aigle<T[]>;
     static timesLimit<T>(n: number, limit: number, iterator: (num: number) => T): Aigle<T[]>;
 
+    /* doUntil */
+
+    static doUntil<T>(iterator: (value: T) => T, tester: (value: T) => boolean): Aigle<T>;
+    static doUntil<T>(value: T, iterator: (value: T) => T, tester: (value: T) => boolean): Aigle<T>;
+
     /** TODO work in progress **/
 
     static attempt(handler: any): Aigle<any>;
@@ -1753,8 +1760,6 @@ declare namespace AigleCore {
     static config(opts: any): void;
 
     static default: any;
-
-    static doUntil(value: any, iterator: any, tester: any): Aigle<any>;
 
     static doWhilst(value: any, iterator: any, tester: any): Aigle<any>;
 
