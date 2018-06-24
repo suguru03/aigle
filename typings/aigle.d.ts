@@ -606,7 +606,7 @@ declare namespace AigleCore {
 
     pick<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
 
-    pick<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T>>;
+    pick<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Partial<T>>;
 
     /* pickBy */
 
@@ -614,7 +614,7 @@ declare namespace AigleCore {
 
     pickBy<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
 
-    pickBy<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T>>;
+    pickBy<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Partial<T>>;
 
     /* pickSeries / pickBySeries */
 
@@ -622,13 +622,13 @@ declare namespace AigleCore {
 
     pickSeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
 
-    pickSeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T>>;
+    pickSeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Partial<T>>;
 
     pickBySeries<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T>>;
 
     pickBySeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
 
-    pickBySeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T>>;
+    pickBySeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Partial<T>>;
 
     /* pickLimit / pickByLimit */
 
@@ -638,8 +638,8 @@ declare namespace AigleCore {
     pickLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
     pickLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T>): Aigle<Dictionary<T>>;
 
-    pickLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T>>;
-    pickLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T>): Aigle<Dictionary<T>>;
+    pickLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Partial<T>>;
+    pickLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T>): Aigle<Partial<T>>;
 
     pickByLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T>>;
     pickByLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T>): Aigle<Dictionary<T>>;
@@ -647,8 +647,8 @@ declare namespace AigleCore {
     pickByLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
     pickByLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T>): Aigle<Dictionary<T>>;
 
-    pickByLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T>>;
-    pickByLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T>): Aigle<Dictionary<T>>;
+    pickByLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Partial<T>>;
+    pickByLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T>): Aigle<Partial<T>>;
 
     /* transform */
 
@@ -1484,7 +1484,7 @@ declare namespace AigleCore {
 
     static omit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
 
-    static omit<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static omit<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Partial<T>>;
 
     /* omitBy */
 
@@ -1492,7 +1492,7 @@ declare namespace AigleCore {
 
     static omitBy<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
 
-    static omitBy<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static omitBy<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Partial<T>>;
 
     /* omitSeries / omitBySeries */
 
@@ -1500,13 +1500,13 @@ declare namespace AigleCore {
 
     static omitSeries<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
 
-    static omitSeries<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static omitSeries<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Partial<T>>;
 
     static omitBySeries<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
 
     static omitBySeries<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
 
-    static omitBySeries<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static omitBySeries<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Partial<T>>;
 
     /* omitLimit / omitByLimit */
 
@@ -1516,12 +1516,12 @@ declare namespace AigleCore {
     static omitLimit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
     static omitLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
 
-    static omitLimit<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static omitLimit<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Partial<T>>;
     static omitLimit<T extends object>(
       collection: T,
       limit: number,
       iterator: ObjectIterator<T, boolean>
-    ): Aigle<Dictionary<T[]>>;
+    ): Aigle<Partial<T>>;
 
     static omitByLimit<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
     static omitByLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
@@ -1529,12 +1529,12 @@ declare namespace AigleCore {
     static omitByLimit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
     static omitByLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
 
-    static omitByLimit<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static omitByLimit<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Partial<T>>;
     static omitByLimit<T extends object>(
       collection: T,
       limit: number,
       iterator: ObjectIterator<T, boolean>
-    ): Aigle<Dictionary<T[]>>;
+    ): Aigle<Partial<T>>;
 
     /* pick */
 
