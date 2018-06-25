@@ -803,6 +803,14 @@ declare namespace AigleCore {
 
     doWhilst<T>(this: Aigle<T>, iterator: (value: T) => T, tester: (value: T) => boolean): Aigle<T>;
 
+    /* until */
+
+    until<T>(this: Aigle<T>, tester: (value: T) => boolean, iterator: (value: T) => T): Aigle<T>;
+
+    /* whilst */
+
+    whilst<T>(this: Aigle<T>, tester: (value: T) => boolean, iterator: (value: T) => T): Aigle<T>;
+
     /* isCancelled */
 
     isCancelled(): boolean;
@@ -839,11 +847,7 @@ declare namespace AigleCore {
 
     toString(...args: any[]): Aigle<any>;
 
-    until(...args: any[]): Aigle<any>;
-
     value(...args: any[]): Aigle<any>;
-
-    whilst(...args: any[]): Aigle<any>;
 
     /** static **/
 
@@ -1760,6 +1764,16 @@ declare namespace AigleCore {
     static doWhilst<T>(iterator: (value: T) => T, tester: (value: T) => boolean): Aigle<T>;
     static doWhilst<T>(value: T, iterator: (value: T) => T, tester: (value: T) => boolean): Aigle<T>;
 
+    /* until */
+
+    static until<T>(tester: (value: T) => boolean, iterator: (value: T) => T): Aigle<T>;
+    static until<T>(value: T, tester: (value: T) => boolean, iterator: (value: T) => T): Aigle<T>;
+
+    /* whilst */
+
+    static whilst<T>(tester: (value: T) => boolean, iterator: (value: T) => T): Aigle<T>;
+    static whilst<T>(value: T, tester: (value: T) => boolean, iterator: (value: T) => T): Aigle<T>;
+
     /** TODO work in progress **/
 
     static attempt(handler: any): Aigle<any>;
@@ -1784,10 +1798,6 @@ declare namespace AigleCore {
 
     static retry(times: any, handler: any): Aigle<any>;
 
-    static until(value: any, tester: any, iterator: any): Aigle<any>;
-
     static using(...args: any[]): Aigle<any>;
-
-    static whilst(value: any, tester: any, iterator: any): Aigle<any>;
   }
 }
