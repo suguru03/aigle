@@ -47,6 +47,11 @@ declare namespace AigleCore {
     collection: T
   ) => IResult | Promise<IResult>;
 
+  interface ConfigOpts {
+    longStackTraces?: boolean;
+    cancellation?: boolean;
+  }
+
   export class Aigle<R> implements PromiseLike<R> {
     /* core functions */
     constructor(
@@ -1774,17 +1779,19 @@ declare namespace AigleCore {
     static whilst<T>(tester: (value: T) => boolean, iterator: (value: T) => T): Aigle<T>;
     static whilst<T>(value: T, tester: (value: T) => boolean, iterator: (value: T) => T): Aigle<T>;
 
+    /* config */
+
+    static config(opts: ConfigOpts): void;
+
+    static longStackTraces(): void;
+
     /** TODO work in progress **/
 
     static attempt(handler: any): Aigle<any>;
 
-    static config(opts: any): void;
-
     static default: any;
 
     static join(...args: any[]): Aigle<any>;
-
-    static longStackTraces(): void;
 
     static mixin(sources: any, opts: any): any;
 
