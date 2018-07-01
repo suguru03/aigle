@@ -863,6 +863,9 @@ declare namespace AigleCore {
 
     static reject(reason: any): Aigle<never>;
 
+    static join<T>(...values: T[]): Aigle<T[]>;
+    static join<T>(...values: PromiseLike<T>[]): Aigle<T[]>;
+
     /**
      * Creates a Promise that is resolved with an array of results when all of the provided Promises
      * resolve, or rejected when any Promise is rejected.
@@ -1790,8 +1793,6 @@ declare namespace AigleCore {
     static attempt(handler: any): Aigle<any>;
 
     static default: any;
-
-    static join(...args: any[]): Aigle<any>;
 
     static mixin(sources: any, opts: any): any;
 
