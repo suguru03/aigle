@@ -132,11 +132,17 @@ declare namespace AigleCore {
 
     finally<T>(handler: () => T | PromiseLike<T>): Aigle<R>;
 
+    /* spread */
+
+    spread<T, R>(this: Aigle<T[]>, onFulfill: (...args: T[]) => R | PromiseLike<R>);
+    // TODO: define type
+    spread<R>(this: Aigle<any>, onFulfill: (...args: any[]) => R | PromiseLike<R>);
+
     /* prpps */
 
-    props<K, V>(this: PromiseLike<Map<K, PromiseLike<V> | V>>): Aigle<Map<K, V>>;
+    props<K, V>(this: Aigle<Map<K, PromiseLike<V> | V>>): Aigle<Map<K, V>>;
 
-    props<T>(this: PromiseLike<ResolvableProps<T>>): Aigle<T>;
+    props<T>(this: Aigle<ResolvableProps<T>>): Aigle<T>;
 
     /* each/forEach */
 
@@ -775,6 +781,7 @@ declare namespace AigleCore {
     reduce<T, R>(this: Aigle<List<T>>, iterator: MemoListIterator<T, R, R>, accumulator?: R): Aigle<R>;
 
     reduce<T extends object, R>(this: Aigle<T>, iterator: MemoObjectIterator<T, R, R>, accumulator?: R): Aigle<R>;
+
     /* delay */
 
     delay(ms: number): Aigle<R>;
@@ -843,8 +850,6 @@ declare namespace AigleCore {
     race(...args: any[]): Aigle<any>;
 
     reason(...args: any[]): Aigle<any>;
-
-    spread(...args: any[]): Aigle<any>;
 
     suppressUnhandledRejections(...args: any[]): Aigle<any>;
 
