@@ -194,29 +194,29 @@ declare namespace AigleCore {
 
     /* map */
 
-    map<T, R>(this: Aigle<T[]>, iterator?: ArrayIterator<T, R>): Aigle<R[]>;
+    map<T, R>(this: Aigle<T[]>, iterator: ArrayIterator<T, R>): Aigle<R[]>;
 
-    map<T, R>(this: Aigle<List<T>>, iterator?: ListIterator<T, R>): Aigle<R[]>;
+    map<T, R>(this: Aigle<List<T>>, iterator: ListIterator<T, R>): Aigle<R[]>;
 
-    map<T extends object, R>(this: Aigle<T>, iterator?: ObjectIterator<T, R>): Aigle<R[]>;
+    map<T extends object, R>(this: Aigle<T>, iterator: ObjectIterator<T, R>): Aigle<R[]>;
 
     /* mapSeries */
 
-    mapSeries<T, R>(this: Aigle<T[]>, iterator?: ArrayIterator<T, R>): Aigle<R[]>;
+    mapSeries<T, R>(this: Aigle<T[]>, iterator: ArrayIterator<T, R>): Aigle<R[]>;
 
-    mapSeries<T, R>(this: Aigle<List<T>>, iterator?: ListIterator<T, R>): Aigle<R[]>;
+    mapSeries<T, R>(this: Aigle<List<T>>, iterator: ListIterator<T, R>): Aigle<R[]>;
 
-    mapSeries<T extends object, R>(this: Aigle<T>, iterator?: ObjectIterator<T, R>): Aigle<R[]>;
+    mapSeries<T extends object, R>(this: Aigle<T>, iterator: ObjectIterator<T, R>): Aigle<R[]>;
 
     /* mapLimit */
 
-    mapLimit<T, R>(this: Aigle<T[]>, iterator?: ArrayIterator<T, R>): Aigle<R[]>;
+    mapLimit<T, R>(this: Aigle<T[]>, iterator: ArrayIterator<T, R>): Aigle<R[]>;
     mapLimit<T, R>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T, R>): Aigle<R[]>;
 
-    mapLimit<T, R>(this: Aigle<List<T>>, iterator?: ListIterator<T, R>): Aigle<R[]>;
+    mapLimit<T, R>(this: Aigle<List<T>>, iterator: ListIterator<T, R>): Aigle<R[]>;
     mapLimit<T, R>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T, R>): Aigle<R[]>;
 
-    mapLimit<T extends object, R>(this: Aigle<T>, iterator?: ObjectIterator<T, R>): Aigle<R[]>;
+    mapLimit<T extends object, R>(this: Aigle<T>, iterator: ObjectIterator<T, R>): Aigle<R[]>;
     mapLimit<T extends object, R>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T, R>): Aigle<R[]>;
 
     /* mapValues */
@@ -1074,29 +1074,29 @@ declare namespace AigleCore {
 
     /* map */
 
-    static map<T, R>(collection: T[], iterator?: ArrayIterator<T, R>): Aigle<R[]>;
+    static map<T, R>(collection: T[], iterator: ArrayIterator<T, R>): Aigle<R[]>;
 
-    static map<T, R>(collection: List<T>, iterator?: ListIterator<T, R>): Aigle<R[]>;
+    static map<T, R>(collection: List<T>, iterator: ListIterator<T, R>): Aigle<R[]>;
 
-    static map<T extends object, R>(collection: T, iterator?: ObjectIterator<T, R>): Aigle<R[]>;
+    static map<T extends object, R>(collection: T, iterator: ObjectIterator<T, R>): Aigle<R[]>;
 
     /* mapSeries */
 
-    static mapSeries<T, R>(collection: T[], iterator?: ArrayIterator<T, R>): Aigle<R[]>;
+    static mapSeries<T, R>(collection: T[], iterator: ArrayIterator<T, R>): Aigle<R[]>;
 
-    static mapSeries<T, R>(collection: List<T>, iterator?: ListIterator<T, R>): Aigle<R[]>;
+    static mapSeries<T, R>(collection: List<T>, iterator: ListIterator<T, R>): Aigle<R[]>;
 
-    static mapSeries<T extends object, R>(collection: T, iterator?: ObjectIterator<T, R>): Aigle<R[]>;
+    static mapSeries<T extends object, R>(collection: T, iterator: ObjectIterator<T, R>): Aigle<R[]>;
 
     /* mapLimit */
 
-    static mapLimit<T, R>(collection: T[], iterator?: ArrayIterator<T, R>): Aigle<R[]>;
+    static mapLimit<T, R>(collection: T[], iterator: ArrayIterator<T, R>): Aigle<R[]>;
     static mapLimit<T, R>(collection: T[], limit: number, iterator: ArrayIterator<T, R>): Aigle<R[]>;
 
-    static mapLimit<T, R>(collection: List<T>, iterator?: ListIterator<T, R>): Aigle<R[]>;
+    static mapLimit<T, R>(collection: List<T>, iterator: ListIterator<T, R>): Aigle<R[]>;
     static mapLimit<T, R>(collection: List<T>, limit: number, iterator: ListIterator<T, R>): Aigle<R[]>;
 
-    static mapLimit<T extends object, R>(collection: T, iterator?: ObjectIterator<T, R>): Aigle<R[]>;
+    static mapLimit<T extends object, R>(collection: T, iterator: ObjectIterator<T, R>): Aigle<R[]>;
     static mapLimit<T extends object, R>(collection: T, limit: number, iterator: ObjectIterator<T, R>): Aigle<R[]>;
 
     /* mapValues */
