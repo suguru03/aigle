@@ -138,6 +138,316 @@ declare namespace AigleCore {
     // TODO: define type
     spread<R>(this: Aigle<any>, onFulfill: (...args: any[]) => R | PromiseLike<R>);
 
+    /* all */
+
+    /**
+     * Creates a Promise that is resolved with an array of results when all of the provided Promises
+     * resolve, or rejected when any Promise is rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    all<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1>,
+          T2 | PromiseLike<T2>,
+          T3 | PromiseLike<T3>,
+          T4 | PromiseLike<T4>,
+          T5 | PromiseLike<T5>,
+          T6 | PromiseLike<T6>,
+          T7 | PromiseLike<T7>,
+          T8 | PromiseLike<T8>,
+          T9 | PromiseLike<T9>,
+          T10 | PromiseLike<T10>
+        ]
+      >
+    ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10]>;
+
+    /**
+     * Creates a Promise that is resolved with an array of results when all of the provided Promises
+     * resolve, or rejected when any Promise is rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    all<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1>,
+          T2 | PromiseLike<T2>,
+          T3 | PromiseLike<T3>,
+          T4 | PromiseLike<T4>,
+          T5 | PromiseLike<T5>,
+          T6 | PromiseLike<T6>,
+          T7 | PromiseLike<T7>,
+          T8 | PromiseLike<T8>,
+          T9 | PromiseLike<T9>
+        ]
+      >
+    ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8, T9]>;
+
+    /**
+     * Creates a Promise that is resolved with an array of results when all of the provided Promises
+     * resolve, or rejected when any Promise is rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    all<T1, T2, T3, T4, T5, T6, T7, T8>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1>,
+          T2 | PromiseLike<T2>,
+          T3 | PromiseLike<T3>,
+          T4 | PromiseLike<T4>,
+          T5 | PromiseLike<T5>,
+          T6 | PromiseLike<T6>,
+          T7 | PromiseLike<T7>,
+          T8 | PromiseLike<T8>
+        ]
+      >
+    ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8]>;
+
+    /**
+     * Creates a Promise that is resolved with an array of results when all of the provided Promises
+     * resolve, or rejected when any Promise is rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    all<T1, T2, T3, T4, T5, T6, T7>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1>,
+          T2 | PromiseLike<T2>,
+          T3 | PromiseLike<T3>,
+          T4 | PromiseLike<T4>,
+          T5 | PromiseLike<T5>,
+          T6 | PromiseLike<T6>,
+          T7 | PromiseLike<T7>
+        ]
+      >
+    ): Aigle<[T1, T2, T3, T4, T5, T6, T7]>;
+
+    /**
+     * Creates a Promise that is resolved with an array of results when all of the provided Promises
+     * resolve, or rejected when any Promise is rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    all<T1, T2, T3, T4, T5, T6>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1>,
+          T2 | PromiseLike<T2>,
+          T3 | PromiseLike<T3>,
+          T4 | PromiseLike<T4>,
+          T5 | PromiseLike<T5>,
+          T6 | PromiseLike<T6>
+        ]
+      >
+    ): Aigle<[T1, T2, T3, T4, T5, T6]>;
+
+    /**
+     * Creates a Promise that is resolved with an array of results when all of the provided Promises
+     * resolve, or rejected when any Promise is rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    all<T1, T2, T3, T4, T5>(
+      this: Aigle<
+        [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike<T4>, T5 | PromiseLike<T5>]
+      >
+    ): Aigle<[T1, T2, T3, T4, T5]>;
+
+    /**
+     * Creates a Promise that is resolved with an array of results when all of the provided Promises
+     * resolve, or rejected when any Promise is rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    all<T1, T2, T3, T4>(
+      this: Aigle<[T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike<T4>]>
+    ): Aigle<[T1, T2, T3, T4]>;
+
+    /**
+     * Creates a Promise that is resolved with an array of results when all of the provided Promises
+     * resolve, or rejected when any Promise is rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    all<T1, T2, T3>(
+      this: Aigle<[T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>]>
+    ): Aigle<[T1, T2, T3]>;
+
+    /**
+     * Creates a Promise that is resolved with an array of results when all of the provided Promises
+     * resolve, or rejected when any Promise is rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    all<T1, T2>(this: Aigle<[T1 | PromiseLike<T1>, T2 | PromiseLike<T2>]>): Aigle<[T1, T2]>;
+
+    /**
+     * Creates a Promise that is resolved with an array of results when all of the provided Promises
+     * resolve, or rejected when any Promise is rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    all<T>(this: Aigle<(T | PromiseLike<T>)[]>): Aigle<T[]>;
+
+    /* race */
+
+    /**
+     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
+     * or rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    race<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1>,
+          T2 | PromiseLike<T2>,
+          T3 | PromiseLike<T3>,
+          T4 | PromiseLike<T4>,
+          T5 | PromiseLike<T5>,
+          T6 | PromiseLike<T6>,
+          T7 | PromiseLike<T7>,
+          T8 | PromiseLike<T8>,
+          T9 | PromiseLike<T9>,
+          T10 | PromiseLike<T10>
+        ]
+      >
+    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9 | T10>;
+
+    /**
+     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
+     * or rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    race<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1>,
+          T2 | PromiseLike<T2>,
+          T3 | PromiseLike<T3>,
+          T4 | PromiseLike<T4>,
+          T5 | PromiseLike<T5>,
+          T6 | PromiseLike<T6>,
+          T7 | PromiseLike<T7>,
+          T8 | PromiseLike<T8>,
+          T9 | PromiseLike<T9>
+        ]
+      >
+    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9>;
+
+    /**
+     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
+     * or rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    race<T1, T2, T3, T4, T5, T6, T7, T8>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1>,
+          T2 | PromiseLike<T2>,
+          T3 | PromiseLike<T3>,
+          T4 | PromiseLike<T4>,
+          T5 | PromiseLike<T5>,
+          T6 | PromiseLike<T6>,
+          T7 | PromiseLike<T7>,
+          T8 | PromiseLike<T8>
+        ]
+      >
+    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8>;
+
+    /**
+     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
+     * or rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    race<T1, T2, T3, T4, T5, T6, T7>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1>,
+          T2 | PromiseLike<T2>,
+          T3 | PromiseLike<T3>,
+          T4 | PromiseLike<T4>,
+          T5 | PromiseLike<T5>,
+          T6 | PromiseLike<T6>,
+          T7 | PromiseLike<T7>
+        ]
+      >
+    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6 | T7>;
+
+    /**
+     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
+     * or rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    race<T1, T2, T3, T4, T5, T6>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1>,
+          T2 | PromiseLike<T2>,
+          T3 | PromiseLike<T3>,
+          T4 | PromiseLike<T4>,
+          T5 | PromiseLike<T5>,
+          T6 | PromiseLike<T6>
+        ]
+      >
+    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6>;
+
+    /**
+     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
+     * or rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    race<T1, T2, T3, T4, T5>(
+      this: Aigle<
+        [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike<T4>, T5 | PromiseLike<T5>]
+      >
+    ): Aigle<T1 | T2 | T3 | T4 | T5>;
+
+    /**
+     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
+     * or rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    race<T1, T2, T3, T4>(
+      this: Aigle<[T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike<T4>]>
+    ): Aigle<T1 | T2 | T3 | T4>;
+
+    /**
+     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
+     * or rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    race<T1, T2, T3>(
+      this: Aigle<[T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>]>
+    ): Aigle<T1 | T2 | T3>;
+
+    /**
+     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
+     * or rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    race<T1, T2>(this: Aigle<[T1 | PromiseLike<T1>, T2 | PromiseLike<T2>]>): Aigle<T1 | T2>;
+
+    /**
+     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
+     * or rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    race<T>(this: Aigle<(T | PromiseLike<T>)[]>): Aigle<T>;
+
     /* prpps */
 
     props<K, V>(this: Aigle<Map<K, PromiseLike<V> | V>>): Aigle<Map<K, V>>;
@@ -847,8 +1157,6 @@ declare namespace AigleCore {
 
     parallel(...args: any[]): Aigle<any>;
 
-    race(...args: any[]): Aigle<any>;
-
     reason(...args: any[]): Aigle<any>;
 
     suppressUnhandledRejections(...args: any[]): Aigle<any>;
@@ -875,7 +1183,7 @@ declare namespace AigleCore {
      * Creates a Promise that is resolved with an array of results when all of the provided Promises
      * resolve, or rejected when any Promise is rejected.
      * @param values An array of Promises.
-     * @returns A new Promise.
+     * @returns A new Aigle.
      */
     static all<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
       values: [
@@ -896,7 +1204,7 @@ declare namespace AigleCore {
      * Creates a Promise that is resolved with an array of results when all of the provided Promises
      * resolve, or rejected when any Promise is rejected.
      * @param values An array of Promises.
-     * @returns A new Promise.
+     * @returns A new Aigle.
      */
     static all<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
       values: [
@@ -916,7 +1224,7 @@ declare namespace AigleCore {
      * Creates a Promise that is resolved with an array of results when all of the provided Promises
      * resolve, or rejected when any Promise is rejected.
      * @param values An array of Promises.
-     * @returns A new Promise.
+     * @returns A new Aigle.
      */
     static all<T1, T2, T3, T4, T5, T6, T7, T8>(
       values: [
@@ -935,7 +1243,7 @@ declare namespace AigleCore {
      * Creates a Promise that is resolved with an array of results when all of the provided Promises
      * resolve, or rejected when any Promise is rejected.
      * @param values An array of Promises.
-     * @returns A new Promise.
+     * @returns A new Aigle.
      */
     static all<T1, T2, T3, T4, T5, T6, T7>(
       values: [
@@ -953,7 +1261,7 @@ declare namespace AigleCore {
      * Creates a Promise that is resolved with an array of results when all of the provided Promises
      * resolve, or rejected when any Promise is rejected.
      * @param values An array of Promises.
-     * @returns A new Promise.
+     * @returns A new Aigle.
      */
     static all<T1, T2, T3, T4, T5, T6>(
       values: [
@@ -970,7 +1278,7 @@ declare namespace AigleCore {
      * Creates a Promise that is resolved with an array of results when all of the provided Promises
      * resolve, or rejected when any Promise is rejected.
      * @param values An array of Promises.
-     * @returns A new Promise.
+     * @returns A new Aigle.
      */
     static all<T1, T2, T3, T4, T5>(
       values: [
@@ -986,7 +1294,7 @@ declare namespace AigleCore {
      * Creates a Promise that is resolved with an array of results when all of the provided Promises
      * resolve, or rejected when any Promise is rejected.
      * @param values An array of Promises.
-     * @returns A new Promise.
+     * @returns A new Aigle.
      */
     static all<T1, T2, T3, T4>(
       values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike<T4>]
@@ -996,7 +1304,7 @@ declare namespace AigleCore {
      * Creates a Promise that is resolved with an array of results when all of the provided Promises
      * resolve, or rejected when any Promise is rejected.
      * @param values An array of Promises.
-     * @returns A new Promise.
+     * @returns A new Aigle.
      */
     static all<T1, T2, T3>(
       values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>]
@@ -1006,7 +1314,7 @@ declare namespace AigleCore {
      * Creates a Promise that is resolved with an array of results when all of the provided Promises
      * resolve, or rejected when any Promise is rejected.
      * @param values An array of Promises.
-     * @returns A new Promise.
+     * @returns A new Aigle.
      */
     static all<T1, T2>(values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>]): Aigle<[T1, T2]>;
 
@@ -1014,9 +1322,158 @@ declare namespace AigleCore {
      * Creates a Promise that is resolved with an array of results when all of the provided Promises
      * resolve, or rejected when any Promise is rejected.
      * @param values An array of Promises.
-     * @returns A new Promise.
+     * @returns A new Aigle.
      */
     static all<T>(values: (T | PromiseLike<T>)[]): Aigle<T[]>;
+
+    /* race */
+
+    /**
+     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
+     * or rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    static race<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
+      values: [
+        T1 | PromiseLike<T1>,
+        T2 | PromiseLike<T2>,
+        T3 | PromiseLike<T3>,
+        T4 | PromiseLike<T4>,
+        T5 | PromiseLike<T5>,
+        T6 | PromiseLike<T6>,
+        T7 | PromiseLike<T7>,
+        T8 | PromiseLike<T8>,
+        T9 | PromiseLike<T9>,
+        T10 | PromiseLike<T10>
+      ]
+    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9 | T10>;
+
+    /**
+     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
+     * or rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    static race<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
+      values: [
+        T1 | PromiseLike<T1>,
+        T2 | PromiseLike<T2>,
+        T3 | PromiseLike<T3>,
+        T4 | PromiseLike<T4>,
+        T5 | PromiseLike<T5>,
+        T6 | PromiseLike<T6>,
+        T7 | PromiseLike<T7>,
+        T8 | PromiseLike<T8>,
+        T9 | PromiseLike<T9>
+      ]
+    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9>;
+
+    /**
+     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
+     * or rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    static race<T1, T2, T3, T4, T5, T6, T7, T8>(
+      values: [
+        T1 | PromiseLike<T1>,
+        T2 | PromiseLike<T2>,
+        T3 | PromiseLike<T3>,
+        T4 | PromiseLike<T4>,
+        T5 | PromiseLike<T5>,
+        T6 | PromiseLike<T6>,
+        T7 | PromiseLike<T7>,
+        T8 | PromiseLike<T8>
+      ]
+    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8>;
+
+    /**
+     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
+     * or rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    static race<T1, T2, T3, T4, T5, T6, T7>(
+      values: [
+        T1 | PromiseLike<T1>,
+        T2 | PromiseLike<T2>,
+        T3 | PromiseLike<T3>,
+        T4 | PromiseLike<T4>,
+        T5 | PromiseLike<T5>,
+        T6 | PromiseLike<T6>,
+        T7 | PromiseLike<T7>
+      ]
+    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6 | T7>;
+
+    /**
+     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
+     * or rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    static race<T1, T2, T3, T4, T5, T6>(
+      values: [
+        T1 | PromiseLike<T1>,
+        T2 | PromiseLike<T2>,
+        T3 | PromiseLike<T3>,
+        T4 | PromiseLike<T4>,
+        T5 | PromiseLike<T5>,
+        T6 | PromiseLike<T6>
+      ]
+    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6>;
+
+    /**
+     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
+     * or rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    static race<T1, T2, T3, T4, T5>(
+      values: [
+        T1 | PromiseLike<T1>,
+        T2 | PromiseLike<T2>,
+        T3 | PromiseLike<T3>,
+        T4 | PromiseLike<T4>,
+        T5 | PromiseLike<T5>
+      ]
+    ): Aigle<T1 | T2 | T3 | T4 | T5>;
+
+    /**
+     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
+     * or rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    static race<T1, T2, T3, T4>(
+      values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike<T4>]
+    ): Aigle<T1 | T2 | T3 | T4>;
+
+    /**
+     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
+     * or rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    static race<T1, T2, T3>(
+      values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>]
+    ): Aigle<T1 | T2 | T3>;
+
+    /**
+     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
+     * or rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    static race<T1, T2>(values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>]): Aigle<T1 | T2>;
+
+    /**
+     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
+     * or rejected.
+     * @param values An array of Promises.
+     * @returns A new Aigle.
+     */
+    static race<T>(values: (T | PromiseLike<T>)[]): Aigle<T>;
 
     /* props */
 
@@ -1806,8 +2263,6 @@ declare namespace AigleCore {
     static promisify(fn: any, opts?: any): Aigle<any>;
 
     static promisifyAll<T extends object>(target: T, options?: any): T;
-
-    static race(collection: any): Aigle<any>;
 
     static retry(times: any, handler: any): Aigle<any>;
 
