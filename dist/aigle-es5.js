@@ -88,6 +88,7 @@
             var callResolve = ref$1.callResolve;
             var callReject = ref$1.callReject;
             var callReceiver = ref$1.callReceiver;
+            var printWarning = ref$1.printWarning;
             var stackTraces = false;
 
             var Aigle = (function(AigleCore) {
@@ -3557,6 +3558,7 @@
                 var _receiver = ref._receiver;
                 this._receiver = undefined;
                 if (_receiver === undefined || _receiver === UNHANDLED) {
+                  printWarning(this._value);
                   process.emit('unhandledRejection', this._value);
                   return;
                 }
@@ -7804,475 +7806,485 @@
       ],
       38: [
         function(require, module, exports) {
-          'use strict';
+          (function(process) {
+            'use strict';
 
-          var ref = require('aigle-core');
-          var AigleCore = ref.AigleCore;
-          var ref$1 = require('../../package.json');
-          var VERSION = ref$1.version;
-          var DEFAULT_LIMIT = 8;
-          var errorObj = { e: undefined };
-          var iteratorSymbol = typeof Symbol === 'function' ? Symbol.iterator : function SYMBOL() {};
+            var ref = require('aigle-core');
+            var AigleCore = ref.AigleCore;
+            var ref$1 = require('../../package.json');
+            var VERSION = ref$1.version;
+            var DEFAULT_LIMIT = 8;
+            var errorObj = { e: undefined };
+            var iteratorSymbol = typeof Symbol === 'function' ? Symbol.iterator : function SYMBOL() {};
+            var isNode = typeof process === 'object' && Object.prototype.toString.call(process) === '[object process]';
 
-          module.exports = {
-            VERSION: VERSION,
-            DEFAULT_LIMIT: DEFAULT_LIMIT,
-            INTERNAL: INTERNAL,
-            PENDING: PENDING,
-            UNHANDLED: UNHANDLED,
-            defaultIterator: defaultIterator,
-            errorObj: errorObj,
-            iteratorSymbol: iteratorSymbol,
-            call0: call0,
-            call1: call1,
-            call3: call3,
-            apply: apply,
-            callResolve: callResolve,
-            callReject: callReject,
-            callReceiver: callReceiver,
-            callThen: callThen,
-            callProxyReciever: callProxyReciever,
-            promiseArrayEach: promiseArrayEach,
-            promiseObjectEach: promiseObjectEach,
-            promiseMapEach: promiseMapEach,
-            promiseSetEach: promiseSetEach,
-            compactArray: compactArray,
-            concatArray: concatArray,
-            clone: clone,
-            createEmptyObject: createEmptyObject,
-            sortArray: sortArray,
-            sortObject: sortObject
-          };
+            module.exports = {
+              VERSION: VERSION,
+              DEFAULT_LIMIT: DEFAULT_LIMIT,
+              INTERNAL: INTERNAL,
+              PENDING: PENDING,
+              UNHANDLED: UNHANDLED,
+              defaultIterator: defaultIterator,
+              errorObj: errorObj,
+              iteratorSymbol: iteratorSymbol,
+              call0: call0,
+              call1: call1,
+              call3: call3,
+              apply: apply,
+              callResolve: callResolve,
+              callReject: callReject,
+              callReceiver: callReceiver,
+              callThen: callThen,
+              callProxyReciever: callProxyReciever,
+              promiseArrayEach: promiseArrayEach,
+              promiseObjectEach: promiseObjectEach,
+              promiseMapEach: promiseMapEach,
+              promiseSetEach: promiseSetEach,
+              compactArray: compactArray,
+              concatArray: concatArray,
+              clone: clone,
+              createEmptyObject: createEmptyObject,
+              sortArray: sortArray,
+              sortObject: sortObject,
+              printWarning: printWarning
+            };
 
-          function INTERNAL() {}
+            function INTERNAL() {}
 
-          function PENDING() {}
+            function PENDING() {}
 
-          function UNHANDLED() {}
+            function UNHANDLED() {}
 
-          function defaultIterator(n) {
-            return n;
-          }
-
-          function call0(handler) {
-            try {
-              return handler();
-            } catch (e) {
-              errorObj.e = e;
-              return errorObj;
+            function defaultIterator(n) {
+              return n;
             }
-          }
 
-          function call1(handler, value) {
-            try {
-              return handler(value);
-            } catch (e) {
-              errorObj.e = e;
-              return errorObj;
-            }
-          }
-
-          function call3(handler, arg1, arg2, arg3) {
-            try {
-              return handler(arg1, arg2, arg3);
-            } catch (e) {
-              errorObj.e = e;
-              return errorObj;
-            }
-          }
-
-          function apply(handler, array) {
-            try {
-              switch (array.length) {
-                case 0:
-                  return handler();
-                case 1:
-                  return handler(array[0]);
-                case 2:
-                  return handler(array[0], array[1]);
-                case 3:
-                  return handler(array[0], array[1], array[2]);
-                default:
-                  return handler.apply(null, array);
-              }
-            } catch (e) {
-              errorObj.e = e;
-              return errorObj;
-            }
-          }
-
-          function callResolve(receiver, onFulfilled, value) {
-            if (typeof onFulfilled !== 'function') {
-              receiver._resolve(value);
-              return;
-            }
-            var promise = call1(onFulfilled, value);
-            if (promise === errorObj) {
-              receiver._reject(errorObj.e);
-              return;
-            }
-            callReceiver(receiver, promise);
-          }
-
-          function callReject(receiver, onRejected, reason) {
-            if (typeof onRejected !== 'function') {
-              receiver._reject(reason);
-              return;
-            }
-            var promise = call1(onRejected, reason);
-            if (promise === errorObj) {
-              receiver._reject(errorObj.e);
-              return;
-            }
-            callReceiver(receiver, promise);
-          }
-
-          function callReceiver(receiver, promise) {
-            if (!promise || !promise.then) {
-              receiver._resolve(promise);
-              return;
-            }
-            if (promise instanceof AigleCore) {
-              switch (promise._resolved) {
-                case 0:
-                  promise._addReceiver(receiver, INTERNAL);
-                  return;
-                case 1:
-                  receiver._resolve(promise._value);
-                  return;
-                case 2:
-                  promise.suppressUnhandledRejections();
-                  receiver._reject(promise._value);
-                  return;
+            function call0(handler) {
+              try {
+                return handler();
+              } catch (e) {
+                errorObj.e = e;
+                return errorObj;
               }
             }
-            callThen(promise, receiver);
-          }
 
-          function callThen(promise, receiver) {
-            promise.then(resolve, reject);
-
-            function resolve(value) {
-              receiver._resolve(value);
-            }
-
-            function reject(reason) {
-              receiver._reject(reason);
-            }
-          }
-
-          function callProxyThen(promise, receiver, key) {
-            promise.then(resolve, reject);
-
-            function resolve(value) {
-              receiver._callResolve(value, key);
-            }
-
-            function reject(reason) {
-              receiver._callReject(reason);
-            }
-          }
-
-          function callProxyReciever(promise, receiver, index) {
-            if (promise instanceof AigleCore) {
-              switch (promise._resolved) {
-                case 0:
-                  promise._addReceiver(receiver, index);
-                  return true;
-                case 1:
-                  receiver._callResolve(promise._value, index);
-                  return true;
-                case 2:
-                  promise.suppressUnhandledRejections();
-                  receiver._callReject(promise._value);
-                  return false;
+            function call1(handler, value) {
+              try {
+                return handler(value);
+              } catch (e) {
+                errorObj.e = e;
+                return errorObj;
               }
             }
-            if (promise === errorObj) {
-              receiver._callReject(errorObj.e);
-              return false;
-            }
-            if (promise && promise.then) {
-              callProxyThen(promise, receiver, index);
-            } else {
-              receiver._callResolve(promise, index);
-            }
-            return true;
-          }
 
-          function promiseArrayEach(receiver) {
-            var _rest = receiver._rest;
-            var _coll = receiver._coll;
-            var i = -1;
-            while (++i < _rest) {
-              var promise = _coll[i];
+            function call3(handler, arg1, arg2, arg3) {
+              try {
+                return handler(arg1, arg2, arg3);
+              } catch (e) {
+                errorObj.e = e;
+                return errorObj;
+              }
+            }
+
+            function apply(handler, array) {
+              try {
+                switch (array.length) {
+                  case 0:
+                    return handler();
+                  case 1:
+                    return handler(array[0]);
+                  case 2:
+                    return handler(array[0], array[1]);
+                  case 3:
+                    return handler(array[0], array[1], array[2]);
+                  default:
+                    return handler.apply(null, array);
+                }
+              } catch (e) {
+                errorObj.e = e;
+                return errorObj;
+              }
+            }
+
+            function callResolve(receiver, onFulfilled, value) {
+              if (typeof onFulfilled !== 'function') {
+                receiver._resolve(value);
+                return;
+              }
+              var promise = call1(onFulfilled, value);
+              if (promise === errorObj) {
+                receiver._reject(errorObj.e);
+                return;
+              }
+              callReceiver(receiver, promise);
+            }
+
+            function callReject(receiver, onRejected, reason) {
+              if (typeof onRejected !== 'function') {
+                receiver._reject(reason);
+                return;
+              }
+              var promise = call1(onRejected, reason);
+              if (promise === errorObj) {
+                receiver._reject(errorObj.e);
+                return;
+              }
+              callReceiver(receiver, promise);
+            }
+
+            function callReceiver(receiver, promise) {
+              if (!promise || !promise.then) {
+                receiver._resolve(promise);
+                return;
+              }
               if (promise instanceof AigleCore) {
                 switch (promise._resolved) {
                   case 0:
-                    promise._addReceiver(receiver, i);
-                    continue;
+                    promise._addReceiver(receiver, INTERNAL);
+                    return;
                   case 1:
-                    receiver._callResolve(promise._value, i);
-                    continue;
+                    receiver._resolve(promise._value);
+                    return;
                   case 2:
                     promise.suppressUnhandledRejections();
-                    receiver._callReject(promise._value);
+                    receiver._reject(promise._value);
                     return;
                 }
               }
-              if (promise && promise.then) {
-                callProxyThen(promise, receiver, i);
-              } else {
-                receiver._callResolve(promise, i);
+              callThen(promise, receiver);
+            }
+
+            function callThen(promise, receiver) {
+              promise.then(resolve, reject);
+
+              function resolve(value) {
+                receiver._resolve(value);
+              }
+
+              function reject(reason) {
+                receiver._reject(reason);
               }
             }
-          }
 
-          function promiseObjectEach(receiver) {
-            var _rest = receiver._rest;
-            var _keys = receiver._keys;
-            var _coll = receiver._coll;
-            var _result = receiver._result;
-            var i = -1;
-            while (++i < _rest) {
-              var key = _keys[i];
-              var promise = _coll[key];
-              _result[key] = undefined;
+            function callProxyThen(promise, receiver, key) {
+              promise.then(resolve, reject);
+
+              function resolve(value) {
+                receiver._callResolve(value, key);
+              }
+
+              function reject(reason) {
+                receiver._callReject(reason);
+              }
+            }
+
+            function callProxyReciever(promise, receiver, index) {
               if (promise instanceof AigleCore) {
                 switch (promise._resolved) {
                   case 0:
-                    promise._addReceiver(receiver, key);
-                    continue;
+                    promise._addReceiver(receiver, index);
+                    return true;
                   case 1:
-                    receiver._callResolve(promise._value, key);
-                    continue;
+                    receiver._callResolve(promise._value, index);
+                    return true;
                   case 2:
                     promise.suppressUnhandledRejections();
                     receiver._callReject(promise._value);
-                    return;
+                    return false;
                 }
               }
-              if (promise && promise.then) {
-                callProxyThen(promise, receiver, key);
-              } else {
-                receiver._callResolve(promise, key);
+              if (promise === errorObj) {
+                receiver._callReject(errorObj.e);
+                return false;
               }
+              if (promise && promise.then) {
+                callProxyThen(promise, receiver, index);
+              } else {
+                receiver._callResolve(promise, index);
+              }
+              return true;
             }
-          }
 
-          function promiseSetEach(receiver) {
-            var iter = receiver._coll[iteratorSymbol]();
-            var i = -1;
-            var item;
-            while ((item = iter.next()).done === false) {
-              var promise = item.value;
-              if (promise instanceof AigleCore) {
-                switch (promise._resolved) {
-                  case 0:
-                    promise._addReceiver(receiver, ++i);
-                    continue;
-                  case 1:
-                    receiver._callResolve(promise._value, ++i);
-                    continue;
-                  case 2:
-                    promise.suppressUnhandledRejections();
-                    receiver._callReject(promise._value);
-                    return;
+            function promiseArrayEach(receiver) {
+              var _rest = receiver._rest;
+              var _coll = receiver._coll;
+              var i = -1;
+              while (++i < _rest) {
+                var promise = _coll[i];
+                if (promise instanceof AigleCore) {
+                  switch (promise._resolved) {
+                    case 0:
+                      promise._addReceiver(receiver, i);
+                      continue;
+                    case 1:
+                      receiver._callResolve(promise._value, i);
+                      continue;
+                    case 2:
+                      promise.suppressUnhandledRejections();
+                      receiver._callReject(promise._value);
+                      return;
+                  }
+                }
+                if (promise && promise.then) {
+                  callProxyThen(promise, receiver, i);
+                } else {
+                  receiver._callResolve(promise, i);
                 }
               }
-              if (promise && promise.then) {
-                callProxyThen(promise, receiver, ++i);
-              } else {
-                receiver._callResolve(promise, ++i);
-              }
             }
-          }
 
-          function promiseMapEach(receiver) {
-            var _result = receiver._result;
-            var iter = receiver._coll[iteratorSymbol]();
-            var item;
-            while ((item = iter.next()).done === false) {
-              var ref = item.value;
-              var key = ref[0];
-              var promise = ref[1];
-              _result.set(key, promise);
-              if (promise instanceof AigleCore) {
-                switch (promise._resolved) {
-                  case 0:
-                    promise._addReceiver(receiver, key);
-                    continue;
-                  case 1:
-                    receiver._callResolve(promise._value, key);
-                    continue;
-                  case 2:
-                    promise.suppressUnhandledRejections();
-                    receiver._callReject(promise._value);
-                    return;
+            function promiseObjectEach(receiver) {
+              var _rest = receiver._rest;
+              var _keys = receiver._keys;
+              var _coll = receiver._coll;
+              var _result = receiver._result;
+              var i = -1;
+              while (++i < _rest) {
+                var key = _keys[i];
+                var promise = _coll[key];
+                _result[key] = undefined;
+                if (promise instanceof AigleCore) {
+                  switch (promise._resolved) {
+                    case 0:
+                      promise._addReceiver(receiver, key);
+                      continue;
+                    case 1:
+                      receiver._callResolve(promise._value, key);
+                      continue;
+                    case 2:
+                      promise.suppressUnhandledRejections();
+                      receiver._callReject(promise._value);
+                      return;
+                  }
+                }
+                if (promise && promise.then) {
+                  callProxyThen(promise, receiver, key);
+                } else {
+                  receiver._callResolve(promise, key);
                 }
               }
-              if (promise && promise.then) {
-                callProxyThen(promise, receiver, key);
-              } else {
-                receiver._callResolve(promise, key);
+            }
+
+            function promiseSetEach(receiver) {
+              var iter = receiver._coll[iteratorSymbol]();
+              var i = -1;
+              var item;
+              while ((item = iter.next()).done === false) {
+                var promise = item.value;
+                if (promise instanceof AigleCore) {
+                  switch (promise._resolved) {
+                    case 0:
+                      promise._addReceiver(receiver, ++i);
+                      continue;
+                    case 1:
+                      receiver._callResolve(promise._value, ++i);
+                      continue;
+                    case 2:
+                      promise.suppressUnhandledRejections();
+                      receiver._callReject(promise._value);
+                      return;
+                  }
+                }
+                if (promise && promise.then) {
+                  callProxyThen(promise, receiver, ++i);
+                } else {
+                  receiver._callResolve(promise, ++i);
+                }
               }
             }
-          }
 
-          function compactArray(array) {
-            var i = -1;
-            var l = array.length;
-            var result = [];
-            while (++i < l) {
-              var value = array[i];
-              if (value !== INTERNAL) {
-                result.push(value);
+            function promiseMapEach(receiver) {
+              var _result = receiver._result;
+              var iter = receiver._coll[iteratorSymbol]();
+              var item;
+              while ((item = iter.next()).done === false) {
+                var ref = item.value;
+                var key = ref[0];
+                var promise = ref[1];
+                _result.set(key, promise);
+                if (promise instanceof AigleCore) {
+                  switch (promise._resolved) {
+                    case 0:
+                      promise._addReceiver(receiver, key);
+                      continue;
+                    case 1:
+                      receiver._callResolve(promise._value, key);
+                      continue;
+                    case 2:
+                      promise.suppressUnhandledRejections();
+                      receiver._callReject(promise._value);
+                      return;
+                  }
+                }
+                if (promise && promise.then) {
+                  callProxyThen(promise, receiver, key);
+                } else {
+                  receiver._callResolve(promise, key);
+                }
               }
             }
-            return result;
-          }
 
-          function concatArray(array) {
-            var i = -1;
-            var l = array.length;
-            var result = [];
-            while (++i < l) {
-              var value = array[i];
-              if (Array.isArray(value)) {
-                result.push.apply(result, value);
-              } else if (value !== undefined) {
-                result.push(value);
+            function compactArray(array) {
+              var i = -1;
+              var l = array.length;
+              var result = [];
+              while (++i < l) {
+                var value = array[i];
+                if (value !== INTERNAL) {
+                  result.push(value);
+                }
               }
+              return result;
             }
-            return result;
-          }
 
-          function clone(target) {
-            return Array.isArray(target) ? cloneArray(target) : cloneObject(target);
-          }
-
-          function cloneArray(array) {
-            var l = array.length;
-            var result = Array(l);
-            while (l--) {
-              result[l] = array[l];
-            }
-            return result;
-          }
-
-          function cloneObject(object) {
-            var keys = Object.keys(object);
-            var l = keys.length;
-            var result = {};
-            while (l--) {
-              var key = keys[l];
-              result[key] = object[key];
-            }
-            return result;
-          }
-
-          function createEmptyObject(object, keys) {
-            var i = -1;
-            var l = keys.length;
-            var result = {};
-            while (++i < l) {
-              result[keys[i]] = undefined;
-            }
-            return result;
-          }
-
-          /**
-           * @private
-           * @param {Array} array
-           * @param {number[]} criteria
-           */
-          function sortArray(array, criteria) {
-            var l = array.length;
-            var indices = Array(l);
-            for (var i = 0; i < l; i++) {
-              indices[i] = i;
-            }
-            quickSort(criteria, 0, l - 1, indices);
-            var result = Array(l);
-            for (var n = 0; n < l; n++) {
-              var i$1 = indices[n];
-              result[n] = i$1 === undefined ? array[n] : array[i$1];
-            }
-            return result;
-          }
-
-          /**
-           * @private
-           * @param {Object} object
-           * @param {string[]} keys
-           * @param {number[]} criteria
-           */
-          function sortObject(object, keys, criteria) {
-            var l = keys.length;
-            var indices = Array(l);
-            for (var i = 0; i < l; i++) {
-              indices[i] = i;
-            }
-            quickSort(criteria, 0, l - 1, indices);
-            var result = Array(l);
-            for (var n = 0; n < l; n++) {
-              var i$1 = indices[n];
-              result[n] = object[keys[i$1 === undefined ? n : i$1]];
-            }
-            return result;
-          }
-
-          function partition(array, i, j, mid, indices) {
-            var l = i;
-            var r = j;
-            while (l <= r) {
-              i = l;
-              while (l < r && array[l] < mid) {
-                l++;
+            function concatArray(array) {
+              var i = -1;
+              var l = array.length;
+              var result = [];
+              while (++i < l) {
+                var value = array[i];
+                if (Array.isArray(value)) {
+                  result.push.apply(result, value);
+                } else if (value !== undefined) {
+                  result.push(value);
+                }
               }
-              while (r >= i && array[r] >= mid) {
-                r--;
-              }
-              if (l > r) {
-                break;
-              }
-              swap(array, indices, l++, r--);
+              return result;
             }
-            return l;
-          }
 
-          function swap(array, indices, l, r) {
-            var n = array[l];
-            array[l] = array[r];
-            array[r] = n;
-            var i = indices[l];
-            indices[l] = indices[r];
-            indices[r] = i;
-          }
+            function clone(target) {
+              return Array.isArray(target) ? cloneArray(target) : cloneObject(target);
+            }
 
-          function quickSort(array, i, j, indices) {
-            if (i === j) {
-              return;
-            }
-            var k = i;
-            while (++k <= j && array[i] === array[k]) {
-              var l = k - 1;
-              if (indices[l] > indices[k]) {
-                var i$1 = indices[l];
-                indices[l] = indices[k];
-                indices[k] = i$1;
+            function cloneArray(array) {
+              var l = array.length;
+              var result = Array(l);
+              while (l--) {
+                result[l] = array[l];
               }
+              return result;
             }
-            if (k > j) {
-              return;
+
+            function cloneObject(object) {
+              var keys = Object.keys(object);
+              var l = keys.length;
+              var result = {};
+              while (l--) {
+                var key = keys[l];
+                result[key] = object[key];
+              }
+              return result;
             }
-            var p = array[i] > array[k] ? i : k;
-            k = partition(array, i, j, array[p], indices);
-            quickSort(array, i, k - 1, indices);
-            quickSort(array, k, j, indices);
-          }
+
+            function createEmptyObject(object, keys) {
+              var i = -1;
+              var l = keys.length;
+              var result = {};
+              while (++i < l) {
+                result[keys[i]] = undefined;
+              }
+              return result;
+            }
+
+            /**
+             * @private
+             * @param {Array} array
+             * @param {number[]} criteria
+             */
+            function sortArray(array, criteria) {
+              var l = array.length;
+              var indices = Array(l);
+              for (var i = 0; i < l; i++) {
+                indices[i] = i;
+              }
+              quickSort(criteria, 0, l - 1, indices);
+              var result = Array(l);
+              for (var n = 0; n < l; n++) {
+                var i$1 = indices[n];
+                result[n] = i$1 === undefined ? array[n] : array[i$1];
+              }
+              return result;
+            }
+
+            /**
+             * @private
+             * @param {Object} object
+             * @param {string[]} keys
+             * @param {number[]} criteria
+             */
+            function sortObject(object, keys, criteria) {
+              var l = keys.length;
+              var indices = Array(l);
+              for (var i = 0; i < l; i++) {
+                indices[i] = i;
+              }
+              quickSort(criteria, 0, l - 1, indices);
+              var result = Array(l);
+              for (var n = 0; n < l; n++) {
+                var i$1 = indices[n];
+                result[n] = object[keys[i$1 === undefined ? n : i$1]];
+              }
+              return result;
+            }
+
+            function partition(array, i, j, mid, indices) {
+              var l = i;
+              var r = j;
+              while (l <= r) {
+                i = l;
+                while (l < r && array[l] < mid) {
+                  l++;
+                }
+                while (r >= i && array[r] >= mid) {
+                  r--;
+                }
+                if (l > r) {
+                  break;
+                }
+                swap(array, indices, l++, r--);
+              }
+              return l;
+            }
+
+            function swap(array, indices, l, r) {
+              var n = array[l];
+              array[l] = array[r];
+              array[r] = n;
+              var i = indices[l];
+              indices[l] = indices[r];
+              indices[r] = i;
+            }
+
+            function quickSort(array, i, j, indices) {
+              if (i === j) {
+                return;
+              }
+              var k = i;
+              while (++k <= j && array[i] === array[k]) {
+                var l = k - 1;
+                if (indices[l] > indices[k]) {
+                  var i$1 = indices[l];
+                  indices[l] = indices[k];
+                  indices[k] = i$1;
+                }
+              }
+              if (k > j) {
+                return;
+              }
+              var p = array[i] > array[k] ? i : k;
+              k = partition(array, i, j, array[p], indices);
+              quickSort(array, i, k - 1, indices);
+              quickSort(array, k, j, indices);
+            }
+
+            function printWarning(message) {
+              isNode
+                ? console.warn('\u001b[31m' + message + '\u001b[0m\n')
+                : console.warn('%c' + message, 'color: red');
+            }
+          }.call(this, require('_process')));
         },
-        { '../../package.json': 88, 'aigle-core': 82 }
+        { '../../package.json': 88, _process: 83, 'aigle-core': 82 }
       ],
       39: [
         function(require, module, exports) {
@@ -13906,7 +13918,7 @@
         function(require, module, exports) {
           module.exports = {
             name: 'aigle',
-            version: '1.13.0-alpha.3',
+            version: '1.13.0-alpha.4',
             description: 'Aigle is an ideal Promise library, faster and more functional than other Promise libraries',
             main: 'index.js',
             typings: 'aigle.d.ts',
@@ -13938,7 +13950,6 @@
               codecov: '^3.0.0',
               docdash: '^0.4.0',
               eslint: '^5.0.0',
-              'fs-extra': '^6.0.0',
               gulp: '^3.9.1',
               'gulp-bump': '^3.0.0',
               'gulp-git': '^2.4.2',

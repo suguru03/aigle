@@ -1,10 +1,10 @@
 'use strict';
 
+const fs = require('fs');
 const path = require('path');
 
 const _ = require('lodash');
 const gulp = require('gulp');
-const fs = require('fs-extra');
 
 const Aigle = require('../../');
 const { exec } = require('../util');
@@ -21,9 +21,9 @@ async function publish() {
   !fs.existsSync(buildpath) && fs.mkdirSync(buildpath);
 
   // copy lib
-  fs.copySync(path.resolve(rootpath, 'lib'), path.resolve(buildpath, 'lib'));
+  fs.copyFileSync(path.resolve(rootpath, 'lib'), path.resolve(buildpath, 'lib'));
   // copy a minified file
-  fs.copySync(path.resolve(rootpath, 'dist', 'aigle-es5.min.js'), path.resolve(buildpath, 'aigle-es5.min.js'));
+  fs.copyFileSync(path.resolve(rootpath, 'dist', 'aigle-es5.min.js'), path.resolve(buildpath, 'aigle-es5.min.js'));
 
   // copy package.json
   const json = _.omit(require('../../package'), ['files', 'scripts', 'private']);
@@ -32,7 +32,7 @@ async function publish() {
   fs.writeFileSync(path.resolve(buildpath, 'package.json'), JSON.stringify(json, null, 2), 'utf8');
 
   // copy README
-  fs.copySync(path.resolve(rootpath, 'README.md'), path.resolve(buildpath, 'README.md'));
+  fs.copyFileSync(path.resolve(rootpath, 'README.md'), path.resolve(buildpath, 'README.md'));
 
   // create all function files
   const template = fs.readFileSync(path.resolve(__dirname, '../template'), 'utf8');
@@ -47,7 +47,7 @@ async function publish() {
   });
 
   // copy type files
-  fs.copySync(path.resolve(rootpath, 'typings', 'aigle.d.ts'), path.resolve(buildpath, 'aigle.d.ts'));
+  fs.copyFileSync(path.resolve(rootpath, 'typings', 'aigle.d.ts'), path.resolve(buildpath, 'aigle.d.ts'));
 
   const tag = /alpha|beta/.test(json.version) ? '--tag next' : '';
 
