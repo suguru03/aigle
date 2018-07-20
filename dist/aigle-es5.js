@@ -13918,7 +13918,7 @@
         function(require, module, exports) {
           module.exports = {
             name: 'aigle',
-            version: '1.13.0-alpha.4',
+            version: '1.13.0-alpha.5',
             description: 'Aigle is an ideal Promise library, faster and more functional than other Promise libraries',
             main: 'index.js',
             typings: 'aigle.d.ts',
@@ -13950,6 +13950,7 @@
               codecov: '^3.0.0',
               docdash: '^0.4.0',
               eslint: '^5.0.0',
+              'fs-extra': '^6.0.0',
               gulp: '^3.9.1',
               'gulp-bump': '^3.0.0',
               'gulp-git': '^2.4.2',
