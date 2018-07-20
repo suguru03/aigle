@@ -4068,7 +4068,7 @@
             }
 
             function addAigle(promise, receiver, onFulfilled, onRejected) {
-              stackTraces && resolveStack(receiver, promise);
+              stackTraces && resolveStack(receiver);
               if (promise._receiver === undefined || promise._receiver === INTERNAL) {
                 promise._resolved !== 0 && invokeAsync(promise);
                 promise._receiver = receiver;
@@ -4088,7 +4088,7 @@
             }
 
             function addReceiver(promise, receiver) {
-              stackTraces && resolveStack(receiver, promise);
+              stackTraces && resolveStack(receiver);
               promise._resolved !== 0 && invokeAsync(promise);
               promise._receiver = receiver;
               return receiver._promise;
@@ -4099,7 +4099,7 @@
                 stackTraces = false;
                 var receiver$1 = addProxy(promise, Proxy, arg1, arg2, arg3);
                 stackTraces = true;
-                resolveStack(receiver$1, promise);
+                resolveStack(receiver$1);
                 return receiver$1;
               }
               switch (promise._resolved) {
@@ -4697,33 +4697,36 @@
             reconstructStack: reconstructStack
           };
 
-          function resolveStack(promise, parent) {
-            var ref$1;
-
-            var ref = new Error();
-            var stack = ref.stack;
-            promise._stacks = promise._stacks || [];
-            if (parent && parent._stacks) {
-              (ref$1 = promise._stacks).push.apply(ref$1, parent._stacks);
-            }
-            var stacks = stack.split('\n').slice(4);
-            promise._stacks.push(stacks.join('\n'));
+          function resolveStack(promise) {
+            Error.captureStackTrace(promise);
           }
 
           function reconstructStack(promise) {
+            var stack = promise.stack;
             var _value = promise._value;
-            var _stacks = promise._stacks;
-            if (_value instanceof Error === false || !_stacks || _value._reconstructed) {
+            if (_value instanceof Error === false || !stack) {
               return;
             }
-            var stacks = _value.stack.split('\n');
-            var l = _stacks.length;
-            while (l--) {
-              stacks.push('From previous event:');
-              stacks.push(_stacks[l]);
+            if (!_value._reconstruct) {
+              _value.stack = reconstruct(_value.stack).join('\n');
+              _value._reconstruct = true;
             }
-            _value.stack = stacks.join('\n');
-            _value._reconstructed = true;
+            var stacks = reconstruct(stack);
+            stacks[0] = '\nFrom previous event:';
+            _value.stack += stacks.join('\n');
+          }
+
+          function reconstruct(stack) {
+            var result = [];
+            var stacks = stack.split('\n');
+            for (var i = 0; i < stacks.length; i++) {
+              var s = stacks[i];
+              if (/node_modules|aigle/.test(s)) {
+                continue;
+              }
+              result.push(s);
+            }
+            return result;
           }
         },
         {}
@@ -13918,7 +13921,7 @@
         function(require, module, exports) {
           module.exports = {
             name: 'aigle',
-            version: '1.13.0-alpha.5',
+            version: '1.13.0-alpha.6',
             description: 'Aigle is an ideal Promise library, faster and more functional than other Promise libraries',
             main: 'index.js',
             typings: 'aigle.d.ts',
