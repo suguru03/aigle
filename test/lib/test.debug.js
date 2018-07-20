@@ -5,7 +5,7 @@ const assert = require('assert');
 const parallel = require('mocha.parallel');
 const Aigle = require('../../');
 
-parallel('longStackTracesTrace', () => {
+parallel('longStackTraces', () => {
   it('should get long trace', () => {
     Aigle.longStackTraces();
     const error = new Error('error');
