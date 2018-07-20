@@ -49,7 +49,7 @@ async function publish() {
   // copy type files
   fs.copyFileSync(path.resolve(rootpath, 'typings', 'aigle.d.ts'), path.resolve(buildpath, 'aigle.d.ts'));
 
-  const tag = /alpha|beta/.test(json.version) ? '--tag next' : '';
-
-  await exec(`cd ${buildpath} && npm publish ${tag}`);
+  // TODO: fix publish task
+  // const tag = /alpha|beta/.test(json.version) ? '--tag next' : '';
+  // await exec(`cd ${buildpath} && npm publish ${tag}`);
 }
