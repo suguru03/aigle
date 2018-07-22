@@ -13,6 +13,13 @@ parallel('VERSION', () => {
   });
 });
 
+parallel('Aigle', () => {
+  it('should export the Aigle class properly', () => {
+    assert.strictEqual(Aigle.Aigle, Aigle);
+    assert.strictEqual(Aigle.default, Aigle);
+  });
+});
+
 parallel('resolve', () => {
   it('should resolve', done => {
     const str = 'test';

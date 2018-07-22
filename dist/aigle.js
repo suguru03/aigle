@@ -3655,6 +3655,7 @@
             const { createProxy } = require('./internal/mixin');
 
             Aigle.VERSION = VERSION;
+            Aigle.Aigle = Aigle;
 
             /* core functions */
             Aigle.resolve = _resolve;
@@ -12893,7 +12894,7 @@
         function(require, module, exports) {
           module.exports = {
             name: 'aigle',
-            version: '1.13.0-alpha.6',
+            version: '1.13.0-alpha.7',
             description: 'Aigle is an ideal Promise library, faster and more functional than other Promise libraries',
             main: 'index.js',
             typings: 'aigle.d.ts',
