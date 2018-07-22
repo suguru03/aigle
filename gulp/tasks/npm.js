@@ -36,15 +36,15 @@ async function publish() {
 
   // create all function files
   const template = fs.readFileSync(path.resolve(__dirname, '../template'), 'utf8');
-  const aiglefile = template.replace(/require.*/, "require('./lib/aigle');");
-  fs.writeFileSync(path.resolve(buildpath, 'aigle.js'), aiglefile, 'utf8');
   _.forOwn(Aigle, (func, key) => {
     if (!_.isFunction(func) || /Error$/.test(key)) {
       return;
     }
     const file = template.replace('<function>', key);
-    fs.writeFileSync(path.resolve(buildpath, `${key}.js`), file, 'utf8');
+    fs.writeFileSync(path.resolve(buildpath, `${_.camelCase(key)}.js`), file, 'utf8');
   });
+  const aiglefile = template.replace(/require.*/, "require('./lib/aigle');");
+  fs.writeFileSync(path.resolve(buildpath, 'aigle.js'), aiglefile, 'utf8');
 
   // copy type files
   fs.copySync(path.resolve(rootpath, 'typings', 'aigle.d.ts'), path.resolve(buildpath, 'aigle.d.ts'));
