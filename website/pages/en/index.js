@@ -100,62 +100,31 @@ const Features = props => (
   <Block layout="fourColumn">
     {[
       {
-        content: 'This is the content of my feature',
-        image: imgUrl('aigle.png'),
+        content: 'faster than other Promise libraries',
+        // image: imgUrl('aigle.png'),
         imageAlign: 'top',
-        title: 'Feature One'
+        title: 'Faster'
       },
       {
-        content: 'The content of my second feature',
-        image: imgUrl('aigle.png'),
+        content: 'There are a lot of functions based on Lodash and Async libraries',
+        // image: imgUrl('aigle.png'),
         imageAlign: 'top',
-        title: 'Feature Two'
+        title: 'More efficient'
       }
     ]}
   </Block>
-);
-
-const FeatureCallout = props => (
-  <div className="productShowcaseSection paddingBottom" style={{ textAlign: 'center' }}>
-    <h2>Feature Callout</h2>
-    <MarkdownBlock>These are features of this project</MarkdownBlock>
-  </div>
 );
 
 const LearnHow = props => (
   <Block background="light">
     {[
       {
-        content: 'Talk about learning how to use this',
-        image: imgUrl('docusaurus.svg'),
+        content: `Aigle has nothing special except for [Aigle-Core](https://github.com/suguru03/aigle-core).
+          It will make your production code faster.
+          Learn more [here](https://hackernoon.com/how-to-make-the-fastest-promise-library-f632fd69f3cb)!`,
+        image: imgUrl('aigle.png'),
         imageAlign: 'right',
-        title: 'Learn How'
-      }
-    ]}
-  </Block>
-);
-
-const TryOut = props => (
-  <Block id="try">
-    {[
-      {
-        content: 'Talk about trying this out',
-        image: imgUrl('docusaurus.svg'),
-        imageAlign: 'left',
-        title: 'Try it Out'
-      }
-    ]}
-  </Block>
-);
-
-const Description = props => (
-  <Block background="dark">
-    {[
-      {
-        content: 'This is another description of how this project is useful',
-        image: imgUrl('docusaurus.svg'),
-        imageAlign: 'right',
-        title: 'Description'
+        title: 'What makes Aigle fast'
       }
     ]}
   </Block>
@@ -200,10 +169,7 @@ class Index extends React.Component {
         <HomeSplash language={language} />
         <div className="mainContainer">
           <Features />
-          <FeatureCallout />
           <LearnHow />
-          <TryOut />
-          <Description />
           <Showcase language={language} />
         </div>
       </div>

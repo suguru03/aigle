@@ -74,7 +74,7 @@ const siteConfig = {
   },*/
 
   // This copyright info is used in /core/Footer.js and blog rss/atom feeds.
-  copyright: 'Copyright © ' + new Date().getFullYear() + ' Your Name or Your Company Name',
+  copyright: 'Copyright © ' + new Date().getFullYear() + ' Aigle',
 
   highlight: {
     // Highlight.js theme to use for syntax highlighting in code blocks
@@ -89,11 +89,11 @@ const siteConfig = {
 
   /* Open Graph and Twitter card images */
   ogImage: 'img/aigle.png',
-  twitterImage: 'img/aigle.png'
+  twitterImage: 'img/aigle.png',
 
   // You may provide arbitrary config keys to be used as needed by your
   // template. For example, if you need your repo's URL...
-  //   repoUrl: 'https://github.com/facebook/test-site',
+  repoUrl: 'https://github.com/suguru03/aigle'
 };
 
 module.exports = siteConfig;
