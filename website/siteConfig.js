@@ -51,14 +51,14 @@ const siteConfig = {
   // users,
 
   /* path to images for header/footer */
-  headerIcon: 'img/aigle.png',
-  footerIcon: 'img/aigle.png',
-  favicon: 'img/aigle.png',
+  headerIcon: 'img/aigle_b1.png',
+  footerIcon: 'img/aigle_b.svg',
+  favicon: 'img/aigle_w2.png',
 
   /* colors for website */
   colors: {
-    primaryColor: '#2E8555',
-    secondaryColor: '#205C3B'
+    primaryColor: '#06124B',
+    secondaryColor: '#2B559A'
   },
 
   /* custom fonts for website */
@@ -88,8 +88,8 @@ const siteConfig = {
   onPageNav: 'separate',
 
   /* Open Graph and Twitter card images */
-  ogImage: 'img/aigle.png',
-  twitterImage: 'img/aigle.png',
+  ogImage: 'img/aigle_w.svg',
+  twitterImage: 'img/aigle_w.svg',
 
   // You may provide arbitrary config keys to be used as needed by your
   // template. For example, if you need your repo's URL...

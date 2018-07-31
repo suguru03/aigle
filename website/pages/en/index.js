@@ -76,7 +76,7 @@ class HomeSplash extends React.Component {
     let language = this.props.language || '';
     return (
       <SplashContainer>
-        <Logo img_src={imgUrl('aigle.png')} />
+        <Logo img_src={imgUrl('aigle_w1.png')} />
         <div className="inner">
           <ProjectTitle />
           <PromoSection>
@@ -101,13 +101,13 @@ const Features = props => (
     {[
       {
         content: 'faster than other Promise libraries',
-        // image: imgUrl('aigle.png'),
+        // image: imgUrl('aigle_w1.png'),
         imageAlign: 'top',
         title: 'Faster'
       },
       {
         content: 'There are a lot of functions based on Lodash and Async libraries',
-        // image: imgUrl('aigle.png'),
+        // image: imgUrl('aigle_w1.png'),
         imageAlign: 'top',
         title: 'More efficient'
       }
@@ -122,7 +122,7 @@ const LearnHow = props => (
         content: `Aigle has nothing special except for [Aigle-Core](https://github.com/suguru03/aigle-core).
           It will make your production code faster.
           Learn more [here](https://hackernoon.com/how-to-make-the-fastest-promise-library-f632fd69f3cb)!`,
-        image: imgUrl('aigle.png'),
+        image: imgUrl('aigle_w1.png'),
         imageAlign: 'right',
         title: 'What makes Aigle fast'
       }
