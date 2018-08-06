@@ -2,54 +2,21 @@
 
 const path = require('path');
 
-const _ = require('lodash');
 const gulp = require('gulp');
-const fs = require('fs-extra');
+const argv = require('minimist')(process.argv.slice(2));
 
-const Aigle = require('../../');
 const { exec } = require('../util');
+const pkg = require('../../package.json');
 
-gulp.task('npm:publish', publish);
-
-async function publish() {
-  const rootpath = path.resolve(__dirname, '../..');
-  const buildpath = path.resolve(rootpath, 'build');
-
-  await exec(`rm -rf ${buildpath}`);
-
-  // make dir
-  !fs.existsSync(buildpath) && fs.mkdirSync(buildpath);
-
-  // copy lib
-  fs.copySync(path.resolve(rootpath, 'lib'), path.resolve(buildpath, 'lib'));
-  // copy a minified file
-  fs.copySync(path.resolve(rootpath, 'dist', 'aigle-es5.min.js'), path.resolve(buildpath, 'aigle-es5.min.js'));
-
-  // copy package.json
-  const json = _.omit(require('../../package'), ['files', 'scripts', 'private']);
-  json.main = 'aigle.js';
-  json.browser = 'aigle-es5.min.js';
-  fs.writeFileSync(path.resolve(buildpath, 'package.json'), JSON.stringify(json, null, 2), 'utf8');
-
-  // copy README
-  fs.copySync(path.resolve(rootpath, 'README.md'), path.resolve(buildpath, 'README.md'));
-
-  // create all function files
-  const template = fs.readFileSync(path.resolve(__dirname, '../template'), 'utf8');
-  _.forOwn(Aigle, (func, key) => {
-    if (!_.isFunction(func) || /Error$/.test(key)) {
-      return;
-    }
-    const file = template.replace('<function>', key);
-    fs.writeFileSync(path.resolve(buildpath, `${_.camelCase(key)}.js`), file, 'utf8');
-  });
-  const aiglefile = template.replace(/require.*/, "require('./lib/aigle');");
-  fs.writeFileSync(path.resolve(buildpath, 'aigle.js'), aiglefile, 'utf8');
-
-  // copy type files
-  fs.copySync(path.resolve(rootpath, 'typings', 'aigle.d.ts'), path.resolve(buildpath, 'aigle.d.ts'));
-
-  // TODO: fix publish task
-  // const tag = /alpha|beta/.test(json.version) ? '--tag next' : '';
-  // await exec(`cd ${buildpath} && npm publish ${tag}`);
-}
+/**
+ * gulp npm:publish --otp <code>
+ */
+gulp.task('npm:publish', async () => {
+  const { otp } = argv;
+  if (!otp) {
+    throw new Error('Invalid otp');
+  }
+  const tag = /alpha|beta/.test(pkg.version) ? '--tag next' : '';
+  const buildpath = path.join(__dirname, '../../build');
+  await exec(`cd ${buildpath} && npm publish ${tag} --otp=${otp}`);
+});
