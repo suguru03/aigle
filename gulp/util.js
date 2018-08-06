@@ -17,6 +17,7 @@ function spawn(name, args) {
 }
 
 function execute(func, command, args) {
+  console.log(`executing... ${command}`);
   return new Aigle((resolve, reject) => {
     let result = '';
     const task = func(command, args);
