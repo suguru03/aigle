@@ -13922,7 +13922,7 @@
         function(require, module, exports) {
           module.exports = {
             name: 'aigle',
-            version: '1.13.0-alpha.9',
+            version: '1.13.0-alpha.10',
             description: 'Aigle is an ideal Promise library, faster and more functional than other Promise libraries',
             main: 'index.js',
             typings: 'aigle.d.ts',
