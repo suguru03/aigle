@@ -4499,7 +4499,7 @@
             const stacks = stack.split('\n');
             for (let i = 0; i < stacks.length; i++) {
               const s = stacks[i];
-              if (/node_modules|aigle/.test(s)) {
+              if (/node_modules/.test(s)) {
                 continue;
               }
               result.push(s);
@@ -12894,13 +12894,14 @@
         function(require, module, exports) {
           module.exports = {
             name: 'aigle',
-            version: '1.13.0-alpha.8',
+            version: '1.13.0-alpha.9',
             description: 'Aigle is an ideal Promise library, faster and more functional than other Promise libraries',
             main: 'index.js',
             typings: 'aigle.d.ts',
             private: true,
             browser: 'browser.js',
             scripts: {
+              'start:doc': 'cd website && npm start',
               bench: 'node --expose_gc ./benchmark -d',
               eslint: 'eslint . --ext .js',
               test: 'DELAY=50 npm-run-all -p eslint test:type test:cov',
