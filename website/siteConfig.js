@@ -53,7 +53,7 @@ const siteConfig = {
   /* path to images for header/footer */
   headerIcon: 'img/aigle_b1.png',
   footerIcon: 'img/aigle_b.svg',
-  favicon: 'img/aigle_w2.png',
+  favicon: 'img/favicon/favicon.ico',
 
   /* colors for website */
   colors: {
