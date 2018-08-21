@@ -49,14 +49,18 @@ import { Aigle } from 'aigle';
 #### Async/Await
 
 ```js
+global.Promise = Aigle;
+```
+
+```js
 async function getUsers(ids) {
-  const users = await Aigle.map(ids, getUser);
-  const targets = await Aigle.filter(users, filterUser);
+  const users = await Promise.map(ids, getUser);
+  const targets = await Promise.filter(users, filterUser);
   return targets;
 }
 
 async function getUsers(ids) {
-  return await Aigle.map(ids, getUser)
+  return await Promise.map(ids, getUser)
     .filter(filterUser);
 }
 ```
