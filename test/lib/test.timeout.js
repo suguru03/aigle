@@ -30,10 +30,30 @@ parallel('#timeout', () => {
   });
 
   it('should time out with message', () => {
-    const message = 'timeout';
+    const message = 'timeout error';
     return Aigle.delay(DELAY * 3, 'delay')
       .timeout(DELAY, message)
       .then(() => assert(false))
-      .catch(error => assert.strictEqual(error, message));
+      .catch(error => assert.strictEqual(error.message, message));
+  });
+
+  it('should time out with an error instance', () => {
+    const err = new TypeError('timeout error');
+    return Aigle.delay(DELAY * 3, 'delay')
+      .timeout(DELAY, err)
+      .then(() => assert(false))
+      .catch(error => assert.strictEqual(error, err));
+  });
+
+  it('should timeout with native promise instance', () => {
+    const promise = new Promise(() => {});
+    return Aigle.resolve(promise)
+      .timeout(DELAY)
+      .then(() => assert(false))
+      .catch(error => {
+        assert.ok(error);
+        assert.ok(error instanceof TimeoutError);
+        assert.strictEqual(error.message, 'operation timed out');
+      });
   });
 });
