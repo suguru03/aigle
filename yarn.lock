@@ -1645,9 +1645,9 @@ diffie-hellman@^5.0.0:
     miller-rabin "^4.0.0"
     randombytes "^2.0.0"
 
-docdash@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/docdash/-/docdash-0.4.0.tgz#05c3a50d83189981699ee0c076d3a3950db7ec00"
+docdash@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/docdash/-/docdash-1.0.0.tgz#5b7df10fed3d341fc4416a8978c65ad561869d18"
 
 doctrine@^2.1.0:
   version "2.1.0"
@@ -3933,9 +3933,9 @@ mkdirp@0.5.1, mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.1:
   dependencies:
     minimist "0.0.8"
 
-mocha.parallel@0.15.5:
-  version "0.15.5"
-  resolved "https://registry.yarnpkg.com/mocha.parallel/-/mocha.parallel-0.15.5.tgz#605ec74764bc3a912d0e095dfc3dd23bd0b56676"
+mocha.parallel@0.15.6:
+  version "0.15.6"
+  resolved "https://registry.yarnpkg.com/mocha.parallel/-/mocha.parallel-0.15.6.tgz#e6df27157c32c1b3c3a00b8703ee04a1f08fe7dc"
   dependencies:
     bluebird "^2.9.34"
     semaphore "^1.0.5"
