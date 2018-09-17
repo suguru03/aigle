@@ -3,7 +3,7 @@
     "About": ["what-is-aigle"],
     "Usage": ["install"]
   },
-  "docs-other": {
-    "First Category": ["doc4", "doc5"]
+  "api-docs": {
+    "Core": ["apis/aigle-class"]
   }
 }
