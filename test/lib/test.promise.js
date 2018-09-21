@@ -63,12 +63,11 @@ parallel('reject', () => {
     let called = 0;
     const err = new Error('error');
     const p = Aigle.reject(err);
-    p
-      .then(res => {
-        assert(false);
-        called++;
-        return res;
-      })
+    p.then(res => {
+      assert(false);
+      called++;
+      return res;
+    })
       .catch(err => {
         assert.ok(err);
         called++;
@@ -86,12 +85,10 @@ parallel('reject', () => {
     const error = new Error('error');
     process.on('unhandledRejection', done);
     const p = Aigle.reject(error);
-    p
-      .catch(err => {
-        assert.strictEqual(err, error);
-        done();
-      })
-      .finally(() => process.removeListener('unhandledRejection', done));
+    p.catch(err => {
+      assert.strictEqual(err, error);
+      done();
+    }).finally(() => process.removeListener('unhandledRejection', done));
   });
 
   it('should notify unhandledRejection', done => {
@@ -243,17 +240,15 @@ parallel('#then', () => {
         setImmediate(() => resolve(++value));
       });
     });
-    p
-      .then(value => {
-        assert.strictEqual(value, 0);
-        assert.strictEqual(called++, 2);
-        return new Aigle(resolve => {
-          setImmediate(() => resolve(++value));
-        });
-      })
-      .then(value => {
-        assert.strictEqual(value, 1);
+    p.then(value => {
+      assert.strictEqual(value, 0);
+      assert.strictEqual(called++, 2);
+      return new Aigle(resolve => {
+        setImmediate(() => resolve(++value));
       });
+    }).then(value => {
+      assert.strictEqual(value, 1);
+    });
     p.then(value => {
       assert.strictEqual(value, 0);
       assert.strictEqual(called++, 3);
@@ -399,12 +394,11 @@ describe('#catch', () => {
       test;
     });
     setTimeout(() => {
-      p
-        .catch(ReferenceError, err => {
-          assert.ok(err);
-          assert.ok(called);
-          done();
-        })
+      p.catch(ReferenceError, err => {
+        assert.ok(err);
+        assert.ok(called);
+        done();
+      })
         .catch(done)
         .finally(() => process.removeListener('unhandledRejection', callback));
     }, DELAY);
@@ -630,12 +624,11 @@ describe('#finally', () => {
     let called = 0;
     const err = new Error('error');
     const p = Aigle.reject(err);
-    p
-      .then(res => {
-        assert(false);
-        called++;
-        return res;
-      })
+    p.then(res => {
+      assert(false);
+      called++;
+      return res;
+    })
       .catch(err => {
         assert.ok(err);
         called++;
