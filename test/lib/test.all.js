@@ -34,6 +34,12 @@ parallel('all', () => {
     return Aigle.all(tasks).then(res => assert.deepStrictEqual(res, [1, 2, 3]));
   });
 
+  it('should work with iteratable tasks', () => {
+    const arr = [['task1', Aigle.delay(DELAY * 3, 1)], ['task2', Aigle.resolve(2)], ['task3', 3]];
+    const tasks = new Map(arr);
+    return Aigle.all(tasks).then(res => assert.deepStrictEqual(res, arr));
+  });
+
   it('should catch an error', () => {
     const order = [];
     const delay = util.makeDelayTask(order);
