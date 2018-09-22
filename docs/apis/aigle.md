@@ -1,5 +1,5 @@
 ---
-id: aigle-class
+id: aigle
 title: Aigle
 ---
 

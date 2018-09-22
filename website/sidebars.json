@@ -4,6 +4,6 @@
     "Usage": ["install"]
   },
   "api-docs": {
-    "Core": ["apis/aigle-class"]
+    "Core": ["apis/aigle"]
   }
 }

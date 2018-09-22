@@ -42,7 +42,7 @@ const siteConfig = {
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
     { doc: 'install', label: 'Docs' },
-    { doc: 'apis/aigle-class', label: 'API' },
+    { doc: 'apis/aigle', label: 'API' },
     { page: 'help', label: 'Help' },
     { blog: true, label: 'Blog' }
   ],
