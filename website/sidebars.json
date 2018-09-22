@@ -4,6 +4,10 @@
     "Usage": ["install"]
   },
   "api-docs": {
-    "Core": ["apis/aigle"]
+    "Core": [
+      "apis/aigle",
+      "apis/all",
+      "apis/all-prototype"
+    ]
   }
 }
