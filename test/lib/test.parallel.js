@@ -145,8 +145,7 @@ parallel('parallel', () => {
 
   it('should return an empty object immediately', () => {
     return Aigle.parallel().then(res => {
-      assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-      assert.deepStrictEqual(res, {});
+      assert.strictEqual(res, undefined);
     });
   });
 });
