@@ -22,7 +22,11 @@ parallel('all', () => {
   it('should execute with a Set instance', () => {
     const order = [];
     const delay = util.makeDelayTask(order);
-    const tasks = new Set([delay('test1', DELAY * 3), delay('test2', DELAY * 2), delay('test3', DELAY * 1)]);
+    const tasks = new Set([
+      delay('test1', DELAY * 3),
+      delay('test2', DELAY * 2),
+      delay('test3', DELAY * 1)
+    ]);
     return Aigle.all(tasks).then(res => {
       assert.deepStrictEqual(res, ['test1', 'test2', 'test3']);
       assert.deepStrictEqual(order, ['test3', 'test2', 'test1']);

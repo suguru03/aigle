@@ -52,7 +52,9 @@ parallel('concat', () => {
   it('should pass falthy except for undefined', () => {
     const collection = [null, undefined, 0, '', false];
     const iterator = value => value;
-    return Aigle.concat(collection, iterator).then(res => assert.deepStrictEqual(res, [null, 0, '', false]));
+    return Aigle.concat(collection, iterator).then(res =>
+      assert.deepStrictEqual(res, [null, 0, '', false])
+    );
   });
 
   it('should return an empty array if collection is an empty array', () => {

@@ -15,12 +15,27 @@ const Aigle = require('../../');
 const { exec } = require('../util');
 
 const packagepath = path.resolve(__dirname, '../..', 'package.json');
-const types = ['patch', 'minor', 'preminor-alpha', 'preminor-beta', 'major', 'premajor-alpha', 'premajor-beta'];
+const types = [
+  'patch',
+  'minor',
+  'preminor-alpha',
+  'preminor-beta',
+  'major',
+  'premajor-alpha',
+  'premajor-beta'
+];
 
 _.forEach(types, type => {
   gulp.task(`release:package:${type}`, updateVersion(type));
   gulp.task(`release:${type}`, () =>
-    runSequence(`release:package:${type}`, 'build', 'release:commit', 'gh-pages', 'release:tag', 'release:package')
+    runSequence(
+      `release:package:${type}`,
+      'build',
+      'release:commit',
+      'gh-pages',
+      'release:tag',
+      'release:package'
+    )
   );
 });
 
@@ -64,7 +79,10 @@ async function createPackage() {
   // copy lib
   fs.copySync(path.join(rootpath, 'lib'), path.join(buildpath, 'lib'));
   // copy a minified file
-  fs.copySync(path.join(rootpath, 'dist', 'aigle-es5.min.js'), path.join(buildpath, 'aigle-es5.min.js'));
+  fs.copySync(
+    path.join(rootpath, 'dist', 'aigle-es5.min.js'),
+    path.join(buildpath, 'aigle-es5.min.js')
+  );
 
   // copy package.json
   const json = _.omit(require('../../package'), ['files', 'scripts', 'private']);

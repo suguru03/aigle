@@ -116,7 +116,9 @@ parallel('using', () => {
       }, DELAY);
     }).disposer(resource => resource.close());
     const error = new ReferenceError('error');
-    const disposer2 = new Aigle((resolve, reject) => reject(error)).disposer(resource => resource.close());
+    const disposer2 = new Aigle((resolve, reject) => reject(error)).disposer(resource =>
+      resource.close()
+    );
     return Aigle.using(disposer1, disposer2, () => assert(false))
       .catch(ReferenceError, err => assert.strictEqual(err, error))
       .then(() => {

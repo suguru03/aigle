@@ -29,7 +29,9 @@ parallel('reduce', () => {
     const collection = [1, 4, 2];
     const result = 'result';
     const iterator = (result, value) => result + value;
-    return Aigle.reduce(collection, iterator, result).then(res => assert.strictEqual(res, 'result142'));
+    return Aigle.reduce(collection, iterator, result).then(res =>
+      assert.strictEqual(res, 'result142')
+    );
   });
 
   it('should execute with object collection in series', () => {

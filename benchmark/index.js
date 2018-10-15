@@ -74,7 +74,10 @@ async function executeTasks(config, tasks, name) {
   setup(config);
 
   // validate all results
-  const obj = await Aigle.mapValuesSeries(tasks, func => (!func.length ? func() : Aigle.promisify(func)()));
+  const obj = await Aigle.mapValuesSeries(
+    tasks,
+    func => (!func.length ? func() : Aigle.promisify(func)())
+  );
   const keys = Object.keys(obj);
   _.forOwn(keys, (key1, index) =>
     _.forEach(keys.slice(index + 1), key2 => {
@@ -102,7 +105,11 @@ async function executeTasks(config, tasks, name) {
       mean *= Math.pow(10, 6);
       ++index;
       memo[name] = { index, mean, diff, rate };
-      console.log(`[${index}] "${name}" ${mean.toPrecision(3)}μs[${diff.toPrecision(3)}][${rate.toPrecision(3)}]`);
+      console.log(
+        `[${index}] "${name}" ${mean.toPrecision(3)}μs[${diff.toPrecision(3)}][${rate.toPrecision(
+          3
+        )}]`
+      );
     },
     {}
   );

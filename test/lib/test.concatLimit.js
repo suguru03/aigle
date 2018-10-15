@@ -49,7 +49,13 @@ parallel('concatLimit', () => {
     return Aigle.concatLimit(collection, 2, iterator).then(res => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
       assert.deepStrictEqual(res, [1, 5, 3, 4, 2]);
-      assert.deepStrictEqual(order, [['task1', 1], ['task3', 3], ['task2', 5], ['task5', 2], ['task4', 4]]);
+      assert.deepStrictEqual(order, [
+        ['task1', 1],
+        ['task3', 3],
+        ['task2', 5],
+        ['task5', 2],
+        ['task4', 4]
+      ]);
     });
   });
 
@@ -69,7 +75,9 @@ parallel('concatLimit', () => {
   it('should pass falthy except for undefined', () => {
     const collection = [null, undefined, 0, '', false];
     const iterator = value => value;
-    return Aigle.concatLimit(collection, iterator).then(res => assert.deepStrictEqual(res, [null, 0, '', false]));
+    return Aigle.concatLimit(collection, iterator).then(res =>
+      assert.deepStrictEqual(res, [null, 0, '', false])
+    );
   });
 
   it('should return an empty array if collection is an empty array', () => {
@@ -192,7 +200,13 @@ parallel('#concatLimit', () => {
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.deepStrictEqual(res, [1, 5, 3, 4, 2]);
-        assert.deepStrictEqual(order, [['task1', 1], ['task3', 3], ['task2', 5], ['task5', 2], ['task4', 4]]);
+        assert.deepStrictEqual(order, [
+          ['task1', 1],
+          ['task3', 3],
+          ['task2', 5],
+          ['task5', 2],
+          ['task4', 4]
+        ]);
       });
   });
 

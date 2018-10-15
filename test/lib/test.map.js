@@ -120,8 +120,8 @@ parallel('map', () => {
     const array = [1, 2, 3];
     const promise = new Aigle(resolve => setImmediate(() => resolve(array)));
     const iterator = value => Aigle.delay(value * DELAY, value * 2);
-    return Aigle.all([promise.map(iterator), promise.map(iterator), promise.map(iterator)]).then(value =>
-      assert.deepStrictEqual(value, [[2, 4, 6], [2, 4, 6], [2, 4, 6]])
+    return Aigle.all([promise.map(iterator), promise.map(iterator), promise.map(iterator)]).then(
+      value => assert.deepStrictEqual(value, [[2, 4, 6], [2, 4, 6], [2, 4, 6]])
     );
   });
 
