@@ -40,23 +40,26 @@ const re = new RegExp(`(config|${target})`);
 execute();
 
 async function execute() {
-  const result = await Aigle.resolve(require('./tasks')(functions))
+  const allTasks = _.chain(require('./tasks')(functions))
     .mapValues((obj, name) => {
       if (!target || re.test(name)) {
         return obj;
       }
       return _.pickBy(obj, (obj, name) => re.test(name) || re.test(_.first(name.split(':'))));
     })
-    .omit(_.isEmpty)
-    .transformSeries(async (memo, obj) => {
-      const config = {
-        count: count || _.get(obj.config, ['count'], defaults.count)
-      };
-      const result = await Aigle.omit(obj, 'config')
-        .mapValuesSeries((tasks, name) => executeTasks(config, tasks, name))
-        .omit(_.isEmpty);
-      Object.assign(memo, result);
-    });
+    .omitBy(_.isEmpty)
+    .values()
+    .value();
+  const result = {};
+  for (const obj of allTasks) {
+    const config = {
+      count: count || _.get(obj.config, ['count'], defaults.count)
+    };
+    const map = _.omit(obj, 'config');
+    for (const [name, tasks] of Object.entries(map)) {
+      result[name] = await executeTasks(config, tasks, name);
+    }
+  }
   makeDoc && makeDocs(result);
 }
 
@@ -72,24 +75,6 @@ async function executeTasks(config, tasks, name) {
     global.gc();
   }
   setup(config);
-
-  // validate all results
-  const obj = await Aigle.mapValuesSeries(
-    tasks,
-    func => (!func.length ? func() : Aigle.promisify(func)())
-  );
-  const keys = Object.keys(obj);
-  _.forOwn(keys, (key1, index) =>
-    _.forEach(keys.slice(index + 1), key2 => {
-      const value1 = obj[key1];
-      const value2 = obj[key2];
-      if (!_.isEqual(value1, value2)) {
-        console.error(`[${key1}]`, value1);
-        console.error(`[${key2}]`, value2);
-        throw new Error(`Validation is failed ${key1}, ${key2}`);
-      }
-    })
-  );
 
   console.log('--------------------------------------');
   console.log(`[${name}] Executing...`);
