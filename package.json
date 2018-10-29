@@ -38,7 +38,7 @@
     "benchmark": "^2.1.1",
     "bluebird": "^3.5.1",
     "browserify": "^16.0.0",
-    "buble": "^0.19.0",
+    "buble": "^0.19.6",
     "codecov": "^3.0.0",
     "docdash": "^1.0.0",
     "eslint": "^5.0.0",
