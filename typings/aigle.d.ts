@@ -1493,7 +1493,11 @@ declare namespace AigleCore {
 
     disposer(...args: any[]): Aigle<any>;
 
+    series(...args: any[]): Aigle<any>;
+
     parallel(...args: any[]): Aigle<any>;
+
+    parallelLimit(...args: any[]): Aigle<any>;
 
     reason(...args: any[]): Aigle<any>;
 
@@ -3021,7 +3025,11 @@ declare namespace AigleCore {
 
     static mixin(sources: any, opts: any): any;
 
+    static series(collection: any): Aigle<any>;
+
     static parallel(collection: any): Aigle<any>;
+
+    static parallelLimit(collection: any): Aigle<any>;
 
     static promisify(fn: any, opts?: any): Aigle<any>;
 
