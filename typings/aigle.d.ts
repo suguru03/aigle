@@ -52,6 +52,11 @@ declare namespace AigleCore {
     cancellation?: boolean;
   }
 
+  interface RetryOpts {
+    times?: number;
+    interval?: number | ((count?: number) => number);
+  }
+
   export class Aigle<R> implements PromiseLike<R> {
     /* core functions */
     constructor(
@@ -3011,6 +3016,11 @@ declare namespace AigleCore {
     static whilst<T>(tester: (value: T) => boolean, iterator: (value: T) => T): Aigle<T>;
     static whilst<T>(value: T, tester: (value: T) => boolean, iterator: (value: T) => T): Aigle<T>;
 
+    /* retry */
+
+    static retry<T>(handler: () => T | PromiseLike<T>): Aigle<T>;
+    static retry<T>(opts: number | RetryOpts, handler: () => T | PromiseLike<T>): Aigle<T>;
+
     /* config */
 
     static config(opts: ConfigOpts): void;
@@ -3034,8 +3044,6 @@ declare namespace AigleCore {
     static promisify(fn: any, opts?: any): Aigle<any>;
 
     static promisifyAll<T extends object>(target: T, options?: any): T;
-
-    static retry(times: any, handler: any): Aigle<any>;
 
     static using(...args: any[]): Aigle<any>;
   }
