@@ -209,6 +209,26 @@ parallel('#parallelLimit', () => {
       });
   });
 
+  it('should execute with object tasks and limit', () => {
+    const order = [];
+    const delay = util.makeDelayTask(order);
+    const tasks = {
+      task1: () => delay('test1', DELAY * 5),
+      task2: () => delay('test2', DELAY * 3),
+      task3: () => delay('test3', DELAY * 1)
+    };
+    return Aigle.resolve(tasks)
+      .parallelLimit(2)
+      .then(res => {
+        assert.deepStrictEqual(res, {
+          task1: 'test1',
+          task2: 'test2',
+          task3: 'test3'
+        });
+        assert.deepStrictEqual(order, ['test2', 'test3', 'test1']);
+      });
+  });
+
   it('should execute with delay', () => {
     const order = [];
     const delay = util.makeDelayTask(order);
