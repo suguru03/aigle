@@ -41,8 +41,8 @@ const siteConfig = {
 
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
-    { doc: 'doc1', label: 'Docs' },
-    { doc: 'doc4', label: 'API' },
+    { doc: 'install', label: 'Docs' },
+    { doc: 'apis/aigle', label: 'API' },
     { page: 'help', label: 'Help' },
     { blog: true, label: 'Blog' }
   ],
@@ -53,7 +53,7 @@ const siteConfig = {
   /* path to images for header/footer */
   headerIcon: 'img/aigle_b1.png',
   footerIcon: 'img/aigle_b.svg',
-  favicon: 'img/aigle_w2.png',
+  favicon: 'img/favicon/favicon.ico',
 
   /* colors for website */
   colors: {

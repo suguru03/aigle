@@ -22,7 +22,11 @@ parallel('all', () => {
   it('should execute with a Set instance', () => {
     const order = [];
     const delay = util.makeDelayTask(order);
-    const tasks = new Set([delay('test1', DELAY * 3), delay('test2', DELAY * 2), delay('test3', DELAY * 1)]);
+    const tasks = new Set([
+      delay('test1', DELAY * 3),
+      delay('test2', DELAY * 2),
+      delay('test3', DELAY * 1)
+    ]);
     return Aigle.all(tasks).then(res => {
       assert.deepStrictEqual(res, ['test1', 'test2', 'test3']);
       assert.deepStrictEqual(order, ['test3', 'test2', 'test1']);
@@ -32,6 +36,12 @@ parallel('all', () => {
   it('should work with a Set instnce which has Aigle instances', () => {
     const tasks = new Set([Aigle.delay(DELAY * 3, 1), Aigle.resolve(2), 3]);
     return Aigle.all(tasks).then(res => assert.deepStrictEqual(res, [1, 2, 3]));
+  });
+
+  it('should work with iteratable tasks', () => {
+    const arr = [['task1', Aigle.delay(DELAY * 3, 1)], ['task2', Aigle.resolve(2)], ['task3', 3]];
+    const tasks = new Map(arr);
+    return Aigle.all(tasks).then(res => assert.deepStrictEqual(res, arr));
   });
 
   it('should catch an error', () => {

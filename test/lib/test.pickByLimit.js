@@ -55,7 +55,13 @@ parallel('pickByLimit', () => {
         task2: 5,
         task3: 3
       });
-      assert.deepStrictEqual(order, [['task1', 1], ['task3', 3], ['task2', 5], ['task5', 2], ['task4', 4]]);
+      assert.deepStrictEqual(order, [
+        ['task1', 1],
+        ['task3', 3],
+        ['task2', 5],
+        ['task5', 2],
+        ['task4', 4]
+      ]);
     });
   });
 
@@ -200,7 +206,13 @@ parallel('#pickByLimit', () => {
           task2: 5,
           task3: 3
         });
-        assert.deepStrictEqual(order, [['task1', 1], ['task3', 3], ['task2', 5], ['task5', 2], ['task4', 4]]);
+        assert.deepStrictEqual(order, [
+          ['task1', 1],
+          ['task3', 3],
+          ['task2', 5],
+          ['task5', 2],
+          ['task4', 4]
+        ]);
       });
   });
 

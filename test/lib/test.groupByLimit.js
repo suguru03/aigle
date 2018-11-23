@@ -53,7 +53,13 @@ parallel('groupByLimit', () => {
         '0': [2, 4],
         '1': [1, 3, 5]
       });
-      assert.deepStrictEqual(order, [['task1', 1], ['task3', 3], ['task2', 5], ['task5', 2], ['task4', 4]]);
+      assert.deepStrictEqual(order, [
+        ['task1', 1],
+        ['task3', 3],
+        ['task2', 5],
+        ['task5', 2],
+        ['task4', 4]
+      ]);
     });
   });
 
@@ -196,7 +202,13 @@ parallel('#groupByLimit', () => {
           '0': [2, 4],
           '1': [1, 3, 5]
         });
-        assert.deepStrictEqual(order, [['task1', 1], ['task3', 3], ['task2', 5], ['task5', 2], ['task4', 4]]);
+        assert.deepStrictEqual(order, [
+          ['task1', 1],
+          ['task3', 3],
+          ['task2', 5],
+          ['task5', 2],
+          ['task4', 4]
+        ]);
       });
   });
 

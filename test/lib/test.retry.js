@@ -4,6 +4,7 @@ const assert = require('assert');
 
 const parallel = require('mocha.parallel');
 const Aigle = require('../../');
+const { DELAY } = require('../config');
 
 parallel('retry', () => {
   it('should execute', () => {
@@ -35,6 +36,48 @@ parallel('retry', () => {
       .then(() => assert(false))
       .catch(error => {
         assert.ok(error instanceof TypeError);
+        assert.strictEqual(count, 5);
+      });
+  });
+
+  it('should execute with interval', () => {
+    const times = 3;
+    const interval = DELAY * 3;
+    const opts = { times, interval };
+    let count = 0;
+    const error = new Error('error');
+    const iterator = () => {
+      count++;
+      return Aigle.reject(error);
+    };
+    const start = Date.now();
+    return Aigle.retry(opts, iterator)
+      .then(() => assert(false))
+      .catch(err => {
+        assert.strictEqual(err, error);
+
+        const diff = Date.now() - start;
+        assert(diff >= interval * (times - 1));
+        assert.strictEqual(count, 3);
+      });
+  });
+
+  it('should execute with a interval function', () => {
+    const interval = c => c * DELAY;
+    const opts = { interval };
+    let count = 0;
+    const error = new Error('error');
+    const iterator = () => {
+      count++;
+      return Aigle.reject(error);
+    };
+    const start = Date.now();
+    return Aigle.retry(opts, iterator)
+      .then(() => assert(false))
+      .catch(err => {
+        assert.strictEqual(err, error);
+        const diff = Date.now() - start;
+        assert(diff >= DELAY * 10);
         assert.strictEqual(count, 5);
       });
   });

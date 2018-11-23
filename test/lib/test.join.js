@@ -27,12 +27,16 @@ parallel('join', () => {
 
   it('should ignore if last argument is not function', () => {
     const tasks = [2, 3, 1];
-    return Aigle.join(tasks[0], tasks[1], tasks[2]).then(res => assert.deepStrictEqual(res, [2, 3, 1]));
+    return Aigle.join(tasks[0], tasks[1], tasks[2]).then(res =>
+      assert.deepStrictEqual(res, [2, 3, 1])
+    );
   });
 
   it('should throw typeEror', () => {
     const tasks = [2, 3, 1];
-    return Aigle.join(tasks[0], tasks[1], tasks[2]).then(res => assert.deepStrictEqual(res, [2, 3, 1]));
+    return Aigle.join(tasks[0], tasks[1], tasks[2]).then(res =>
+      assert.deepStrictEqual(res, [2, 3, 1])
+    );
   });
 
   it('should throw TypeError', () => {

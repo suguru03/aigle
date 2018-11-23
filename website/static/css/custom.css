@@ -1,5 +1,16 @@
 /* your custom css */
 
+.aigleLogo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.aigleLogoImg {
+  width: auto;
+  height: 240px;
+}
+
 @media only screen and (min-device-width: 360px) and (max-device-width: 736px) {
 }
 
@@ -7,6 +18,11 @@
 }
 
 @media only screen and (max-width: 1023px) {
+  .aigleLogoImg {
+    width: auto;
+    height: auto;
+  }
+
 }
 
 @media only screen and (min-width: 1400px) {

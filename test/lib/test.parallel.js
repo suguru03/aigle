@@ -18,6 +18,17 @@ parallel('parallel', () => {
     });
   });
 
+  it('should execute with array function tasks', () => {
+    const tasks = [
+      () => Aigle.delay(DELAY * 3, 'test1'),
+      Aigle.delay(DELAY * 2, 'test2'),
+      () => 'test3'
+    ];
+    return Aigle.parallel(tasks).then(res => {
+      assert.deepStrictEqual(res, ['test1', 'test2', 'test3']);
+    });
+  });
+
   it('should execute with object tasks in parallel', () => {
     const order = [];
     const delay = util.makeDelayTask(order);
@@ -33,6 +44,22 @@ parallel('parallel', () => {
         task3: 'test3'
       });
       assert.deepStrictEqual(order, ['test3', 'test2', 'test1']);
+    });
+  });
+
+  it('should execute with object function tasks', () => {
+    const tasks = {
+      task1: () => Aigle.delay(DELAY * 3, 'test1'),
+      task2: Aigle.delay(DELAY * 2, 'test2'),
+      task3: 'test3'
+    };
+    return Aigle.parallel(tasks).then(res => {
+      assert.deepStrictEqual(res, {
+        task1: 'test1',
+        task2: 'test2',
+        task3: 'test3'
+      });
+      assert.deepStrictEqual(Object.keys(res), ['task1', 'task2', 'task3']);
     });
   });
 
@@ -62,6 +89,20 @@ parallel('parallel', () => {
     });
   });
 
+  it('should work with a Set instance which has function tasks', () => {
+    const order = [];
+    const delay = util.makeDelayTask(order);
+    const tasks = new Set([
+      () => delay(1, DELAY * 3),
+      () => delay(2, DELAY * 2),
+      delay(3, DELAY * 1)
+    ]);
+    return Aigle.parallel(tasks).then(res => {
+      assert.deepStrictEqual(res, [1, 2, 3]);
+      assert.deepStrictEqual(order, [3, 2, 1]);
+    });
+  });
+
   it('should work with a Map instance', () => {
     const order = [];
     const delay = util.makeDelayTask(order);
@@ -69,6 +110,23 @@ parallel('parallel', () => {
       ['task1', delay(1, DELAY * 3)],
       ['task2', delay(2, DELAY * 2)],
       ['task3', delay(3, DELAY * 1)]
+    ]);
+    return Aigle.parallel(tasks).then(res => {
+      assert.ok(res instanceof Map);
+      assert.strictEqual(res.get('task1'), 1);
+      assert.strictEqual(res.get('task2'), 2);
+      assert.strictEqual(res.get('task3'), 3);
+      assert.deepStrictEqual(order, [3, 2, 1]);
+    });
+  });
+
+  it('should work with a Map instance which has function tasks', () => {
+    const order = [];
+    const delay = util.makeDelayTask(order);
+    const tasks = new Map([
+      ['task1', () => delay(1, DELAY * 3)],
+      ['task2', () => delay(2, DELAY * 2)],
+      ['task3', () => delay(3, DELAY * 1)]
     ]);
     return Aigle.parallel(tasks).then(res => {
       assert.ok(res instanceof Map);
@@ -95,8 +153,7 @@ parallel('parallel', () => {
 
   it('should return an empty object immediately', () => {
     return Aigle.parallel().then(res => {
-      assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
-      assert.deepStrictEqual(res, {});
+      assert.strictEqual(res, undefined);
     });
   });
 });

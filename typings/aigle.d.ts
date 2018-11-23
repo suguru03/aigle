@@ -52,6 +52,11 @@ declare namespace AigleCore {
     cancellation?: boolean;
   }
 
+  interface RetryOpts {
+    times?: number;
+    interval?: number | ((count?: number) => number);
+  }
+
   export class Aigle<R> implements PromiseLike<R> {
     /* core functions */
     constructor(
@@ -62,7 +67,10 @@ declare namespace AigleCore {
       ) => void
     );
 
-    then<T>(onFulfill?: (value: R) => T | PromiseLike<T>, onReject?: (error: any) => T | PromiseLike<T>): Aigle<T>;
+    then<T>(
+      onFulfill?: (value: R) => T | PromiseLike<T>,
+      onReject?: (error: any) => T | PromiseLike<T>
+    ): Aigle<T>;
     then<TResult1 = R, TResult2 = never>(
       onfulfilled?: ((value: R) => TResult1 | PromiseLike<TResult1>) | null,
       onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null
@@ -253,7 +261,13 @@ declare namespace AigleCore {
      */
     all<T1, T2, T3, T4, T5>(
       this: Aigle<
-        [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike<T4>, T5 | PromiseLike<T5>]
+        [
+          T1 | PromiseLike<T1>,
+          T2 | PromiseLike<T2>,
+          T3 | PromiseLike<T3>,
+          T4 | PromiseLike<T4>,
+          T5 | PromiseLike<T5>
+        ]
       >
     ): Aigle<[T1, T2, T3, T4, T5]>;
 
@@ -264,7 +278,9 @@ declare namespace AigleCore {
      * @returns A new Aigle.
      */
     all<T1, T2, T3, T4>(
-      this: Aigle<[T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike<T4>]>
+      this: Aigle<
+        [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike<T4>]
+      >
     ): Aigle<[T1, T2, T3, T4]>;
 
     /**
@@ -408,7 +424,13 @@ declare namespace AigleCore {
      */
     race<T1, T2, T3, T4, T5>(
       this: Aigle<
-        [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike<T4>, T5 | PromiseLike<T5>]
+        [
+          T1 | PromiseLike<T1>,
+          T2 | PromiseLike<T2>,
+          T3 | PromiseLike<T3>,
+          T4 | PromiseLike<T4>,
+          T5 | PromiseLike<T5>
+        ]
       >
     ): Aigle<T1 | T2 | T3 | T4 | T5>;
 
@@ -419,7 +441,9 @@ declare namespace AigleCore {
      * @returns A new Aigle.
      */
     race<T1, T2, T3, T4>(
-      this: Aigle<[T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike<T4>]>
+      this: Aigle<
+        [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike<T4>]
+      >
     ): Aigle<T1 | T2 | T3 | T4>;
 
     /**
@@ -488,19 +512,35 @@ declare namespace AigleCore {
     eachLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T, any>): Aigle<T[]>;
 
     eachLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, any>): Aigle<List<T>>;
-    eachLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T, any>): Aigle<List<T>>;
+    eachLimit<T>(
+      this: Aigle<List<T>>,
+      limit: number,
+      iterator: ListIterator<T, any>
+    ): Aigle<List<T>>;
 
     eachLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, any>): Aigle<T>;
-    eachLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T, any>): Aigle<T>;
+    eachLimit<T extends object>(
+      this: Aigle<T>,
+      limit: number,
+      iterator: ObjectIterator<T, any>
+    ): Aigle<T>;
 
     forEachLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, any>): Aigle<T[]>;
     forEachLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T, any>): Aigle<T[]>;
 
     forEachLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, any>): Aigle<List<T>>;
-    forEachLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T, any>): Aigle<List<T>>;
+    forEachLimit<T>(
+      this: Aigle<List<T>>,
+      limit: number,
+      iterator: ListIterator<T, any>
+    ): Aigle<List<T>>;
 
     forEachLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, any>): Aigle<T>;
-    forEachLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T, any>): Aigle<T>;
+    forEachLimit<T extends object>(
+      this: Aigle<T>,
+      limit: number,
+      iterator: ObjectIterator<T, any>
+    ): Aigle<T>;
 
     /* map */
 
@@ -527,7 +567,11 @@ declare namespace AigleCore {
     mapLimit<T, R>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T, R>): Aigle<R[]>;
 
     mapLimit<T extends object, R>(this: Aigle<T>, iterator: ObjectIterator<T, R>): Aigle<R[]>;
-    mapLimit<T extends object, R>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T, R>): Aigle<R[]>;
+    mapLimit<T extends object, R>(
+      this: Aigle<T>,
+      limit: number,
+      iterator: ObjectIterator<T, R>
+    ): Aigle<R[]>;
 
     /* mapValues */
 
@@ -535,25 +579,45 @@ declare namespace AigleCore {
 
     mapValues<T, R>(this: Aigle<List<T>>, iterator?: ListIterator<T, R>): Aigle<Dictionary<R>>;
 
-    mapValues<T extends object, R>(this: Aigle<T>, iterator?: ObjectIterator<T, R>): Aigle<Record<keyof T, R>>;
+    mapValues<T extends object, R>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, R>
+    ): Aigle<Record<keyof T, R>>;
 
     /* mapValuesSeries */
 
     mapValuesSeries<T, R>(this: Aigle<T[]>, iterator?: ArrayIterator<T, R>): Aigle<Dictionary<R>>;
 
-    mapValuesSeries<T, R>(this: Aigle<List<T>>, iterator?: ListIterator<T, R>): Aigle<Dictionary<R>>;
+    mapValuesSeries<T, R>(
+      this: Aigle<List<T>>,
+      iterator?: ListIterator<T, R>
+    ): Aigle<Dictionary<R>>;
 
-    mapValuesSeries<T extends object, R>(this: Aigle<T>, iterator?: ObjectIterator<T, R>): Aigle<Record<keyof T, R>>;
+    mapValuesSeries<T extends object, R>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, R>
+    ): Aigle<Record<keyof T, R>>;
 
     /* mapValuesLimit */
 
     mapValuesLimit<T, R>(this: Aigle<T[]>, iterator?: ArrayIterator<T, R>): Aigle<Dictionary<R>>;
-    mapValuesLimit<T, R>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T, R>): Aigle<Dictionary<R>>;
+    mapValuesLimit<T, R>(
+      this: Aigle<T[]>,
+      limit: number,
+      iterator: ArrayIterator<T, R>
+    ): Aigle<Dictionary<R>>;
 
     mapValuesLimit<T, R>(this: Aigle<List<T>>, iterator?: ListIterator<T, R>): Aigle<Dictionary<R>>;
-    mapValuesLimit<T, R>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T, R>): Aigle<Dictionary<R>>;
+    mapValuesLimit<T, R>(
+      this: Aigle<List<T>>,
+      limit: number,
+      iterator: ListIterator<T, R>
+    ): Aigle<Dictionary<R>>;
 
-    mapValuesLimit<T extends object, R>(this: Aigle<T>, iterator?: ObjectIterator<T, R>): Aigle<Record<keyof T, R>>;
+    mapValuesLimit<T extends object, R>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, R>
+    ): Aigle<Record<keyof T, R>>;
     mapValuesLimit<T extends object, R>(
       this: Aigle<T>,
       limit: number,
@@ -574,18 +638,36 @@ declare namespace AigleCore {
 
     concatSeries<T, R>(this: Aigle<List<T>>, iterator?: ListIterator<T, R | R[]>): Aigle<R[]>;
 
-    concatSeries<T extends object, R>(this: Aigle<T>, iterator?: ObjectIterator<T, R | R[]>): Aigle<R[]>;
+    concatSeries<T extends object, R>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, R | R[]>
+    ): Aigle<R[]>;
 
     /* concatLimit */
 
     concatLimit<T, R>(this: Aigle<T[]>, iterator?: ArrayIterator<T, R | R[]>): Aigle<R[]>;
-    concatLimit<T, R>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T, R | R[]>): Aigle<R[]>;
+    concatLimit<T, R>(
+      this: Aigle<T[]>,
+      limit: number,
+      iterator: ArrayIterator<T, R | R[]>
+    ): Aigle<R[]>;
 
     concatLimit<T, R>(this: Aigle<List<T>>, iterator?: ListIterator<T, R | R[]>): Aigle<R[]>;
-    concatLimit<T, R>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T, R | R[]>): Aigle<R[]>;
+    concatLimit<T, R>(
+      this: Aigle<List<T>>,
+      limit: number,
+      iterator: ListIterator<T, R | R[]>
+    ): Aigle<R[]>;
 
-    concatLimit<T extends object, R>(this: Aigle<T>, iterator?: ObjectIterator<T, R | R[]>): Aigle<R[]>;
-    concatLimit<T extends object, R>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T, R | R[]>): Aigle<R[]>;
+    concatLimit<T extends object, R>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, R | R[]>
+    ): Aigle<R[]>;
+    concatLimit<T extends object, R>(
+      this: Aigle<T>,
+      limit: number,
+      iterator: ObjectIterator<T, R | R[]>
+    ): Aigle<R[]>;
 
     /* every */
 
@@ -601,18 +683,36 @@ declare namespace AigleCore {
 
     everySeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<boolean>;
 
-    everySeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<boolean>;
+    everySeries<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<boolean>;
 
     /* everyLimit */
 
     everyLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<boolean>;
-    everyLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T, boolean>): Aigle<boolean>;
+    everyLimit<T>(
+      this: Aigle<T[]>,
+      limit: number,
+      iterator: ArrayIterator<T, boolean>
+    ): Aigle<boolean>;
 
     everyLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<boolean>;
-    everyLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T, boolean>): Aigle<boolean>;
+    everyLimit<T>(
+      this: Aigle<List<T>>,
+      limit: number,
+      iterator: ListIterator<T, boolean>
+    ): Aigle<boolean>;
 
-    everyLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<boolean>;
-    everyLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T, boolean>): Aigle<boolean>;
+    everyLimit<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<boolean>;
+    everyLimit<T extends object>(
+      this: Aigle<T>,
+      limit: number,
+      iterator: ObjectIterator<T, boolean>
+    ): Aigle<boolean>;
 
     /* some */
 
@@ -628,18 +728,36 @@ declare namespace AigleCore {
 
     someSeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<boolean>;
 
-    someSeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<boolean>;
+    someSeries<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<boolean>;
 
     /* someLimit */
 
     someLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<boolean>;
-    someLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T, boolean>): Aigle<boolean>;
+    someLimit<T>(
+      this: Aigle<T[]>,
+      limit: number,
+      iterator: ArrayIterator<T, boolean>
+    ): Aigle<boolean>;
 
     someLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<boolean>;
-    someLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T, boolean>): Aigle<boolean>;
+    someLimit<T>(
+      this: Aigle<List<T>>,
+      limit: number,
+      iterator: ListIterator<T, boolean>
+    ): Aigle<boolean>;
 
-    someLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<boolean>;
-    someLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T, boolean>): Aigle<boolean>;
+    someLimit<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<boolean>;
+    someLimit<T extends object>(
+      this: Aigle<T>,
+      limit: number,
+      iterator: ObjectIterator<T, boolean>
+    ): Aigle<boolean>;
 
     /* filter */
 
@@ -647,7 +765,10 @@ declare namespace AigleCore {
 
     filter<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<T[]>;
 
-    filter<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<Array<T[keyof T]>>;
+    filter<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<Array<T[keyof T]>>;
 
     /* filterSeries */
 
@@ -655,17 +776,31 @@ declare namespace AigleCore {
 
     filterSeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<T[]>;
 
-    filterSeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<Array<T[keyof T]>>;
+    filterSeries<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<Array<T[keyof T]>>;
 
     /* filterLimit */
 
     filterLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<T[]>;
-    filterLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T, boolean>): Aigle<T[]>;
+    filterLimit<T>(
+      this: Aigle<T[]>,
+      limit: number,
+      iterator: ArrayIterator<T, boolean>
+    ): Aigle<T[]>;
 
     filterLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<T[]>;
-    filterLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T, boolean>): Aigle<T[]>;
+    filterLimit<T>(
+      this: Aigle<List<T>>,
+      limit: number,
+      iterator: ListIterator<T, boolean>
+    ): Aigle<T[]>;
 
-    filterLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<Array<T[keyof T]>>;
+    filterLimit<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<Array<T[keyof T]>>;
     filterLimit<T extends object>(
       this: Aigle<T>,
       limit: number,
@@ -678,7 +813,10 @@ declare namespace AigleCore {
 
     reject<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<T[]>;
 
-    reject<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<Array<T[keyof T]>>;
+    reject<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<Array<T[keyof T]>>;
 
     /* rejectSeries */
 
@@ -686,17 +824,31 @@ declare namespace AigleCore {
 
     rejectSeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<T[]>;
 
-    rejectSeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<Array<T[keyof T]>>;
+    rejectSeries<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<Array<T[keyof T]>>;
 
     /* rejectLimit */
 
     rejectLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<T[]>;
-    rejectLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T, boolean>): Aigle<T[]>;
+    rejectLimit<T>(
+      this: Aigle<T[]>,
+      limit: number,
+      iterator: ArrayIterator<T, boolean>
+    ): Aigle<T[]>;
 
     rejectLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<T[]>;
-    rejectLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T, boolean>): Aigle<T[]>;
+    rejectLimit<T>(
+      this: Aigle<List<T>>,
+      limit: number,
+      iterator: ListIterator<T, boolean>
+    ): Aigle<T[]>;
 
-    rejectLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<Array<T[keyof T]>>;
+    rejectLimit<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<Array<T[keyof T]>>;
     rejectLimit<T extends object>(
       this: Aigle<T>,
       limit: number,
@@ -709,7 +861,10 @@ declare namespace AigleCore {
 
     sortBy<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<T[]>;
 
-    sortBy<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Array<T[keyof T]>>;
+    sortBy<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T>
+    ): Aigle<Array<T[keyof T]>>;
 
     /* sortBySeries */
 
@@ -717,7 +872,10 @@ declare namespace AigleCore {
 
     sortBySeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<T[]>;
 
-    sortBySeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Array<T[keyof T]>>;
+    sortBySeries<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T>
+    ): Aigle<Array<T[keyof T]>>;
 
     /* sortByLimit */
 
@@ -727,8 +885,15 @@ declare namespace AigleCore {
     sortByLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<T[]>;
     sortByLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T>): Aigle<T[]>;
 
-    sortByLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Array<T[keyof T]>>;
-    sortByLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T>): Aigle<Array<T[keyof T]>>;
+    sortByLimit<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T>
+    ): Aigle<Array<T[keyof T]>>;
+    sortByLimit<T extends object>(
+      this: Aigle<T>,
+      limit: number,
+      iterator: ObjectIterator<T>
+    ): Aigle<Array<T[keyof T]>>;
 
     /* find / detect */
 
@@ -736,13 +901,19 @@ declare namespace AigleCore {
 
     find<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<T>;
 
-    find<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<T[keyof T]>;
+    find<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<T[keyof T]>;
 
     detect<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<T>;
 
     detect<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<T>;
 
-    detect<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<T[keyof T]>;
+    detect<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<T[keyof T]>;
 
     /* findSeries / detectSeries */
 
@@ -750,13 +921,19 @@ declare namespace AigleCore {
 
     findSeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<T>;
 
-    findSeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<T[keyof T]>;
+    findSeries<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<T[keyof T]>;
 
     detectSeries<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<T>;
 
     detectSeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<T>;
 
-    detectSeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<T[keyof T]>;
+    detectSeries<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<T[keyof T]>;
 
     /* findLimit / detectLimit */
 
@@ -766,16 +943,30 @@ declare namespace AigleCore {
     findLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<T>;
     findLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T, boolean>): Aigle<T>;
 
-    findLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<T[keyof T]>;
-    findLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T, boolean>): Aigle<T[keyof T]>;
+    findLimit<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<T[keyof T]>;
+    findLimit<T extends object>(
+      this: Aigle<T>,
+      limit: number,
+      iterator: ObjectIterator<T, boolean>
+    ): Aigle<T[keyof T]>;
 
     detectLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<T>;
     detectLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T, boolean>): Aigle<T>;
 
     detectLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<T>;
-    detectLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T, boolean>): Aigle<T>;
+    detectLimit<T>(
+      this: Aigle<List<T>>,
+      limit: number,
+      iterator: ListIterator<T, boolean>
+    ): Aigle<T>;
 
-    detectLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<T[keyof T]>;
+    detectLimit<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<T[keyof T]>;
     detectLimit<T extends object>(
       this: Aigle<T>,
       limit: number,
@@ -788,7 +979,10 @@ declare namespace AigleCore {
 
     findIndex<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<number>;
 
-    findIndex<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<number>;
+    findIndex<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<number>;
 
     /* findIndexSeries */
 
@@ -796,17 +990,31 @@ declare namespace AigleCore {
 
     findIndexSeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<number>;
 
-    findIndexSeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<number>;
+    findIndexSeries<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<number>;
 
     /* findIndexLimit */
 
     findIndexLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<number>;
-    findIndexLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T, boolean>): Aigle<number>;
+    findIndexLimit<T>(
+      this: Aigle<T[]>,
+      limit: number,
+      iterator: ArrayIterator<T, boolean>
+    ): Aigle<number>;
 
     findIndexLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<number>;
-    findIndexLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T, boolean>): Aigle<number>;
+    findIndexLimit<T>(
+      this: Aigle<List<T>>,
+      limit: number,
+      iterator: ListIterator<T, boolean>
+    ): Aigle<number>;
 
-    findIndexLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<number>;
+    findIndexLimit<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<number>;
     findIndexLimit<T extends object>(
       this: Aigle<T>,
       limit: number,
@@ -817,27 +1025,59 @@ declare namespace AigleCore {
 
     findKey<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<string | undefined>;
 
-    findKey<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<string | undefined>;
+    findKey<T>(
+      this: Aigle<List<T>>,
+      iterator?: ListIterator<T, boolean>
+    ): Aigle<string | undefined>;
 
-    findKey<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<string | undefined>;
+    findKey<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<string | undefined>;
 
     /* findKeySeries */
 
-    findKeySeries<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<string | undefined>;
+    findKeySeries<T>(
+      this: Aigle<T[]>,
+      iterator?: ArrayIterator<T, boolean>
+    ): Aigle<string | undefined>;
 
-    findKeySeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<string | undefined>;
+    findKeySeries<T>(
+      this: Aigle<List<T>>,
+      iterator?: ListIterator<T, boolean>
+    ): Aigle<string | undefined>;
 
-    findKeySeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<string | undefined>;
+    findKeySeries<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<string | undefined>;
 
     /* findKeyLimit */
 
-    findKeyLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<string | undefined>;
-    findKeyLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T, boolean>): Aigle<string | undefined>;
+    findKeyLimit<T>(
+      this: Aigle<T[]>,
+      iterator?: ArrayIterator<T, boolean>
+    ): Aigle<string | undefined>;
+    findKeyLimit<T>(
+      this: Aigle<T[]>,
+      limit: number,
+      iterator: ArrayIterator<T, boolean>
+    ): Aigle<string | undefined>;
 
-    findKeyLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<string | undefined>;
-    findKeyLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T, boolean>): Aigle<string | undefined>;
+    findKeyLimit<T>(
+      this: Aigle<List<T>>,
+      iterator?: ListIterator<T, boolean>
+    ): Aigle<string | undefined>;
+    findKeyLimit<T>(
+      this: Aigle<List<T>>,
+      limit: number,
+      iterator: ListIterator<T, boolean>
+    ): Aigle<string | undefined>;
 
-    findKeyLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, boolean>): Aigle<string | undefined>;
+    findKeyLimit<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<string | undefined>;
     findKeyLimit<T extends object>(
       this: Aigle<T>,
       limit: number,
@@ -858,18 +1098,36 @@ declare namespace AigleCore {
 
     groupBySeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T[]>>;
 
-    groupBySeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T[]>>;
+    groupBySeries<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T>
+    ): Aigle<Dictionary<T[]>>;
 
     /* groupByLimit */
 
     groupByLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T[]>>;
-    groupByLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T>): Aigle<Dictionary<T[]>>;
+    groupByLimit<T>(
+      this: Aigle<T[]>,
+      limit: number,
+      iterator: ArrayIterator<T>
+    ): Aigle<Dictionary<T[]>>;
 
     groupByLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T[]>>;
-    groupByLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T>): Aigle<Dictionary<T[]>>;
+    groupByLimit<T>(
+      this: Aigle<List<T>>,
+      limit: number,
+      iterator: ListIterator<T>
+    ): Aigle<Dictionary<T[]>>;
 
-    groupByLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T[]>>;
-    groupByLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T>): Aigle<Dictionary<T[]>>;
+    groupByLimit<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T>
+    ): Aigle<Dictionary<T[]>>;
+    groupByLimit<T extends object>(
+      this: Aigle<T>,
+      limit: number,
+      iterator: ObjectIterator<T>
+    ): Aigle<Dictionary<T[]>>;
 
     /* omit */
 
@@ -893,13 +1151,19 @@ declare namespace AigleCore {
 
     omitSeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
 
-    omitSeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T>>;
+    omitSeries<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T>
+    ): Aigle<Dictionary<T>>;
 
     omitBySeries<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T>>;
 
     omitBySeries<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
 
-    omitBySeries<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T>>;
+    omitBySeries<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T>
+    ): Aigle<Dictionary<T>>;
 
     /* omitLimit / omitByLimit */
 
@@ -907,19 +1171,42 @@ declare namespace AigleCore {
     omitLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T>): Aigle<Dictionary<T>>;
 
     omitLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
-    omitLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T>): Aigle<Dictionary<T>>;
+    omitLimit<T>(
+      this: Aigle<List<T>>,
+      limit: number,
+      iterator: ListIterator<T>
+    ): Aigle<Dictionary<T>>;
 
     omitLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T>>;
-    omitLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T>): Aigle<Dictionary<T>>;
+    omitLimit<T extends object>(
+      this: Aigle<T>,
+      limit: number,
+      iterator: ObjectIterator<T>
+    ): Aigle<Dictionary<T>>;
 
     omitByLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T>>;
-    omitByLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T>): Aigle<Dictionary<T>>;
+    omitByLimit<T>(
+      this: Aigle<T[]>,
+      limit: number,
+      iterator: ArrayIterator<T>
+    ): Aigle<Dictionary<T>>;
 
     omitByLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
-    omitByLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T>): Aigle<Dictionary<T>>;
+    omitByLimit<T>(
+      this: Aigle<List<T>>,
+      limit: number,
+      iterator: ListIterator<T>
+    ): Aigle<Dictionary<T>>;
 
-    omitByLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Dictionary<T>>;
-    omitByLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T>): Aigle<Dictionary<T>>;
+    omitByLimit<T extends object>(
+      this: Aigle<T>,
+      iterator?: ObjectIterator<T>
+    ): Aigle<Dictionary<T>>;
+    omitByLimit<T extends object>(
+      this: Aigle<T>,
+      limit: number,
+      iterator: ObjectIterator<T>
+    ): Aigle<Dictionary<T>>;
 
     /* pick */
 
@@ -957,30 +1244,58 @@ declare namespace AigleCore {
     pickLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T>): Aigle<Dictionary<T>>;
 
     pickLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
-    pickLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T>): Aigle<Dictionary<T>>;
+    pickLimit<T>(
+      this: Aigle<List<T>>,
+      limit: number,
+      iterator: ListIterator<T>
+    ): Aigle<Dictionary<T>>;
 
     pickLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Partial<T>>;
-    pickLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T>): Aigle<Partial<T>>;
+    pickLimit<T extends object>(
+      this: Aigle<T>,
+      limit: number,
+      iterator: ObjectIterator<T>
+    ): Aigle<Partial<T>>;
 
     pickByLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T>>;
-    pickByLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T>): Aigle<Dictionary<T>>;
+    pickByLimit<T>(
+      this: Aigle<T[]>,
+      limit: number,
+      iterator: ArrayIterator<T>
+    ): Aigle<Dictionary<T>>;
 
     pickByLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
-    pickByLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T>): Aigle<Dictionary<T>>;
+    pickByLimit<T>(
+      this: Aigle<List<T>>,
+      limit: number,
+      iterator: ListIterator<T>
+    ): Aigle<Dictionary<T>>;
 
     pickByLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Partial<T>>;
-    pickByLimit<T extends object>(this: Aigle<T>, limit: number, iterator: ObjectIterator<T>): Aigle<Partial<T>>;
+    pickByLimit<T extends object>(
+      this: Aigle<T>,
+      limit: number,
+      iterator: ObjectIterator<T>
+    ): Aigle<Partial<T>>;
 
     /* transform */
 
-    transform<T, R>(this: Aigle<T[]>, iterator: MemoArrayIterator<T, R[]>, accumulator?: R[]): Aigle<R[]>;
+    transform<T, R>(
+      this: Aigle<T[]>,
+      iterator: MemoArrayIterator<T, R[]>,
+      accumulator?: R[]
+    ): Aigle<R[]>;
     transform<T, R>(
       this: Aigle<T[]>,
       iterator: MemoArrayIterator<T, Dictionary<R>>,
       accumulator: Dictionary<R>
     ): Aigle<Dictionary<R>>;
 
-    transform<T, R>(this: Aigle<List<T>>, iterator: MemoListIterator<T, R[]>, accumulator?: R[]): Aigle<R[]>;
+    transform<T, R>(
+      this: Aigle<List<T>>,
+      iterator: MemoListIterator<T, R[]>,
+      accumulator?: R[]
+    ): Aigle<R[]>;
     transform<T, R>(
       this: Aigle<List<T>>,
       iterator: MemoListIterator<T, Dictionary<R>>,
@@ -992,18 +1307,30 @@ declare namespace AigleCore {
       iterator: MemoObjectIterator<T, Dictionary<R>>,
       accumulator?: Dictionary<R>
     ): Aigle<Dictionary<R>>;
-    transform<T extends object, R>(this: Aigle<T>, iterator: MemoObjectIterator<T, R[]>, accumulator: R[]): Aigle<R[]>;
+    transform<T extends object, R>(
+      this: Aigle<T>,
+      iterator: MemoObjectIterator<T, R[]>,
+      accumulator: R[]
+    ): Aigle<R[]>;
 
     /* transformSeries */
 
-    transformSeries<T, R>(this: Aigle<T[]>, iterator: MemoArrayIterator<T, R[]>, accumulator?: R[]): Aigle<R[]>;
+    transformSeries<T, R>(
+      this: Aigle<T[]>,
+      iterator: MemoArrayIterator<T, R[]>,
+      accumulator?: R[]
+    ): Aigle<R[]>;
     transformSeries<T, R>(
       this: Aigle<T[]>,
       iterator: MemoArrayIterator<T, Dictionary<R>>,
       accumulator: Dictionary<R>
     ): Aigle<Dictionary<R>>;
 
-    transformSeries<T, R>(this: Aigle<List<T>>, iterator: MemoListIterator<T, R[]>, accumulator?: R[]): Aigle<R[]>;
+    transformSeries<T, R>(
+      this: Aigle<List<T>>,
+      iterator: MemoListIterator<T, R[]>,
+      accumulator?: R[]
+    ): Aigle<R[]>;
     transformSeries<T, R>(
       this: Aigle<List<T>>,
       iterator: MemoListIterator<T, Dictionary<R>>,
@@ -1023,7 +1350,11 @@ declare namespace AigleCore {
 
     /* transformLimit */
 
-    transformLimit<T, R>(this: Aigle<T[]>, iterator: MemoArrayIterator<T, R[]>, accumulator?: R[]): Aigle<R[]>;
+    transformLimit<T, R>(
+      this: Aigle<T[]>,
+      iterator: MemoArrayIterator<T, R[]>,
+      accumulator?: R[]
+    ): Aigle<R[]>;
     transformLimit<T, R>(
       this: Aigle<T[]>,
       limit: number,
@@ -1042,7 +1373,11 @@ declare namespace AigleCore {
       accumulator: Dictionary<R>
     ): Aigle<Dictionary<R>>;
 
-    transformLimit<T, R>(this: Aigle<List<T>>, iterator: MemoListIterator<T, R[]>, accumulator?: R[]): Aigle<R[]>;
+    transformLimit<T, R>(
+      this: Aigle<List<T>>,
+      iterator: MemoListIterator<T, R[]>,
+      accumulator?: R[]
+    ): Aigle<R[]>;
     transformLimit<T, R>(
       this: Aigle<List<T>>,
       limit: number,
@@ -1088,9 +1423,17 @@ declare namespace AigleCore {
 
     reduce<T, R>(this: Aigle<T[]>, iterator: MemoArrayIterator<T, R, R>, accumulator?: R): Aigle<R>;
 
-    reduce<T, R>(this: Aigle<List<T>>, iterator: MemoListIterator<T, R, R>, accumulator?: R): Aigle<R>;
+    reduce<T, R>(
+      this: Aigle<List<T>>,
+      iterator: MemoListIterator<T, R, R>,
+      accumulator?: R
+    ): Aigle<R>;
 
-    reduce<T extends object, R>(this: Aigle<T>, iterator: MemoObjectIterator<T, R, R>, accumulator?: R): Aigle<R>;
+    reduce<T extends object, R>(
+      this: Aigle<T>,
+      iterator: MemoObjectIterator<T, R, R>,
+      accumulator?: R
+    ): Aigle<R>;
 
     /* delay */
 
@@ -1155,7 +1498,11 @@ declare namespace AigleCore {
 
     disposer(...args: any[]): Aigle<any>;
 
+    series(...args: any[]): Aigle<any>;
+
     parallel(...args: any[]): Aigle<any>;
+
+    parallelLimit(...args: any[]): Aigle<any>;
 
     reason(...args: any[]): Aigle<any>;
 
@@ -1297,7 +1644,12 @@ declare namespace AigleCore {
      * @returns A new Aigle.
      */
     static all<T1, T2, T3, T4>(
-      values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike<T4>]
+      values: [
+        T1 | PromiseLike<T1>,
+        T2 | PromiseLike<T2>,
+        T3 | PromiseLike<T3>,
+        T4 | PromiseLike<T4>
+      ]
     ): Aigle<[T1, T2, T3, T4]>;
 
     /**
@@ -1446,7 +1798,12 @@ declare namespace AigleCore {
      * @returns A new Aigle.
      */
     static race<T1, T2, T3, T4>(
-      values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike<T4>]
+      values: [
+        T1 | PromiseLike<T1>,
+        T2 | PromiseLike<T2>,
+        T3 | PromiseLike<T3>,
+        T4 | PromiseLike<T4>
+      ]
     ): Aigle<T1 | T2 | T3 | T4>;
 
     /**
@@ -1477,7 +1834,9 @@ declare namespace AigleCore {
 
     /* props */
 
-    static props<K, V>(map: PromiseLike<Map<K, PromiseLike<V> | V>> | Map<K, PromiseLike<V> | V>): Aigle<Map<K, V>>;
+    static props<K, V>(
+      map: PromiseLike<Map<K, PromiseLike<V> | V>> | Map<K, PromiseLike<V> | V>
+    ): Aigle<Map<K, V>>;
 
     static props<T>(object: ResolvableProps<T> | PromiseLike<ResolvableProps<T>>): Aigle<T>;
 
@@ -1507,27 +1866,57 @@ declare namespace AigleCore {
 
     static forEachSeries<T>(collection: List<T>, iterator?: ListIterator<T, any>): Aigle<List<T>>;
 
-    static forEachSeries<T extends object>(collection: T, iterator?: ObjectIterator<T, any>): Aigle<T>;
+    static forEachSeries<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, any>
+    ): Aigle<T>;
 
     /* eachLimit/forEachLimit */
 
     static eachLimit<T>(collection: T[], iterator?: ArrayIterator<T, any>): Aigle<T[]>;
-    static eachLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T, any>): Aigle<T[]>;
+    static eachLimit<T>(
+      collection: T[],
+      limit: number,
+      iterator: ArrayIterator<T, any>
+    ): Aigle<T[]>;
 
     static eachLimit<T>(collection: List<T>, iterator?: ListIterator<T, any>): Aigle<List<T>>;
-    static eachLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, any>): Aigle<List<T>>;
+    static eachLimit<T>(
+      collection: List<T>,
+      limit: number,
+      iterator: ListIterator<T, any>
+    ): Aigle<List<T>>;
 
     static eachLimit<T extends object>(collection: T, iterator?: ObjectIterator<T, any>): Aigle<T>;
-    static eachLimit<T extends object>(collection: T, limit: number, iterator: ObjectIterator<T, any>): Aigle<T>;
+    static eachLimit<T extends object>(
+      collection: T,
+      limit: number,
+      iterator: ObjectIterator<T, any>
+    ): Aigle<T>;
 
     static forEachLimit<T>(collection: T[], iterator?: ArrayIterator<T, any>): Aigle<T[]>;
-    static forEachLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T, any>): Aigle<T[]>;
+    static forEachLimit<T>(
+      collection: T[],
+      limit: number,
+      iterator: ArrayIterator<T, any>
+    ): Aigle<T[]>;
 
     static forEachLimit<T>(collection: List<T>, iterator?: ListIterator<T, any>): Aigle<List<T>>;
-    static forEachLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, any>): Aigle<List<T>>;
+    static forEachLimit<T>(
+      collection: List<T>,
+      limit: number,
+      iterator: ListIterator<T, any>
+    ): Aigle<List<T>>;
 
-    static forEachLimit<T extends object>(collection: T, iterator?: ObjectIterator<T, any>): Aigle<T>;
-    static forEachLimit<T extends object>(collection: T, limit: number, iterator: ObjectIterator<T, any>): Aigle<T>;
+    static forEachLimit<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, any>
+    ): Aigle<T>;
+    static forEachLimit<T extends object>(
+      collection: T,
+      limit: number,
+      iterator: ObjectIterator<T, any>
+    ): Aigle<T>;
 
     /* map */
 
@@ -1543,32 +1932,59 @@ declare namespace AigleCore {
 
     static mapSeries<T, R>(collection: List<T>, iterator: ListIterator<T, R>): Aigle<R[]>;
 
-    static mapSeries<T extends object, R>(collection: T, iterator: ObjectIterator<T, R>): Aigle<R[]>;
+    static mapSeries<T extends object, R>(
+      collection: T,
+      iterator: ObjectIterator<T, R>
+    ): Aigle<R[]>;
 
     /* mapLimit */
 
     static mapLimit<T, R>(collection: T[], iterator: ArrayIterator<T, R>): Aigle<R[]>;
-    static mapLimit<T, R>(collection: T[], limit: number, iterator: ArrayIterator<T, R>): Aigle<R[]>;
+    static mapLimit<T, R>(
+      collection: T[],
+      limit: number,
+      iterator: ArrayIterator<T, R>
+    ): Aigle<R[]>;
 
     static mapLimit<T, R>(collection: List<T>, iterator: ListIterator<T, R>): Aigle<R[]>;
-    static mapLimit<T, R>(collection: List<T>, limit: number, iterator: ListIterator<T, R>): Aigle<R[]>;
+    static mapLimit<T, R>(
+      collection: List<T>,
+      limit: number,
+      iterator: ListIterator<T, R>
+    ): Aigle<R[]>;
 
     static mapLimit<T extends object, R>(collection: T, iterator: ObjectIterator<T, R>): Aigle<R[]>;
-    static mapLimit<T extends object, R>(collection: T, limit: number, iterator: ObjectIterator<T, R>): Aigle<R[]>;
+    static mapLimit<T extends object, R>(
+      collection: T,
+      limit: number,
+      iterator: ObjectIterator<T, R>
+    ): Aigle<R[]>;
 
     /* mapValues */
 
     static mapValues<T, R>(collection: T[], iterator?: ArrayIterator<T, R>): Aigle<Dictionary<R>>;
 
-    static mapValues<T, R>(collection: List<T>, iterator?: ListIterator<T, R>): Aigle<Dictionary<R>>;
+    static mapValues<T, R>(
+      collection: List<T>,
+      iterator?: ListIterator<T, R>
+    ): Aigle<Dictionary<R>>;
 
-    static mapValues<T extends object, R>(collection: T, iterator?: ObjectIterator<T, R>): Aigle<Record<keyof T, R>>;
+    static mapValues<T extends object, R>(
+      collection: T,
+      iterator?: ObjectIterator<T, R>
+    ): Aigle<Record<keyof T, R>>;
 
     /* mapValuesSeries */
 
-    static mapValuesSeries<T, R>(collection: T[], iterator?: ArrayIterator<T, R>): Aigle<Dictionary<R>>;
+    static mapValuesSeries<T, R>(
+      collection: T[],
+      iterator?: ArrayIterator<T, R>
+    ): Aigle<Dictionary<R>>;
 
-    static mapValuesSeries<T, R>(collection: List<T>, iterator?: ListIterator<T, R>): Aigle<Dictionary<R>>;
+    static mapValuesSeries<T, R>(
+      collection: List<T>,
+      iterator?: ListIterator<T, R>
+    ): Aigle<Dictionary<R>>;
 
     static mapValuesSeries<T extends object, R>(
       collection: T,
@@ -1577,11 +1993,25 @@ declare namespace AigleCore {
 
     /* mapValuesLimit */
 
-    static mapValuesLimit<T, R>(collection: T[], iterator?: ArrayIterator<T, R>): Aigle<Dictionary<R>>;
-    static mapValuesLimit<T, R>(collection: T[], limit: number, iterator: ArrayIterator<T, R>): Aigle<Dictionary<R>>;
+    static mapValuesLimit<T, R>(
+      collection: T[],
+      iterator?: ArrayIterator<T, R>
+    ): Aigle<Dictionary<R>>;
+    static mapValuesLimit<T, R>(
+      collection: T[],
+      limit: number,
+      iterator: ArrayIterator<T, R>
+    ): Aigle<Dictionary<R>>;
 
-    static mapValuesLimit<T, R>(collection: List<T>, iterator?: ListIterator<T, R>): Aigle<Dictionary<R>>;
-    static mapValuesLimit<T, R>(collection: List<T>, limit: number, iterator: ListIterator<T, R>): Aigle<Dictionary<R>>;
+    static mapValuesLimit<T, R>(
+      collection: List<T>,
+      iterator?: ListIterator<T, R>
+    ): Aigle<Dictionary<R>>;
+    static mapValuesLimit<T, R>(
+      collection: List<T>,
+      limit: number,
+      iterator: ListIterator<T, R>
+    ): Aigle<Dictionary<R>>;
 
     static mapValuesLimit<T extends object, R>(
       collection: T,
@@ -1599,7 +2029,10 @@ declare namespace AigleCore {
 
     static concat<T, R>(collection: List<T>, iterator?: ListIterator<T, R | R[]>): Aigle<R[]>;
 
-    static concat<T extends object, R>(collection: T, iterator?: ObjectIterator<T, R | R[]>): Aigle<R[]>;
+    static concat<T extends object, R>(
+      collection: T,
+      iterator?: ObjectIterator<T, R | R[]>
+    ): Aigle<R[]>;
 
     /* concatSeries */
 
@@ -1607,17 +2040,31 @@ declare namespace AigleCore {
 
     static concatSeries<T, R>(collection: List<T>, iterator?: ListIterator<T, R | R[]>): Aigle<R[]>;
 
-    static concatSeries<T extends object, R>(collection: T, iterator?: ObjectIterator<T, R | R[]>): Aigle<R[]>;
+    static concatSeries<T extends object, R>(
+      collection: T,
+      iterator?: ObjectIterator<T, R | R[]>
+    ): Aigle<R[]>;
 
     /* concatLimit */
 
     static concatLimit<T, R>(collection: T[], iterator?: ArrayIterator<T, R | R[]>): Aigle<R[]>;
-    static concatLimit<T, R>(collection: T[], limit: number, iterator: ArrayIterator<T, R | R[]>): Aigle<R[]>;
+    static concatLimit<T, R>(
+      collection: T[],
+      limit: number,
+      iterator: ArrayIterator<T, R | R[]>
+    ): Aigle<R[]>;
 
     static concatLimit<T, R>(collection: List<T>, iterator?: ListIterator<T, R | R[]>): Aigle<R[]>;
-    static concatLimit<T, R>(collection: List<T>, limit: number, iterator: ListIterator<T, R | R[]>): Aigle<R[]>;
+    static concatLimit<T, R>(
+      collection: List<T>,
+      limit: number,
+      iterator: ListIterator<T, R | R[]>
+    ): Aigle<R[]>;
 
-    static concatLimit<T extends object, R>(collection: T, iterator?: ObjectIterator<T, R | R[]>): Aigle<R[]>;
+    static concatLimit<T extends object, R>(
+      collection: T,
+      iterator?: ObjectIterator<T, R | R[]>
+    ): Aigle<R[]>;
     static concatLimit<T extends object, R>(
       collection: T,
       limit: number,
@@ -1630,7 +2077,10 @@ declare namespace AigleCore {
 
     static every<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<boolean>;
 
-    static every<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<boolean>;
+    static every<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<boolean>;
 
     /* everySeries */
 
@@ -1638,17 +2088,31 @@ declare namespace AigleCore {
 
     static everySeries<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<boolean>;
 
-    static everySeries<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<boolean>;
+    static everySeries<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<boolean>;
 
     /* everyLimit */
 
     static everyLimit<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<boolean>;
-    static everyLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T, boolean>): Aigle<boolean>;
+    static everyLimit<T>(
+      collection: T[],
+      limit: number,
+      iterator: ArrayIterator<T, boolean>
+    ): Aigle<boolean>;
 
     static everyLimit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<boolean>;
-    static everyLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, boolean>): Aigle<boolean>;
+    static everyLimit<T>(
+      collection: List<T>,
+      limit: number,
+      iterator: ListIterator<T, boolean>
+    ): Aigle<boolean>;
 
-    static everyLimit<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<boolean>;
+    static everyLimit<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<boolean>;
     static everyLimit<T extends object>(
       collection: T,
       limit: number,
@@ -1661,7 +2125,10 @@ declare namespace AigleCore {
 
     static some<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<boolean>;
 
-    static some<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<boolean>;
+    static some<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<boolean>;
 
     /* someSeries */
 
@@ -1669,17 +2136,31 @@ declare namespace AigleCore {
 
     static someSeries<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<boolean>;
 
-    static someSeries<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<boolean>;
+    static someSeries<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<boolean>;
 
     /* someLimit */
 
     static someLimit<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<boolean>;
-    static someLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T, boolean>): Aigle<boolean>;
+    static someLimit<T>(
+      collection: T[],
+      limit: number,
+      iterator: ArrayIterator<T, boolean>
+    ): Aigle<boolean>;
 
     static someLimit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<boolean>;
-    static someLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, boolean>): Aigle<boolean>;
+    static someLimit<T>(
+      collection: List<T>,
+      limit: number,
+      iterator: ListIterator<T, boolean>
+    ): Aigle<boolean>;
 
-    static someLimit<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<boolean>;
+    static someLimit<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<boolean>;
     static someLimit<T extends object>(
       collection: T,
       limit: number,
@@ -1692,7 +2173,10 @@ declare namespace AigleCore {
 
     static filter<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<T[]>;
 
-    static filter<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Array<T[keyof T]>>;
+    static filter<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<Array<T[keyof T]>>;
 
     /* filterSeries */
 
@@ -1708,10 +2192,18 @@ declare namespace AigleCore {
     /* filterLimit */
 
     static filterLimit<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<T[]>;
-    static filterLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T, boolean>): Aigle<T[]>;
+    static filterLimit<T>(
+      collection: T[],
+      limit: number,
+      iterator: ArrayIterator<T, boolean>
+    ): Aigle<T[]>;
 
     static filterLimit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<T[]>;
-    static filterLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, boolean>): Aigle<T[]>;
+    static filterLimit<T>(
+      collection: List<T>,
+      limit: number,
+      iterator: ListIterator<T, boolean>
+    ): Aigle<T[]>;
 
     static filterLimit<T extends object>(
       collection: T,
@@ -1729,7 +2221,10 @@ declare namespace AigleCore {
 
     static reject<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<T[]>;
 
-    static reject<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Array<T[keyof T]>>;
+    static reject<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<Array<T[keyof T]>>;
 
     /* rejectSeries */
 
@@ -1745,10 +2240,18 @@ declare namespace AigleCore {
     /* rejectLimit */
 
     static rejectLimit<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<T[]>;
-    static rejectLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T, boolean>): Aigle<T[]>;
+    static rejectLimit<T>(
+      collection: T[],
+      limit: number,
+      iterator: ArrayIterator<T, boolean>
+    ): Aigle<T[]>;
 
     static rejectLimit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<T[]>;
-    static rejectLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, boolean>): Aigle<T[]>;
+    static rejectLimit<T>(
+      collection: List<T>,
+      limit: number,
+      iterator: ListIterator<T, boolean>
+    ): Aigle<T[]>;
 
     static rejectLimit<T extends object>(
       collection: T,
@@ -1766,7 +2269,10 @@ declare namespace AigleCore {
 
     static sortBy<T>(collection: List<T>, iterator?: ListIterator<T>): Aigle<T[]>;
 
-    static sortBy<T extends object>(collection: T, iterator?: ObjectIterator<T>): Aigle<Array<T[keyof T]>>;
+    static sortBy<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T>
+    ): Aigle<Array<T[keyof T]>>;
 
     /* sortBySeries */
 
@@ -1774,7 +2280,10 @@ declare namespace AigleCore {
 
     static sortBySeries<T>(collection: List<T>, iterator?: ListIterator<T>): Aigle<T[]>;
 
-    static sortBySeries<T extends object>(collection: T, iterator?: ObjectIterator<T>): Aigle<Array<T[keyof T]>>;
+    static sortBySeries<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T>
+    ): Aigle<Array<T[keyof T]>>;
 
     /* sortByLimit */
 
@@ -1782,9 +2291,16 @@ declare namespace AigleCore {
     static sortByLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T>): Aigle<T[]>;
 
     static sortByLimit<T>(collection: List<T>, iterator?: ListIterator<T>): Aigle<T[]>;
-    static sortByLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T>): Aigle<T[]>;
+    static sortByLimit<T>(
+      collection: List<T>,
+      limit: number,
+      iterator: ListIterator<T>
+    ): Aigle<T[]>;
 
-    static sortByLimit<T extends object>(collection: T, iterator?: ObjectIterator<T>): Aigle<Array<T[keyof T]>>;
+    static sortByLimit<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T>
+    ): Aigle<Array<T[keyof T]>>;
     static sortByLimit<T extends object>(
       collection: T,
       limit: number,
@@ -1797,13 +2313,19 @@ declare namespace AigleCore {
 
     static find<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<T>;
 
-    static find<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<T[keyof T]>;
+    static find<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<T[keyof T]>;
 
     static detect<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<T>;
 
     static detect<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<T>;
 
-    static detect<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<T[keyof T]>;
+    static detect<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<T[keyof T]>;
 
     /* findSeries / detectSeries */
 
@@ -1811,23 +2333,40 @@ declare namespace AigleCore {
 
     static findSeries<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<T>;
 
-    static findSeries<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<T[keyof T]>;
+    static findSeries<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<T[keyof T]>;
 
     static detectSeries<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<T>;
 
     static detectSeries<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<T>;
 
-    static detectSeries<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<T[keyof T]>;
+    static detectSeries<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<T[keyof T]>;
 
     /* findLimit / detectLimit */
 
     static findLimit<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<T>;
-    static findLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T, boolean>): Aigle<T>;
+    static findLimit<T>(
+      collection: T[],
+      limit: number,
+      iterator: ArrayIterator<T, boolean>
+    ): Aigle<T>;
 
     static findLimit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<T>;
-    static findLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, boolean>): Aigle<T>;
+    static findLimit<T>(
+      collection: List<T>,
+      limit: number,
+      iterator: ListIterator<T, boolean>
+    ): Aigle<T>;
 
-    static findLimit<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<T[keyof T]>;
+    static findLimit<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<T[keyof T]>;
     static findLimit<T extends object>(
       collection: T,
       limit: number,
@@ -1835,12 +2374,23 @@ declare namespace AigleCore {
     ): Aigle<T[keyof T]>;
 
     static detectLimit<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<T>;
-    static detectLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T, boolean>): Aigle<T>;
+    static detectLimit<T>(
+      collection: T[],
+      limit: number,
+      iterator: ArrayIterator<T, boolean>
+    ): Aigle<T>;
 
     static detectLimit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<T>;
-    static detectLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, boolean>): Aigle<T>;
+    static detectLimit<T>(
+      collection: List<T>,
+      limit: number,
+      iterator: ListIterator<T, boolean>
+    ): Aigle<T>;
 
-    static detectLimit<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<T[keyof T]>;
+    static detectLimit<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<T[keyof T]>;
     static detectLimit<T extends object>(
       collection: T,
       limit: number,
@@ -1853,25 +2403,48 @@ declare namespace AigleCore {
 
     static findIndex<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<number>;
 
-    static findIndex<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<number>;
+    static findIndex<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<number>;
 
     /* findIndexSeries */
 
     static findIndexSeries<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<number>;
 
-    static findIndexSeries<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<number>;
+    static findIndexSeries<T>(
+      collection: List<T>,
+      iterator?: ListIterator<T, boolean>
+    ): Aigle<number>;
 
-    static findIndexSeries<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<number>;
+    static findIndexSeries<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<number>;
 
     /* findIndexLimit */
 
     static findIndexLimit<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<number>;
-    static findIndexLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T, boolean>): Aigle<number>;
+    static findIndexLimit<T>(
+      collection: T[],
+      limit: number,
+      iterator: ArrayIterator<T, boolean>
+    ): Aigle<number>;
 
-    static findIndexLimit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<number>;
-    static findIndexLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, boolean>): Aigle<number>;
+    static findIndexLimit<T>(
+      collection: List<T>,
+      iterator?: ListIterator<T, boolean>
+    ): Aigle<number>;
+    static findIndexLimit<T>(
+      collection: List<T>,
+      limit: number,
+      iterator: ListIterator<T, boolean>
+    ): Aigle<number>;
 
-    static findIndexLimit<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<number>;
+    static findIndexLimit<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<number>;
     static findIndexLimit<T extends object>(
       collection: T,
       limit: number,
@@ -1880,17 +2453,32 @@ declare namespace AigleCore {
 
     /* findKey */
 
-    static findKey<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<string | undefined>;
+    static findKey<T>(
+      collection: T[],
+      iterator?: ArrayIterator<T, boolean>
+    ): Aigle<string | undefined>;
 
-    static findKey<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<string | undefined>;
+    static findKey<T>(
+      collection: List<T>,
+      iterator?: ListIterator<T, boolean>
+    ): Aigle<string | undefined>;
 
-    static findKey<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<string | undefined>;
+    static findKey<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<string | undefined>;
 
     /* findKeySeries */
 
-    static findKeySeries<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<string | undefined>;
+    static findKeySeries<T>(
+      collection: T[],
+      iterator?: ArrayIterator<T, boolean>
+    ): Aigle<string | undefined>;
 
-    static findKeySeries<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<string | undefined>;
+    static findKeySeries<T>(
+      collection: List<T>,
+      iterator?: ListIterator<T, boolean>
+    ): Aigle<string | undefined>;
 
     static findKeySeries<T extends object>(
       collection: T,
@@ -1899,14 +2487,20 @@ declare namespace AigleCore {
 
     /* findKeyLimit */
 
-    static findKeyLimit<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<string | undefined>;
+    static findKeyLimit<T>(
+      collection: T[],
+      iterator?: ArrayIterator<T, boolean>
+    ): Aigle<string | undefined>;
     static findKeyLimit<T>(
       collection: T[],
       limit: number,
       iterator: ArrayIterator<T, boolean>
     ): Aigle<string | undefined>;
 
-    static findKeyLimit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<string | undefined>;
+    static findKeyLimit<T>(
+      collection: List<T>,
+      iterator?: ListIterator<T, boolean>
+    ): Aigle<string | undefined>;
     static findKeyLimit<T>(
       collection: List<T>,
       limit: number,
@@ -1929,25 +2523,45 @@ declare namespace AigleCore {
 
     static groupBy<T>(collection: List<T>, iterator?: ListIterator<T>): Aigle<Dictionary<T[]>>;
 
-    static groupBy<T extends object>(collection: T, iterator?: ObjectIterator<T>): Aigle<Dictionary<T[]>>;
+    static groupBy<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T>
+    ): Aigle<Dictionary<T[]>>;
 
     /* groupBySeries */
 
     static groupBySeries<T>(collection: T[], iterator?: ArrayIterator<T>): Aigle<Dictionary<T[]>>;
 
-    static groupBySeries<T>(collection: List<T>, iterator?: ListIterator<T>): Aigle<Dictionary<T[]>>;
+    static groupBySeries<T>(
+      collection: List<T>,
+      iterator?: ListIterator<T>
+    ): Aigle<Dictionary<T[]>>;
 
-    static groupBySeries<T extends object>(collection: T, iterator?: ObjectIterator<T>): Aigle<Dictionary<T[]>>;
+    static groupBySeries<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T>
+    ): Aigle<Dictionary<T[]>>;
 
     /* groupByLimit */
 
     static groupByLimit<T>(collection: T[], iterator?: ArrayIterator<T>): Aigle<Dictionary<T[]>>;
-    static groupByLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T>): Aigle<Dictionary<T[]>>;
+    static groupByLimit<T>(
+      collection: T[],
+      limit: number,
+      iterator: ArrayIterator<T>
+    ): Aigle<Dictionary<T[]>>;
 
     static groupByLimit<T>(collection: List<T>, iterator?: ListIterator<T>): Aigle<Dictionary<T[]>>;
-    static groupByLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T>): Aigle<Dictionary<T[]>>;
+    static groupByLimit<T>(
+      collection: List<T>,
+      limit: number,
+      iterator: ListIterator<T>
+    ): Aigle<Dictionary<T[]>>;
 
-    static groupByLimit<T extends object>(collection: T, iterator?: ObjectIterator<T>): Aigle<Dictionary<T[]>>;
+    static groupByLimit<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T>
+    ): Aigle<Dictionary<T[]>>;
     static groupByLimit<T extends object>(
       collection: T,
       limit: number,
@@ -1960,52 +2574,113 @@ declare namespace AigleCore {
 
     static omit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
 
-    static omit<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Partial<T>>;
+    static omit<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<Partial<T>>;
 
     /* omitBy */
 
     static omitBy<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
 
-    static omitBy<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static omitBy<T>(
+      collection: List<T>,
+      iterator?: ListIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
 
-    static omitBy<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Partial<T>>;
+    static omitBy<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<Partial<T>>;
 
     /* omitSeries / omitBySeries */
 
-    static omitSeries<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static omitSeries<T>(
+      collection: T[],
+      iterator?: ArrayIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
 
-    static omitSeries<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static omitSeries<T>(
+      collection: List<T>,
+      iterator?: ListIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
 
-    static omitSeries<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Partial<T>>;
+    static omitSeries<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<Partial<T>>;
 
-    static omitBySeries<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static omitBySeries<T>(
+      collection: T[],
+      iterator?: ArrayIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
 
-    static omitBySeries<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static omitBySeries<T>(
+      collection: List<T>,
+      iterator?: ListIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
 
-    static omitBySeries<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Partial<T>>;
+    static omitBySeries<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<Partial<T>>;
 
     /* omitLimit / omitByLimit */
 
-    static omitLimit<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
-    static omitLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static omitLimit<T>(
+      collection: T[],
+      iterator?: ArrayIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
+    static omitLimit<T>(
+      collection: T[],
+      limit: number,
+      iterator: ArrayIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
 
-    static omitLimit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
-    static omitLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static omitLimit<T>(
+      collection: List<T>,
+      iterator?: ListIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
+    static omitLimit<T>(
+      collection: List<T>,
+      limit: number,
+      iterator: ListIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
 
-    static omitLimit<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Partial<T>>;
+    static omitLimit<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<Partial<T>>;
     static omitLimit<T extends object>(
       collection: T,
       limit: number,
       iterator: ObjectIterator<T, boolean>
     ): Aigle<Partial<T>>;
 
-    static omitByLimit<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
-    static omitByLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static omitByLimit<T>(
+      collection: T[],
+      iterator?: ArrayIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
+    static omitByLimit<T>(
+      collection: T[],
+      limit: number,
+      iterator: ArrayIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
 
-    static omitByLimit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
-    static omitByLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static omitByLimit<T>(
+      collection: List<T>,
+      iterator?: ListIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
+    static omitByLimit<T>(
+      collection: List<T>,
+      limit: number,
+      iterator: ListIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
 
-    static omitByLimit<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Partial<T>>;
+    static omitByLimit<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<Partial<T>>;
     static omitByLimit<T extends object>(
       collection: T,
       limit: number,
@@ -2018,52 +2693,113 @@ declare namespace AigleCore {
 
     static pick<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
 
-    static pick<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static pick<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
 
     /* pickBy */
 
     static pickBy<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
 
-    static pickBy<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static pickBy<T>(
+      collection: List<T>,
+      iterator?: ListIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
 
-    static pickBy<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static pickBy<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
 
     /* pickSeries / pickBySeries */
 
-    static pickSeries<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static pickSeries<T>(
+      collection: T[],
+      iterator?: ArrayIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
 
-    static pickSeries<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static pickSeries<T>(
+      collection: List<T>,
+      iterator?: ListIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
 
-    static pickSeries<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static pickSeries<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
 
-    static pickBySeries<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static pickBySeries<T>(
+      collection: T[],
+      iterator?: ArrayIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
 
-    static pickBySeries<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static pickBySeries<T>(
+      collection: List<T>,
+      iterator?: ListIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
 
-    static pickBySeries<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static pickBySeries<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
 
     /* pickLimit / pickByLimit */
 
-    static pickLimit<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
-    static pickLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static pickLimit<T>(
+      collection: T[],
+      iterator?: ArrayIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
+    static pickLimit<T>(
+      collection: T[],
+      limit: number,
+      iterator: ArrayIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
 
-    static pickLimit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
-    static pickLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static pickLimit<T>(
+      collection: List<T>,
+      iterator?: ListIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
+    static pickLimit<T>(
+      collection: List<T>,
+      limit: number,
+      iterator: ListIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
 
-    static pickLimit<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static pickLimit<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
     static pickLimit<T extends object>(
       collection: T,
       limit: number,
       iterator: ObjectIterator<T, boolean>
     ): Aigle<Dictionary<T[]>>;
 
-    static pickByLimit<T>(collection: T[], iterator?: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
-    static pickByLimit<T>(collection: T[], limit: number, iterator: ArrayIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static pickByLimit<T>(
+      collection: T[],
+      iterator?: ArrayIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
+    static pickByLimit<T>(
+      collection: T[],
+      limit: number,
+      iterator: ArrayIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
 
-    static pickByLimit<T>(collection: List<T>, iterator?: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
-    static pickByLimit<T>(collection: List<T>, limit: number, iterator: ListIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static pickByLimit<T>(
+      collection: List<T>,
+      iterator?: ListIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
+    static pickByLimit<T>(
+      collection: List<T>,
+      limit: number,
+      iterator: ListIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
 
-    static pickByLimit<T extends object>(collection: T, iterator?: ObjectIterator<T, boolean>): Aigle<Dictionary<T>>;
+    static pickByLimit<T extends object>(
+      collection: T,
+      iterator?: ObjectIterator<T, boolean>
+    ): Aigle<Dictionary<T>>;
     static pickByLimit<T extends object>(
       collection: T,
       limit: number,
@@ -2072,14 +2808,22 @@ declare namespace AigleCore {
 
     /* transform */
 
-    static transform<T, R>(collection: T[], iterator: MemoArrayIterator<T, R[]>, accumulator?: R[]): Aigle<R[]>;
+    static transform<T, R>(
+      collection: T[],
+      iterator: MemoArrayIterator<T, R[]>,
+      accumulator?: R[]
+    ): Aigle<R[]>;
     static transform<T, R>(
       collection: T[],
       iterator: MemoArrayIterator<T, Dictionary<R>>,
       accumulator: Dictionary<R>
     ): Aigle<Dictionary<R>>;
 
-    static transform<T, R>(collection: List<T>, iterator: MemoListIterator<T, R[]>, accumulator?: R[]): Aigle<R[]>;
+    static transform<T, R>(
+      collection: List<T>,
+      iterator: MemoListIterator<T, R[]>,
+      accumulator?: R[]
+    ): Aigle<R[]>;
     static transform<T, R>(
       collection: List<T>,
       iterator: MemoListIterator<T, Dictionary<R>>,
@@ -2099,7 +2843,11 @@ declare namespace AigleCore {
 
     /* transformSeries */
 
-    static transformSeries<T, R>(collection: T[], iterator: MemoArrayIterator<T, R[]>, accumulator?: R[]): Aigle<R[]>;
+    static transformSeries<T, R>(
+      collection: T[],
+      iterator: MemoArrayIterator<T, R[]>,
+      accumulator?: R[]
+    ): Aigle<R[]>;
     static transformSeries<T, R>(
       collection: T[],
       iterator: MemoArrayIterator<T, Dictionary<R>>,
@@ -2130,7 +2878,11 @@ declare namespace AigleCore {
 
     /* transformLimit */
 
-    static transformLimit<T, R>(collection: T[], iterator: MemoArrayIterator<T, R[]>, accumulator?: R[]): Aigle<R[]>;
+    static transformLimit<T, R>(
+      collection: T[],
+      iterator: MemoArrayIterator<T, R[]>,
+      accumulator?: R[]
+    ): Aigle<R[]>;
     static transformLimit<T, R>(
       collection: T[],
       limit: number,
@@ -2149,7 +2901,11 @@ declare namespace AigleCore {
       accumulator: Dictionary<R>
     ): Aigle<Dictionary<R>>;
 
-    static transformLimit<T, R>(collection: List<T>, iterator: MemoListIterator<T, R[]>, accumulator?: R[]): Aigle<R[]>;
+    static transformLimit<T, R>(
+      collection: List<T>,
+      iterator: MemoListIterator<T, R[]>,
+      accumulator?: R[]
+    ): Aigle<R[]>;
     static transformLimit<T, R>(
       collection: List<T>,
       limit: number,
@@ -2193,11 +2949,23 @@ declare namespace AigleCore {
 
     /* reduce */
 
-    static reduce<T, R>(collection: T[], iterator: MemoArrayIterator<T, R, R>, accumulator?: R): Aigle<R>;
+    static reduce<T, R>(
+      collection: T[],
+      iterator: MemoArrayIterator<T, R, R>,
+      accumulator?: R
+    ): Aigle<R>;
 
-    static reduce<T, R>(collection: List<T>, iterator: MemoListIterator<T, R, R>, accumulator?: R): Aigle<R>;
+    static reduce<T, R>(
+      collection: List<T>,
+      iterator: MemoListIterator<T, R, R>,
+      accumulator?: R
+    ): Aigle<R>;
 
-    static reduce<T extends object, R>(collection: T, iterator: MemoObjectIterator<T, R, R>, accumulator?: R): Aigle<R>;
+    static reduce<T extends object, R>(
+      collection: T,
+      iterator: MemoObjectIterator<T, R, R>,
+      accumulator?: R
+    ): Aigle<R>;
 
     /* delay */
 
@@ -2232,7 +3000,11 @@ declare namespace AigleCore {
     /* doWhilst */
 
     static doWhilst<T>(iterator: (value: T) => T, tester: (value: T) => boolean): Aigle<T>;
-    static doWhilst<T>(value: T, iterator: (value: T) => T, tester: (value: T) => boolean): Aigle<T>;
+    static doWhilst<T>(
+      value: T,
+      iterator: (value: T) => T,
+      tester: (value: T) => boolean
+    ): Aigle<T>;
 
     /* until */
 
@@ -2243,6 +3015,11 @@ declare namespace AigleCore {
 
     static whilst<T>(tester: (value: T) => boolean, iterator: (value: T) => T): Aigle<T>;
     static whilst<T>(value: T, tester: (value: T) => boolean, iterator: (value: T) => T): Aigle<T>;
+
+    /* retry */
+
+    static retry<T>(handler: () => T | PromiseLike<T>): Aigle<T>;
+    static retry<T>(opts: number | RetryOpts, handler: () => T | PromiseLike<T>): Aigle<T>;
 
     /* config */
 
@@ -2258,13 +3035,15 @@ declare namespace AigleCore {
 
     static mixin(sources: any, opts: any): any;
 
+    static series(collection: any): Aigle<any>;
+
     static parallel(collection: any): Aigle<any>;
 
-    static promisify(fn: any, opts?: any): Aigle<any>;
+    static parallelLimit(collection: any): Aigle<any>;
+
+    static promisify(fn: any, opts?: any): any;
 
     static promisifyAll<T extends object>(target: T, options?: any): T;
-
-    static retry(times: any, handler: any): Aigle<any>;
 
     static using(...args: any[]): Aigle<any>;
   }

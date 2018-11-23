@@ -47,7 +47,13 @@ parallel('sortByLimit', () => {
     return Aigle.sortByLimit(collection, 2, iterator).then(res => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
       assert.deepStrictEqual(res, [1, 2, 3, 4, 5]);
-      assert.deepStrictEqual(order, [['task1', 1], ['task3', 3], ['task2', 5], ['task5', 2], ['task4', 4]]);
+      assert.deepStrictEqual(order, [
+        ['task1', 1],
+        ['task3', 3],
+        ['task2', 5],
+        ['task5', 2],
+        ['task4', 4]
+      ]);
     });
   });
 
@@ -184,7 +190,13 @@ parallel('#sortByLimit', () => {
       .then(res => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
         assert.deepStrictEqual(res, [1, 2, 3, 4, 5]);
-        assert.deepStrictEqual(order, [['task1', 1], ['task3', 3], ['task2', 5], ['task5', 2], ['task4', 4]]);
+        assert.deepStrictEqual(order, [
+          ['task1', 1],
+          ['task3', 3],
+          ['task2', 5],
+          ['task5', 2],
+          ['task4', 4]
+        ]);
       });
   });
 

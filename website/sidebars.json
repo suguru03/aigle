@@ -1,10 +1,13 @@
 {
   "docs": {
-    "Docusaurus": ["doc1"],
-    "First Category": ["doc2"],
-    "Second Category": ["doc3"]
+    "About": ["what-is-aigle"],
+    "Usage": ["install"]
   },
-  "docs-other": {
-    "First Category": ["doc4", "doc5"]
+  "api-docs": {
+    "Core": [
+      "apis/aigle",
+      "apis/all",
+      "apis/all-prototype"
+    ]
   }
 }

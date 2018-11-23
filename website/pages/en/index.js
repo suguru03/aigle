@@ -51,14 +51,13 @@ const SplashContainer = props => (
 );
 
 const Logo = props => (
-  <div className="projectLogo">
-    <img src={props.img_src} />
+  <div className="aigleLogo">
+    <img className="aigleLogoImg" src={props.img_src} />
   </div>
 );
 
 const ProjectTitle = props => (
   <h2 className="projectTitle">
-    {siteConfig.title}
     <small>{siteConfig.tagline}</small>
   </h2>
 );
@@ -80,9 +79,9 @@ class HomeSplash extends React.Component {
         <div className="inner">
           <ProjectTitle />
           <PromoSection>
-            <Button href="#try">Try It Out</Button>
-            <Button href={docUrl('doc1.html', language)}>Example Link</Button>
-            <Button href={docUrl('doc2.html', language)}>Example Link 2</Button>
+            <Button href={docUrl('install.html', language)}>Get Started</Button>
+            <Button href={docUrl('apis/aigle.html', language)}>APIs</Button>
+            <Button href={siteConfig.repoUrl}>Github</Button>
           </PromoSection>
         </div>
       </SplashContainer>
@@ -101,13 +100,13 @@ const Features = props => (
     {[
       {
         content: 'faster than other Promise libraries',
-        // image: imgUrl('aigle_w1.png'),
+        image: imgUrl('fast.svg'),
         imageAlign: 'top',
         title: 'Faster'
       },
       {
         content: 'There are a lot of functions based on Lodash and Async libraries',
-        // image: imgUrl('aigle_w1.png'),
+        image: imgUrl('efficient.svg'),
         imageAlign: 'top',
         title: 'More efficient'
       }
@@ -119,8 +118,9 @@ const LearnHow = props => (
   <Block background="light">
     {[
       {
-        content: `Aigle has nothing special except for [Aigle-Core](https://github.com/suguru03/aigle-core).
-          It will make your production code faster.
+        content: `Aigle has three principals: Avoiding unnecessary memory allocation,
+          less function execution and dealing with asynchronous functions smartly.
+          Also, [Aigle-Core](https://github.com/suguru03/aigle-core) makes Aigle faster beyond Aigle dependencies.
           Learn more [here](https://hackernoon.com/how-to-make-the-fastest-promise-library-f632fd69f3cb)!`,
         image: imgUrl('aigle_w1.png'),
         imageAlign: 'right',
