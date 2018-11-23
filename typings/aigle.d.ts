@@ -3041,7 +3041,7 @@ declare namespace AigleCore {
 
     static parallelLimit(collection: any): Aigle<any>;
 
-    static promisify(fn: any, opts?: any): Aigle<any>;
+    static promisify(fn: any, opts?: any): any;
 
     static promisifyAll<T extends object>(target: T, options?: any): T;
 
