@@ -14,6 +14,6 @@ parallel('flow', () => {
     const addSquare = Aigle.flow([add, square]);
     const promise = addSquare(1, 2);
     assert.ok(promise instanceof Aigle);
-    return promise.then(data => assert.strict(data, 9));
+    return promise.then(data => assert.strictEqual(data, 9));
   });
 });
