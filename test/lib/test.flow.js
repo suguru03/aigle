@@ -16,4 +16,21 @@ parallel('flow', () => {
     assert.ok(promise instanceof Aigle);
     return promise.then(data => assert.strictEqual(data, 9));
   });
+
+  it('should create a function with arguments', () => {
+    const addSquare = Aigle.flow(
+      add,
+      square
+    );
+    return addSquare(1, 2).then(data => assert.strictEqual(data, 9));
+  });
+
+  it('should work with a funciton', () => {
+    const addSquare = Aigle.flow(add);
+    return addSquare(1, 2).then(data => assert.strictEqual(data, 3));
+  });
+
+  it('should work without any functions', () => {
+    return Aigle.flow()(1, 2).then(val => assert.strictEqual(val, 1));
+  });
 });
