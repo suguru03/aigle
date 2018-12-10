@@ -2979,6 +2979,11 @@ declare namespace AigleCore {
 
     static thru<T, R>(value: T, intercepter: (value: T) => R): Aigle<R>;
 
+    /* flow */
+    // TODO
+    static flow<T>(handlers: Array<(...args) => any>): (...args: any[]) => Aigle<T>;
+    static flow<T>(...handlers: Array<(...args) => any>): (...args: any[]) => Aigle<T>;
+
     /* times */
 
     static times<T>(n: number, iterator?: (num: number) => T): Aigle<T[]>;

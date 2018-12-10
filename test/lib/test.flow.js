@@ -33,4 +33,20 @@ parallel('flow', () => {
   it('should work without any functions', () => {
     return Aigle.flow()(1, 2).then(val => assert.strictEqual(val, 1));
   });
+
+  it('should throw an error', () => {
+    const err = new Error('error');
+    const throwError = () => {
+      throw err;
+    };
+    return Aigle.flow(
+      add,
+      throwError,
+      square
+    )(1, 2)
+      .then(() => assert.ok(false))
+      .catch(error => {
+        assert.strictEqual(error, err);
+      });
+  });
 });
