@@ -31,6 +31,7 @@ _.forEach(types, type => {
     runSequence(
       `release:package:${type}`,
       'build',
+      // 'build:type',
       'release:commit',
       'gh-pages',
       'release:tag',

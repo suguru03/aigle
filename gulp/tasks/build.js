@@ -1,7 +1,7 @@
 'use strict';
 
 const fs = require('fs');
-const { spawn } = require('child_process');
+const { spawn, exec } = require('child_process');
 
 const gulp = require('gulp');
 
@@ -26,3 +26,5 @@ gulp.task('build', () => {
     });
   });
 });
+
+gulp.task('build:type', () => Aigle.promisify(exec)('npm run build:type'));
