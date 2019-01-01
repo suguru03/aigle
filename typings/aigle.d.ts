@@ -58,7 +58,6 @@ declare namespace AigleCore {
   }
 
   export class Aigle<R> implements PromiseLike<R> {
-    /* core functions */
     constructor(
       executor: (
         resolve: (thenableOrResult?: R | PromiseLike<R>) => void,
@@ -67,33 +66,38 @@ declare namespace AigleCore {
       ) => void
     );
 
+    /* then */
+
     then<T>(
       onFulfill?: (value: R) => T | PromiseLike<T>,
       onReject?: (error: any) => T | PromiseLike<T>
     ): Aigle<T>;
+
     then<TResult1 = R, TResult2 = never>(
       onfulfilled?: ((value: R) => TResult1 | PromiseLike<TResult1>) | null,
       onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null
     ): Aigle<TResult1 | TResult2>;
 
+    /* catch */
+
     catch(onReject: (error: any) => R | PromiseLike<R>): Aigle<R>;
+
     catch<T>(onReject: ((error: any) => T | PromiseLike<T>) | undefined | null): Aigle<T | R>;
-    catch<E1, E2, E3, E4, E5>(
+
+    catch<E1>(filter1: CatchFilter<E1>, onReject: (error: E1) => R | PromiseLike<R>): Aigle<R>;
+
+    catch<E1, E2>(
       filter1: CatchFilter<E1>,
       filter2: CatchFilter<E2>,
-      filter3: CatchFilter<E3>,
-      filter4: CatchFilter<E4>,
-      filter5: CatchFilter<E5>,
-      onReject: (error: E1 | E2 | E3 | E4 | E5) => R | PromiseLike<R>
+      onReject: (error: E1 | E2) => R | PromiseLike<R>
     ): Aigle<R>;
-    catch<T, E1, E2, E3, E4, E5>(
+
+    catch<E1, E2, E3>(
       filter1: CatchFilter<E1>,
       filter2: CatchFilter<E2>,
       filter3: CatchFilter<E3>,
-      filter4: CatchFilter<E4>,
-      filter5: CatchFilter<E5>,
-      onReject: (error: E1 | E2 | E3 | E4 | E5) => T | PromiseLike<T>
-    ): Aigle<T | R>;
+      onReject: (error: E1 | E2 | E3) => R | PromiseLike<R>
+    ): Aigle<R>;
 
     catch<E1, E2, E3, E4>(
       filter1: CatchFilter<E1>,
@@ -103,6 +107,33 @@ declare namespace AigleCore {
       onReject: (error: E1 | E2 | E3 | E4) => R | PromiseLike<R>
     ): Aigle<R>;
 
+    catch<E1, E2, E3, E4, E5>(
+      filter1: CatchFilter<E1>,
+      filter2: CatchFilter<E2>,
+      filter3: CatchFilter<E3>,
+      filter4: CatchFilter<E4>,
+      filter5: CatchFilter<E5>,
+      onReject: (error: E1 | E2 | E3 | E4 | E5) => R | PromiseLike<R>
+    ): Aigle<R>;
+
+    catch<T, E1>(
+      filter1: CatchFilter<E1>,
+      onReject: (error: E1) => T | PromiseLike<T>
+    ): Aigle<T | R>;
+
+    catch<T, E1, E2>(
+      filter1: CatchFilter<E1>,
+      filter2: CatchFilter<E2>,
+      onReject: (error: E1 | E2) => T | PromiseLike<T>
+    ): Aigle<T | R>;
+
+    catch<T, E1, E2, E3>(
+      filter1: CatchFilter<E1>,
+      filter2: CatchFilter<E2>,
+      filter3: CatchFilter<E3>,
+      onReject: (error: E1 | E2 | E3) => T | PromiseLike<T>
+    ): Aigle<T | R>;
+
     catch<T, E1, E2, E3, E4>(
       filter1: CatchFilter<E1>,
       filter2: CatchFilter<E2>,
@@ -111,40 +142,18 @@ declare namespace AigleCore {
       onReject: (error: E1 | E2 | E3 | E4) => T | PromiseLike<T>
     ): Aigle<T | R>;
 
-    catch<E1, E2, E3>(
+    catch<T, E1, E2, E3, E4, E5>(
       filter1: CatchFilter<E1>,
       filter2: CatchFilter<E2>,
       filter3: CatchFilter<E3>,
-      onReject: (error: E1 | E2 | E3) => R | PromiseLike<R>
-    ): Aigle<R>;
-    catch<T, E1, E2, E3>(
-      filter1: CatchFilter<E1>,
-      filter2: CatchFilter<E2>,
-      filter3: CatchFilter<E3>,
-      onReject: (error: E1 | E2 | E3) => T | PromiseLike<T>
+      filter4: CatchFilter<E4>,
+      filter5: CatchFilter<E5>,
+      onReject: (error: E1 | E2 | E3 | E4 | E5) => T | PromiseLike<T>
     ): Aigle<T | R>;
 
-    catch<E1, E2>(
-      filter1: CatchFilter<E1>,
-      filter2: CatchFilter<E2>,
-      onReject: (error: E1 | E2) => R | PromiseLike<R>
-    ): Aigle<R>;
-    catch<T, E1, E2>(
-      filter1: CatchFilter<E1>,
-      filter2: CatchFilter<E2>,
-      onReject: (error: E1 | E2) => T | PromiseLike<T>
-    ): Aigle<T | R>;
-
-    catch<E>(filter1: CatchFilter<E>, onReject: (error: E) => R | PromiseLike<R>): Aigle<R>;
-    catch<T, E>(filter1: CatchFilter<E>, onReject: (error: E) => T | PromiseLike<T>): Aigle<T | R>;
+    /* finally */
 
     finally<T>(handler: () => T | PromiseLike<T>): Aigle<R>;
-
-    /* spread */
-
-    spread<T, R>(this: Aigle<T[]>, onFulfill: (...args: T[]) => R | PromiseLike<R>);
-    // TODO: define type
-    spread<R>(this: Aigle<any>, onFulfill: (...args: any[]) => R | PromiseLike<R>);
 
     /* all */
 
@@ -154,6 +163,90 @@ declare namespace AigleCore {
      * @param values An array of Promises.
      * @returns A new Aigle.
      */
+    all<T1>(this: Aigle<[T1 | PromiseLike<T1>]>): Aigle<[T1]>;
+
+    all<T1, T2>(this: Aigle<[T1 | PromiseLike<T1>, T2 | PromiseLike<T2>]>): Aigle<[T1, T2]>;
+
+    all<T1, T2, T3>(
+      this: Aigle<[T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>]>
+    ): Aigle<[T1, T2, T3]>;
+
+    all<T1, T2, T3, T4>(
+      this: Aigle<
+        [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike<T4>]
+      >
+    ): Aigle<[T1, T2, T3, T4]>;
+
+    all<T1, T2, T3, T4, T5>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1>,
+          T2 | PromiseLike<T2>,
+          T3 | PromiseLike<T3>,
+          T4 | PromiseLike<T4>,
+          T5 | PromiseLike<T5>
+        ]
+      >
+    ): Aigle<[T1, T2, T3, T4, T5]>;
+
+    all<T1, T2, T3, T4, T5, T6>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1>,
+          T2 | PromiseLike<T2>,
+          T3 | PromiseLike<T3>,
+          T4 | PromiseLike<T4>,
+          T5 | PromiseLike<T5>,
+          T6 | PromiseLike<T6>
+        ]
+      >
+    ): Aigle<[T1, T2, T3, T4, T5, T6]>;
+
+    all<T1, T2, T3, T4, T5, T6, T7>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1>,
+          T2 | PromiseLike<T2>,
+          T3 | PromiseLike<T3>,
+          T4 | PromiseLike<T4>,
+          T5 | PromiseLike<T5>,
+          T6 | PromiseLike<T6>,
+          T7 | PromiseLike<T7>
+        ]
+      >
+    ): Aigle<[T1, T2, T3, T4, T5, T6, T7]>;
+
+    all<T1, T2, T3, T4, T5, T6, T7, T8>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1>,
+          T2 | PromiseLike<T2>,
+          T3 | PromiseLike<T3>,
+          T4 | PromiseLike<T4>,
+          T5 | PromiseLike<T5>,
+          T6 | PromiseLike<T6>,
+          T7 | PromiseLike<T7>,
+          T8 | PromiseLike<T8>
+        ]
+      >
+    ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8]>;
+
+    all<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1>,
+          T2 | PromiseLike<T2>,
+          T3 | PromiseLike<T3>,
+          T4 | PromiseLike<T4>,
+          T5 | PromiseLike<T5>,
+          T6 | PromiseLike<T6>,
+          T7 | PromiseLike<T7>,
+          T8 | PromiseLike<T8>,
+          T9 | PromiseLike<T9>
+        ]
+      >
+    ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8, T9]>;
+
     all<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
       this: Aigle<
         [
@@ -171,13 +264,54 @@ declare namespace AigleCore {
       >
     ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10]>;
 
+    /* race */
+
     /**
-     * Creates a Promise that is resolved with an array of results when all of the provided Promises
-     * resolve, or rejected when any Promise is rejected.
+     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
+     * or rejected.
      * @param values An array of Promises.
      * @returns A new Aigle.
      */
-    all<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
+    race<T1>(this: Aigle<[T1 | PromiseLike<T1>]>): Aigle<T1>;
+
+    race<T1, T2>(this: Aigle<[T1 | PromiseLike<T1>, T2 | PromiseLike<T2>]>): Aigle<T1 | T2>;
+
+    race<T1, T2, T3>(
+      this: Aigle<[T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>]>
+    ): Aigle<T1 | T2 | T3>;
+
+    race<T1, T2, T3, T4>(
+      this: Aigle<
+        [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike<T4>]
+      >
+    ): Aigle<T1 | T2 | T3 | T4>;
+
+    race<T1, T2, T3, T4, T5>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1>,
+          T2 | PromiseLike<T2>,
+          T3 | PromiseLike<T3>,
+          T4 | PromiseLike<T4>,
+          T5 | PromiseLike<T5>
+        ]
+      >
+    ): Aigle<T1 | T2 | T3 | T4 | T5>;
+
+    race<T1, T2, T3, T4, T5, T6>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1>,
+          T2 | PromiseLike<T2>,
+          T3 | PromiseLike<T3>,
+          T4 | PromiseLike<T4>,
+          T5 | PromiseLike<T5>,
+          T6 | PromiseLike<T6>
+        ]
+      >
+    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6>;
+
+    race<T1, T2, T3, T4, T5, T6, T7>(
       this: Aigle<
         [
           T1 | PromiseLike<T1>,
@@ -186,20 +320,12 @@ declare namespace AigleCore {
           T4 | PromiseLike<T4>,
           T5 | PromiseLike<T5>,
           T6 | PromiseLike<T6>,
-          T7 | PromiseLike<T7>,
-          T8 | PromiseLike<T8>,
-          T9 | PromiseLike<T9>
+          T7 | PromiseLike<T7>
         ]
       >
-    ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8, T9]>;
+    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6 | T7>;
 
-    /**
-     * Creates a Promise that is resolved with an array of results when all of the provided Promises
-     * resolve, or rejected when any Promise is rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    all<T1, T2, T3, T4, T5, T6, T7, T8>(
+    race<T1, T2, T3, T4, T5, T6, T7, T8>(
       this: Aigle<
         [
           T1 | PromiseLike<T1>,
@@ -212,134 +338,8 @@ declare namespace AigleCore {
           T8 | PromiseLike<T8>
         ]
       >
-    ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8]>;
+    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8>;
 
-    /**
-     * Creates a Promise that is resolved with an array of results when all of the provided Promises
-     * resolve, or rejected when any Promise is rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    all<T1, T2, T3, T4, T5, T6, T7>(
-      this: Aigle<
-        [
-          T1 | PromiseLike<T1>,
-          T2 | PromiseLike<T2>,
-          T3 | PromiseLike<T3>,
-          T4 | PromiseLike<T4>,
-          T5 | PromiseLike<T5>,
-          T6 | PromiseLike<T6>,
-          T7 | PromiseLike<T7>
-        ]
-      >
-    ): Aigle<[T1, T2, T3, T4, T5, T6, T7]>;
-
-    /**
-     * Creates a Promise that is resolved with an array of results when all of the provided Promises
-     * resolve, or rejected when any Promise is rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    all<T1, T2, T3, T4, T5, T6>(
-      this: Aigle<
-        [
-          T1 | PromiseLike<T1>,
-          T2 | PromiseLike<T2>,
-          T3 | PromiseLike<T3>,
-          T4 | PromiseLike<T4>,
-          T5 | PromiseLike<T5>,
-          T6 | PromiseLike<T6>
-        ]
-      >
-    ): Aigle<[T1, T2, T3, T4, T5, T6]>;
-
-    /**
-     * Creates a Promise that is resolved with an array of results when all of the provided Promises
-     * resolve, or rejected when any Promise is rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    all<T1, T2, T3, T4, T5>(
-      this: Aigle<
-        [
-          T1 | PromiseLike<T1>,
-          T2 | PromiseLike<T2>,
-          T3 | PromiseLike<T3>,
-          T4 | PromiseLike<T4>,
-          T5 | PromiseLike<T5>
-        ]
-      >
-    ): Aigle<[T1, T2, T3, T4, T5]>;
-
-    /**
-     * Creates a Promise that is resolved with an array of results when all of the provided Promises
-     * resolve, or rejected when any Promise is rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    all<T1, T2, T3, T4>(
-      this: Aigle<
-        [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike<T4>]
-      >
-    ): Aigle<[T1, T2, T3, T4]>;
-
-    /**
-     * Creates a Promise that is resolved with an array of results when all of the provided Promises
-     * resolve, or rejected when any Promise is rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    all<T1, T2, T3>(
-      this: Aigle<[T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>]>
-    ): Aigle<[T1, T2, T3]>;
-
-    /**
-     * Creates a Promise that is resolved with an array of results when all of the provided Promises
-     * resolve, or rejected when any Promise is rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    all<T1, T2>(this: Aigle<[T1 | PromiseLike<T1>, T2 | PromiseLike<T2>]>): Aigle<[T1, T2]>;
-
-    /**
-     * Creates a Promise that is resolved with an array of results when all of the provided Promises
-     * resolve, or rejected when any Promise is rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    all<T>(this: Aigle<(T | PromiseLike<T>)[]>): Aigle<T[]>;
-
-    /* race */
-
-    /**
-     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
-     * or rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    race<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
-      this: Aigle<
-        [
-          T1 | PromiseLike<T1>,
-          T2 | PromiseLike<T2>,
-          T3 | PromiseLike<T3>,
-          T4 | PromiseLike<T4>,
-          T5 | PromiseLike<T5>,
-          T6 | PromiseLike<T6>,
-          T7 | PromiseLike<T7>,
-          T8 | PromiseLike<T8>,
-          T9 | PromiseLike<T9>,
-          T10 | PromiseLike<T10>
-        ]
-      >
-    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9 | T10>;
-
-    /**
-     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
-     * or rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
     race<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
       this: Aigle<
         [
@@ -356,13 +356,7 @@ declare namespace AigleCore {
       >
     ): Aigle<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9>;
 
-    /**
-     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
-     * or rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    race<T1, T2, T3, T4, T5, T6, T7, T8>(
+    race<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
       this: Aigle<
         [
           T1 | PromiseLike<T1>,
@@ -372,105 +366,12 @@ declare namespace AigleCore {
           T5 | PromiseLike<T5>,
           T6 | PromiseLike<T6>,
           T7 | PromiseLike<T7>,
-          T8 | PromiseLike<T8>
+          T8 | PromiseLike<T8>,
+          T9 | PromiseLike<T9>,
+          T10 | PromiseLike<T10>
         ]
       >
-    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8>;
-
-    /**
-     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
-     * or rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    race<T1, T2, T3, T4, T5, T6, T7>(
-      this: Aigle<
-        [
-          T1 | PromiseLike<T1>,
-          T2 | PromiseLike<T2>,
-          T3 | PromiseLike<T3>,
-          T4 | PromiseLike<T4>,
-          T5 | PromiseLike<T5>,
-          T6 | PromiseLike<T6>,
-          T7 | PromiseLike<T7>
-        ]
-      >
-    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6 | T7>;
-
-    /**
-     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
-     * or rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    race<T1, T2, T3, T4, T5, T6>(
-      this: Aigle<
-        [
-          T1 | PromiseLike<T1>,
-          T2 | PromiseLike<T2>,
-          T3 | PromiseLike<T3>,
-          T4 | PromiseLike<T4>,
-          T5 | PromiseLike<T5>,
-          T6 | PromiseLike<T6>
-        ]
-      >
-    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6>;
-
-    /**
-     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
-     * or rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    race<T1, T2, T3, T4, T5>(
-      this: Aigle<
-        [
-          T1 | PromiseLike<T1>,
-          T2 | PromiseLike<T2>,
-          T3 | PromiseLike<T3>,
-          T4 | PromiseLike<T4>,
-          T5 | PromiseLike<T5>
-        ]
-      >
-    ): Aigle<T1 | T2 | T3 | T4 | T5>;
-
-    /**
-     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
-     * or rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    race<T1, T2, T3, T4>(
-      this: Aigle<
-        [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseLike<T4>]
-      >
-    ): Aigle<T1 | T2 | T3 | T4>;
-
-    /**
-     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
-     * or rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    race<T1, T2, T3>(
-      this: Aigle<[T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>]>
-    ): Aigle<T1 | T2 | T3>;
-
-    /**
-     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
-     * or rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    race<T1, T2>(this: Aigle<[T1 | PromiseLike<T1>, T2 | PromiseLike<T2>]>): Aigle<T1 | T2>;
-
-    /**
-     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
-     * or rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    race<T>(this: Aigle<(T | PromiseLike<T>)[]>): Aigle<T>;
+    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9 | T10>;
 
     /* prpps */
 
@@ -509,9 +410,11 @@ declare namespace AigleCore {
     /* eachLimit/forEachLimit */
 
     eachLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, any>): Aigle<T[]>;
+
     eachLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T, any>): Aigle<T[]>;
 
     eachLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, any>): Aigle<List<T>>;
+
     eachLimit<T>(
       this: Aigle<List<T>>,
       limit: number,
@@ -519,6 +422,7 @@ declare namespace AigleCore {
     ): Aigle<List<T>>;
 
     eachLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, any>): Aigle<T>;
+
     eachLimit<T extends object>(
       this: Aigle<T>,
       limit: number,
@@ -526,9 +430,11 @@ declare namespace AigleCore {
     ): Aigle<T>;
 
     forEachLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, any>): Aigle<T[]>;
+
     forEachLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T, any>): Aigle<T[]>;
 
     forEachLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, any>): Aigle<List<T>>;
+
     forEachLimit<T>(
       this: Aigle<List<T>>,
       limit: number,
@@ -536,6 +442,7 @@ declare namespace AigleCore {
     ): Aigle<List<T>>;
 
     forEachLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T, any>): Aigle<T>;
+
     forEachLimit<T extends object>(
       this: Aigle<T>,
       limit: number,
@@ -561,12 +468,15 @@ declare namespace AigleCore {
     /* mapLimit */
 
     mapLimit<T, R>(this: Aigle<T[]>, iterator: ArrayIterator<T, R>): Aigle<R[]>;
+
     mapLimit<T, R>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T, R>): Aigle<R[]>;
 
     mapLimit<T, R>(this: Aigle<List<T>>, iterator: ListIterator<T, R>): Aigle<R[]>;
+
     mapLimit<T, R>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T, R>): Aigle<R[]>;
 
     mapLimit<T extends object, R>(this: Aigle<T>, iterator: ObjectIterator<T, R>): Aigle<R[]>;
+
     mapLimit<T extends object, R>(
       this: Aigle<T>,
       limit: number,
@@ -601,6 +511,7 @@ declare namespace AigleCore {
     /* mapValuesLimit */
 
     mapValuesLimit<T, R>(this: Aigle<T[]>, iterator?: ArrayIterator<T, R>): Aigle<Dictionary<R>>;
+
     mapValuesLimit<T, R>(
       this: Aigle<T[]>,
       limit: number,
@@ -618,6 +529,7 @@ declare namespace AigleCore {
       this: Aigle<T>,
       iterator?: ObjectIterator<T, R>
     ): Aigle<Record<keyof T, R>>;
+
     mapValuesLimit<T extends object, R>(
       this: Aigle<T>,
       limit: number,
@@ -646,6 +558,7 @@ declare namespace AigleCore {
     /* concatLimit */
 
     concatLimit<T, R>(this: Aigle<T[]>, iterator?: ArrayIterator<T, R | R[]>): Aigle<R[]>;
+
     concatLimit<T, R>(
       this: Aigle<T[]>,
       limit: number,
@@ -653,6 +566,7 @@ declare namespace AigleCore {
     ): Aigle<R[]>;
 
     concatLimit<T, R>(this: Aigle<List<T>>, iterator?: ListIterator<T, R | R[]>): Aigle<R[]>;
+
     concatLimit<T, R>(
       this: Aigle<List<T>>,
       limit: number,
@@ -663,6 +577,7 @@ declare namespace AigleCore {
       this: Aigle<T>,
       iterator?: ObjectIterator<T, R | R[]>
     ): Aigle<R[]>;
+
     concatLimit<T extends object, R>(
       this: Aigle<T>,
       limit: number,
@@ -691,6 +606,7 @@ declare namespace AigleCore {
     /* everyLimit */
 
     everyLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<boolean>;
+
     everyLimit<T>(
       this: Aigle<T[]>,
       limit: number,
@@ -698,6 +614,7 @@ declare namespace AigleCore {
     ): Aigle<boolean>;
 
     everyLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<boolean>;
+
     everyLimit<T>(
       this: Aigle<List<T>>,
       limit: number,
@@ -708,6 +625,7 @@ declare namespace AigleCore {
       this: Aigle<T>,
       iterator?: ObjectIterator<T, boolean>
     ): Aigle<boolean>;
+
     everyLimit<T extends object>(
       this: Aigle<T>,
       limit: number,
@@ -736,6 +654,7 @@ declare namespace AigleCore {
     /* someLimit */
 
     someLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<boolean>;
+
     someLimit<T>(
       this: Aigle<T[]>,
       limit: number,
@@ -743,6 +662,7 @@ declare namespace AigleCore {
     ): Aigle<boolean>;
 
     someLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<boolean>;
+
     someLimit<T>(
       this: Aigle<List<T>>,
       limit: number,
@@ -753,6 +673,7 @@ declare namespace AigleCore {
       this: Aigle<T>,
       iterator?: ObjectIterator<T, boolean>
     ): Aigle<boolean>;
+
     someLimit<T extends object>(
       this: Aigle<T>,
       limit: number,
@@ -784,6 +705,7 @@ declare namespace AigleCore {
     /* filterLimit */
 
     filterLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<T[]>;
+
     filterLimit<T>(
       this: Aigle<T[]>,
       limit: number,
@@ -791,6 +713,7 @@ declare namespace AigleCore {
     ): Aigle<T[]>;
 
     filterLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<T[]>;
+
     filterLimit<T>(
       this: Aigle<List<T>>,
       limit: number,
@@ -801,6 +724,7 @@ declare namespace AigleCore {
       this: Aigle<T>,
       iterator?: ObjectIterator<T, boolean>
     ): Aigle<Array<T[keyof T]>>;
+
     filterLimit<T extends object>(
       this: Aigle<T>,
       limit: number,
@@ -832,6 +756,7 @@ declare namespace AigleCore {
     /* rejectLimit */
 
     rejectLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<T[]>;
+
     rejectLimit<T>(
       this: Aigle<T[]>,
       limit: number,
@@ -839,6 +764,7 @@ declare namespace AigleCore {
     ): Aigle<T[]>;
 
     rejectLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<T[]>;
+
     rejectLimit<T>(
       this: Aigle<List<T>>,
       limit: number,
@@ -849,6 +775,7 @@ declare namespace AigleCore {
       this: Aigle<T>,
       iterator?: ObjectIterator<T, boolean>
     ): Aigle<Array<T[keyof T]>>;
+
     rejectLimit<T extends object>(
       this: Aigle<T>,
       limit: number,
@@ -880,15 +807,18 @@ declare namespace AigleCore {
     /* sortByLimit */
 
     sortByLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<T[]>;
+
     sortByLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T>): Aigle<T[]>;
 
     sortByLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<T[]>;
+
     sortByLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T>): Aigle<T[]>;
 
     sortByLimit<T extends object>(
       this: Aigle<T>,
       iterator?: ObjectIterator<T>
     ): Aigle<Array<T[keyof T]>>;
+
     sortByLimit<T extends object>(
       this: Aigle<T>,
       limit: number,
@@ -938,15 +868,18 @@ declare namespace AigleCore {
     /* findLimit / detectLimit */
 
     findLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<T>;
+
     findLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T, boolean>): Aigle<T>;
 
     findLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<T>;
+
     findLimit<T>(this: Aigle<List<T>>, limit: number, iterator: ListIterator<T, boolean>): Aigle<T>;
 
     findLimit<T extends object>(
       this: Aigle<T>,
       iterator?: ObjectIterator<T, boolean>
     ): Aigle<T[keyof T]>;
+
     findLimit<T extends object>(
       this: Aigle<T>,
       limit: number,
@@ -954,9 +887,11 @@ declare namespace AigleCore {
     ): Aigle<T[keyof T]>;
 
     detectLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<T>;
+
     detectLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T, boolean>): Aigle<T>;
 
     detectLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<T>;
+
     detectLimit<T>(
       this: Aigle<List<T>>,
       limit: number,
@@ -967,6 +902,7 @@ declare namespace AigleCore {
       this: Aigle<T>,
       iterator?: ObjectIterator<T, boolean>
     ): Aigle<T[keyof T]>;
+
     detectLimit<T extends object>(
       this: Aigle<T>,
       limit: number,
@@ -998,6 +934,7 @@ declare namespace AigleCore {
     /* findIndexLimit */
 
     findIndexLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, boolean>): Aigle<number>;
+
     findIndexLimit<T>(
       this: Aigle<T[]>,
       limit: number,
@@ -1005,6 +942,7 @@ declare namespace AigleCore {
     ): Aigle<number>;
 
     findIndexLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T, boolean>): Aigle<number>;
+
     findIndexLimit<T>(
       this: Aigle<List<T>>,
       limit: number,
@@ -1015,6 +953,7 @@ declare namespace AigleCore {
       this: Aigle<T>,
       iterator?: ObjectIterator<T, boolean>
     ): Aigle<number>;
+
     findIndexLimit<T extends object>(
       this: Aigle<T>,
       limit: number,
@@ -1058,6 +997,7 @@ declare namespace AigleCore {
       this: Aigle<T[]>,
       iterator?: ArrayIterator<T, boolean>
     ): Aigle<string | undefined>;
+
     findKeyLimit<T>(
       this: Aigle<T[]>,
       limit: number,
@@ -1068,6 +1008,7 @@ declare namespace AigleCore {
       this: Aigle<List<T>>,
       iterator?: ListIterator<T, boolean>
     ): Aigle<string | undefined>;
+
     findKeyLimit<T>(
       this: Aigle<List<T>>,
       limit: number,
@@ -1078,6 +1019,7 @@ declare namespace AigleCore {
       this: Aigle<T>,
       iterator?: ObjectIterator<T, boolean>
     ): Aigle<string | undefined>;
+
     findKeyLimit<T extends object>(
       this: Aigle<T>,
       limit: number,
@@ -1106,6 +1048,7 @@ declare namespace AigleCore {
     /* groupByLimit */
 
     groupByLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T[]>>;
+
     groupByLimit<T>(
       this: Aigle<T[]>,
       limit: number,
@@ -1113,6 +1056,7 @@ declare namespace AigleCore {
     ): Aigle<Dictionary<T[]>>;
 
     groupByLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T[]>>;
+
     groupByLimit<T>(
       this: Aigle<List<T>>,
       limit: number,
@@ -1123,6 +1067,7 @@ declare namespace AigleCore {
       this: Aigle<T>,
       iterator?: ObjectIterator<T>
     ): Aigle<Dictionary<T[]>>;
+
     groupByLimit<T extends object>(
       this: Aigle<T>,
       limit: number,
@@ -1168,9 +1113,11 @@ declare namespace AigleCore {
     /* omitLimit / omitByLimit */
 
     omitLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T>>;
+
     omitLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T>): Aigle<Dictionary<T>>;
 
     omitLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
+
     omitLimit<T>(
       this: Aigle<List<T>>,
       limit: number,
@@ -1185,6 +1132,7 @@ declare namespace AigleCore {
     ): Aigle<Dictionary<T>>;
 
     omitByLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T>>;
+
     omitByLimit<T>(
       this: Aigle<T[]>,
       limit: number,
@@ -1192,6 +1140,7 @@ declare namespace AigleCore {
     ): Aigle<Dictionary<T>>;
 
     omitByLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
+
     omitByLimit<T>(
       this: Aigle<List<T>>,
       limit: number,
@@ -1202,6 +1151,7 @@ declare namespace AigleCore {
       this: Aigle<T>,
       iterator?: ObjectIterator<T>
     ): Aigle<Dictionary<T>>;
+
     omitByLimit<T extends object>(
       this: Aigle<T>,
       limit: number,
@@ -1241,9 +1191,11 @@ declare namespace AigleCore {
     /* pickLimit / pickByLimit */
 
     pickLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T>>;
+
     pickLimit<T>(this: Aigle<T[]>, limit: number, iterator: ArrayIterator<T>): Aigle<Dictionary<T>>;
 
     pickLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
+
     pickLimit<T>(
       this: Aigle<List<T>>,
       limit: number,
@@ -1251,6 +1203,7 @@ declare namespace AigleCore {
     ): Aigle<Dictionary<T>>;
 
     pickLimit<T extends object>(this: Aigle<T>, iterator?: ObjectIterator<T>): Aigle<Partial<T>>;
+
     pickLimit<T extends object>(
       this: Aigle<T>,
       limit: number,
@@ -1258,6 +1211,7 @@ declare namespace AigleCore {
     ): Aigle<Partial<T>>;
 
     pickByLimit<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T>): Aigle<Dictionary<T>>;
+
     pickByLimit<T>(
       this: Aigle<T[]>,
       limit: number,
@@ -1265,6 +1219,7 @@ declare namespace AigleCore {
     ): Aigle<Dictionary<T>>;
 
     pickByLimit<T>(this: Aigle<List<T>>, iterator?: ListIterator<T>): Aigle<Dictionary<T>>;
+
     pickByLimit<T>(
       this: Aigle<List<T>>,
       limit: number,
@@ -1285,6 +1240,7 @@ declare namespace AigleCore {
       iterator: MemoArrayIterator<T, R[]>,
       accumulator?: R[]
     ): Aigle<R[]>;
+
     transform<T, R>(
       this: Aigle<T[]>,
       iterator: MemoArrayIterator<T, Dictionary<R>>,
@@ -1296,6 +1252,7 @@ declare namespace AigleCore {
       iterator: MemoListIterator<T, R[]>,
       accumulator?: R[]
     ): Aigle<R[]>;
+
     transform<T, R>(
       this: Aigle<List<T>>,
       iterator: MemoListIterator<T, Dictionary<R>>,
@@ -1307,6 +1264,7 @@ declare namespace AigleCore {
       iterator: MemoObjectIterator<T, Dictionary<R>>,
       accumulator?: Dictionary<R>
     ): Aigle<Dictionary<R>>;
+
     transform<T extends object, R>(
       this: Aigle<T>,
       iterator: MemoObjectIterator<T, R[]>,
@@ -1320,6 +1278,7 @@ declare namespace AigleCore {
       iterator: MemoArrayIterator<T, R[]>,
       accumulator?: R[]
     ): Aigle<R[]>;
+
     transformSeries<T, R>(
       this: Aigle<T[]>,
       iterator: MemoArrayIterator<T, Dictionary<R>>,
@@ -1331,6 +1290,7 @@ declare namespace AigleCore {
       iterator: MemoListIterator<T, R[]>,
       accumulator?: R[]
     ): Aigle<R[]>;
+
     transformSeries<T, R>(
       this: Aigle<List<T>>,
       iterator: MemoListIterator<T, Dictionary<R>>,
@@ -1342,6 +1302,7 @@ declare namespace AigleCore {
       iterator: MemoObjectIterator<T, Dictionary<R>>,
       accumulator?: Dictionary<R>
     ): Aigle<Dictionary<R>>;
+
     transformSeries<T extends object, R>(
       this: Aigle<T>,
       iterator: MemoObjectIterator<T, R[]>,
@@ -1355,17 +1316,20 @@ declare namespace AigleCore {
       iterator: MemoArrayIterator<T, R[]>,
       accumulator?: R[]
     ): Aigle<R[]>;
+
     transformLimit<T, R>(
       this: Aigle<T[]>,
       limit: number,
       iterator: MemoArrayIterator<T, R[]>,
       accumulator?: R[]
     ): Aigle<R[]>;
+
     transformLimit<T, R>(
       this: Aigle<T[]>,
       iterator: MemoArrayIterator<T, Dictionary<R>>,
       accumulator: Dictionary<R>
     ): Aigle<Dictionary<R>>;
+
     transformLimit<T, R>(
       this: Aigle<T[]>,
       limit: number,
@@ -1378,17 +1342,20 @@ declare namespace AigleCore {
       iterator: MemoListIterator<T, R[]>,
       accumulator?: R[]
     ): Aigle<R[]>;
+
     transformLimit<T, R>(
       this: Aigle<List<T>>,
       limit: number,
       iterator: MemoListIterator<T, R[]>,
       accumulator?: R[]
     ): Aigle<R[]>;
+
     transformLimit<T, R>(
       this: Aigle<List<T>>,
       iterator: MemoListIterator<T, Dictionary<R>>,
       accumulator?: Dictionary<R>
     ): Aigle<Dictionary<R>>;
+
     transformLimit<T, R>(
       this: Aigle<List<T>>,
       limit: number,
@@ -1401,17 +1368,20 @@ declare namespace AigleCore {
       iterator: MemoObjectIterator<T, Dictionary<R>>,
       accumulator?: Dictionary<R>
     ): Aigle<Dictionary<R>>;
+
     transformLimit<T extends object, R>(
       this: Aigle<T>,
       limit: number,
       iterator: MemoObjectIterator<T, Dictionary<R>>,
       accumulator?: Dictionary<R>
     ): Aigle<Dictionary<R>>;
+
     transformLimit<T extends object, R>(
       this: Aigle<T>,
       iterator: MemoObjectIterator<T, R[]>,
       accumulator: R[]
     ): Aigle<R[]>;
+
     transformLimit<T extends object, R>(
       this: Aigle<T>,
       limit: number,
@@ -1458,6 +1428,7 @@ declare namespace AigleCore {
     /* timesLimit */
 
     timesLimit<T>(this: Aigle<number>, iterator?: (num: number) => T): Aigle<T[]>;
+
     timesLimit<T>(this: Aigle<number>, limit: number, iterator: (num: number) => T): Aigle<T[]>;
 
     /* doUntil */
@@ -1519,12 +1490,16 @@ declare namespace AigleCore {
     /* core functions */
 
     static resolve(): Aigle<void>;
+
     static resolve<T>(value: T | PromiseLike<T>): Aigle<T>;
 
     static reject(reason: any): Aigle<never>;
 
     static join<T>(...values: T[]): Aigle<T[]>;
+
     static join<T>(...values: PromiseLike<T>[]): Aigle<T[]>;
+
+    /* all */
 
     /**
      * Creates a Promise that is resolved with an array of results when all of the provided Promises
@@ -1532,6 +1507,83 @@ declare namespace AigleCore {
      * @param values An array of Promises.
      * @returns A new Aigle.
      */
+    static all<T1>(values: [T1 | PromiseLike<T1>]): Aigle<[T1]>;
+
+    static all<T1, T2>(values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>]): Aigle<[T1, T2]>;
+
+    static all<T1, T2, T3>(
+      values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>]
+    ): Aigle<[T1, T2, T3]>;
+
+    static all<T1, T2, T3, T4>(
+      values: [
+        T1 | PromiseLike<T1>,
+        T2 | PromiseLike<T2>,
+        T3 | PromiseLike<T3>,
+        T4 | PromiseLike<T4>
+      ]
+    ): Aigle<[T1, T2, T3, T4]>;
+
+    static all<T1, T2, T3, T4, T5>(
+      values: [
+        T1 | PromiseLike<T1>,
+        T2 | PromiseLike<T2>,
+        T3 | PromiseLike<T3>,
+        T4 | PromiseLike<T4>,
+        T5 | PromiseLike<T5>
+      ]
+    ): Aigle<[T1, T2, T3, T4, T5]>;
+
+    static all<T1, T2, T3, T4, T5, T6>(
+      values: [
+        T1 | PromiseLike<T1>,
+        T2 | PromiseLike<T2>,
+        T3 | PromiseLike<T3>,
+        T4 | PromiseLike<T4>,
+        T5 | PromiseLike<T5>,
+        T6 | PromiseLike<T6>
+      ]
+    ): Aigle<[T1, T2, T3, T4, T5, T6]>;
+
+    static all<T1, T2, T3, T4, T5, T6, T7>(
+      values: [
+        T1 | PromiseLike<T1>,
+        T2 | PromiseLike<T2>,
+        T3 | PromiseLike<T3>,
+        T4 | PromiseLike<T4>,
+        T5 | PromiseLike<T5>,
+        T6 | PromiseLike<T6>,
+        T7 | PromiseLike<T7>
+      ]
+    ): Aigle<[T1, T2, T3, T4, T5, T6, T7]>;
+
+    static all<T1, T2, T3, T4, T5, T6, T7, T8>(
+      values: [
+        T1 | PromiseLike<T1>,
+        T2 | PromiseLike<T2>,
+        T3 | PromiseLike<T3>,
+        T4 | PromiseLike<T4>,
+        T5 | PromiseLike<T5>,
+        T6 | PromiseLike<T6>,
+        T7 | PromiseLike<T7>,
+        T8 | PromiseLike<T8>
+      ]
+    ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8]>;
+
+    static all<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
+      values: [
+        T1 | PromiseLike<T1>,
+        T2 | PromiseLike<T2>,
+        T3 | PromiseLike<T3>,
+        T4 | PromiseLike<T4>,
+        T5 | PromiseLike<T5>,
+        T6 | PromiseLike<T6>,
+        T7 | PromiseLike<T7>,
+        T8 | PromiseLike<T8>,
+        T9 | PromiseLike<T9>
+      ]
+    ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8, T9]>;
+
     static all<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
       values: [
         T1 | PromiseLike<T1>,
@@ -1547,13 +1599,53 @@ declare namespace AigleCore {
       ]
     ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10]>;
 
+    /* rase */
+
     /**
-     * Creates a Promise that is resolved with an array of results when all of the provided Promises
-     * resolve, or rejected when any Promise is rejected.
+     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
+     * or rejected.
      * @param values An array of Promises.
      * @returns A new Aigle.
      */
-    static all<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
+    static race<T1>(values: [T1 | PromiseLike<T1>]): Aigle<T1>;
+
+    static race<T1, T2>(values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>]): Aigle<T1 | T2>;
+
+    static race<T1, T2, T3>(
+      values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>]
+    ): Aigle<T1 | T2 | T3>;
+
+    static race<T1, T2, T3, T4>(
+      values: [
+        T1 | PromiseLike<T1>,
+        T2 | PromiseLike<T2>,
+        T3 | PromiseLike<T3>,
+        T4 | PromiseLike<T4>
+      ]
+    ): Aigle<T1 | T2 | T3 | T4>;
+
+    static race<T1, T2, T3, T4, T5>(
+      values: [
+        T1 | PromiseLike<T1>,
+        T2 | PromiseLike<T2>,
+        T3 | PromiseLike<T3>,
+        T4 | PromiseLike<T4>,
+        T5 | PromiseLike<T5>
+      ]
+    ): Aigle<T1 | T2 | T3 | T4 | T5>;
+
+    static race<T1, T2, T3, T4, T5, T6>(
+      values: [
+        T1 | PromiseLike<T1>,
+        T2 | PromiseLike<T2>,
+        T3 | PromiseLike<T3>,
+        T4 | PromiseLike<T4>,
+        T5 | PromiseLike<T5>,
+        T6 | PromiseLike<T6>
+      ]
+    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6>;
+
+    static race<T1, T2, T3, T4, T5, T6, T7>(
       values: [
         T1 | PromiseLike<T1>,
         T2 | PromiseLike<T2>,
@@ -1561,19 +1653,11 @@ declare namespace AigleCore {
         T4 | PromiseLike<T4>,
         T5 | PromiseLike<T5>,
         T6 | PromiseLike<T6>,
-        T7 | PromiseLike<T7>,
-        T8 | PromiseLike<T8>,
-        T9 | PromiseLike<T9>
+        T7 | PromiseLike<T7>
       ]
-    ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8, T9]>;
+    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6 | T7>;
 
-    /**
-     * Creates a Promise that is resolved with an array of results when all of the provided Promises
-     * resolve, or rejected when any Promise is rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    static all<T1, T2, T3, T4, T5, T6, T7, T8>(
+    static race<T1, T2, T3, T4, T5, T6, T7, T8>(
       values: [
         T1 | PromiseLike<T1>,
         T2 | PromiseLike<T2>,
@@ -1584,129 +1668,8 @@ declare namespace AigleCore {
         T7 | PromiseLike<T7>,
         T8 | PromiseLike<T8>
       ]
-    ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8]>;
+    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8>;
 
-    /**
-     * Creates a Promise that is resolved with an array of results when all of the provided Promises
-     * resolve, or rejected when any Promise is rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    static all<T1, T2, T3, T4, T5, T6, T7>(
-      values: [
-        T1 | PromiseLike<T1>,
-        T2 | PromiseLike<T2>,
-        T3 | PromiseLike<T3>,
-        T4 | PromiseLike<T4>,
-        T5 | PromiseLike<T5>,
-        T6 | PromiseLike<T6>,
-        T7 | PromiseLike<T7>
-      ]
-    ): Aigle<[T1, T2, T3, T4, T5, T6, T7]>;
-
-    /**
-     * Creates a Promise that is resolved with an array of results when all of the provided Promises
-     * resolve, or rejected when any Promise is rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    static all<T1, T2, T3, T4, T5, T6>(
-      values: [
-        T1 | PromiseLike<T1>,
-        T2 | PromiseLike<T2>,
-        T3 | PromiseLike<T3>,
-        T4 | PromiseLike<T4>,
-        T5 | PromiseLike<T5>,
-        T6 | PromiseLike<T6>
-      ]
-    ): Aigle<[T1, T2, T3, T4, T5, T6]>;
-
-    /**
-     * Creates a Promise that is resolved with an array of results when all of the provided Promises
-     * resolve, or rejected when any Promise is rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    static all<T1, T2, T3, T4, T5>(
-      values: [
-        T1 | PromiseLike<T1>,
-        T2 | PromiseLike<T2>,
-        T3 | PromiseLike<T3>,
-        T4 | PromiseLike<T4>,
-        T5 | PromiseLike<T5>
-      ]
-    ): Aigle<[T1, T2, T3, T4, T5]>;
-
-    /**
-     * Creates a Promise that is resolved with an array of results when all of the provided Promises
-     * resolve, or rejected when any Promise is rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    static all<T1, T2, T3, T4>(
-      values: [
-        T1 | PromiseLike<T1>,
-        T2 | PromiseLike<T2>,
-        T3 | PromiseLike<T3>,
-        T4 | PromiseLike<T4>
-      ]
-    ): Aigle<[T1, T2, T3, T4]>;
-
-    /**
-     * Creates a Promise that is resolved with an array of results when all of the provided Promises
-     * resolve, or rejected when any Promise is rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    static all<T1, T2, T3>(
-      values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>]
-    ): Aigle<[T1, T2, T3]>;
-
-    /**
-     * Creates a Promise that is resolved with an array of results when all of the provided Promises
-     * resolve, or rejected when any Promise is rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    static all<T1, T2>(values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>]): Aigle<[T1, T2]>;
-
-    /**
-     * Creates a Promise that is resolved with an array of results when all of the provided Promises
-     * resolve, or rejected when any Promise is rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    static all<T>(values: (T | PromiseLike<T>)[]): Aigle<T[]>;
-
-    /* race */
-
-    /**
-     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
-     * or rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    static race<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
-      values: [
-        T1 | PromiseLike<T1>,
-        T2 | PromiseLike<T2>,
-        T3 | PromiseLike<T3>,
-        T4 | PromiseLike<T4>,
-        T5 | PromiseLike<T5>,
-        T6 | PromiseLike<T6>,
-        T7 | PromiseLike<T7>,
-        T8 | PromiseLike<T8>,
-        T9 | PromiseLike<T9>,
-        T10 | PromiseLike<T10>
-      ]
-    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9 | T10>;
-
-    /**
-     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
-     * or rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
     static race<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
       values: [
         T1 | PromiseLike<T1>,
@@ -1721,13 +1684,7 @@ declare namespace AigleCore {
       ]
     ): Aigle<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9>;
 
-    /**
-     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
-     * or rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    static race<T1, T2, T3, T4, T5, T6, T7, T8>(
+    static race<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
       values: [
         T1 | PromiseLike<T1>,
         T2 | PromiseLike<T2>,
@@ -1736,101 +1693,11 @@ declare namespace AigleCore {
         T5 | PromiseLike<T5>,
         T6 | PromiseLike<T6>,
         T7 | PromiseLike<T7>,
-        T8 | PromiseLike<T8>
+        T8 | PromiseLike<T8>,
+        T9 | PromiseLike<T9>,
+        T10 | PromiseLike<T10>
       ]
-    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8>;
-
-    /**
-     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
-     * or rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    static race<T1, T2, T3, T4, T5, T6, T7>(
-      values: [
-        T1 | PromiseLike<T1>,
-        T2 | PromiseLike<T2>,
-        T3 | PromiseLike<T3>,
-        T4 | PromiseLike<T4>,
-        T5 | PromiseLike<T5>,
-        T6 | PromiseLike<T6>,
-        T7 | PromiseLike<T7>
-      ]
-    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6 | T7>;
-
-    /**
-     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
-     * or rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    static race<T1, T2, T3, T4, T5, T6>(
-      values: [
-        T1 | PromiseLike<T1>,
-        T2 | PromiseLike<T2>,
-        T3 | PromiseLike<T3>,
-        T4 | PromiseLike<T4>,
-        T5 | PromiseLike<T5>,
-        T6 | PromiseLike<T6>
-      ]
-    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6>;
-
-    /**
-     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
-     * or rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    static race<T1, T2, T3, T4, T5>(
-      values: [
-        T1 | PromiseLike<T1>,
-        T2 | PromiseLike<T2>,
-        T3 | PromiseLike<T3>,
-        T4 | PromiseLike<T4>,
-        T5 | PromiseLike<T5>
-      ]
-    ): Aigle<T1 | T2 | T3 | T4 | T5>;
-
-    /**
-     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
-     * or rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    static race<T1, T2, T3, T4>(
-      values: [
-        T1 | PromiseLike<T1>,
-        T2 | PromiseLike<T2>,
-        T3 | PromiseLike<T3>,
-        T4 | PromiseLike<T4>
-      ]
-    ): Aigle<T1 | T2 | T3 | T4>;
-
-    /**
-     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
-     * or rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    static race<T1, T2, T3>(
-      values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>]
-    ): Aigle<T1 | T2 | T3>;
-
-    /**
-     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
-     * or rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    static race<T1, T2>(values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>]): Aigle<T1 | T2>;
-
-    /**
-     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
-     * or rejected.
-     * @param values An array of Promises.
-     * @returns A new Aigle.
-     */
-    static race<T>(values: (T | PromiseLike<T>)[]): Aigle<T>;
+    ): Aigle<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9 | T10>;
 
     /* props */
 
