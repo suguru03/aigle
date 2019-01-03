@@ -32,6 +32,8 @@ type CrowMap<T extends string = string> = Record<T, Crow>;
 
 type List<T> = ArrayLike<T>;
 
+type PromiseCallback<T> = () => Aigle<T>;
+
 /* variables */
 
 let obj: object;
@@ -67,6 +69,10 @@ let duckArrProm: Aigle<Ducks>;
 let hawkListProm: Aigle<List<Hawk>>;
 let swanListProm: Aigle<List<Swan>>;
 let duckListProm: Aigle<List<Duck>>;
+
+let hawkCallback: PromiseCallback<Hawk>;
+let swanCallback: PromiseCallback<Swan>;
+let duckCallback: PromiseCallback<Duck>;
 
 /* core functions */
 
@@ -118,6 +124,10 @@ hawkArrProm.all().then((values: Hawks) => {});
 //-- race --//
 
 hawkArrProm.race().then((value: Hawk) => {});
+
+//-- series --//
+
+hawkArrProm.series().then((values: Hawks) => {});
 
 /* each/forEach */
 
@@ -442,6 +452,12 @@ Aigle.all([hawkProm, swanProm, duckProm]).then((values: [Hawk, Swan, Duck]) => {
 //-- race --//
 
 Aigle.race([hawkProm, swanProm, duckProm]).then((value: Hawk | Swan | Duck) => {});
+
+//-- series --//
+
+Aigle.series([hawkProm, swanProm, duckProm]).then((values: [Hawk, Swan, Duck]) => {});
+
+Aigle.series([hawkCallback, swanCallback, duckCallback]).then((values: [Hawk, Swan, Duck]) => {});
 
 /* each/forEach */
 

@@ -47,6 +47,8 @@ declare namespace AigleCore {
     collection: T
   ) => IResult | Promise<IResult>;
 
+  type PromiseCallback<T> = () => T | Promise<T> | PromiseLike<T>;
+
   interface ConfigOpts {
     longStackTraces?: boolean;
     cancellation?: boolean;
@@ -125,6 +127,13 @@ declare namespace AigleCore {
     props<K, V>(this: Aigle<Map<K, PromiseLike<V> | V>>): Aigle<Map<K, V>>;
 
     props<T>(this: Aigle<ResolvableProps<T>>): Aigle<T>;
+
+    /* series */
+
+    @Times(10, 'T', { args: { this: 'arrayMulti' }, returnType: 'arrayMulti' })
+    series<T>(this: Aigle<[T | PromiseLike<T> | PromiseCallback<T>]>): Aigle<[T]>;
+
+    series<T>(this: Aigle<(T | PromiseLike<T> | PromiseCallback<T>)[]>): Aigle<T[]>;
 
     /* each/forEach */
 
@@ -1279,6 +1288,13 @@ declare namespace AigleCore {
     ): Aigle<Map<K, V>>;
 
     static props<T>(object: ResolvableProps<T> | PromiseLike<ResolvableProps<T>>): Aigle<T>;
+
+    /* series */
+
+    @Times(10, 'T', { args: { values: 'arrayMulti' }, returnType: 'arrayMulti' })
+    static series<T>(values: [T | PromiseLike<T> | PromiseCallback<T>]): Aigle<[T]>;
+
+    static series<T>(values: (T | PromiseLike<T> | PromiseCallback<T>)[]): Aigle<T[]>;
 
     /* each/forEach */
 
