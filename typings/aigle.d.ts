@@ -264,6 +264,8 @@ declare namespace AigleCore {
       >
     ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10]>;
 
+    all<T>(this: Aigle<(T | PromiseLike<T>)[]>): Aigle<T[]>;
+
     /* race */
 
     /**
@@ -372,6 +374,8 @@ declare namespace AigleCore {
         ]
       >
     ): Aigle<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9 | T10>;
+
+    race<T>(this: Aigle<(T | PromiseLike<T>)[]>): Aigle<T>;
 
     /* prpps */
 
@@ -1599,6 +1603,8 @@ declare namespace AigleCore {
       ]
     ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10]>;
 
+    static all<T>(values: (T | PromiseLike<T>)[]): Aigle<T[]>;
+
     /* rase */
 
     /**
@@ -1698,6 +1704,8 @@ declare namespace AigleCore {
         T10 | PromiseLike<T10>
       ]
     ): Aigle<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9 | T10>;
+
+    static race<T>(values: (T | PromiseLike<T>)[]): Aigle<T>;
 
     /* props */
 

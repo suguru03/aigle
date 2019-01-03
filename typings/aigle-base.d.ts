@@ -105,6 +105,8 @@ declare namespace AigleCore {
     @Times(10, 'T', { args: { this: 'arrayMulti' }, returnType: 'arrayMulti' })
     all<T>(this: Aigle<[T | PromiseLike<T>]>): Aigle<[T]>;
 
+    all<T>(this: Aigle<(T | PromiseLike<T>)[]>): Aigle<T[]>;
+
     /* race */
 
     /**
@@ -115,6 +117,8 @@ declare namespace AigleCore {
      */
     @Times(10, 'T', { args: { this: 'arrayMulti' } })
     race<T>(this: Aigle<[T | PromiseLike<T>]>): Aigle<T>;
+
+    race<T>(this: Aigle<(T | PromiseLike<T>)[]>): Aigle<T>;
 
     /* prpps */
 
@@ -1253,6 +1257,8 @@ declare namespace AigleCore {
     @Times(10, 'T', { args: { values: 'arrayMulti' }, returnType: 'arrayMulti' })
     static all<T>(values: [T | PromiseLike<T>]): Aigle<[T]>;
 
+    static all<T>(values: (T | PromiseLike<T>)[]): Aigle<T[]>;
+
     /* rase */
 
     /**
@@ -1263,6 +1269,8 @@ declare namespace AigleCore {
      */
     @Times(10, 'T', { args: { values: 'arrayMulti' } })
     static race<T>(values: [T | PromiseLike<T>]): Aigle<T>;
+
+    static race<T>(values: (T | PromiseLike<T>)[]): Aigle<T>;
 
     /* props */
 

@@ -111,6 +111,14 @@ hawkProm.finally(() => {});
 hawkProm.finally(() => str);
 hawkProm.finally(() => swanProm);
 
+//-- all --//
+
+hawkArrProm.all().then((values: Hawks) => {});
+
+//-- race --//
+
+hawkArrProm.race().then((value: Hawk) => {});
+
 /* each/forEach */
 
 //-- each:array --//
@@ -426,6 +434,14 @@ Aigle.reject(err).catch((error: any) => {});
 Aigle.resolve(hawkProm)
   .catch((error: any) => Aigle.reject(error))
   .then((value: Hawk) => swan);
+
+//-- all --//
+
+Aigle.all([hawkProm, swanProm, duckProm]).then((values: [Hawk, Swan, Duck]) => {});
+
+//-- race --//
+
+Aigle.race([hawkProm, swanProm, duckProm]).then((value: Hawk | Swan | Duck) => {});
 
 /* each/forEach */
 
