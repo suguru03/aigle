@@ -8,6 +8,7 @@ declare namespace AigleCore {
   type ResolvableProps<T> = object & { [K in keyof T]: T[K] | PromiseLike<T[K]> };
 
   type CatchFilter<E> = (new (...args: any[]) => E) | ((error: E) => boolean) | (object & E);
+  type Many<T> = T | T[];
   type List<T> = ArrayLike<T>;
   type Dictionary<T> = Record<string, T>;
   type NotVoid = {} | null | undefined;
@@ -3555,10 +3556,176 @@ declare namespace AigleCore {
 
     static thru<T, R>(value: T, intercepter: (value: T) => R): Aigle<R>;
 
-    /* flow */
-    // TODO
-    static flow<T>(handlers: Array<(...args) => any>): (...args: any[]) => Aigle<T>;
-    static flow<T>(...handlers: Array<(...args) => any>): (...args: any[]) => Aigle<T>;
+    /**
+     * flow
+     * @see https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/lodash/common/util.d.ts#L198
+     */
+    static flow<R1, R2>(
+      f1: () => R1 | PromiseLike<R1>,
+      f2: (a: R1) => R2 | PromiseLike<R2>
+    ): () => Aigle<R2>;
+    static flow<R1, R2, R3>(
+      f1: () => R1 | PromiseLike<R1>,
+      f2: (a: R1) => R2 | PromiseLike<R2>,
+      f3: (a: R2) => R3 | PromiseLike<R3>
+    ): () => Aigle<R3>;
+    static flow<R1, R2, R3, R4>(
+      f1: () => R1 | PromiseLike<R1>,
+      f2: (a: R1) => R2 | PromiseLike<R2>,
+      f3: (a: R2) => R3 | PromiseLike<R3>,
+      f4: (a: R3) => R4 | PromiseLike<R4>
+    ): () => Aigle<R4>;
+    static flow<R1, R2, R3, R4, R5>(
+      f1: () => R1 | PromiseLike<R1>,
+      f2: (a: R1) => R2 | PromiseLike<R2>,
+      f3: (a: R2) => R3 | PromiseLike<R3>,
+      f4: (a: R3) => R4 | PromiseLike<R4>,
+      f5: (a: R4) => R5 | PromiseLike<R5>
+    ): () => Aigle<R5>;
+    static flow<R1, R2, R3, R4, R5, R6>(
+      f1: () => R1 | PromiseLike<R1>,
+      f2: (a: R1) => R2 | PromiseLike<R2>,
+      f3: (a: R2) => R3 | PromiseLike<R3>,
+      f4: (a: R3) => R4 | PromiseLike<R4>,
+      f5: (a: R4) => R5 | PromiseLike<R5>,
+      f6: (a: R5) => R6 | PromiseLike<R6>
+    ): () => Aigle<R6>;
+    static flow<R1, R2, R3, R4, R5, R6, R7>(
+      f1: () => R1 | PromiseLike<R1>,
+      f2: (a: R1) => R2 | PromiseLike<R2>,
+      f3: (a: R2) => R3 | PromiseLike<R3>,
+      f4: (a: R3) => R4 | PromiseLike<R4>,
+      f5: (a: R4) => R5 | PromiseLike<R5>,
+      f6: (a: R5) => R6 | PromiseLike<R6>,
+      f7: (a: R6) => R7 | PromiseLike<R7>,
+      ...funcs: Array<Many<(a: any) => any>>
+    ): () => Aigle<any>;
+
+    // 1-argument first function
+    static flow<A1, R1, R2>(
+      f1: (a1: A1) => R1 | PromiseLike<R1>,
+      f2: (a: R1) => R2 | PromiseLike<R2>
+    ): (a1: A1) => Aigle<R2>;
+    static flow<A1, R1, R2, R3>(
+      f1: (a1: A1) => R1 | PromiseLike<R1>,
+      f2: (a: R1) => R2 | PromiseLike<R2>,
+      f3: (a: R2) => R3 | PromiseLike<R3>
+    ): (a1: A1) => Aigle<R3>;
+    static flow<A1, R1, R2, R3, R4>(
+      f1: (a1: A1) => R1 | PromiseLike<R1>,
+      f2: (a: R1) => R2 | PromiseLike<R2>,
+      f3: (a: R2) => R3 | PromiseLike<R3>,
+      f4: (a: R3) => R4 | PromiseLike<R4>
+    ): (a1: A1) => Aigle<R4>;
+    static flow<A1, R1, R2, R3, R4, R5>(
+      f1: (a1: A1) => R1 | PromiseLike<R1>,
+      f2: (a: R1) => R2 | PromiseLike<R2>,
+      f3: (a: R2) => R3 | PromiseLike<R3>,
+      f4: (a: R3) => R4 | PromiseLike<R4>,
+      f5: (a: R4) => R5 | PromiseLike<R5>
+    ): (a1: A1) => Aigle<R5>;
+    static flow<A1, R1, R2, R3, R4, R5, R6>(
+      f1: (a1: A1) => R1 | PromiseLike<R1>,
+      f2: (a: R1) => R2 | PromiseLike<R2>,
+      f3: (a: R2) => R3 | PromiseLike<R3>,
+      f4: (a: R3) => R4 | PromiseLike<R4>,
+      f5: (a: R4) => R5 | PromiseLike<R5>,
+      f6: (a: R5) => R6 | PromiseLike<R6>
+    ): (a1: A1) => Aigle<R6>;
+    static flow<A1, R1, R2, R3, R4, R5, R6, R7>(
+      f1: (a1: A1) => R1 | PromiseLike<R1>,
+      f2: (a: R1) => R2 | PromiseLike<R2>,
+      f3: (a: R2) => R3 | PromiseLike<R3>,
+      f4: (a: R3) => R4 | PromiseLike<R4>,
+      f5: (a: R4) => R5 | PromiseLike<R5>,
+      f6: (a: R5) => R6 | PromiseLike<R6>,
+      f7: (a: R6) => R7 | PromiseLike<R7>,
+      ...funcs: Array<Many<(a: any) => any>>
+    ): (a1: A1) => Aigle<any>;
+
+    // 2-argument first function
+    static flow<A1, A2, R1, R2>(
+      f1: (a1: A1, a2: A2) => R1 | PromiseLike<R1>,
+      f2: (a: R1) => R2 | PromiseLike<R2>
+    ): (a1: A1, a2: A2) => Aigle<R2>;
+    static flow<A1, A2, R1, R2, R3>(
+      f1: (a1: A1, a2: A2) => R1 | PromiseLike<R1>,
+      f2: (a: R1) => R2 | PromiseLike<R2>,
+      f3: (a: R2) => R3 | PromiseLike<R3>
+    ): (a1: A1, a2: A2) => Aigle<R3>;
+    static flow<A1, A2, R1, R2, R3, R4>(
+      f1: (a1: A1, a2: A2) => R1 | PromiseLike<R1>,
+      f2: (a: R1) => R2 | PromiseLike<R2>,
+      f3: (a: R2) => R3 | PromiseLike<R3>,
+      f4: (a: R3) => R4 | PromiseLike<R4>
+    ): (a1: A1, a2: A2) => Aigle<R4>;
+    static flow<A1, A2, R1, R2, R3, R4, R5>(
+      f1: (a1: A1, a2: A2) => R1 | PromiseLike<R1>,
+      f2: (a: R1) => R2 | PromiseLike<R2>,
+      f3: (a: R2) => R3 | PromiseLike<R3>,
+      f4: (a: R3) => R4 | PromiseLike<R4>,
+      f5: (a: R4) => R5 | PromiseLike<R5>
+    ): (a1: A1, a2: A2) => Aigle<R5>;
+    static flow<A1, A2, R1, R2, R3, R4, R5, R6>(
+      f1: (a1: A1, a2: A2) => R1 | PromiseLike<R1>,
+      f2: (a: R1) => R2 | PromiseLike<R2>,
+      f3: (a: R2) => R3 | PromiseLike<R3>,
+      f4: (a: R3) => R4 | PromiseLike<R4>,
+      f5: (a: R4) => R5 | PromiseLike<R5>,
+      f6: (a: R5) => R6 | PromiseLike<R6>
+    ): (a1: A1, a2: A2) => Aigle<R6>;
+    static flow<A1, A2, R1, R2, R3, R4, R5, R6, R7>(
+      f1: (a1: A1, a2: A2) => R1 | PromiseLike<R1>,
+      f2: (a: R1) => R2 | PromiseLike<R2>,
+      f3: (a: R2) => R3 | PromiseLike<R3>,
+      f4: (a: R3) => R4 | PromiseLike<R4>,
+      f5: (a: R4) => R5 | PromiseLike<R5>,
+      f6: (a: R5) => R6 | PromiseLike<R6>,
+      f7: (a: R6) => R7 | PromiseLike<R7>,
+      ...funcs: Array<Many<(a: any) => any>>
+    ): (a1: A1, a2: A2) => Aigle<any>;
+
+    // any-argument first function
+    static flow<A1, A2, A3, R1, R2>(
+      f1: (a1: A1, a2: A2, a3: A3, ...args: any[]) => R1 | PromiseLike<R1>,
+      f2: (a: R1) => R2 | PromiseLike<R2>
+    ): (a1: A1, a2: A2, a3: A3, ...args: any[]) => Aigle<R2>;
+    static flow<A1, A2, A3, R1, R2, R3>(
+      f1: (a1: A1, a2: A2, a3: A3, ...args: any[]) => R1 | PromiseLike<R1>,
+      f2: (a: R1) => R2 | PromiseLike<R2>,
+      f3: (a: R2) => R3 | PromiseLike<R3>
+    ): (a1: A1, a2: A2, a3: A3, ...args: any[]) => Aigle<R3>;
+    static flow<A1, A2, A3, R1, R2, R3, R4>(
+      f1: (a1: A1, a2: A2, a3: A3, ...args: any[]) => R1 | PromiseLike<R1>,
+      f2: (a: R1) => R2 | PromiseLike<R2>,
+      f3: (a: R2) => R3 | PromiseLike<R3>,
+      f4: (a: R3) => R4 | PromiseLike<R4>
+    ): (a1: A1, a2: A2, a3: A3, ...args: any[]) => Aigle<R4>;
+    static flow<A1, A2, A3, R1, R2, R3, R4, R5>(
+      f1: (a1: A1, a2: A2, a3: A3, ...args: any[]) => R1 | PromiseLike<R1>,
+      f2: (a: R1) => R2 | PromiseLike<R2>,
+      f3: (a: R2) => R3 | PromiseLike<R3>,
+      f4: (a: R3) => R4 | PromiseLike<R4>,
+      f5: (a: R4) => R5 | PromiseLike<R5>
+    ): (a1: A1, a2: A2, a3: A3, ...args: any[]) => Aigle<R5>;
+    static flow<A1, A2, A3, R1, R2, R3, R4, R5, R6>(
+      f1: (a1: A1, a2: A2, a3: A3, ...args: any[]) => R1 | PromiseLike<R1>,
+      f2: (a: R1) => R2 | PromiseLike<R2>,
+      f3: (a: R2) => R3 | PromiseLike<R3>,
+      f4: (a: R3) => R4 | PromiseLike<R4>,
+      f5: (a: R4) => R5 | PromiseLike<R5>,
+      f6: (a: R5) => R6 | PromiseLike<R6>
+    ): (a1: A1, a2: A2, a3: A3, ...args: any[]) => Aigle<R6>;
+    static flow<A1, A2, A3, R1, R2, R3, R4, R5, R6, R7>(
+      f1: (a1: A1, a2: A2, a3: A3, ...args: any[]) => R1 | PromiseLike<R1>,
+      f2: (a: R1) => R2 | PromiseLike<R2>,
+      f3: (a: R2) => R3 | PromiseLike<R3>,
+      f4: (a: R3) => R4 | PromiseLike<R4>,
+      f5: (a: R4) => R5 | PromiseLike<R5>,
+      f6: (a: R5) => R6 | PromiseLike<R6>,
+      f7: (a: R6) => R7 | PromiseLike<R7>,
+      ...funcs: Array<Many<(a: any) => any>>
+    ): (a1: A1, a2: A2, a3: A3, ...args: any[]) => Aigle<any>;
 
     /* times */
 

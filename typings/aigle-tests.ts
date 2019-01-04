@@ -117,23 +117,23 @@ hawkProm.finally(() => {});
 hawkProm.finally(() => str);
 hawkProm.finally(() => swanProm);
 
-//-- all --//
+/* all */
 
 hawkArrProm.all().then((values: Hawks) => {});
 
-//-- race --//
+/* race */
 
 hawkArrProm.race().then((value: Hawk) => {});
 
-//-- series --//
+/* series */
 
 hawkArrProm.series().then((values: Hawks) => {});
 
-//-- parallel --//
+/* parallel */
 
 hawkArrProm.parallel().then((values: Hawks) => {});
 
-//-- parallelLimit --//
+/* parallelLimit */
 
 hawkArrProm.parallelLimit().then((values: Hawks) => {});
 
@@ -455,27 +455,27 @@ Aigle.resolve(hawkProm)
   .catch((error: any) => Aigle.reject(error))
   .then((value: Hawk) => swan);
 
-//-- all --//
+/* all */
 
 Aigle.all([hawkProm, swanProm, duckProm]).then((values: [Hawk, Swan, Duck]) => {});
 
-//-- race --//
+/* race */
 
 Aigle.race([hawkProm, swanProm, duckProm]).then((value: Hawk | Swan | Duck) => {});
 
-//-- series --//
+/* series */
 
 Aigle.series([hawkProm, swanProm, duckProm]).then((values: [Hawk, Swan, Duck]) => {});
 
 Aigle.series([hawkCallback, swanCallback, duckCallback]).then((values: [Hawk, Swan, Duck]) => {});
 
-//-- parallel --//
+/* parallel */
 
 Aigle.parallel([hawkProm, swanProm, duckProm]).then((values: [Hawk, Swan, Duck]) => {});
 
 Aigle.parallel([hawkCallback, swanCallback, duckCallback]).then((values: [Hawk, Swan, Duck]) => {});
 
-//-- parallelLimit --//
+/* parallelLimit */
 
 Aigle.parallelLimit([hawkProm, swanProm, duckProm]).then((values: [Hawk, Swan, Duck]) => {});
 
@@ -632,3 +632,10 @@ Aigle.every(hawk, (val: Hawk[keyof Hawk], key: string, hawk: Hawk) => bool).then
 Aigle.every(hawk, (val: Hawk[keyof Hawk], key: string) => bool).then((bool: boolean) => {});
 
 Aigle.every(hawk, (val: Hawk[keyof Hawk]) => bool).then((bool: boolean) => {});
+
+/* flow */
+
+Aigle.flow(
+  (a: number, b: number) => Aigle.delay(10, a + b),
+  (c: number) => Aigle.delay(10, c * c)
+)(1, 2).then((value: number) => {});
