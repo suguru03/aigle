@@ -129,6 +129,10 @@ hawkArrProm.race().then((value: Hawk) => {});
 
 hawkArrProm.series().then((values: Hawks) => {});
 
+//-- parallel --//
+
+hawkArrProm.parallel().then((values: Hawks) => {});
+
 /* each/forEach */
 
 //-- each:array --//
@@ -458,6 +462,12 @@ Aigle.race([hawkProm, swanProm, duckProm]).then((value: Hawk | Swan | Duck) => {
 Aigle.series([hawkProm, swanProm, duckProm]).then((values: [Hawk, Swan, Duck]) => {});
 
 Aigle.series([hawkCallback, swanCallback, duckCallback]).then((values: [Hawk, Swan, Duck]) => {});
+
+//-- parallel --//
+
+Aigle.parallel([hawkProm, swanProm, duckProm]).then((values: [Hawk, Swan, Duck]) => {});
+
+Aigle.parallel([hawkCallback, swanCallback, duckCallback]).then((values: [Hawk, Swan, Duck]) => {});
 
 /* each/forEach */
 

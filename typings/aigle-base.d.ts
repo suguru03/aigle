@@ -135,6 +135,13 @@ declare namespace AigleCore {
 
     series<T>(this: Aigle<(T | PromiseLike<T> | PromiseCallback<T>)[]>): Aigle<T[]>;
 
+    /* parallel */
+
+    @Times(10, 'T', { args: { this: 'arrayMulti' }, returnType: 'arrayMulti' })
+    parallel<T>(this: Aigle<[T | PromiseLike<T> | PromiseCallback<T>]>): Aigle<[T]>;
+
+    parallel<T>(this: Aigle<(T | PromiseLike<T> | PromiseCallback<T>)[]>): Aigle<T[]>;
+
     /* each/forEach */
 
     each<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, any>): Aigle<T[]>;
@@ -1227,8 +1234,6 @@ declare namespace AigleCore {
 
     series(...args: any[]): Aigle<any>;
 
-    parallel(...args: any[]): Aigle<any>;
-
     parallelLimit(...args: any[]): Aigle<any>;
 
     reason(...args: any[]): Aigle<any>;
@@ -1295,6 +1300,13 @@ declare namespace AigleCore {
     static series<T>(values: [T | PromiseLike<T> | PromiseCallback<T>]): Aigle<[T]>;
 
     static series<T>(values: (T | PromiseLike<T> | PromiseCallback<T>)[]): Aigle<T[]>;
+
+    /* parallel */
+
+    @Times(10, 'T', { args: { values: 'arrayMulti' }, returnType: 'arrayMulti' })
+    static parallel<T>(values: [T | PromiseLike<T> | PromiseCallback<T>]): Aigle<[T]>;
+
+    static parallel<T>(values: (T | PromiseLike<T> | PromiseCallback<T>)[]): Aigle<T[]>;
 
     /* each/forEach */
 
@@ -2497,8 +2509,6 @@ declare namespace AigleCore {
     static mixin(sources: any, opts: any): any;
 
     static series(collection: any): Aigle<any>;
-
-    static parallel(collection: any): Aigle<any>;
 
     static parallelLimit(collection: any): Aigle<any>;
 

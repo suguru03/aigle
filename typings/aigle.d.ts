@@ -505,6 +505,126 @@ declare namespace AigleCore {
 
     series<T>(this: Aigle<(T | PromiseLike<T> | PromiseCallback<T>)[]>): Aigle<T[]>;
 
+    /* parallel */
+
+    parallel<T1>(this: Aigle<[T1 | PromiseLike<T1> | PromiseCallback<T1>]>): Aigle<[T1]>;
+
+    parallel<T1, T2>(
+      this: Aigle<
+        [T1 | PromiseLike<T1> | PromiseCallback<T1>, T2 | PromiseLike<T2> | PromiseCallback<T2>]
+      >
+    ): Aigle<[T1, T2]>;
+
+    parallel<T1, T2, T3>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1> | PromiseCallback<T1>,
+          T2 | PromiseLike<T2> | PromiseCallback<T2>,
+          T3 | PromiseLike<T3> | PromiseCallback<T3>
+        ]
+      >
+    ): Aigle<[T1, T2, T3]>;
+
+    parallel<T1, T2, T3, T4>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1> | PromiseCallback<T1>,
+          T2 | PromiseLike<T2> | PromiseCallback<T2>,
+          T3 | PromiseLike<T3> | PromiseCallback<T3>,
+          T4 | PromiseLike<T4> | PromiseCallback<T4>
+        ]
+      >
+    ): Aigle<[T1, T2, T3, T4]>;
+
+    parallel<T1, T2, T3, T4, T5>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1> | PromiseCallback<T1>,
+          T2 | PromiseLike<T2> | PromiseCallback<T2>,
+          T3 | PromiseLike<T3> | PromiseCallback<T3>,
+          T4 | PromiseLike<T4> | PromiseCallback<T4>,
+          T5 | PromiseLike<T5> | PromiseCallback<T5>
+        ]
+      >
+    ): Aigle<[T1, T2, T3, T4, T5]>;
+
+    parallel<T1, T2, T3, T4, T5, T6>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1> | PromiseCallback<T1>,
+          T2 | PromiseLike<T2> | PromiseCallback<T2>,
+          T3 | PromiseLike<T3> | PromiseCallback<T3>,
+          T4 | PromiseLike<T4> | PromiseCallback<T4>,
+          T5 | PromiseLike<T5> | PromiseCallback<T5>,
+          T6 | PromiseLike<T6> | PromiseCallback<T6>
+        ]
+      >
+    ): Aigle<[T1, T2, T3, T4, T5, T6]>;
+
+    parallel<T1, T2, T3, T4, T5, T6, T7>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1> | PromiseCallback<T1>,
+          T2 | PromiseLike<T2> | PromiseCallback<T2>,
+          T3 | PromiseLike<T3> | PromiseCallback<T3>,
+          T4 | PromiseLike<T4> | PromiseCallback<T4>,
+          T5 | PromiseLike<T5> | PromiseCallback<T5>,
+          T6 | PromiseLike<T6> | PromiseCallback<T6>,
+          T7 | PromiseLike<T7> | PromiseCallback<T7>
+        ]
+      >
+    ): Aigle<[T1, T2, T3, T4, T5, T6, T7]>;
+
+    parallel<T1, T2, T3, T4, T5, T6, T7, T8>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1> | PromiseCallback<T1>,
+          T2 | PromiseLike<T2> | PromiseCallback<T2>,
+          T3 | PromiseLike<T3> | PromiseCallback<T3>,
+          T4 | PromiseLike<T4> | PromiseCallback<T4>,
+          T5 | PromiseLike<T5> | PromiseCallback<T5>,
+          T6 | PromiseLike<T6> | PromiseCallback<T6>,
+          T7 | PromiseLike<T7> | PromiseCallback<T7>,
+          T8 | PromiseLike<T8> | PromiseCallback<T8>
+        ]
+      >
+    ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8]>;
+
+    parallel<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1> | PromiseCallback<T1>,
+          T2 | PromiseLike<T2> | PromiseCallback<T2>,
+          T3 | PromiseLike<T3> | PromiseCallback<T3>,
+          T4 | PromiseLike<T4> | PromiseCallback<T4>,
+          T5 | PromiseLike<T5> | PromiseCallback<T5>,
+          T6 | PromiseLike<T6> | PromiseCallback<T6>,
+          T7 | PromiseLike<T7> | PromiseCallback<T7>,
+          T8 | PromiseLike<T8> | PromiseCallback<T8>,
+          T9 | PromiseLike<T9> | PromiseCallback<T9>
+        ]
+      >
+    ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8, T9]>;
+
+    parallel<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1> | PromiseCallback<T1>,
+          T2 | PromiseLike<T2> | PromiseCallback<T2>,
+          T3 | PromiseLike<T3> | PromiseCallback<T3>,
+          T4 | PromiseLike<T4> | PromiseCallback<T4>,
+          T5 | PromiseLike<T5> | PromiseCallback<T5>,
+          T6 | PromiseLike<T6> | PromiseCallback<T6>,
+          T7 | PromiseLike<T7> | PromiseCallback<T7>,
+          T8 | PromiseLike<T8> | PromiseCallback<T8>,
+          T9 | PromiseLike<T9> | PromiseCallback<T9>,
+          T10 | PromiseLike<T10> | PromiseCallback<T10>
+        ]
+      >
+    ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10]>;
+
+    parallel<T>(this: Aigle<(T | PromiseLike<T> | PromiseCallback<T>)[]>): Aigle<T[]>;
+
     /* each/forEach */
 
     each<T>(this: Aigle<T[]>, iterator?: ArrayIterator<T, any>): Aigle<T[]>;
@@ -1597,8 +1717,6 @@ declare namespace AigleCore {
 
     series(...args: any[]): Aigle<any>;
 
-    parallel(...args: any[]): Aigle<any>;
-
     parallelLimit(...args: any[]): Aigle<any>;
 
     reason(...args: any[]): Aigle<any>;
@@ -1941,6 +2059,111 @@ declare namespace AigleCore {
     ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10]>;
 
     static series<T>(values: (T | PromiseLike<T> | PromiseCallback<T>)[]): Aigle<T[]>;
+
+    /* parallel */
+
+    static parallel<T1>(values: [T1 | PromiseLike<T1> | PromiseCallback<T1>]): Aigle<[T1]>;
+
+    static parallel<T1, T2>(
+      values: [
+        T1 | PromiseLike<T1> | PromiseCallback<T1>,
+        T2 | PromiseLike<T2> | PromiseCallback<T2>
+      ]
+    ): Aigle<[T1, T2]>;
+
+    static parallel<T1, T2, T3>(
+      values: [
+        T1 | PromiseLike<T1> | PromiseCallback<T1>,
+        T2 | PromiseLike<T2> | PromiseCallback<T2>,
+        T3 | PromiseLike<T3> | PromiseCallback<T3>
+      ]
+    ): Aigle<[T1, T2, T3]>;
+
+    static parallel<T1, T2, T3, T4>(
+      values: [
+        T1 | PromiseLike<T1> | PromiseCallback<T1>,
+        T2 | PromiseLike<T2> | PromiseCallback<T2>,
+        T3 | PromiseLike<T3> | PromiseCallback<T3>,
+        T4 | PromiseLike<T4> | PromiseCallback<T4>
+      ]
+    ): Aigle<[T1, T2, T3, T4]>;
+
+    static parallel<T1, T2, T3, T4, T5>(
+      values: [
+        T1 | PromiseLike<T1> | PromiseCallback<T1>,
+        T2 | PromiseLike<T2> | PromiseCallback<T2>,
+        T3 | PromiseLike<T3> | PromiseCallback<T3>,
+        T4 | PromiseLike<T4> | PromiseCallback<T4>,
+        T5 | PromiseLike<T5> | PromiseCallback<T5>
+      ]
+    ): Aigle<[T1, T2, T3, T4, T5]>;
+
+    static parallel<T1, T2, T3, T4, T5, T6>(
+      values: [
+        T1 | PromiseLike<T1> | PromiseCallback<T1>,
+        T2 | PromiseLike<T2> | PromiseCallback<T2>,
+        T3 | PromiseLike<T3> | PromiseCallback<T3>,
+        T4 | PromiseLike<T4> | PromiseCallback<T4>,
+        T5 | PromiseLike<T5> | PromiseCallback<T5>,
+        T6 | PromiseLike<T6> | PromiseCallback<T6>
+      ]
+    ): Aigle<[T1, T2, T3, T4, T5, T6]>;
+
+    static parallel<T1, T2, T3, T4, T5, T6, T7>(
+      values: [
+        T1 | PromiseLike<T1> | PromiseCallback<T1>,
+        T2 | PromiseLike<T2> | PromiseCallback<T2>,
+        T3 | PromiseLike<T3> | PromiseCallback<T3>,
+        T4 | PromiseLike<T4> | PromiseCallback<T4>,
+        T5 | PromiseLike<T5> | PromiseCallback<T5>,
+        T6 | PromiseLike<T6> | PromiseCallback<T6>,
+        T7 | PromiseLike<T7> | PromiseCallback<T7>
+      ]
+    ): Aigle<[T1, T2, T3, T4, T5, T6, T7]>;
+
+    static parallel<T1, T2, T3, T4, T5, T6, T7, T8>(
+      values: [
+        T1 | PromiseLike<T1> | PromiseCallback<T1>,
+        T2 | PromiseLike<T2> | PromiseCallback<T2>,
+        T3 | PromiseLike<T3> | PromiseCallback<T3>,
+        T4 | PromiseLike<T4> | PromiseCallback<T4>,
+        T5 | PromiseLike<T5> | PromiseCallback<T5>,
+        T6 | PromiseLike<T6> | PromiseCallback<T6>,
+        T7 | PromiseLike<T7> | PromiseCallback<T7>,
+        T8 | PromiseLike<T8> | PromiseCallback<T8>
+      ]
+    ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8]>;
+
+    static parallel<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
+      values: [
+        T1 | PromiseLike<T1> | PromiseCallback<T1>,
+        T2 | PromiseLike<T2> | PromiseCallback<T2>,
+        T3 | PromiseLike<T3> | PromiseCallback<T3>,
+        T4 | PromiseLike<T4> | PromiseCallback<T4>,
+        T5 | PromiseLike<T5> | PromiseCallback<T5>,
+        T6 | PromiseLike<T6> | PromiseCallback<T6>,
+        T7 | PromiseLike<T7> | PromiseCallback<T7>,
+        T8 | PromiseLike<T8> | PromiseCallback<T8>,
+        T9 | PromiseLike<T9> | PromiseCallback<T9>
+      ]
+    ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8, T9]>;
+
+    static parallel<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
+      values: [
+        T1 | PromiseLike<T1> | PromiseCallback<T1>,
+        T2 | PromiseLike<T2> | PromiseCallback<T2>,
+        T3 | PromiseLike<T3> | PromiseCallback<T3>,
+        T4 | PromiseLike<T4> | PromiseCallback<T4>,
+        T5 | PromiseLike<T5> | PromiseCallback<T5>,
+        T6 | PromiseLike<T6> | PromiseCallback<T6>,
+        T7 | PromiseLike<T7> | PromiseCallback<T7>,
+        T8 | PromiseLike<T8> | PromiseCallback<T8>,
+        T9 | PromiseLike<T9> | PromiseCallback<T9>,
+        T10 | PromiseLike<T10> | PromiseCallback<T10>
+      ]
+    ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10]>;
+
+    static parallel<T>(values: (T | PromiseLike<T> | PromiseCallback<T>)[]): Aigle<T[]>;
 
     /* each/forEach */
 
@@ -3143,8 +3366,6 @@ declare namespace AigleCore {
     static mixin(sources: any, opts: any): any;
 
     static series(collection: any): Aigle<any>;
-
-    static parallel(collection: any): Aigle<any>;
 
     static parallelLimit(collection: any): Aigle<any>;
 
