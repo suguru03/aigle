@@ -133,6 +133,12 @@ hawkArrProm.series().then((values: Hawks) => {});
 
 hawkArrProm.parallel().then((values: Hawks) => {});
 
+//-- parallelLimit --//
+
+hawkArrProm.parallelLimit().then((values: Hawks) => {});
+
+hawkArrProm.parallelLimit(2).then((values: Hawks) => {});
+
 /* each/forEach */
 
 //-- each:array --//
@@ -468,6 +474,14 @@ Aigle.series([hawkCallback, swanCallback, duckCallback]).then((values: [Hawk, Sw
 Aigle.parallel([hawkProm, swanProm, duckProm]).then((values: [Hawk, Swan, Duck]) => {});
 
 Aigle.parallel([hawkCallback, swanCallback, duckCallback]).then((values: [Hawk, Swan, Duck]) => {});
+
+//-- parallelLimit --//
+
+Aigle.parallelLimit([hawkProm, swanProm, duckProm]).then((values: [Hawk, Swan, Duck]) => {});
+
+Aigle.parallelLimit([hawkCallback, swanCallback, duckCallback], 2).then(
+  (values: [Hawk, Swan, Duck]) => {}
+);
 
 /* each/forEach */
 
