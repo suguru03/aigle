@@ -16,6 +16,7 @@
     "test:cov": "nyc npm run test:mocha",
     "test:type": "cd typings && tsc",
     "codecov": "nyc report --reporter=lcovonly && codecov",
+    "lint-staged": "lint-staged",
     "prettier": "prettier --write './benchmark/**/*.js' './gulp/**/*.js' './lib/**/*.js' './test/**/*.js' './typings/**/*.ts'"
   },
   "homepage": "https://github.com/suguru03/aigle",
@@ -72,7 +73,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "npm-run-all -p build:type lint-staged"
     }
   },
   "lint-staged": {

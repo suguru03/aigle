@@ -1240,21 +1240,33 @@ declare namespace AigleCore {
 
     isRejected(): boolean;
 
-    /** TODO work in progress **/
+    /* value */
 
-    cancel(...args: any[]): Aigle<any>;
+    value(): any;
 
-    disposer(...args: any[]): Aigle<any>;
+    /* reason */
 
-    reason(...args: any[]): Aigle<any>;
+    reason(): any;
 
-    suppressUnhandledRejections(...args: any[]): Aigle<any>;
+    /* cancel */
 
-    timeout(...args: any[]): Aigle<any>;
+    cancel(): void;
 
-    toString(...args: any[]): Aigle<any>;
+    /* disposer */
 
-    value(...args: any[]): Aigle<any>;
+    disposer(): any;
+
+    /* suppressUnhandledRejections */
+
+    suppressUnhandledRejections(): void;
+
+    /* timeout */
+
+    timeout(ms: number, message?: string | Error): Aigle<R>;
+
+    /* toString */
+
+    toString(): string;
 
     /** static **/
 

@@ -437,6 +437,14 @@ hawkProm
   .transform((acc: SwanMap, hawk: Hawk[keyof Hawk]) => (acc.a = swan), {})
   .then((swan: SwanMap) => {});
 
+/* timeout */
+
+hawkProm.timeout(num).then((hawk: Hawk) => {});
+
+hawkProm.timeout(num, str).then((hawk: Hawk) => {});
+
+hawkProm.timeout(num, err).then((hawk: Hawk) => {});
+
 /** static **/
 
 /* core functions */
