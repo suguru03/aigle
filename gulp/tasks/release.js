@@ -8,7 +8,6 @@ const fs = require('fs-extra');
 const git = require('gulp-git');
 const semver = require('semver');
 const bump = require('gulp-bump');
-const runSequence = require('run-sequence');
 const tagVersion = require('gulp-tag-version');
 
 const Aigle = require('../../');
@@ -25,21 +24,6 @@ const types = [
   'premajor-beta'
 ];
 
-_.forEach(types, type => {
-  gulp.task(`release:package:${type}`, updateVersion(type));
-  gulp.task(`release:${type}`, () =>
-    runSequence(
-      `release:package:${type}`,
-      'build',
-      // 'build:type',
-      'release:commit',
-      'gh-pages',
-      'release:tag',
-      'release:package'
-    )
-  );
-});
-
 gulp.task('release:tag', () => {
   return gulp.src(packagepath).pipe(tagVersion());
 });
@@ -51,6 +35,22 @@ gulp.task('release:commit', () => {
 });
 
 gulp.task('release:package', createPackage);
+
+_.forEach(types, type => {
+  gulp.task(`release:package:${type}`, updateVersion(type));
+  gulp.task(
+    `release:${type}`,
+    gulp.series(
+      `release:package:${type}`,
+      'build',
+      // 'build:type',
+      'release:commit',
+      'gh-pages',
+      'release:tag',
+      'release:package'
+    )
+  );
+});
 
 function updateVersion(type) {
   return () => {

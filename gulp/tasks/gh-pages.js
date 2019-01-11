@@ -4,26 +4,14 @@ const path = require('path');
 
 const gulp = require('gulp');
 const git = require('gulp-git');
-const runSequence = require('run-sequence');
 
 const Aigle = require('../../');
+
+require('./jsdoc');
 
 Aigle.promisifyAll(git);
 
 let version;
-
-gulp.task('gh-pages', () =>
-  runSequence(
-    'jsdoc',
-    'gh-pages:version',
-    'gh-pages:add',
-    'gh-pages:stash',
-    'checkout:gh-pages',
-    'gh-pages:pop',
-    'gh-pages:commit',
-    'checkout:master'
-  )
-);
 
 gulp.task('gh-pages:version', () => {
   const packagepath = path.resolve(__dirname, '../..', 'package.json');
@@ -42,3 +30,17 @@ gulp.task('gh-pages:pop', () => git.execAsync({ args: 'checkout stash -- .' }));
 gulp.task('gh-pages:commit', () => {
   return gulp.src('./docs/*').pipe(git.commit(`docs(jsdoc): v${version} [ci skip]`));
 });
+
+gulp.task(
+  'gh-pages',
+  gulp.series(
+    'jsdoc',
+    'gh-pages:version',
+    'gh-pages:add',
+    'gh-pages:stash',
+    'checkout:gh-pages',
+    'gh-pages:pop',
+    'gh-pages:commit',
+    'checkout:master'
+  )
+);
