@@ -437,6 +437,20 @@ hawkProm
   .transform((acc: SwanMap, hawk: Hawk[keyof Hawk]) => (acc.a = swan), {})
   .then((swan: SwanMap) => {});
 
+/* times */
+
+Aigle.resolve(10)
+  .times((num: number) => hawkProm)
+  .then((hawks: Hawks) => {});
+
+/* tap */
+
+hawkProm.tap((hawk: Hawk) => swanProm).then((hawk: Hawk) => {});
+
+/* thru */
+
+hawkProm.thru((hawk: Hawk) => swanProm).then((swan: Swan) => {});
+
 /* timeout */
 
 hawkProm.timeout(num).then((hawk: Hawk) => {});
@@ -641,9 +655,25 @@ Aigle.every(hawk, (val: Hawk[keyof Hawk], key: string) => bool).then((bool: bool
 
 Aigle.every(hawk, (val: Hawk[keyof Hawk]) => bool).then((bool: boolean) => {});
 
+/* tap */
+
+Aigle.tap(hawk, (hawk: Hawk) => swanProm).then((hawk: Hawk) => {});
+
+/* thru */
+
+Aigle.thru(hawk, (hawk: Hawk) => swanProm).then((swan: Swan) => {});
+
 /* flow */
 
 Aigle.flow(
   (a: number, b: number) => Aigle.delay(10, a + b),
   (c: number) => Aigle.delay(10, c * c)
 )(1, 2).then((value: number) => {});
+
+/* attempt */
+
+Aigle.attempt(() => hawkProm).then((val: Hawk) => {});
+
+/* using */
+
+Aigle.using(hawkProm.disposer(() => {}), (hawk: Hawk) => hawk).then((hawk: Hawk) => {});

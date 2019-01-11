@@ -5,7 +5,8 @@ export as namespace Aigle;
 declare namespace AigleCore {
   class CancellationError extends Error {}
   class TimeoutError extends Error {}
-  type ResolvableProps<T> = object & { [K in keyof T]: T[K] | PromiseLike<T[K]> };
+  type ReturnType<T> = T | PromiseLike<T>;
+  type ResolvableProps<T> = object & { [K in keyof T]: ReturnType<T[K]> };
 
   type CatchFilter<E> = (new (...args: any[]) => E) | ((error: E) => boolean) | (object & E);
   type Many<T> = T | T[];
@@ -13,42 +14,42 @@ declare namespace AigleCore {
   type Dictionary<T> = Record<string, T>;
   type NotVoid = {} | null | undefined;
 
+  type PromiseCallback<T> = () => ReturnType<T>;
+
   type ArrayIterator<T, TResult = NotVoid> = (
     value: T,
     index: number,
     collection: T[]
-  ) => TResult | PromiseLike<TResult>;
+  ) => ReturnType<TResult>;
   type ListIterator<T, TResult = NotVoid> = (
     value: T,
     index: number,
     collection: List<T>
-  ) => TResult | PromiseLike<TResult>;
+  ) => ReturnType<TResult>;
   type ObjectIterator<T, TResult = NotVoid> = (
     value: T[keyof T],
     key: keyof T,
     collection: T
-  ) => TResult | PromiseLike<TResult>;
+  ) => ReturnType<TResult>;
 
   type MemoArrayIterator<T, TResult, IResult = any> = (
     accumulator: TResult,
     value: T,
     index: number,
     collection: T[]
-  ) => IResult | Promise<IResult>;
+  ) => ReturnType<IResult>;
   type MemoListIterator<T, TResult, IResult = any> = (
     accumulator: TResult,
     value: T,
     index: number,
     collection: List<T>
-  ) => IResult | Promise<IResult>;
+  ) => ReturnType<IResult>;
   type MemoObjectIterator<T, TResult, IResult = any> = (
     accumulator: TResult,
     value: T[keyof T],
     key: keyof T,
     collection: T
-  ) => IResult | Promise<IResult>;
-
-  type PromiseCallback<T> = () => T | Promise<T> | PromiseLike<T>;
+  ) => ReturnType<IResult>;
 
   interface ConfigOpts {
     longStackTraces?: boolean;
@@ -59,6 +60,8 @@ declare namespace AigleCore {
     times?: number;
     interval?: number | ((count?: number) => number);
   }
+
+  export class Disposer<T> {}
 
   export class Aigle<R> implements PromiseLike<R> {
     constructor(
@@ -72,30 +75,30 @@ declare namespace AigleCore {
     /* then */
 
     then<T>(
-      onFulfill?: (value: R) => T | PromiseLike<T>,
-      onReject?: (error: any) => T | PromiseLike<T>
+      onFulfill?: (value: R) => ReturnType<T>,
+      onReject?: (error: any) => ReturnType<T>
     ): Aigle<T>;
 
     then<TResult1 = R, TResult2 = never>(
-      onfulfilled?: ((value: R) => TResult1 | PromiseLike<TResult1>) | null,
-      onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null
+      onfulfilled?: ((value: R) => ReturnType<TResult1>) | null,
+      onrejected?: ((reason: any) => ReturnType<TResult2>) | null
     ): Aigle<TResult1 | TResult2>;
 
     /* catch */
 
-    catch(onReject: (error: any) => R | PromiseLike<R>): Aigle<R>;
+    catch(onReject: (error: any) => ReturnType<R>): Aigle<R>;
 
-    catch<T>(onReject: ((error: any) => T | PromiseLike<T>) | undefined | null): Aigle<T | R>;
-
-    @Times(5, 'E', { args: { filter: 'multi' } })
-    catch<E>(filter: CatchFilter<E>, onReject: (error: E) => R | PromiseLike<R>): Aigle<R>;
+    catch<T>(onReject: ((error: any) => ReturnType<T>) | undefined | null): Aigle<T | R>;
 
     @Times(5, 'E', { args: { filter: 'multi' } })
-    catch<T, E>(filter: CatchFilter<E>, onReject: (error: E) => T | PromiseLike<T>): Aigle<T | R>;
+    catch<E>(filter: CatchFilter<E>, onReject: (error: E) => ReturnType<R>): Aigle<R>;
+
+    @Times(5, 'E', { args: { filter: 'multi' } })
+    catch<T, E>(filter: CatchFilter<E>, onReject: (error: E) => ReturnType<T>): Aigle<T | R>;
 
     /* finally */
 
-    finally<T>(handler: () => T | PromiseLike<T>): Aigle<R>;
+    finally<T>(handler: () => ReturnType<T>): Aigle<R>;
 
     /* all */
 
@@ -1188,41 +1191,61 @@ declare namespace AigleCore {
 
     /* tap */
 
-    tap<T>(this: Aigle<T>, intercepter: (value: T) => any): Aigle<T>;
+    tap(intercepter: (value: R) => ReturnType<any>): Aigle<R>;
 
     /* thru */
 
-    thru<T, R>(this: Aigle<T>, intercepter: (value: T) => R): Aigle<R>;
+    thru<T>(intercepter: (value: R) => ReturnType<T>): Aigle<T>;
 
     /* times */
 
-    times<T>(this: Aigle<number>, iterator?: (num: number) => T): Aigle<T[]>;
+    times<T>(this: Aigle<number>, iterator?: (num: number) => ReturnType<T>): Aigle<T[]>;
 
     /* timesSeries */
 
-    timesSeries<T>(this: Aigle<number>, iterator?: (num: number) => T): Aigle<T[]>;
+    timesSeries<T>(this: Aigle<number>, iterator?: (num: number) => ReturnType<T>): Aigle<T[]>;
 
     /* timesLimit */
 
-    timesLimit<T>(this: Aigle<number>, iterator?: (num: number) => T): Aigle<T[]>;
+    timesLimit<T>(this: Aigle<number>, iterator?: (num: number) => ReturnType<T>): Aigle<T[]>;
 
-    timesLimit<T>(this: Aigle<number>, limit: number, iterator: (num: number) => T): Aigle<T[]>;
+    timesLimit<T>(
+      this: Aigle<number>,
+      limit: number,
+      iterator: (num: number) => ReturnType<T>
+    ): Aigle<T[]>;
 
     /* doUntil */
 
-    doUntil<T>(this: Aigle<T>, iterator: (value: T) => T, tester: (value: T) => boolean): Aigle<T>;
+    doUntil<T>(
+      this: Aigle<T>,
+      iterator: (value: T) => ReturnType<T>,
+      tester: (value: T) => ReturnType<boolean>
+    ): Aigle<T>;
 
     /* doWhilst */
 
-    doWhilst<T>(this: Aigle<T>, iterator: (value: T) => T, tester: (value: T) => boolean): Aigle<T>;
+    doWhilst<T>(
+      this: Aigle<T>,
+      iterator: (value: T) => ReturnType<T>,
+      tester: (value: T) => ReturnType<boolean>
+    ): Aigle<T>;
 
     /* until */
 
-    until<T>(this: Aigle<T>, tester: (value: T) => boolean, iterator: (value: T) => T): Aigle<T>;
+    until<T>(
+      this: Aigle<T>,
+      tester: (value: T) => ReturnType<boolean>,
+      iterator: (value: T) => ReturnType<T>
+    ): Aigle<T>;
 
     /* whilst */
 
-    whilst<T>(this: Aigle<T>, tester: (value: T) => boolean, iterator: (value: T) => T): Aigle<T>;
+    whilst<T>(
+      this: Aigle<T>,
+      tester: (value: T) => ReturnType<boolean>,
+      iterator: (value: T) => ReturnType<T>
+    ): Aigle<T>;
 
     /* isCancelled */
 
@@ -1254,7 +1277,7 @@ declare namespace AigleCore {
 
     /* disposer */
 
-    disposer(): any;
+    disposer(fn: (value: R) => any): Disposer<R>;
 
     /* suppressUnhandledRejections */
 
@@ -1274,7 +1297,7 @@ declare namespace AigleCore {
 
     static resolve(): Aigle<void>;
 
-    static resolve<T>(value: T | PromiseLike<T>): Aigle<T>;
+    static resolve<T>(value: ReturnType<T>): Aigle<T>;
 
     static reject(reason: any): Aigle<never>;
 
@@ -1291,9 +1314,9 @@ declare namespace AigleCore {
      * @returns A new Aigle.
      */
     @Times(10, 'T', { args: { values: 'arrayMulti' }, returnType: 'arrayMulti' })
-    static all<T>(values: [T | PromiseLike<T>]): Aigle<[T]>;
+    static all<T>(values: [ReturnType<T>]): Aigle<[T]>;
 
-    static all<T>(values: (T | PromiseLike<T>)[]): Aigle<T[]>;
+    static all<T>(values: (ReturnType<T>)[]): Aigle<T[]>;
 
     /* rase */
 
@@ -1304,9 +1327,9 @@ declare namespace AigleCore {
      * @returns A new Aigle.
      */
     @Times(10, 'T', { args: { values: 'arrayMulti' } })
-    static race<T>(values: [T | PromiseLike<T>]): Aigle<T>;
+    static race<T>(values: [ReturnType<T>]): Aigle<T>;
 
-    static race<T>(values: (T | PromiseLike<T>)[]): Aigle<T>;
+    static race<T>(values: (ReturnType<T>)[]): Aigle<T>;
 
     /* props */
 
@@ -2476,243 +2499,288 @@ declare namespace AigleCore {
 
     /* tap */
 
-    static tap<T>(value: T, intercepter: (value: T) => any): Aigle<T>;
+    static tap<T>(value: T, intercepter: (value: T) => ReturnType<any>): Aigle<T>;
 
     /* thru */
 
-    static thru<T, R>(value: T, intercepter: (value: T) => R): Aigle<R>;
+    static thru<T, R>(value: T, intercepter: (value: T) => ReturnType<R>): Aigle<R>;
 
     /**
      * flow
      * @see https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/lodash/common/util.d.ts#L198
      */
-    static flow<R1, R2>(
-      f1: () => R1 | PromiseLike<R1>,
-      f2: (a: R1) => R2 | PromiseLike<R2>
-    ): () => Aigle<R2>;
+    static flow<R1, R2>(f1: () => ReturnType<R1>, f2: (a: R1) => ReturnType<R2>): () => Aigle<R2>;
     static flow<R1, R2, R3>(
-      f1: () => R1 | PromiseLike<R1>,
-      f2: (a: R1) => R2 | PromiseLike<R2>,
-      f3: (a: R2) => R3 | PromiseLike<R3>
+      f1: () => ReturnType<R1>,
+      f2: (a: R1) => ReturnType<R2>,
+      f3: (a: R2) => ReturnType<R3>
     ): () => Aigle<R3>;
     static flow<R1, R2, R3, R4>(
-      f1: () => R1 | PromiseLike<R1>,
-      f2: (a: R1) => R2 | PromiseLike<R2>,
-      f3: (a: R2) => R3 | PromiseLike<R3>,
-      f4: (a: R3) => R4 | PromiseLike<R4>
+      f1: () => ReturnType<R1>,
+      f2: (a: R1) => ReturnType<R2>,
+      f3: (a: R2) => ReturnType<R3>,
+      f4: (a: R3) => ReturnType<R4>
     ): () => Aigle<R4>;
     static flow<R1, R2, R3, R4, R5>(
-      f1: () => R1 | PromiseLike<R1>,
-      f2: (a: R1) => R2 | PromiseLike<R2>,
-      f3: (a: R2) => R3 | PromiseLike<R3>,
-      f4: (a: R3) => R4 | PromiseLike<R4>,
-      f5: (a: R4) => R5 | PromiseLike<R5>
+      f1: () => ReturnType<R1>,
+      f2: (a: R1) => ReturnType<R2>,
+      f3: (a: R2) => ReturnType<R3>,
+      f4: (a: R3) => ReturnType<R4>,
+      f5: (a: R4) => ReturnType<R5>
     ): () => Aigle<R5>;
     static flow<R1, R2, R3, R4, R5, R6>(
-      f1: () => R1 | PromiseLike<R1>,
-      f2: (a: R1) => R2 | PromiseLike<R2>,
-      f3: (a: R2) => R3 | PromiseLike<R3>,
-      f4: (a: R3) => R4 | PromiseLike<R4>,
-      f5: (a: R4) => R5 | PromiseLike<R5>,
-      f6: (a: R5) => R6 | PromiseLike<R6>
+      f1: () => ReturnType<R1>,
+      f2: (a: R1) => ReturnType<R2>,
+      f3: (a: R2) => ReturnType<R3>,
+      f4: (a: R3) => ReturnType<R4>,
+      f5: (a: R4) => ReturnType<R5>,
+      f6: (a: R5) => ReturnType<R6>
     ): () => Aigle<R6>;
     static flow<R1, R2, R3, R4, R5, R6, R7>(
-      f1: () => R1 | PromiseLike<R1>,
-      f2: (a: R1) => R2 | PromiseLike<R2>,
-      f3: (a: R2) => R3 | PromiseLike<R3>,
-      f4: (a: R3) => R4 | PromiseLike<R4>,
-      f5: (a: R4) => R5 | PromiseLike<R5>,
-      f6: (a: R5) => R6 | PromiseLike<R6>,
-      f7: (a: R6) => R7 | PromiseLike<R7>,
+      f1: () => ReturnType<R1>,
+      f2: (a: R1) => ReturnType<R2>,
+      f3: (a: R2) => ReturnType<R3>,
+      f4: (a: R3) => ReturnType<R4>,
+      f5: (a: R4) => ReturnType<R5>,
+      f6: (a: R5) => ReturnType<R6>,
+      f7: (a: R6) => ReturnType<R7>,
       ...funcs: Array<Many<(a: any) => any>>
     ): () => Aigle<any>;
 
     // 1-argument first function
     static flow<A1, R1, R2>(
-      f1: (a1: A1) => R1 | PromiseLike<R1>,
-      f2: (a: R1) => R2 | PromiseLike<R2>
+      f1: (a1: A1) => ReturnType<R1>,
+      f2: (a: R1) => ReturnType<R2>
     ): (a1: A1) => Aigle<R2>;
     static flow<A1, R1, R2, R3>(
-      f1: (a1: A1) => R1 | PromiseLike<R1>,
-      f2: (a: R1) => R2 | PromiseLike<R2>,
-      f3: (a: R2) => R3 | PromiseLike<R3>
+      f1: (a1: A1) => ReturnType<R1>,
+      f2: (a: R1) => ReturnType<R2>,
+      f3: (a: R2) => ReturnType<R3>
     ): (a1: A1) => Aigle<R3>;
     static flow<A1, R1, R2, R3, R4>(
-      f1: (a1: A1) => R1 | PromiseLike<R1>,
-      f2: (a: R1) => R2 | PromiseLike<R2>,
-      f3: (a: R2) => R3 | PromiseLike<R3>,
-      f4: (a: R3) => R4 | PromiseLike<R4>
+      f1: (a1: A1) => ReturnType<R1>,
+      f2: (a: R1) => ReturnType<R2>,
+      f3: (a: R2) => ReturnType<R3>,
+      f4: (a: R3) => ReturnType<R4>
     ): (a1: A1) => Aigle<R4>;
     static flow<A1, R1, R2, R3, R4, R5>(
-      f1: (a1: A1) => R1 | PromiseLike<R1>,
-      f2: (a: R1) => R2 | PromiseLike<R2>,
-      f3: (a: R2) => R3 | PromiseLike<R3>,
-      f4: (a: R3) => R4 | PromiseLike<R4>,
-      f5: (a: R4) => R5 | PromiseLike<R5>
+      f1: (a1: A1) => ReturnType<R1>,
+      f2: (a: R1) => ReturnType<R2>,
+      f3: (a: R2) => ReturnType<R3>,
+      f4: (a: R3) => ReturnType<R4>,
+      f5: (a: R4) => ReturnType<R5>
     ): (a1: A1) => Aigle<R5>;
     static flow<A1, R1, R2, R3, R4, R5, R6>(
-      f1: (a1: A1) => R1 | PromiseLike<R1>,
-      f2: (a: R1) => R2 | PromiseLike<R2>,
-      f3: (a: R2) => R3 | PromiseLike<R3>,
-      f4: (a: R3) => R4 | PromiseLike<R4>,
-      f5: (a: R4) => R5 | PromiseLike<R5>,
-      f6: (a: R5) => R6 | PromiseLike<R6>
+      f1: (a1: A1) => ReturnType<R1>,
+      f2: (a: R1) => ReturnType<R2>,
+      f3: (a: R2) => ReturnType<R3>,
+      f4: (a: R3) => ReturnType<R4>,
+      f5: (a: R4) => ReturnType<R5>,
+      f6: (a: R5) => ReturnType<R6>
     ): (a1: A1) => Aigle<R6>;
     static flow<A1, R1, R2, R3, R4, R5, R6, R7>(
-      f1: (a1: A1) => R1 | PromiseLike<R1>,
-      f2: (a: R1) => R2 | PromiseLike<R2>,
-      f3: (a: R2) => R3 | PromiseLike<R3>,
-      f4: (a: R3) => R4 | PromiseLike<R4>,
-      f5: (a: R4) => R5 | PromiseLike<R5>,
-      f6: (a: R5) => R6 | PromiseLike<R6>,
-      f7: (a: R6) => R7 | PromiseLike<R7>,
+      f1: (a1: A1) => ReturnType<R1>,
+      f2: (a: R1) => ReturnType<R2>,
+      f3: (a: R2) => ReturnType<R3>,
+      f4: (a: R3) => ReturnType<R4>,
+      f5: (a: R4) => ReturnType<R5>,
+      f6: (a: R5) => ReturnType<R6>,
+      f7: (a: R6) => ReturnType<R7>,
       ...funcs: Array<Many<(a: any) => any>>
     ): (a1: A1) => Aigle<any>;
 
     // 2-argument first function
     static flow<A1, A2, R1, R2>(
-      f1: (a1: A1, a2: A2) => R1 | PromiseLike<R1>,
-      f2: (a: R1) => R2 | PromiseLike<R2>
+      f1: (a1: A1, a2: A2) => ReturnType<R1>,
+      f2: (a: R1) => ReturnType<R2>
     ): (a1: A1, a2: A2) => Aigle<R2>;
     static flow<A1, A2, R1, R2, R3>(
-      f1: (a1: A1, a2: A2) => R1 | PromiseLike<R1>,
-      f2: (a: R1) => R2 | PromiseLike<R2>,
-      f3: (a: R2) => R3 | PromiseLike<R3>
+      f1: (a1: A1, a2: A2) => ReturnType<R1>,
+      f2: (a: R1) => ReturnType<R2>,
+      f3: (a: R2) => ReturnType<R3>
     ): (a1: A1, a2: A2) => Aigle<R3>;
     static flow<A1, A2, R1, R2, R3, R4>(
-      f1: (a1: A1, a2: A2) => R1 | PromiseLike<R1>,
-      f2: (a: R1) => R2 | PromiseLike<R2>,
-      f3: (a: R2) => R3 | PromiseLike<R3>,
-      f4: (a: R3) => R4 | PromiseLike<R4>
+      f1: (a1: A1, a2: A2) => ReturnType<R1>,
+      f2: (a: R1) => ReturnType<R2>,
+      f3: (a: R2) => ReturnType<R3>,
+      f4: (a: R3) => ReturnType<R4>
     ): (a1: A1, a2: A2) => Aigle<R4>;
     static flow<A1, A2, R1, R2, R3, R4, R5>(
-      f1: (a1: A1, a2: A2) => R1 | PromiseLike<R1>,
-      f2: (a: R1) => R2 | PromiseLike<R2>,
-      f3: (a: R2) => R3 | PromiseLike<R3>,
-      f4: (a: R3) => R4 | PromiseLike<R4>,
-      f5: (a: R4) => R5 | PromiseLike<R5>
+      f1: (a1: A1, a2: A2) => ReturnType<R1>,
+      f2: (a: R1) => ReturnType<R2>,
+      f3: (a: R2) => ReturnType<R3>,
+      f4: (a: R3) => ReturnType<R4>,
+      f5: (a: R4) => ReturnType<R5>
     ): (a1: A1, a2: A2) => Aigle<R5>;
     static flow<A1, A2, R1, R2, R3, R4, R5, R6>(
-      f1: (a1: A1, a2: A2) => R1 | PromiseLike<R1>,
-      f2: (a: R1) => R2 | PromiseLike<R2>,
-      f3: (a: R2) => R3 | PromiseLike<R3>,
-      f4: (a: R3) => R4 | PromiseLike<R4>,
-      f5: (a: R4) => R5 | PromiseLike<R5>,
-      f6: (a: R5) => R6 | PromiseLike<R6>
+      f1: (a1: A1, a2: A2) => ReturnType<R1>,
+      f2: (a: R1) => ReturnType<R2>,
+      f3: (a: R2) => ReturnType<R3>,
+      f4: (a: R3) => ReturnType<R4>,
+      f5: (a: R4) => ReturnType<R5>,
+      f6: (a: R5) => ReturnType<R6>
     ): (a1: A1, a2: A2) => Aigle<R6>;
     static flow<A1, A2, R1, R2, R3, R4, R5, R6, R7>(
-      f1: (a1: A1, a2: A2) => R1 | PromiseLike<R1>,
-      f2: (a: R1) => R2 | PromiseLike<R2>,
-      f3: (a: R2) => R3 | PromiseLike<R3>,
-      f4: (a: R3) => R4 | PromiseLike<R4>,
-      f5: (a: R4) => R5 | PromiseLike<R5>,
-      f6: (a: R5) => R6 | PromiseLike<R6>,
-      f7: (a: R6) => R7 | PromiseLike<R7>,
+      f1: (a1: A1, a2: A2) => ReturnType<R1>,
+      f2: (a: R1) => ReturnType<R2>,
+      f3: (a: R2) => ReturnType<R3>,
+      f4: (a: R3) => ReturnType<R4>,
+      f5: (a: R4) => ReturnType<R5>,
+      f6: (a: R5) => ReturnType<R6>,
+      f7: (a: R6) => ReturnType<R7>,
       ...funcs: Array<Many<(a: any) => any>>
     ): (a1: A1, a2: A2) => Aigle<any>;
 
     // any-argument first function
     static flow<A1, A2, A3, R1, R2>(
-      f1: (a1: A1, a2: A2, a3: A3, ...args: any[]) => R1 | PromiseLike<R1>,
-      f2: (a: R1) => R2 | PromiseLike<R2>
+      f1: (a1: A1, a2: A2, a3: A3, ...args: any[]) => ReturnType<R1>,
+      f2: (a: R1) => ReturnType<R2>
     ): (a1: A1, a2: A2, a3: A3, ...args: any[]) => Aigle<R2>;
     static flow<A1, A2, A3, R1, R2, R3>(
-      f1: (a1: A1, a2: A2, a3: A3, ...args: any[]) => R1 | PromiseLike<R1>,
-      f2: (a: R1) => R2 | PromiseLike<R2>,
-      f3: (a: R2) => R3 | PromiseLike<R3>
+      f1: (a1: A1, a2: A2, a3: A3, ...args: any[]) => ReturnType<R1>,
+      f2: (a: R1) => ReturnType<R2>,
+      f3: (a: R2) => ReturnType<R3>
     ): (a1: A1, a2: A2, a3: A3, ...args: any[]) => Aigle<R3>;
     static flow<A1, A2, A3, R1, R2, R3, R4>(
-      f1: (a1: A1, a2: A2, a3: A3, ...args: any[]) => R1 | PromiseLike<R1>,
-      f2: (a: R1) => R2 | PromiseLike<R2>,
-      f3: (a: R2) => R3 | PromiseLike<R3>,
-      f4: (a: R3) => R4 | PromiseLike<R4>
+      f1: (a1: A1, a2: A2, a3: A3, ...args: any[]) => ReturnType<R1>,
+      f2: (a: R1) => ReturnType<R2>,
+      f3: (a: R2) => ReturnType<R3>,
+      f4: (a: R3) => ReturnType<R4>
     ): (a1: A1, a2: A2, a3: A3, ...args: any[]) => Aigle<R4>;
     static flow<A1, A2, A3, R1, R2, R3, R4, R5>(
-      f1: (a1: A1, a2: A2, a3: A3, ...args: any[]) => R1 | PromiseLike<R1>,
-      f2: (a: R1) => R2 | PromiseLike<R2>,
-      f3: (a: R2) => R3 | PromiseLike<R3>,
-      f4: (a: R3) => R4 | PromiseLike<R4>,
-      f5: (a: R4) => R5 | PromiseLike<R5>
+      f1: (a1: A1, a2: A2, a3: A3, ...args: any[]) => ReturnType<R1>,
+      f2: (a: R1) => ReturnType<R2>,
+      f3: (a: R2) => ReturnType<R3>,
+      f4: (a: R3) => ReturnType<R4>,
+      f5: (a: R4) => ReturnType<R5>
     ): (a1: A1, a2: A2, a3: A3, ...args: any[]) => Aigle<R5>;
     static flow<A1, A2, A3, R1, R2, R3, R4, R5, R6>(
-      f1: (a1: A1, a2: A2, a3: A3, ...args: any[]) => R1 | PromiseLike<R1>,
-      f2: (a: R1) => R2 | PromiseLike<R2>,
-      f3: (a: R2) => R3 | PromiseLike<R3>,
-      f4: (a: R3) => R4 | PromiseLike<R4>,
-      f5: (a: R4) => R5 | PromiseLike<R5>,
-      f6: (a: R5) => R6 | PromiseLike<R6>
+      f1: (a1: A1, a2: A2, a3: A3, ...args: any[]) => ReturnType<R1>,
+      f2: (a: R1) => ReturnType<R2>,
+      f3: (a: R2) => ReturnType<R3>,
+      f4: (a: R3) => ReturnType<R4>,
+      f5: (a: R4) => ReturnType<R5>,
+      f6: (a: R5) => ReturnType<R6>
     ): (a1: A1, a2: A2, a3: A3, ...args: any[]) => Aigle<R6>;
     static flow<A1, A2, A3, R1, R2, R3, R4, R5, R6, R7>(
-      f1: (a1: A1, a2: A2, a3: A3, ...args: any[]) => R1 | PromiseLike<R1>,
-      f2: (a: R1) => R2 | PromiseLike<R2>,
-      f3: (a: R2) => R3 | PromiseLike<R3>,
-      f4: (a: R3) => R4 | PromiseLike<R4>,
-      f5: (a: R4) => R5 | PromiseLike<R5>,
-      f6: (a: R5) => R6 | PromiseLike<R6>,
-      f7: (a: R6) => R7 | PromiseLike<R7>,
+      f1: (a1: A1, a2: A2, a3: A3, ...args: any[]) => ReturnType<R1>,
+      f2: (a: R1) => ReturnType<R2>,
+      f3: (a: R2) => ReturnType<R3>,
+      f4: (a: R3) => ReturnType<R4>,
+      f5: (a: R4) => ReturnType<R5>,
+      f6: (a: R5) => ReturnType<R6>,
+      f7: (a: R6) => ReturnType<R7>,
       ...funcs: Array<Many<(a: any) => any>>
     ): (a1: A1, a2: A2, a3: A3, ...args: any[]) => Aigle<any>;
 
     /* times */
 
-    static times<T>(n: number, iterator?: (num: number) => T): Aigle<T[]>;
+    static times<T>(n: number, iterator?: (num: number) => ReturnType<T>): Aigle<T[]>;
 
     /* timesSeries */
 
-    static timesSeries<T>(n: number, iterator?: (num: number) => T): Aigle<T[]>;
+    static timesSeries<T>(n: number, iterator?: (num: number) => ReturnType<T>): Aigle<T[]>;
 
     /* timesLimit */
 
-    static timesLimit<T>(n: number, iterator?: (num: number) => T): Aigle<T[]>;
-    static timesLimit<T>(n: number, limit: number, iterator: (num: number) => T): Aigle<T[]>;
+    static timesLimit<T>(n: number, iterator?: (num: number) => ReturnType<T>): Aigle<T[]>;
+    static timesLimit<T>(
+      n: number,
+      limit: number,
+      iterator: (num: number) => ReturnType<T>
+    ): Aigle<T[]>;
 
     /* doUntil */
 
-    static doUntil<T>(iterator: (value: T) => T, tester: (value: T) => boolean): Aigle<T>;
-    static doUntil<T>(value: T, iterator: (value: T) => T, tester: (value: T) => boolean): Aigle<T>;
+    static doUntil<T>(
+      iterator: (value: T) => ReturnType<T>,
+      tester: (value: T) => ReturnType<boolean>
+    ): Aigle<T>;
+    static doUntil<T>(
+      value: T,
+      iterator: (value: T) => ReturnType<T>,
+      tester: (value: T) => ReturnType<boolean>
+    ): Aigle<T>;
 
     /* doWhilst */
 
-    static doWhilst<T>(iterator: (value: T) => T, tester: (value: T) => boolean): Aigle<T>;
+    static doWhilst<T>(
+      iterator: (value: T) => ReturnType<T>,
+      tester: (value: T) => ReturnType<boolean>
+    ): Aigle<T>;
     static doWhilst<T>(
       value: T,
-      iterator: (value: T) => T,
-      tester: (value: T) => boolean
+      iterator: (value: T) => ReturnType<T>,
+      tester: (value: T) => ReturnType<boolean>
     ): Aigle<T>;
 
     /* until */
 
-    static until<T>(tester: (value: T) => boolean, iterator: (value: T) => T): Aigle<T>;
-    static until<T>(value: T, tester: (value: T) => boolean, iterator: (value: T) => T): Aigle<T>;
+    static until<T>(
+      tester: (value: T) => ReturnType<boolean>,
+      iterator: (value: T) => ReturnType<T>
+    ): Aigle<T>;
+    static until<T>(
+      value: T,
+      tester: (value: T) => ReturnType<boolean>,
+      iterator: (value: T) => ReturnType<T>
+    ): Aigle<T>;
 
     /* whilst */
 
-    static whilst<T>(tester: (value: T) => boolean, iterator: (value: T) => T): Aigle<T>;
-    static whilst<T>(value: T, tester: (value: T) => boolean, iterator: (value: T) => T): Aigle<T>;
+    static whilst<T>(
+      tester: (value: T) => ReturnType<boolean>,
+      iterator: (value: T) => ReturnType<T>
+    ): Aigle<T>;
+    static whilst<T>(
+      value: T,
+      tester: (value: T) => ReturnType<boolean>,
+      iterator: (value: T) => ReturnType<T>
+    ): Aigle<T>;
 
     /* retry */
 
-    static retry<T>(handler: () => T | PromiseLike<T>): Aigle<T>;
-    static retry<T>(opts: number | RetryOpts, handler: () => T | PromiseLike<T>): Aigle<T>;
+    static retry<T>(handler: PromiseCallback<T>): Aigle<T>;
+    static retry<T>(opts: number | RetryOpts, handler: PromiseCallback<T>): Aigle<T>;
+
+    /* attempt */
+
+    static attempt<T>(handler: PromiseCallback<T>): Aigle<T>;
+
+    /* prommisify */
+
+    static promisify(fn: any, opts?: any): any;
+
+    /* prommisifyAll */
+
+    static promisifyAll(target: any, options?: any): any;
+
+    /* using */
+
+    static using<R1, T>(
+      arg1: Disposer<R1>,
+      executor: (transaction1: R1) => ReturnType<T>
+    ): Aigle<T>;
+    static using<R1, R2, T>(
+      arg1: Disposer<R1>,
+      arg2: Disposer<R2>,
+      executor: (transaction1: R1, transaction2: R2) => ReturnType<T>
+    ): Aigle<T>;
+    static using<R1, R2, R3, T>(
+      arg1: Disposer<R1>,
+      arg2: Disposer<R2>,
+      arg3: Disposer<R3>,
+      executor: (transaction1: R1, transaction2: R2, transaction3: R3) => ReturnType<T>
+    ): Aigle<T>;
+
+    /* mixin */
+
+    static mixin(sources: any, opts: any): any;
 
     /* config */
 
     static config(opts: ConfigOpts): void;
 
     static longStackTraces(): void;
-
-    /** TODO work in progress **/
-
-    static attempt(handler: any): Aigle<any>;
-
-    static default: any;
-
-    static mixin(sources: any, opts: any): any;
-
-    static promisify(fn: any, opts?: any): any;
-
-    static promisifyAll<T extends object>(target: T, options?: any): T;
-
-    static using(...args: any[]): Aigle<any>;
   }
 }
