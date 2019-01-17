@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>race.js - Documentation</title>
+    <title>series.js - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -31,7 +31,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">race.js</h1>
+    <h1 class="page-title">series.js</h1>
     
 
     
@@ -49,44 +49,46 @@ const Aigle = require('./aigle');
 const {
   INTERNAL,
   PENDING,
-  promiseArrayEach,
-  promiseObjectEach,
-  promiseMapEach,
-  promiseSetEach,
+  promiseArrayIterator,
+  promiseObjectIterator,
+  promiseSetIterator,
+  promiseMapIterator,
   iteratorSymbol
 } = require('./internal/util');
+const { execute } = require('./internal/collection');
 
-class Race extends AigleProxy {
+class Series extends AigleProxy {
   constructor(coll) {
     super();
     this._promise = new Aigle(INTERNAL);
+    this._index = -1;
+    this._coll = undefined;
     this._keys = undefined;
+    this._rest = undefined;
+    this._result = undefined;
+    this._iterate = undefined;
     if (coll === PENDING) {
-      this._callResolve = this._set;
+      this._set = set;
+      this._iterate = this._callResolve;
+      this._callResolve = execute;
     } else {
-      this._callResolve = undefined;
-      this._set(coll);
+      set.call(this, coll);
     }
-  }
-
-  _set(coll) {
-    this._callResolve = callResolve;
-    if (Array.isArray(coll)) {
-      promiseArrayEach(this, coll.length, coll);
-    } else if (!coll || typeof coll !== 'object') {
-    } else if (coll[iteratorSymbol]) {
-      coll instanceof Map
-        ? promiseMapEach(this, Infinity, coll, new Map())
-        : promiseSetEach(this, Infinity, coll);
-    } else {
-      const keys = Object.keys(coll);
-      promiseObjectEach(this, keys.length, coll, {}, keys);
-    }
-    return this;
   }
 
   _execute() {
+    this._iterate();
     return this._promise;
+  }
+
+  _callResolve(value, key) {
+    this._result[key] = value;
+    this._iterate();
+  }
+
+  _callResolveMap(value, key) {
+    this._result.set(key, value);
+    this._iterate();
   }
 
   _callReject(reason) {
@@ -94,32 +96,75 @@ class Race extends AigleProxy {
   }
 }
 
-module.exports = { race, Race };
+module.exports = { series, Series };
 
-function callResolve(value) {
-  this._promise._resolve(value);
+function set(coll) {
+  this._coll = coll;
+  this._iterate = iterate;
+  if (Array.isArray(coll)) {
+    const size = coll.length;
+    this._rest = size;
+    this._result = Array(size);
+    this._iterator = promiseArrayIterator;
+  } else if (typeof coll !== 'object' || coll === null) {
+    this._rest = 0;
+    this._result = undefined;
+  } else if (coll[iteratorSymbol]) {
+    this._coll = coll[iteratorSymbol]();
+    const size = coll.size;
+    this._rest = size;
+    if (coll instanceof Map) {
+      const result = new Map();
+      this._result = result;
+      this._callResolve = this._callResolveMap;
+      this._iterator = promiseMapIterator;
+    } else {
+      this._result = [];
+      this._iterator = promiseSetIterator;
+    }
+  } else {
+    const result = {};
+    const keys = Object.keys(coll);
+    this._rest = keys.length;
+    this._keys = keys;
+    this._result = result;
+    this._iterator = promiseObjectIterator;
+  }
+  return this;
+}
+
+function iterate() {
+  if (++this._index === this._rest) {
+    this._promise._resolve(this._result);
+  } else {
+    this._iterator(this, this._coll, this._index, this._result, this._keys);
+  }
 }
 
 /**
- * @param {Object|Array} collection
+ * `Aigle.series` functionality has the same functionality as [`Aigle.parallel`](https://suguru03.github.io/aigle/docs/global.html#parallel)
+ * and it works in series.
+ * @param {Array|Object} collection - it should be an array/object of functions or Promise instances
  * @example
- * Aigle.race([
- *   new Aigle(resolve => setTimeout(() => resolve(1), 30)),
- *   new Aigle(resolve => setTimeout(() => resolve(2), 20)),
- *   new Aigle(resolve => setTimeout(() => resolve(3), 10))
- * ])
- * .then(value => console.log(value)); // 3
+ *   Aigle.series([
+ *     () => Aigle.delay(30, 1),
+ *     Aigle.delay(20, 2),
+ *     3
+ *   ]).then(array => {
+ *     console.log(array); // [1, 2, 3]
+ *   });
  *
  * @example
- * Aigle.race({
- *   a: new Aigle(resolve => setTimeout(() => resolve(1), 30)),
- *   b: new Aigle(resolve => setTimeout(() => resolve(2), 20)),
- *   c: new Aigle(resolve => setTimeout(() => resolve(3), 10))
- * })
- * .then(value => console.log(value)); // 3
+ *   Aigle.series({
+ *     a: () => Aigle.delay(30, 1),
+ *     b: Aigle.delay(20, 2),
+ *     c: 3
+ *   }).then(obj => {
+ *     console.log(obj); // { a: 1, b: 2, c: 3 }
+ *   });
  */
-function race(collection) {
-  return new Race(collection)._promise;
+function series(collection) {
+  return new Series(collection)._execute();
 }
 </code></pre>
         </article>
