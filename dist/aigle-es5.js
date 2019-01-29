@@ -334,58 +334,90 @@
                 return addProxy(this, Props);
               };
 
-              Aigle.prototype.series = function series() {
-                return addProxy(this, Series);
-              };
-
               /**
                * `Aigle#parallel` will execute [`Aigle.parallel`](https://suguru03.github.io/aigle/docs/global.html#parallel) using a previous promise value.
                * The value will be assigned as the first argument to [`Aigle.parallel`](https://suguru03.github.io/aigle/docs/global.html#parallel).
-               * @param {Array|Object} collection - it should be an array of object of Promise instances
                * @example
-               * const order = [];
-               * const makeDelay = (num, delay) => {
-               *   return Aigle.delay(delay)
-               *     .then(() => {
-               *       order.push(num);
-               *       return num;
-               *     });
-               * };
-               * Aigle.resolve([
-               *   makeDelay(1, 30),
-               *   makeDelay(2, 20),
-               *   makeDelay(3, 10)
-               * ])
-               * .parallel()
-               * .then(array => {
-               *   console.log(array); // [1, 2, 3]
-               *   console.log(order); // [3, 2, 1]
-               * });
+               *   Aigle.resolve([
+               *     () => Aigle.delay(30, 1),
+               *     Aigle.delay(20, 2),
+               *     3
+               *   ])
+               *   .parallel()
+               *   .then(array => {
+               *     console.log(array); // [1, 2, 3]
+               *   });
                *
                * @example
-               * const order = [];
-               * const makeDelay = (num, delay) => {
-               *   return Aigle.delay(delay)
-               *     .then(() => {
-               *       order.push(num);
-               *       return num;
-               *     });
-               * };
-               * Aigle.resolve({
-               *   a: makeDelay(1, 30),
-               *   b: makeDelay(2, 20),
-               *   c: makeDelay(3, 10)
-               * })
-               * .parallel()
-               * .then(object => {
-               *   console.log(object); // { a: 1, b: 2, c: 3 }
-               *   console.log(order); // [3, 2, 1]
-               * });
+               *   Aigle.resolve({
+               *     a: () => Aigle.delay(30, 1),
+               *     b: Aigle.delay(20, 2),
+               *     c: 3
+               *   })
+               *   .parallel()
+               *   .then(object => {
+               *     console.log(object); // { a: 1, b: 2, c: 3 }
+               *   });
                */
               Aigle.prototype.parallel = function parallel() {
                 return addProxy(this, Parallel);
               };
 
+              /**
+               * `Aigle#series` has the same functionality as [`Aigle#parallel`](https://suguru03.github.io/aigle/docs/Aigle.html#parallel)
+               * and it works in series.
+               * @example
+               *   Aigle.resolve([
+               *     () => Aigle.delay(30, 1),
+               *     Aigle.delay(20, 2),
+               *     3
+               *   ])
+               *   .series()
+               *   .then(array => {
+               *     console.log(array); // [1, 2, 3]
+               *   });
+               *
+               * @example
+               *   Aigle.resolve({
+               *     a: () => Aigle.delay(30, 1),
+               *     b: Aigle.delay(20, 2),
+               *     c: 3
+               *   })
+               *   .series()
+               *   .then(object => {
+               *     console.log(object); // { a: 1, b: 2, c: 3 }
+               *   });
+               */
+              Aigle.prototype.series = function series() {
+                return addProxy(this, Series);
+              };
+
+              /**
+               * `Aigle#parallelLimit` has the same functionality as [`Aigle#parallel`](https://suguru03.github.io/aigle/docs/Aigle.html#parallel)
+               * and it works with concurrency.
+               * @param {number} [limit=8]
+               * @example
+               *   Aigle.resolve([
+               *     () => Aigle.delay(30, 1),
+               *     Aigle.delay(20, 2),
+               *     3
+               *   ])
+               *   .parallelLimit()
+               *   .then(array => {
+               *     console.log(array); // [1, 2, 3]
+               *   });
+               *
+               * @example
+               *   Aigle.resolve({
+               *     a: () => Aigle.delay(30, 1),
+               *     b: Aigle.delay(20, 2),
+               *     c: 3
+               *   })
+               *   .parallelLimit(2)
+               *   .then(object => {
+               *     console.log(object); // { a: 1, b: 2, c: 3 }
+               *   });
+               */
               Aigle.prototype.parallelLimit = function parallelLimit(limit) {
                 return addProxy(this, ParallelLimit, limit);
               };
@@ -618,8 +650,7 @@
               };
 
               /**
-               * `Aigle#mapSeries` is almost the same as [`Aigle#map`](https://suguru03.github.io/aigle/docs/global.html#map), but it will work in series.
-               * @param {Array|Object} collection
+               * `Aigle#mapSeries` is almost the same as [`Aigle#map`](https://suguru03.github.io/aigle/docs/Aigle.html#map), but it will work in series.
                * @param {Function} iterator
                * @return {Aigle} Returns an Aigle instance
                * @example
@@ -661,9 +692,8 @@
               };
 
               /**
-               * `Aigle#mapLimit` is almost the same as [`Aigle#map`](https://suguru03.github.io/aigle/docs/global.html#map)
+               * `Aigle#mapLimit` is almost the same as [`Aigle#map`](https://suguru03.github.io/aigle/docs/Aigle.html#map)
                * and [`Aigle#mapSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#mapSeries)), but it will work with concurrency.
-               * @param {Array|Object} collection
                * @param {integer} [limit=8]
                * @param {Function} iterator
                * @return {Aigle} Returns an Aigle instance
@@ -795,7 +825,7 @@
               };
 
               /**
-               * `Aigle#mapValuesSeries` is almost the same as [`Aigle#mapValues`](https://suguru03.github.io/aigle/docs/global.html#mapValues), but it will work in series.
+               * `Aigle#mapValuesSeries` is almost the same as [`Aigle#mapValues`](https://suguru03.github.io/aigle/docs/Aigle.html#mapValues), but it will work in series.
                * @param {Function} iterator
                * @return {Aigle} Returns an Aigle instance
                * @example
@@ -837,7 +867,7 @@
               };
 
               /**
-               * `Aigle#mapValuesLimit` is almost the same as [`Aigle#mapValues`](https://suguru03.github.io/aigle/docs/global.html#mapValues)
+               * `Aigle#mapValuesLimit` is almost the same as [`Aigle#mapValues`](https://suguru03.github.io/aigle/docs/Aigle.html#mapValues)
                * and [`Aigle#mapValuesSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#mapValuesSeries)), but it will work with concurrency.
                * @param {number} [limit=8]
                * @param {Function} iterator
@@ -981,7 +1011,7 @@
               };
 
               /**
-               * `Aigle#filterSeries` is almost the same as [`Aigle#filter`](https://suguru03.github.io/aigle/docs/global.html#filter), but it will work in series.
+               * `Aigle#filterSeries` is almost the same as [`Aigle#filter`](https://suguru03.github.io/aigle/docs/Aigle.html#filter), but it will work in series.
                * @param {Function} iterator
                * @return {Aigle} Returns an Aigle instance
                * @example
@@ -1023,9 +1053,8 @@
               };
 
               /**
-               * `Aigle#filterLimit` is almost the same as [`Aigle#filter`](https://suguru03.github.io/aigle/docs/global.html#filter)
+               * `Aigle#filterLimit` is almost the same as [`Aigle#filter`](https://suguru03.github.io/aigle/docs/Aigle.html#filter)
                * and [`Aigle#filterSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#filterSeries)), but it will work with concurrency.
-               * @param {Array|Object} collection
                * @param {integer} [limit=8]
                * @param {Function} iterator
                * @return {Aigle} Returns an Aigle instance
@@ -1368,7 +1397,7 @@
               };
 
               /**
-               * `Aigle#findSeries` is almost the same as [`Aigle#find`](https://suguru03.github.io/aigle/docs/global.html#find), but it will work in series.
+               * `Aigle#findSeries` is almost the same as [`Aigle#find`](https://suguru03.github.io/aigle/docs/Aigle.html#find), but it will work in series.
                * @param {Function} iterator
                * @return {Aigle} Returns an Aigle instance
                * @example
@@ -1427,7 +1456,7 @@
               };
 
               /**
-               * `Aigle#findLimit` is almost the same as [`Aigle#find`](https://suguru03.github.io/aigle/docs/global.html#find)
+               * `Aigle#findLimit` is almost the same as [`Aigle#find`](https://suguru03.github.io/aigle/docs/Aigle.html#find)
                * and [`Aigle#findSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#findSeries)), but it will work with concurrency.
                * @param {integer} [limit=8]
                * @param {Function} iterator
@@ -1574,7 +1603,7 @@
               };
 
               /**
-               * `Aigle#findIndexSeries` is almost the same as [`Aigle#findIndex`](https://suguru03.github.io/aigle/docs/global.html#findIndex), but it will work in series.
+               * `Aigle#findIndexSeries` is almost the same as [`Aigle#findIndex`](https://suguru03.github.io/aigle/docs/Aigle.html#findIndex), but it will work in series.
                * @param {Function} iterator
                * @return {Aigle} Returns an Aigle instance
                * @example
@@ -1616,7 +1645,7 @@
               };
 
               /**
-               * `Aigle#findIndexLimit` is almost the same as [`Aigle#findIndex`](https://suguru03.github.io/aigle/docs/global.html#findIndex)
+               * `Aigle#findIndexLimit` is almost the same as [`Aigle#findIndex`](https://suguru03.github.io/aigle/docs/Aigle.html#findIndex)
                * and [`Aigle#findIndexSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#findIndexSeries)), but it will work with concurrency.
                * @param {integer} [limit=8]
                * @param {Function} iterator
@@ -1798,7 +1827,7 @@
               };
 
               /**
-               * `Aigle#pickBySeries` is almost the same as [`Aigle#pickBy`](https://suguru03.github.io/aigle/docs/global.html#pickBy), but it will work in series.
+               * `Aigle#pickBySeries` is almost the same as [`Aigle#pickBy`](https://suguru03.github.io/aigle/docs/Aigle.html#pickBy), but it will work in series.
                * @param {Function} iterator
                * @return {Aigle} Returns an Aigle instance
                * @example
@@ -1840,7 +1869,7 @@
               };
 
               /**
-               * `Aigle#pickByLimit` is almost the same as [`Aigle#pickBy`](https://suguru03.github.io/aigle/docs/global.html#pickBy)
+               * `Aigle#pickByLimit` is almost the same as [`Aigle#pickBy`](https://suguru03.github.io/aigle/docs/Aigle.html#pickBy)
                * and [`Aigle#pickBySeries`](https://suguru03.github.io/aigle/docs/Aigle.html#pickBySeries)), but it will work with concurrency.
                * @param {number} [limit=8]
                * @param {Function} iterator
@@ -2014,7 +2043,7 @@
               };
 
               /**
-               * `Aigle#omitBySeries` is almost the same as [`Aigle#omitBy`](https://suguru03.github.io/aigle/docs/global.html#omitBy), but it will work in series.
+               * `Aigle#omitBySeries` is almost the same as [`Aigle#omitBy`](https://suguru03.github.io/aigle/docs/Aigle.html#omitBy), but it will work in series.
                * @param {Function} iterator
                * @return {Aigle} Returns an Aigle instance
                * @example
@@ -2056,7 +2085,7 @@
               };
 
               /**
-               * `Aigle#omitByLimit` is almost the same as [`Aigle#omitBy`](https://suguru03.github.io/aigle/docs/global.html#omitBy)
+               * `Aigle#omitByLimit` is almost the same as [`Aigle#omitBy`](https://suguru03.github.io/aigle/docs/Aigle.html#omitBy)
                * and [`Aigle#omitBySeries`](https://suguru03.github.io/aigle/docs/Aigle.html#omitBySeries)), but it will work with concurrency.
                * @param {number} [limit=8]
                * @param {Function} iterator
@@ -2404,7 +2433,7 @@
               };
 
               /**
-               * `Aigle#sortBySeries` is almost the same as [`Aigle#sortBy`](https://suguru03.github.io/aigle/docs/global.html#sortBy), but it will work in series.
+               * `Aigle#sortBySeries` is almost the same as [`Aigle#sortBy`](https://suguru03.github.io/aigle/docs/Aigle.html#sortBy), but it will work in series.
                * @param {Function} iterator
                * @return {Aigle} Returns an Aigle instance
                * @example
@@ -2446,7 +2475,7 @@
               };
 
               /**
-               * `Aigle#sortByLimit` is almost the same as [`Aigle#sortBy`](https://suguru03.github.io/aigle/docs/global.html#sortBy)
+               * `Aigle#sortByLimit` is almost the same as [`Aigle#sortBy`](https://suguru03.github.io/aigle/docs/Aigle.html#sortBy)
                * and [`Aigle#sortBySeries`](https://suguru03.github.io/aigle/docs/Aigle.html#sortBySeries)), but it will work with concurrency.
                * @param {number} [limit=8]
                * @param {Function} iterator
@@ -2604,7 +2633,7 @@
               };
 
               /**
-               * `Aigle#someSeries` is almost the same as [`Aigle#some`](https://suguru03.github.io/aigle/docs/global.html#some), but it will work in series.
+               * `Aigle#someSeries` is almost the same as [`Aigle#some`](https://suguru03.github.io/aigle/docs/Aigle.html#some), but it will work in series.
                * @param {Function} iterator
                * @return {Aigle} Returns an Aigle instance
                * @example
@@ -2663,7 +2692,7 @@
               };
 
               /**
-               * `Aigle#someLimit` is almost the same as [`Aigle#some`](https://suguru03.github.io/aigle/docs/global.html#some)
+               * `Aigle#someLimit` is almost the same as [`Aigle#some`](https://suguru03.github.io/aigle/docs/Aigle.html#some)
                * and [`Aigle#someSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#someSeries)), but it will work with concurrency.
                * @param {number} [limit=8]
                * @param {Function} iterator
@@ -2892,8 +2921,8 @@
               };
 
               /**
-               * `Aigle#everyLimit` is almost the same as [`Aigle.every`](https://suguru03.github.io/aigle/docs/Aigle.html#every) and
-               * [`Aigle.everySeries`](https://suguru03.github.io/aigle/docs/Aigle.html#everySeries), but it will work with concurrency.
+               * `Aigle#everyLimit` is almost the same as [`Aigle#every`](https://suguru03.github.io/aigle/docs/Aigle.html#every) and
+               * [`Aigle#everySeries`](https://suguru03.github.io/aigle/docs/Aigle.html#everySeries), but it will work with concurrency.
                * @param {number} [limit=8]
                * @param {Function} iterator
                * @return {Aigle} Returns an Aigle instance
@@ -3002,7 +3031,7 @@
               };
 
               /**
-               * `Aigle#concatSeries` is almost the same as [`Aigle#concat`](https://suguru03.github.io/aigle/docs/global.html#concat), but it will work in series.
+               * `Aigle#concatSeries` is almost the same as [`Aigle#concat`](https://suguru03.github.io/aigle/docs/Aigle.html#concat), but it will work in series.
                * @param {Function} iterator
                * @example
                * const order = [];
@@ -3043,7 +3072,7 @@
               };
 
               /**
-               * `Aigle#concatLimit` is almost the same as [`Aigle#concat`](https://suguru03.github.io/aigle/docs/global.html#concat)
+               * `Aigle#concatLimit` is almost the same as [`Aigle#concat`](https://suguru03.github.io/aigle/docs/Aigle.html#concat)
                * and [`Aigle#concatSeries`](https://suguru03.github.io/aigle/docs/Aigle.html#concatSeries)), but it will work with concurrency.
                * @param {integer} [limit=8]
                * @param {Function} iterator
@@ -9600,46 +9629,26 @@
           module.exports = { parallel: parallel, Parallel: Parallel };
 
           /**
-           * `Aigle.parallel` functionality is [`Aigle.all`](https://suguru03.github.io/aigle/docs/global.html#all) plus [`Aigle.props`](https://suguru03.github.io/aigle/docs/global.html#props).
-           * The function allows an object or an array as the first argument.
-           * @param {Array|Object} collection - it should be an array/object of Promise instances
+           * `Aigle.parallel` functionality is similar to [`Aigle.all`](https://suguru03.github.io/aigle/docs/global.html#all)
+           * and [`Aigle.props`](https://suguru03.github.io/aigle/docs/global.html#props), and the function allows function collection.
+           * @param {Array|Object} collection - it should be an array/object of functions or Promise instances
            * @example
-           * const order = [];
-           * const makeDelay = (num, delay) => {
-           *   return Aigle.delay(delay)
-           *     .then(() => {
-           *       order.push(num);
-           *       return num;
-           *     });
-           * };
-           * Aigle.parallel([
-           *   makeDelay(1, 30),
-           *   makeDelay(2, 20),
-           *   makeDelay(3, 10)
-           * ])
-           * .then(array => {
-           *   console.log(array); // [1, 2, 3]
-           *   console.log(order); // [3, 2, 1]
-           * });
+           *   Aigle.parallel([
+           *     () => Aigle.delay(30, 1),
+           *     Aigle.delay(20, 2),
+           *     3
+           *   ]).then(array => {
+           *     console.log(array); // [1, 2, 3]
+           *   });
            *
            * @example
-           * const order = [];
-           * const makeDelay = (num, delay) => {
-           *   return Aigle.delay(delay)
-           *     .then(() => {
-           *       order.push(num);
-           *       return num;
-           *     });
-           * };
-           * Aigle.parallel({
-           *   a: makeDelay(1, 30),
-           *   b: makeDelay(2, 20),
-           *   c: makeDelay(3, 10)
-           * })
-           * .then(object => {
-           *   console.log(object); // { a: 1, b: 2, c: 3 }
-           *   console.log(order); // [3, 2, 1]
-           * });
+           *   Aigle.parallel({
+           *     a: () => Aigle.delay(30, 1),
+           *     b: Aigle.delay(20, 2),
+           *     c: 3
+           *   }).then(obj => {
+           *     console.log(obj); // { a: 1, b: 2, c: 3 }
+           *   });
            */
           function parallel(collection) {
             return new Parallel(collection)._promise;
@@ -9718,6 +9727,29 @@
               this._iterator(this, this._coll, this._index, this._result, this._keys);
           }
 
+          /**
+           * `Aigle.parallel` functionality has the same functionality as [`Aigle.parallel`](https://suguru03.github.io/aigle/docs/global.html#parallel)
+           * and it works with concurrency.
+           * @param {Array|Object} collection - it should be an array/object of functions or Promise instances
+           * @param {integer} [limit=8] - It is concurrncy, default is 8
+           * @example
+           *   Aigle.parallelLimit([
+           *     () => Aigle.delay(30, 1),
+           *     Aigle.delay(20, 2),
+           *     3
+           *   ]).then(array => {
+           *     console.log(array); // [1, 2, 3]
+           *   });
+           *
+           * @example
+           *   Aigle.parallelLimit({
+           *     a: () => Aigle.delay(30, 1),
+           *     b: Aigle.delay(20, 2),
+           *     c: 3
+           *   }, 2).then(obj => {
+           *     console.log(obj); // { a: 1, b: 2, c: 3 }
+           *   });
+           */
           function parallelLimit(collection, limit) {
             return new ParallelLimit(collection, limit)._execute();
           }
@@ -11400,6 +11432,28 @@
             }
           }
 
+          /**
+           * `Aigle.series` functionality has the same functionality as [`Aigle.parallel`](https://suguru03.github.io/aigle/docs/global.html#parallel)
+           * and it works in series.
+           * @param {Array|Object} collection - it should be an array/object of functions or Promise instances
+           * @example
+           *   Aigle.series([
+           *     () => Aigle.delay(30, 1),
+           *     Aigle.delay(20, 2),
+           *     3
+           *   ]).then(array => {
+           *     console.log(array); // [1, 2, 3]
+           *   });
+           *
+           * @example
+           *   Aigle.series({
+           *     a: () => Aigle.delay(30, 1),
+           *     b: Aigle.delay(20, 2),
+           *     c: 3
+           *   }).then(obj => {
+           *     console.log(obj); // { a: 1, b: 2, c: 3 }
+           *   });
+           */
           function series(collection) {
             return new Series(collection)._execute();
           }
@@ -14290,7 +14344,7 @@
         function(require, module, exports) {
           module.exports = {
             name: 'aigle',
-            version: '1.13.0-alpha.12',
+            version: '1.13.0',
             description:
               'Aigle is an ideal Promise library, faster and more functional than other Promise libraries',
             main: 'index.js',
