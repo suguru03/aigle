@@ -57,7 +57,10 @@ async function execute() {
     };
     const map = _.omit(obj, 'config');
     for (const [name, tasks] of Object.entries(map)) {
-      result[name] = await executeTasks(config, tasks, name);
+      const res = await executeTasks(config, tasks, name);
+      if (res) {
+        result[name] = res;
+      }
     }
   }
   makeDoc && makeDocs(result);
