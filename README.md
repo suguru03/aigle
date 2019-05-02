@@ -35,10 +35,6 @@ const each = require('aigle/each');
 ### TypeScript
 
 ```ts
-npm install --save aigle@next
-```
-
-```ts
 import Aigle from 'aigle';
 ```
 
