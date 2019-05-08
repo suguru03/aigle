@@ -426,11 +426,11 @@ hawkListProm.transform((acc: SwanMap, hawk: Hawk) => (acc.a = swan), {}).then((m
 //-- transform:object --//
 
 hawkProm
-  .transform((acc: SwanMap, val: Hawk[keyof Hawk], key: keyof Hawk, hawk: Hawk) => {})
+  .transform((acc: SwanMap, val: Hawk[keyof Hawk], key: string, hawk: Hawk) => {})
   .then((map: SwanMap) => {});
 
 hawkProm
-  .transform((acc: Swans, hawk: Hawk[keyof Hawk], key: keyof Hawk) => acc.push(swan), [])
+  .transform((acc: Swans, hawk: Hawk[keyof Hawk], key: string) => acc.push(swan), [])
   .then((arr: Swans) => {});
 
 hawkProm
