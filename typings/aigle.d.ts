@@ -28,7 +28,7 @@ declare namespace AigleCore {
   ) => ReturnType<TResult>;
   type ObjectIterator<T, TResult = NotVoid> = (
     value: T[keyof T],
-    key: keyof T,
+    key: string,
     collection: T
   ) => ReturnType<TResult>;
 
@@ -47,7 +47,7 @@ declare namespace AigleCore {
   type MemoObjectIterator<T, TResult, IResult = any> = (
     accumulator: TResult,
     value: T[keyof T],
-    key: keyof T,
+    key: string,
     collection: T
   ) => ReturnType<IResult>;
 
