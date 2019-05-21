@@ -153,7 +153,7 @@ parallel('series', () => {
 
   it('should return an empty object immediately', () => {
     return Aigle.series().then(res => {
-      assert.strictEqual(res, undefined);
+      assert.deepStrictEqual(res, {});
     });
   });
 });

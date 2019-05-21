@@ -171,7 +171,7 @@ parallel('parallelLimit', () => {
 
   it('should return an empty object immediately', () => {
     return Aigle.parallelLimit().then(res => {
-      assert.strictEqual(res, undefined);
+      assert.deepStrictEqual(res, {});
     });
   });
 });
