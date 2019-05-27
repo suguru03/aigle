@@ -73,7 +73,7 @@ describe('mixin', () => {
         return array;
       })
       .all()
-      .then(value => assert.deepStrictEqual(value[(2, 4, 6)]));
+      .then(value => assert.deepStrictEqual(value, [2, 4, 6]));
   });
 
   it('should execute with a synchronous iterator', () => {
