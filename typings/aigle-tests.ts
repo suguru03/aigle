@@ -1,4 +1,5 @@
-import Aigle, { AllSettledResponse } from './aigle';
+import Aigle from './aigle';
+type AllSettledResponse<T> = Aigle.AllSettledResponse<T>;
 
 /* interface */
 
