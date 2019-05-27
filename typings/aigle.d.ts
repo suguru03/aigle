@@ -2,6 +2,8 @@ export default AigleCore.Aigle;
 export class Aigle<R> extends AigleCore.Aigle<R> {}
 export as namespace Aigle;
 
+export type AllSettledResponse<T> = AigleCore.AllSettledResponse<T>;
+
 declare namespace AigleCore {
   export enum State {
     Pending = 'pending',

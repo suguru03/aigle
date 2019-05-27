@@ -123,7 +123,7 @@ hawkArrProm.all().then((values: Hawks) => {});
 
 /* allSettled */
 
-hawkArrProm.allSettled().then((values: AllSettledResponse<Hawk>) => {});
+hawkArrProm.allSettled().then((values: AllSettledResponse<Hawk>[]) => {});
 
 /* race */
 
