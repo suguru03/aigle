@@ -3,6 +3,12 @@ export class Aigle<R> extends AigleCore.Aigle<R> {}
 export as namespace Aigle;
 
 declare namespace AigleCore {
+  export enum State {
+    Pending = 'pending',
+    Fulfilled = 'fulfilled',
+    Rejected = 'rejected'
+  }
+
   class CancellationError extends Error {}
   class TimeoutError extends Error {}
   type ReturnType<T> = T | PromiseLike<T>;
@@ -50,6 +56,16 @@ declare namespace AigleCore {
     key: string,
     collection: T
   ) => ReturnType<IResult>;
+
+  export interface AllSettledFulfilled<T> {
+    state: State.Fulfilled;
+    value: T;
+  }
+  export interface AllSettledRejected {
+    state: State.Rejected;
+    reason: any;
+  }
+  export type AllSettledResponse<T> = AllSettledFulfilled<T> | AllSettledRejected;
 
   interface ConfigOpts {
     longStackTraces?: boolean;
@@ -268,6 +284,200 @@ declare namespace AigleCore {
     ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10]>;
 
     all<T>(this: Aigle<(T | PromiseLike<T>)[]>): Aigle<T[]>;
+
+    /* allSettled */
+
+    allSettled<T1>(
+      this: Aigle<[T1 | PromiseLike<T1> | PromiseCallback<T1>]>
+    ): Aigle<[AllSettledResponse<T1>]>;
+
+    allSettled<T1, T2>(
+      this: Aigle<
+        [T1 | PromiseLike<T1> | PromiseCallback<T1>, T2 | PromiseLike<T2> | PromiseCallback<T2>]
+      >
+    ): Aigle<[AllSettledResponse<T1>, AllSettledResponse<T2>]>;
+
+    allSettled<T1, T2, T3>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1> | PromiseCallback<T1>,
+          T2 | PromiseLike<T2> | PromiseCallback<T2>,
+          T3 | PromiseLike<T3> | PromiseCallback<T3>
+        ]
+      >
+    ): Aigle<[AllSettledResponse<T1>, AllSettledResponse<T2>, AllSettledResponse<T3>]>;
+
+    allSettled<T1, T2, T3, T4>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1> | PromiseCallback<T1>,
+          T2 | PromiseLike<T2> | PromiseCallback<T2>,
+          T3 | PromiseLike<T3> | PromiseCallback<T3>,
+          T4 | PromiseLike<T4> | PromiseCallback<T4>
+        ]
+      >
+    ): Aigle<
+      [
+        AllSettledResponse<T1>,
+        AllSettledResponse<T2>,
+        AllSettledResponse<T3>,
+        AllSettledResponse<T4>
+      ]
+    >;
+
+    allSettled<T1, T2, T3, T4, T5>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1> | PromiseCallback<T1>,
+          T2 | PromiseLike<T2> | PromiseCallback<T2>,
+          T3 | PromiseLike<T3> | PromiseCallback<T3>,
+          T4 | PromiseLike<T4> | PromiseCallback<T4>,
+          T5 | PromiseLike<T5> | PromiseCallback<T5>
+        ]
+      >
+    ): Aigle<
+      [
+        AllSettledResponse<T1>,
+        AllSettledResponse<T2>,
+        AllSettledResponse<T3>,
+        AllSettledResponse<T4>,
+        AllSettledResponse<T5>
+      ]
+    >;
+
+    allSettled<T1, T2, T3, T4, T5, T6>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1> | PromiseCallback<T1>,
+          T2 | PromiseLike<T2> | PromiseCallback<T2>,
+          T3 | PromiseLike<T3> | PromiseCallback<T3>,
+          T4 | PromiseLike<T4> | PromiseCallback<T4>,
+          T5 | PromiseLike<T5> | PromiseCallback<T5>,
+          T6 | PromiseLike<T6> | PromiseCallback<T6>
+        ]
+      >
+    ): Aigle<
+      [
+        AllSettledResponse<T1>,
+        AllSettledResponse<T2>,
+        AllSettledResponse<T3>,
+        AllSettledResponse<T4>,
+        AllSettledResponse<T5>,
+        AllSettledResponse<T6>
+      ]
+    >;
+
+    allSettled<T1, T2, T3, T4, T5, T6, T7>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1> | PromiseCallback<T1>,
+          T2 | PromiseLike<T2> | PromiseCallback<T2>,
+          T3 | PromiseLike<T3> | PromiseCallback<T3>,
+          T4 | PromiseLike<T4> | PromiseCallback<T4>,
+          T5 | PromiseLike<T5> | PromiseCallback<T5>,
+          T6 | PromiseLike<T6> | PromiseCallback<T6>,
+          T7 | PromiseLike<T7> | PromiseCallback<T7>
+        ]
+      >
+    ): Aigle<
+      [
+        AllSettledResponse<T1>,
+        AllSettledResponse<T2>,
+        AllSettledResponse<T3>,
+        AllSettledResponse<T4>,
+        AllSettledResponse<T5>,
+        AllSettledResponse<T6>,
+        AllSettledResponse<T7>
+      ]
+    >;
+
+    allSettled<T1, T2, T3, T4, T5, T6, T7, T8>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1> | PromiseCallback<T1>,
+          T2 | PromiseLike<T2> | PromiseCallback<T2>,
+          T3 | PromiseLike<T3> | PromiseCallback<T3>,
+          T4 | PromiseLike<T4> | PromiseCallback<T4>,
+          T5 | PromiseLike<T5> | PromiseCallback<T5>,
+          T6 | PromiseLike<T6> | PromiseCallback<T6>,
+          T7 | PromiseLike<T7> | PromiseCallback<T7>,
+          T8 | PromiseLike<T8> | PromiseCallback<T8>
+        ]
+      >
+    ): Aigle<
+      [
+        AllSettledResponse<T1>,
+        AllSettledResponse<T2>,
+        AllSettledResponse<T3>,
+        AllSettledResponse<T4>,
+        AllSettledResponse<T5>,
+        AllSettledResponse<T6>,
+        AllSettledResponse<T7>,
+        AllSettledResponse<T8>
+      ]
+    >;
+
+    allSettled<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1> | PromiseCallback<T1>,
+          T2 | PromiseLike<T2> | PromiseCallback<T2>,
+          T3 | PromiseLike<T3> | PromiseCallback<T3>,
+          T4 | PromiseLike<T4> | PromiseCallback<T4>,
+          T5 | PromiseLike<T5> | PromiseCallback<T5>,
+          T6 | PromiseLike<T6> | PromiseCallback<T6>,
+          T7 | PromiseLike<T7> | PromiseCallback<T7>,
+          T8 | PromiseLike<T8> | PromiseCallback<T8>,
+          T9 | PromiseLike<T9> | PromiseCallback<T9>
+        ]
+      >
+    ): Aigle<
+      [
+        AllSettledResponse<T1>,
+        AllSettledResponse<T2>,
+        AllSettledResponse<T3>,
+        AllSettledResponse<T4>,
+        AllSettledResponse<T5>,
+        AllSettledResponse<T6>,
+        AllSettledResponse<T7>,
+        AllSettledResponse<T8>,
+        AllSettledResponse<T9>
+      ]
+    >;
+
+    allSettled<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
+      this: Aigle<
+        [
+          T1 | PromiseLike<T1> | PromiseCallback<T1>,
+          T2 | PromiseLike<T2> | PromiseCallback<T2>,
+          T3 | PromiseLike<T3> | PromiseCallback<T3>,
+          T4 | PromiseLike<T4> | PromiseCallback<T4>,
+          T5 | PromiseLike<T5> | PromiseCallback<T5>,
+          T6 | PromiseLike<T6> | PromiseCallback<T6>,
+          T7 | PromiseLike<T7> | PromiseCallback<T7>,
+          T8 | PromiseLike<T8> | PromiseCallback<T8>,
+          T9 | PromiseLike<T9> | PromiseCallback<T9>,
+          T10 | PromiseLike<T10> | PromiseCallback<T10>
+        ]
+      >
+    ): Aigle<
+      [
+        AllSettledResponse<T1>,
+        AllSettledResponse<T2>,
+        AllSettledResponse<T3>,
+        AllSettledResponse<T4>,
+        AllSettledResponse<T5>,
+        AllSettledResponse<T6>,
+        AllSettledResponse<T7>,
+        AllSettledResponse<T8>,
+        AllSettledResponse<T9>,
+        AllSettledResponse<T10>
+      ]
+    >;
+
+    allSettled<T>(
+      this: Aigle<(T | PromiseLike<T> | PromiseCallback<T>)[]>
+    ): Aigle<AllSettledResponse<T>[]>;
 
     /* race */
 
@@ -1997,6 +2207,185 @@ declare namespace AigleCore {
     ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10]>;
 
     static all<T>(values: (ReturnType<T>)[]): Aigle<T[]>;
+
+    /* allSettled */
+
+    static allSettled<T1>(
+      values: [T1 | PromiseLike<T1> | PromiseCallback<T1>]
+    ): Aigle<[AllSettledResponse<T1>]>;
+
+    static allSettled<T1, T2>(
+      values: [
+        T1 | PromiseLike<T1> | PromiseCallback<T1>,
+        T2 | PromiseLike<T2> | PromiseCallback<T2>
+      ]
+    ): Aigle<[AllSettledResponse<T1>, AllSettledResponse<T2>]>;
+
+    static allSettled<T1, T2, T3>(
+      values: [
+        T1 | PromiseLike<T1> | PromiseCallback<T1>,
+        T2 | PromiseLike<T2> | PromiseCallback<T2>,
+        T3 | PromiseLike<T3> | PromiseCallback<T3>
+      ]
+    ): Aigle<[AllSettledResponse<T1>, AllSettledResponse<T2>, AllSettledResponse<T3>]>;
+
+    static allSettled<T1, T2, T3, T4>(
+      values: [
+        T1 | PromiseLike<T1> | PromiseCallback<T1>,
+        T2 | PromiseLike<T2> | PromiseCallback<T2>,
+        T3 | PromiseLike<T3> | PromiseCallback<T3>,
+        T4 | PromiseLike<T4> | PromiseCallback<T4>
+      ]
+    ): Aigle<
+      [
+        AllSettledResponse<T1>,
+        AllSettledResponse<T2>,
+        AllSettledResponse<T3>,
+        AllSettledResponse<T4>
+      ]
+    >;
+
+    static allSettled<T1, T2, T3, T4, T5>(
+      values: [
+        T1 | PromiseLike<T1> | PromiseCallback<T1>,
+        T2 | PromiseLike<T2> | PromiseCallback<T2>,
+        T3 | PromiseLike<T3> | PromiseCallback<T3>,
+        T4 | PromiseLike<T4> | PromiseCallback<T4>,
+        T5 | PromiseLike<T5> | PromiseCallback<T5>
+      ]
+    ): Aigle<
+      [
+        AllSettledResponse<T1>,
+        AllSettledResponse<T2>,
+        AllSettledResponse<T3>,
+        AllSettledResponse<T4>,
+        AllSettledResponse<T5>
+      ]
+    >;
+
+    static allSettled<T1, T2, T3, T4, T5, T6>(
+      values: [
+        T1 | PromiseLike<T1> | PromiseCallback<T1>,
+        T2 | PromiseLike<T2> | PromiseCallback<T2>,
+        T3 | PromiseLike<T3> | PromiseCallback<T3>,
+        T4 | PromiseLike<T4> | PromiseCallback<T4>,
+        T5 | PromiseLike<T5> | PromiseCallback<T5>,
+        T6 | PromiseLike<T6> | PromiseCallback<T6>
+      ]
+    ): Aigle<
+      [
+        AllSettledResponse<T1>,
+        AllSettledResponse<T2>,
+        AllSettledResponse<T3>,
+        AllSettledResponse<T4>,
+        AllSettledResponse<T5>,
+        AllSettledResponse<T6>
+      ]
+    >;
+
+    static allSettled<T1, T2, T3, T4, T5, T6, T7>(
+      values: [
+        T1 | PromiseLike<T1> | PromiseCallback<T1>,
+        T2 | PromiseLike<T2> | PromiseCallback<T2>,
+        T3 | PromiseLike<T3> | PromiseCallback<T3>,
+        T4 | PromiseLike<T4> | PromiseCallback<T4>,
+        T5 | PromiseLike<T5> | PromiseCallback<T5>,
+        T6 | PromiseLike<T6> | PromiseCallback<T6>,
+        T7 | PromiseLike<T7> | PromiseCallback<T7>
+      ]
+    ): Aigle<
+      [
+        AllSettledResponse<T1>,
+        AllSettledResponse<T2>,
+        AllSettledResponse<T3>,
+        AllSettledResponse<T4>,
+        AllSettledResponse<T5>,
+        AllSettledResponse<T6>,
+        AllSettledResponse<T7>
+      ]
+    >;
+
+    static allSettled<T1, T2, T3, T4, T5, T6, T7, T8>(
+      values: [
+        T1 | PromiseLike<T1> | PromiseCallback<T1>,
+        T2 | PromiseLike<T2> | PromiseCallback<T2>,
+        T3 | PromiseLike<T3> | PromiseCallback<T3>,
+        T4 | PromiseLike<T4> | PromiseCallback<T4>,
+        T5 | PromiseLike<T5> | PromiseCallback<T5>,
+        T6 | PromiseLike<T6> | PromiseCallback<T6>,
+        T7 | PromiseLike<T7> | PromiseCallback<T7>,
+        T8 | PromiseLike<T8> | PromiseCallback<T8>
+      ]
+    ): Aigle<
+      [
+        AllSettledResponse<T1>,
+        AllSettledResponse<T2>,
+        AllSettledResponse<T3>,
+        AllSettledResponse<T4>,
+        AllSettledResponse<T5>,
+        AllSettledResponse<T6>,
+        AllSettledResponse<T7>,
+        AllSettledResponse<T8>
+      ]
+    >;
+
+    static allSettled<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
+      values: [
+        T1 | PromiseLike<T1> | PromiseCallback<T1>,
+        T2 | PromiseLike<T2> | PromiseCallback<T2>,
+        T3 | PromiseLike<T3> | PromiseCallback<T3>,
+        T4 | PromiseLike<T4> | PromiseCallback<T4>,
+        T5 | PromiseLike<T5> | PromiseCallback<T5>,
+        T6 | PromiseLike<T6> | PromiseCallback<T6>,
+        T7 | PromiseLike<T7> | PromiseCallback<T7>,
+        T8 | PromiseLike<T8> | PromiseCallback<T8>,
+        T9 | PromiseLike<T9> | PromiseCallback<T9>
+      ]
+    ): Aigle<
+      [
+        AllSettledResponse<T1>,
+        AllSettledResponse<T2>,
+        AllSettledResponse<T3>,
+        AllSettledResponse<T4>,
+        AllSettledResponse<T5>,
+        AllSettledResponse<T6>,
+        AllSettledResponse<T7>,
+        AllSettledResponse<T8>,
+        AllSettledResponse<T9>
+      ]
+    >;
+
+    static allSettled<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
+      values: [
+        T1 | PromiseLike<T1> | PromiseCallback<T1>,
+        T2 | PromiseLike<T2> | PromiseCallback<T2>,
+        T3 | PromiseLike<T3> | PromiseCallback<T3>,
+        T4 | PromiseLike<T4> | PromiseCallback<T4>,
+        T5 | PromiseLike<T5> | PromiseCallback<T5>,
+        T6 | PromiseLike<T6> | PromiseCallback<T6>,
+        T7 | PromiseLike<T7> | PromiseCallback<T7>,
+        T8 | PromiseLike<T8> | PromiseCallback<T8>,
+        T9 | PromiseLike<T9> | PromiseCallback<T9>,
+        T10 | PromiseLike<T10> | PromiseCallback<T10>
+      ]
+    ): Aigle<
+      [
+        AllSettledResponse<T1>,
+        AllSettledResponse<T2>,
+        AllSettledResponse<T3>,
+        AllSettledResponse<T4>,
+        AllSettledResponse<T5>,
+        AllSettledResponse<T6>,
+        AllSettledResponse<T7>,
+        AllSettledResponse<T8>,
+        AllSettledResponse<T9>,
+        AllSettledResponse<T10>
+      ]
+    >;
+
+    static allSettled<T>(
+      values: (T | PromiseLike<T> | PromiseCallback<T>)[]
+    ): Aigle<AllSettledResponse<T>[]>;
 
     /* rase */
 

@@ -1,4 +1,4 @@
-import Aigle from './aigle';
+import Aigle, { AllSettledResponse } from './aigle';
 
 /* interface */
 
@@ -120,6 +120,10 @@ hawkProm.finally(() => swanProm);
 /* all */
 
 hawkArrProm.all().then((values: Hawks) => {});
+
+/* allSettled */
+
+hawkArrProm.allSettled().then((values: AllSettledResponse<Hawk>) => {});
 
 /* race */
 
@@ -480,6 +484,12 @@ Aigle.resolve(hawkProm)
 /* all */
 
 Aigle.all([hawkProm, swanProm, duckProm]).then((values: [Hawk, Swan, Duck]) => {});
+
+/* allSettled */
+
+Aigle.allSettled([hawkProm, swanProm, duckProm]).then(
+  (values: [AllSettledResponse<Hawk>, AllSettledResponse<Swan>, AllSettledResponse<Duck>]) => {}
+);
 
 /* race */
 

@@ -3,6 +3,12 @@ export class Aigle<R> extends AigleCore.Aigle<R> {}
 export as namespace Aigle;
 
 declare namespace AigleCore {
+  export enum State {
+    Pending = 'pending',
+    Fulfilled = 'fulfilled',
+    Rejected = 'rejected'
+  }
+
   class CancellationError extends Error {}
   class TimeoutError extends Error {}
   type ReturnType<T> = T | PromiseLike<T>;
@@ -50,6 +56,16 @@ declare namespace AigleCore {
     key: string,
     collection: T
   ) => ReturnType<IResult>;
+
+  export interface AllSettledFulfilled<T> {
+    state: State.Fulfilled;
+    value: T;
+  }
+  export interface AllSettledRejected {
+    state: State.Rejected;
+    reason: any;
+  }
+  export type AllSettledResponse<T> = AllSettledFulfilled<T> | AllSettledRejected;
 
   interface ConfigOpts {
     longStackTraces?: boolean;
@@ -112,6 +128,17 @@ declare namespace AigleCore {
     all<T>(this: Aigle<[T | PromiseLike<T>]>): Aigle<[T]>;
 
     all<T>(this: Aigle<(T | PromiseLike<T>)[]>): Aigle<T[]>;
+
+    /* allSettled */
+
+    @Times(10, 'T', { args: { this: 'arrayMulti' }, returnType: 'arrayMulti' })
+    allSettled<T>(
+      this: Aigle<[T | PromiseLike<T> | PromiseCallback<T>]>
+    ): Aigle<[AllSettledResponse<T>]>;
+
+    allSettled<T>(
+      this: Aigle<(T | PromiseLike<T> | PromiseCallback<T>)[]>
+    ): Aigle<AllSettledResponse<T>[]>;
 
     /* race */
 
@@ -1317,6 +1344,17 @@ declare namespace AigleCore {
     static all<T>(values: [ReturnType<T>]): Aigle<[T]>;
 
     static all<T>(values: (ReturnType<T>)[]): Aigle<T[]>;
+
+    /* allSettled */
+
+    @Times(10, 'T', { args: { values: 'arrayMulti' }, returnType: 'arrayMulti' })
+    static allSettled<T>(
+      values: [T | PromiseLike<T> | PromiseCallback<T>]
+    ): Aigle<[AllSettledResponse<T>]>;
+
+    static allSettled<T>(
+      values: (T | PromiseLike<T> | PromiseCallback<T>)[]
+    ): Aigle<AllSettledResponse<T>[]>;
 
     /* rase */
 
