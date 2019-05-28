@@ -59,7 +59,7 @@
           require('setimmediate');
           module.exports = require('./lib/aigle');
         },
-        { './lib/aigle': 2, setimmediate: 87 }
+        { './lib/aigle': 2, setimmediate: 88 }
       ],
       2: [
         function(require, module, exports) {
@@ -294,6 +294,10 @@
                */
               all() {
                 return addProxy(this, All);
+              }
+
+              allSettled() {
+                return addProxy(this, AllSettled);
               }
 
               /**
@@ -3618,6 +3622,7 @@
 
             /* functions, classes */
             const { all, All } = require('./all');
+            const { allSettled, AllSettled } = require('./allSettled');
             const attempt = require('./attempt');
             const { race, Race } = require('./race');
             const { props, Props } = require('./props');
@@ -3704,6 +3709,7 @@
 
             /* collections */
             Aigle.all = all;
+            Aigle.allSettled = allSettled;
             Aigle.race = race;
             Aigle.props = props;
             Aigle.series = series;
@@ -4067,88 +4073,89 @@
         },
         {
           './all': 3,
-          './attempt': 4,
-          './concat': 5,
-          './concatLimit': 6,
-          './concatSeries': 7,
-          './debug': 8,
-          './delay': 9,
-          './doUntil': 10,
-          './doWhilst': 11,
-          './each': 12,
-          './eachLimit': 13,
-          './eachSeries': 14,
-          './error': 15,
-          './every': 16,
-          './everyLimit': 17,
-          './everySeries': 18,
-          './filter': 19,
-          './filterLimit': 20,
-          './filterSeries': 21,
-          './find': 22,
-          './findIndex': 23,
-          './findIndexLimit': 24,
-          './findIndexSeries': 25,
-          './findKey': 26,
-          './findKeyLimit': 27,
-          './findKeySeries': 28,
-          './findLimit': 29,
-          './findSeries': 30,
-          './flow': 31,
-          './groupBy': 32,
-          './groupByLimit': 33,
-          './groupBySeries': 34,
-          './internal/async': 35,
-          './internal/mixin': 37,
-          './internal/queue': 38,
-          './internal/util': 39,
-          './join': 40,
-          './map': 41,
-          './mapLimit': 42,
-          './mapSeries': 43,
-          './mapValues': 44,
-          './mapValuesLimit': 45,
-          './mapValuesSeries': 46,
-          './omit': 47,
-          './omitBy': 48,
-          './omitByLimit': 49,
-          './omitBySeries': 50,
-          './parallel': 51,
-          './parallelLimit': 52,
-          './pick': 53,
-          './pickBy': 54,
-          './pickByLimit': 55,
-          './pickBySeries': 56,
-          './promisify': 57,
-          './promisifyAll': 58,
-          './props': 59,
-          './race': 60,
-          './reduce': 61,
-          './reject': 62,
-          './rejectLimit': 63,
-          './rejectSeries': 64,
-          './retry': 65,
-          './series': 66,
-          './some': 67,
-          './someLimit': 68,
-          './someSeries': 69,
-          './sortBy': 70,
-          './sortByLimit': 71,
-          './sortBySeries': 72,
-          './tap': 73,
-          './thru': 74,
-          './timeout': 75,
-          './times': 76,
-          './timesLimit': 77,
-          './timesSeries': 78,
-          './transform': 79,
-          './transformLimit': 80,
-          './transformSeries': 81,
-          './until': 82,
-          './using': 83,
-          './whilst': 84,
-          _process: 86,
-          'aigle-core': 85
+          './allSettled': 4,
+          './attempt': 5,
+          './concat': 6,
+          './concatLimit': 7,
+          './concatSeries': 8,
+          './debug': 9,
+          './delay': 10,
+          './doUntil': 11,
+          './doWhilst': 12,
+          './each': 13,
+          './eachLimit': 14,
+          './eachSeries': 15,
+          './error': 16,
+          './every': 17,
+          './everyLimit': 18,
+          './everySeries': 19,
+          './filter': 20,
+          './filterLimit': 21,
+          './filterSeries': 22,
+          './find': 23,
+          './findIndex': 24,
+          './findIndexLimit': 25,
+          './findIndexSeries': 26,
+          './findKey': 27,
+          './findKeyLimit': 28,
+          './findKeySeries': 29,
+          './findLimit': 30,
+          './findSeries': 31,
+          './flow': 32,
+          './groupBy': 33,
+          './groupByLimit': 34,
+          './groupBySeries': 35,
+          './internal/async': 36,
+          './internal/mixin': 38,
+          './internal/queue': 39,
+          './internal/util': 40,
+          './join': 41,
+          './map': 42,
+          './mapLimit': 43,
+          './mapSeries': 44,
+          './mapValues': 45,
+          './mapValuesLimit': 46,
+          './mapValuesSeries': 47,
+          './omit': 48,
+          './omitBy': 49,
+          './omitByLimit': 50,
+          './omitBySeries': 51,
+          './parallel': 52,
+          './parallelLimit': 53,
+          './pick': 54,
+          './pickBy': 55,
+          './pickByLimit': 56,
+          './pickBySeries': 57,
+          './promisify': 58,
+          './promisifyAll': 59,
+          './props': 60,
+          './race': 61,
+          './reduce': 62,
+          './reject': 63,
+          './rejectLimit': 64,
+          './rejectSeries': 65,
+          './retry': 66,
+          './series': 67,
+          './some': 68,
+          './someLimit': 69,
+          './someSeries': 70,
+          './sortBy': 71,
+          './sortByLimit': 72,
+          './sortBySeries': 73,
+          './tap': 74,
+          './thru': 75,
+          './timeout': 76,
+          './times': 77,
+          './timesLimit': 78,
+          './timesSeries': 79,
+          './transform': 80,
+          './transformLimit': 81,
+          './transformSeries': 82,
+          './until': 83,
+          './using': 84,
+          './whilst': 85,
+          _process: 87,
+          'aigle-core': 86
         }
       ],
       3: [
@@ -4243,9 +4250,74 @@
             return new All(array)._promise;
           }
         },
-        { './aigle': 2, './internal/util': 39, './props': 59, 'aigle-core': 85 }
+        { './aigle': 2, './internal/util': 40, './props': 60, 'aigle-core': 86 }
       ],
       4: [
+        function(require, module, exports) {
+          'use strict';
+
+          const { Parallel } = require('./parallel');
+
+          class AllSettled extends Parallel {
+            _set(coll) {
+              this._errorSet = new Set();
+              this._promise._resolve = createResolve(this);
+              super._set(coll);
+            }
+
+            _callReject(reason, key) {
+              this._errorSet.add(key);
+              this._callResolve(reason, key);
+              return true;
+            }
+          }
+
+          function createResolve(proxy) {
+            const { _errorSet, _promise } = proxy;
+            const { _resolve } = _promise;
+            return result => {
+              if (Array.isArray(result)) {
+                result = result.map(iterator);
+              } else if (result instanceof Map) {
+                for (const [key, val] of result) {
+                  result.set(key, iterator(val, key));
+                }
+              } else {
+                for (const [key, val] of Object.entries(result)) {
+                  result[key] = iterator(val, key);
+                }
+              }
+              _resolve.call(_promise, result);
+            };
+            function iterator(res, key) {
+              return _errorSet.has(key)
+                ? { state: 'rejected', reason: res }
+                : { state: 'fulfilled', value: res };
+            }
+          }
+
+          module.exports = { allSettled, AllSettled };
+
+          /**
+           * Return an Aigle instance
+           * @param {Array|Object} collection - it should be an array/object of functions or Promise instances
+           * @example
+           * Aigle.allSettled([
+           *   Aigle.resolve(1),
+           *   Aigle.reject(2),
+           *   Aigle.reject(3)
+           * ])
+           * .then(array => {
+           *   console.log(array); // [{ state: 'fulfilled', value: 1 }, { state: 'rejected', reason: 2 }, { state: 'rejected', reason: 3 }]
+           * });
+           */
+          function allSettled(collection) {
+            return new AllSettled(collection)._promise;
+          }
+        },
+        { './parallel': 52 }
+      ],
+      5: [
         function(require, module, exports) {
           'use strict';
 
@@ -4269,9 +4341,9 @@
             return receiver;
           }
         },
-        { './aigle': 2, './internal/util': 39 }
+        { './aigle': 2, './internal/util': 40 }
       ],
-      5: [
+      6: [
         function(require, module, exports) {
           'use strict';
 
@@ -4346,9 +4418,9 @@
             return new Concat(collection, iterator)._execute();
           }
         },
-        { './each': 12, './internal/collection': 36, './internal/util': 39 }
+        { './each': 13, './internal/collection': 37, './internal/util': 40 }
       ],
-      6: [
+      7: [
         function(require, module, exports) {
           'use strict';
 
@@ -4444,9 +4516,9 @@
             return new ConcatLimit(collection, limit, iterator)._execute();
           }
         },
-        { './eachLimit': 13, './internal/collection': 36, './internal/util': 39 }
+        { './eachLimit': 14, './internal/collection': 37, './internal/util': 40 }
       ],
-      7: [
+      8: [
         function(require, module, exports) {
           'use strict';
 
@@ -4515,9 +4587,9 @@
             return new ConcatSeries(collection, iterator)._execute();
           }
         },
-        { './eachSeries': 14 }
+        { './eachSeries': 15 }
       ],
-      8: [
+      9: [
         function(require, module, exports) {
           'use strict';
 
@@ -4559,7 +4631,7 @@
         },
         {}
       ],
-      9: [
+      10: [
         function(require, module, exports) {
           'use strict';
 
@@ -4603,9 +4675,9 @@
             return new Delay(ms)._resolve(value);
           }
         },
-        { './aigle': 2, './internal/util': 39 }
+        { './aigle': 2, './internal/util': 40 }
       ],
-      10: [
+      11: [
         function(require, module, exports) {
           'use strict';
 
@@ -4668,9 +4740,9 @@
             return new DoWhilst(new UntilTester(tester), iterator)._iterate(value);
           }
         },
-        { './doWhilst': 11, './until': 82 }
+        { './doWhilst': 12, './until': 83 }
       ],
-      11: [
+      12: [
         function(require, module, exports) {
           'use strict';
 
@@ -4743,9 +4815,9 @@
             return new DoWhilst(new WhilstTester(tester), iterator)._iterate(value);
           }
         },
-        { './whilst': 84 }
+        { './whilst': 85 }
       ],
-      12: [
+      13: [
         function(require, module, exports) {
           'use strict';
 
@@ -4857,9 +4929,9 @@
             return new Each(collection, iterator)._execute();
           }
         },
-        { './aigle': 2, './internal/collection': 36, './internal/util': 39, 'aigle-core': 85 }
+        { './aigle': 2, './internal/collection': 37, './internal/util': 40, 'aigle-core': 86 }
       ],
-      13: [
+      14: [
         function(require, module, exports) {
           'use strict';
 
@@ -5015,9 +5087,9 @@
             return new EachLimit(collection, limit, iterator)._execute();
           }
         },
-        { './aigle': 2, './internal/collection': 36, './internal/util': 39, 'aigle-core': 85 }
+        { './aigle': 2, './internal/collection': 37, './internal/util': 40, 'aigle-core': 86 }
       ],
-      14: [
+      15: [
         function(require, module, exports) {
           'use strict';
 
@@ -5129,9 +5201,9 @@
             return new EachSeries(collection, iterator)._execute();
           }
         },
-        { './aigle': 2, './internal/collection': 36, './internal/util': 39, 'aigle-core': 85 }
+        { './aigle': 2, './internal/collection': 37, './internal/util': 40, 'aigle-core': 86 }
       ],
-      15: [
+      16: [
         function(require, module, exports) {
           'use strict';
 
@@ -5146,7 +5218,7 @@
         },
         {}
       ],
-      16: [
+      17: [
         function(require, module, exports) {
           'use strict';
 
@@ -5268,9 +5340,9 @@
             return new Every(collection, iterator)._execute();
           }
         },
-        { './each': 12, './internal/collection': 36, './internal/util': 39 }
+        { './each': 13, './internal/collection': 37, './internal/util': 40 }
       ],
-      17: [
+      18: [
         function(require, module, exports) {
           'use strict';
 
@@ -5358,9 +5430,9 @@
             return new EveryLimit(collection, limit, iterator)._execute();
           }
         },
-        { './eachLimit': 13 }
+        { './eachLimit': 14 }
       ],
-      18: [
+      19: [
         function(require, module, exports) {
           'use strict';
 
@@ -5442,9 +5514,9 @@
             return new EverySeries(collection, iterator)._execute();
           }
         },
-        { './eachSeries.js': 14 }
+        { './eachSeries.js': 15 }
       ],
-      19: [
+      20: [
         function(require, module, exports) {
           'use strict';
 
@@ -5565,9 +5637,9 @@
             return new Filter(collection, iterator)._execute();
           }
         },
-        { './each': 12, './internal/collection': 36, './internal/util': 39 }
+        { './each': 13, './internal/collection': 37, './internal/util': 40 }
       ],
-      20: [
+      21: [
         function(require, module, exports) {
           'use strict';
 
@@ -5673,9 +5745,9 @@
             return new FilterLimit(collection, limit, iterator)._execute();
           }
         },
-        { './eachLimit': 13, './internal/collection': 36, './internal/util': 39 }
+        { './eachLimit': 14, './internal/collection': 37, './internal/util': 40 }
       ],
-      21: [
+      22: [
         function(require, module, exports) {
           'use strict';
 
@@ -5757,9 +5829,9 @@
             return new FilterSeries(collection, iterator)._execute();
           }
         },
-        { './eachSeries': 14, './internal/collection': 36, './internal/util': 39 }
+        { './eachSeries': 15, './internal/collection': 37, './internal/util': 40 }
       ],
-      22: [
+      23: [
         function(require, module, exports) {
           'use strict';
 
@@ -5892,9 +5964,9 @@
             return new Find(collection, iterator)._execute();
           }
         },
-        { './each': 12, './internal/collection': 36 }
+        { './each': 13, './internal/collection': 37 }
       ],
-      23: [
+      24: [
         function(require, module, exports) {
           'use strict';
 
@@ -6001,9 +6073,9 @@
             return new FindIndex(collection, iterator)._execute();
           }
         },
-        { './each': 12, './internal/collection': 36 }
+        { './each': 13, './internal/collection': 37 }
       ],
-      24: [
+      25: [
         function(require, module, exports) {
           'use strict';
 
@@ -6081,9 +6153,9 @@
             return new FindIndexLimit(collection, limit, iterator)._execute();
           }
         },
-        { './eachLimit': 13, './internal/collection': 36 }
+        { './eachLimit': 14, './internal/collection': 37 }
       ],
-      25: [
+      26: [
         function(require, module, exports) {
           'use strict';
 
@@ -6157,9 +6229,9 @@
             return new FindIndexSeries(collection, iterator)._execute();
           }
         },
-        { './eachSeries': 14, './internal/collection': 36 }
+        { './eachSeries': 15, './internal/collection': 37 }
       ],
-      26: [
+      27: [
         function(require, module, exports) {
           'use strict';
 
@@ -6207,9 +6279,9 @@
             return new FindKey(collection, iterator)._execute();
           }
         },
-        { './each': 12, './internal/collection': 36 }
+        { './each': 13, './internal/collection': 37 }
       ],
-      27: [
+      28: [
         function(require, module, exports) {
           'use strict';
 
@@ -6262,9 +6334,9 @@
             return new FindKeyLimit(collection, limit, iterator)._execute();
           }
         },
-        { './eachLimit': 13, './internal/collection': 36 }
+        { './eachLimit': 14, './internal/collection': 37 }
       ],
-      28: [
+      29: [
         function(require, module, exports) {
           'use strict';
 
@@ -6314,9 +6386,9 @@
             return new FindKeySeries(collection, iterator)._execute();
           }
         },
-        { './eachSeries': 14, './internal/collection': 36 }
+        { './eachSeries': 15, './internal/collection': 37 }
       ],
-      29: [
+      30: [
         function(require, module, exports) {
           'use strict';
 
@@ -6418,9 +6490,9 @@
             return new FindLimit(collection, limit, iterator)._execute();
           }
         },
-        { './eachLimit': 13, './internal/collection': 36 }
+        { './eachLimit': 14, './internal/collection': 37 }
       ],
-      30: [
+      31: [
         function(require, module, exports) {
           'use strict';
 
@@ -6518,9 +6590,9 @@
             return new FindSeries(collection, iterator)._execute();
           }
         },
-        { './eachSeries': 14, './internal/collection': 36 }
+        { './eachSeries': 15, './internal/collection': 37 }
       ],
-      31: [
+      32: [
         function(require, module, exports) {
           'use strict';
 
@@ -6564,7 +6636,7 @@
         },
         { './aigle': 2 }
       ],
-      32: [
+      33: [
         function(require, module, exports) {
           'use strict';
 
@@ -6680,9 +6752,9 @@
             return new GroupBy(collection, iterator)._execute();
           }
         },
-        { './each': 12, './internal/collection': 36 }
+        { './each': 13, './internal/collection': 37 }
       ],
-      33: [
+      34: [
         function(require, module, exports) {
           'use strict';
 
@@ -6793,9 +6865,9 @@
             return new GroupByLimit(collection, limit, iterator)._execute();
           }
         },
-        { './eachLimit': 13, './internal/collection': 36 }
+        { './eachLimit': 14, './internal/collection': 37 }
       ],
-      34: [
+      35: [
         function(require, module, exports) {
           'use strict';
 
@@ -6883,9 +6955,9 @@
             return new GroupBySeries(collection, iterator)._execute();
           }
         },
-        { './eachSeries': 14, './internal/collection': 36 }
+        { './eachSeries': 15, './internal/collection': 37 }
       ],
-      35: [
+      36: [
         function(require, module, exports) {
           'use strict';
 
@@ -6923,7 +6995,7 @@
         },
         {}
       ],
-      36: [
+      37: [
         function(require, module, exports) {
           'use strict';
 
@@ -7231,9 +7303,9 @@
             }
           }
         },
-        { './util': 39 }
+        { './util': 40 }
       ],
-      37: [
+      38: [
         function(require, module, exports) {
           'use strict';
 
@@ -7329,9 +7401,9 @@
             };
           }
         },
-        { '../aigle': 2, '../map': 41, '../mapValues': 44, './util': 39, 'aigle-core': 85 }
+        { '../aigle': 2, '../map': 42, '../mapValues': 45, './util': 40, 'aigle-core': 86 }
       ],
-      38: [
+      39: [
         function(require, module, exports) {
           'use strict';
 
@@ -7350,7 +7422,7 @@
         },
         {}
       ],
-      39: [
+      40: [
         function(require, module, exports) {
           (function(process) {
             'use strict';
@@ -7544,7 +7616,7 @@
               }
 
               function reject(reason) {
-                receiver._callReject(reason);
+                receiver._callReject(reason, key);
               }
             }
 
@@ -7559,13 +7631,11 @@
                     return true;
                   case 2:
                     promise.suppressUnhandledRejections();
-                    receiver._callReject(promise._value);
-                    return false;
+                    return receiver._callReject(promise._value, key) === true;
                 }
               }
               if (promise === errorObj) {
-                receiver._callReject(errorObj.e);
-                return false;
+                return receiver._callReject(errorObj.e, key) === true;
               }
               if (promise && promise.then) {
                 callProxyThen(promise, receiver, key);
@@ -7803,9 +7873,9 @@
             }
           }.call(this, require('_process')));
         },
-        { '../../package.json': 91, _process: 86, 'aigle-core': 85 }
+        { '../../package.json': 92, _process: 87, 'aigle-core': 86 }
       ],
-      40: [
+      41: [
         function(require, module, exports) {
           'use strict';
 
@@ -7919,9 +7989,9 @@
             callProxyReciever(apply(_handler, array), proxy, INTERNAL);
           }
         },
-        { './aigle': 2, './internal/util': 39, 'aigle-core': 85 }
+        { './aigle': 2, './internal/util': 40, 'aigle-core': 86 }
       ],
-      41: [
+      42: [
         function(require, module, exports) {
           'use strict';
 
@@ -8005,9 +8075,9 @@
             return new Map(collection, iterator)._execute();
           }
         },
-        { './each': 12, './internal/collection': 36 }
+        { './each': 13, './internal/collection': 37 }
       ],
-      42: [
+      43: [
         function(require, module, exports) {
           'use strict';
 
@@ -8096,9 +8166,9 @@
             return new MapLimit(collection, limit, iterator)._execute();
           }
         },
-        { './eachLimit': 13, './internal/collection': 36 }
+        { './eachLimit': 14, './internal/collection': 37 }
       ],
-      43: [
+      44: [
         function(require, module, exports) {
           'use strict';
 
@@ -8169,9 +8239,9 @@
             return new MapSeries(collection, iterator)._execute();
           }
         },
-        { './eachSeries': 14, './internal/collection': 36 }
+        { './eachSeries': 15, './internal/collection': 37 }
       ],
-      44: [
+      45: [
         function(require, module, exports) {
           'use strict';
 
@@ -8258,9 +8328,9 @@
             return new MapValues(collection, iterator)._execute();
           }
         },
-        { './each': 12, './internal/collection': 36 }
+        { './each': 13, './internal/collection': 37 }
       ],
-      45: [
+      46: [
         function(require, module, exports) {
           'use strict';
 
@@ -8365,9 +8435,9 @@
             return new MapValuesLimit(collection, limit, iterator)._execute();
           }
         },
-        { './eachLimit': 13, './internal/collection': 36, './internal/util': 39 }
+        { './eachLimit': 14, './internal/collection': 37, './internal/util': 40 }
       ],
-      46: [
+      47: [
         function(require, module, exports) {
           'use strict';
 
@@ -8448,9 +8518,9 @@
             return new MapValuesSeries(collection, iterator)._execute();
           }
         },
-        { './eachSeries': 14, './internal/collection': 36 }
+        { './eachSeries': 15, './internal/collection': 37 }
       ],
-      47: [
+      48: [
         function(require, module, exports) {
           'use strict';
 
@@ -8538,9 +8608,9 @@
             return new Omit(collection, iterator, args)._execute();
           }
         },
-        { './each': 12, './internal/collection': 36 }
+        { './each': 13, './internal/collection': 37 }
       ],
-      48: [
+      49: [
         function(require, module, exports) {
           'use strict';
 
@@ -8659,9 +8729,9 @@
             return new OmitBy(collection, iterator)._execute();
           }
         },
-        { './each': 12, './internal/collection': 36 }
+        { './each': 13, './internal/collection': 37 }
       ],
-      49: [
+      50: [
         function(require, module, exports) {
           'use strict';
 
@@ -8765,9 +8835,9 @@
             return new OmitByLimit(collection, limit, iterator)._execute();
           }
         },
-        { './eachLimit': 13, './internal/collection': 36 }
+        { './eachLimit': 14, './internal/collection': 37 }
       ],
-      50: [
+      51: [
         function(require, module, exports) {
           'use strict';
 
@@ -8859,9 +8929,9 @@
             return new OmitBySeries(collection, iterator)._execute();
           }
         },
-        { './eachSeries': 14, './internal/collection': 36, './internal/util': 39 }
+        { './eachSeries': 15, './internal/collection': 37, './internal/util': 40 }
       ],
-      51: [
+      52: [
         function(require, module, exports) {
           'use strict';
 
@@ -8902,7 +8972,7 @@
                 promiseArrayEachWithFunc(this, size, coll);
               } else if (!coll || typeof coll !== 'object') {
                 this._rest = 0;
-                this._result = undefined;
+                this._result = {};
               } else if (coll[iteratorSymbol]) {
                 const size = coll.size;
                 this._rest = size;
@@ -8968,9 +9038,9 @@
             return new Parallel(collection)._promise;
           }
         },
-        { './aigle': 2, './internal/util': 39, './props': 59, 'aigle-core': 85 }
+        { './aigle': 2, './internal/util': 40, './props': 60, 'aigle-core': 86 }
       ],
-      52: [
+      53: [
         function(require, module, exports) {
           'use strict';
 
@@ -9056,9 +9126,9 @@
             return new ParallelLimit(collection, limit)._execute();
           }
         },
-        { './internal/util': 39, './series': 66 }
+        { './internal/util': 40, './series': 67 }
       ],
-      53: [
+      54: [
         function(require, module, exports) {
           'use strict';
 
@@ -9146,9 +9216,9 @@
             return new Pick(collection, iterator, args)._execute();
           }
         },
-        { './each': 12, './internal/collection': 36 }
+        { './each': 13, './internal/collection': 37 }
       ],
-      54: [
+      55: [
         function(require, module, exports) {
           'use strict';
 
@@ -9267,9 +9337,9 @@
             return new PickBy(collection, iterator)._execute();
           }
         },
-        { './each': 12, './internal/collection': 36 }
+        { './each': 13, './internal/collection': 37 }
       ],
-      55: [
+      56: [
         function(require, module, exports) {
           'use strict';
 
@@ -9373,9 +9443,9 @@
             return new PickByLimit(collection, limit, iterator)._execute();
           }
         },
-        { './eachLimit': 13, './internal/collection': 36 }
+        { './eachLimit': 14, './internal/collection': 37 }
       ],
-      56: [
+      57: [
         function(require, module, exports) {
           'use strict';
 
@@ -9461,9 +9531,9 @@
             return new PickBySeries(collection, iterator)._execute();
           }
         },
-        { './eachSeries': 14, './internal/collection': 36 }
+        { './eachSeries': 15, './internal/collection': 37 }
       ],
-      57: [
+      58: [
         function(require, module, exports) {
           'use strict';
 
@@ -9643,9 +9713,9 @@
             }
           }
         },
-        { './aigle': 2, './internal/util': 39, util: 90 }
+        { './aigle': 2, './internal/util': 40, util: 91 }
       ],
-      58: [
+      59: [
         function(require, module, exports) {
           'use strict';
 
@@ -9752,9 +9822,9 @@
             }
           }
         },
-        { './promisify': 57 }
+        { './promisify': 58 }
       ],
-      59: [
+      60: [
         function(require, module, exports) {
           'use strict';
 
@@ -9858,9 +9928,9 @@
             return new Props(object)._promise;
           }
         },
-        { './aigle': 2, './internal/util': 39, 'aigle-core': 85 }
+        { './aigle': 2, './internal/util': 40, 'aigle-core': 86 }
       ],
-      60: [
+      61: [
         function(require, module, exports) {
           'use strict';
 
@@ -9943,9 +10013,9 @@
             return new Race(collection)._promise;
           }
         },
-        { './aigle': 2, './internal/util': 39, 'aigle-core': 85 }
+        { './aigle': 2, './internal/util': 40, 'aigle-core': 86 }
       ],
-      61: [
+      62: [
         function(require, module, exports) {
           'use strict';
 
@@ -10060,9 +10130,9 @@
             return new Reduce(collection, iterator, result)._execute();
           }
         },
-        { './aigle': 2, './internal/collection': 36, './internal/util': 39, 'aigle-core': 85 }
+        { './aigle': 2, './internal/collection': 37, './internal/util': 40, 'aigle-core': 86 }
       ],
-      62: [
+      63: [
         function(require, module, exports) {
           'use strict';
 
@@ -10187,9 +10257,9 @@
             return new Reject(collection, iterator)._execute();
           }
         },
-        { './each': 12, './internal/collection': 36, './internal/util': 39 }
+        { './each': 13, './internal/collection': 37, './internal/util': 40 }
       ],
-      63: [
+      64: [
         function(require, module, exports) {
           'use strict';
 
@@ -10287,9 +10357,9 @@
             return new RejectLimit(collection, limit, iterator)._execute();
           }
         },
-        { './eachLimit': 13, './internal/collection': 36, './internal/util': 39 }
+        { './eachLimit': 14, './internal/collection': 37, './internal/util': 40 }
       ],
-      64: [
+      65: [
         function(require, module, exports) {
           'use strict';
 
@@ -10370,9 +10440,9 @@
             return new RejectSeries(collection, iterator)._execute();
           }
         },
-        { './eachSeries': 14, './internal/collection': 36, './internal/util': 39 }
+        { './eachSeries': 15, './internal/collection': 37, './internal/util': 40 }
       ],
-      65: [
+      66: [
         function(require, module, exports) {
           'use strict';
 
@@ -10496,9 +10566,9 @@
             return new Retry(opts, handler)._promise;
           }
         },
-        { './aigle': 2, './internal/util': 39, 'aigle-core': 85 }
+        { './aigle': 2, './internal/util': 40, 'aigle-core': 86 }
       ],
-      66: [
+      67: [
         function(require, module, exports) {
           'use strict';
 
@@ -10567,7 +10637,7 @@
               this._iterator = promiseArrayIterator;
             } else if (typeof coll !== 'object' || coll === null) {
               this._rest = 0;
-              this._result = undefined;
+              this._result = {};
             } else if (coll[iteratorSymbol]) {
               this._coll = coll[iteratorSymbol]();
               const size = coll.size;
@@ -10626,9 +10696,9 @@
             return new Series(collection)._execute();
           }
         },
-        { './aigle': 2, './internal/collection': 36, './internal/util': 39, 'aigle-core': 85 }
+        { './aigle': 2, './internal/collection': 37, './internal/util': 40, 'aigle-core': 86 }
       ],
-      67: [
+      68: [
         function(require, module, exports) {
           'use strict';
 
@@ -10746,9 +10816,9 @@
             return new Some(collection, iterator)._execute();
           }
         },
-        { './each': 12, './internal/collection': 36 }
+        { './each': 13, './internal/collection': 37 }
       ],
-      68: [
+      69: [
         function(require, module, exports) {
           'use strict';
 
@@ -10832,9 +10902,9 @@
             return new SomeLimit(collection, limit, iterator)._execute();
           }
         },
-        { './eachLimit': 13 }
+        { './eachLimit': 14 }
       ],
-      69: [
+      70: [
         function(require, module, exports) {
           'use strict';
 
@@ -10916,9 +10986,9 @@
             return new SomeSeries(collection, iterator)._execute();
           }
         },
-        { './eachSeries.js': 14 }
+        { './eachSeries.js': 15 }
       ],
-      70: [
+      71: [
         function(require, module, exports) {
           'use strict';
 
@@ -11009,9 +11079,9 @@
             return new SortBy(collection, iterator)._execute();
           }
         },
-        { './each': 12, './internal/collection': 36, './internal/util': 39 }
+        { './each': 13, './internal/collection': 37, './internal/util': 40 }
       ],
-      71: [
+      72: [
         function(require, module, exports) {
           'use strict';
 
@@ -11111,9 +11181,9 @@
             return new SortByLimit(collection, limit, iterator)._execute();
           }
         },
-        { './eachLimit': 13, './internal/collection': 36, './internal/util': 39 }
+        { './eachLimit': 14, './internal/collection': 37, './internal/util': 40 }
       ],
-      72: [
+      73: [
         function(require, module, exports) {
           'use strict';
 
@@ -11196,9 +11266,9 @@
             return new SortBySeries(collection, iterator)._execute();
           }
         },
-        { './eachSeries': 14, './internal/collection': 36, './internal/util': 39 }
+        { './eachSeries': 15, './internal/collection': 37, './internal/util': 40 }
       ],
-      73: [
+      74: [
         function(require, module, exports) {
           'use strict';
 
@@ -11214,9 +11284,9 @@
 
           module.exports = tap;
         },
-        { './aigle': 2, './internal/util': 39 }
+        { './aigle': 2, './internal/util': 40 }
       ],
-      74: [
+      75: [
         function(require, module, exports) {
           'use strict';
 
@@ -11231,9 +11301,9 @@
 
           module.exports = thru;
         },
-        { './aigle': 2, './internal/util': 39 }
+        { './aigle': 2, './internal/util': 40 }
       ],
-      75: [
+      76: [
         function(require, module, exports) {
           'use strict';
 
@@ -11267,9 +11337,9 @@
 
           module.exports = Timeout;
         },
-        { './aigle': 2, './error': 15, './internal/util': 39, 'aigle-core': 85 }
+        { './aigle': 2, './error': 16, './internal/util': 40, 'aigle-core': 86 }
       ],
-      76: [
+      77: [
         function(require, module, exports) {
           'use strict';
 
@@ -11365,9 +11435,9 @@
             return new Times(times, iterator)._execute();
           }
         },
-        { './aigle': 2, './internal/util': 39, 'aigle-core': 85 }
+        { './aigle': 2, './internal/util': 40, 'aigle-core': 86 }
       ],
-      77: [
+      78: [
         function(require, module, exports) {
           'use strict';
 
@@ -11499,9 +11569,9 @@
             return new TimesLimit(times, limit, iterator)._execute();
           }
         },
-        { './aigle': 2, './internal/util': 39, 'aigle-core': 85 }
+        { './aigle': 2, './internal/util': 40, 'aigle-core': 86 }
       ],
-      78: [
+      79: [
         function(require, module, exports) {
           'use strict';
 
@@ -11587,9 +11657,9 @@
             return new TimesSeries(times, iterator)._execute();
           }
         },
-        { './aigle': 2, './internal/util': 39, './times': 76, 'aigle-core': 85 }
+        { './aigle': 2, './internal/util': 40, './times': 77, 'aigle-core': 86 }
       ],
-      79: [
+      80: [
         function(require, module, exports) {
           'use strict';
 
@@ -11712,9 +11782,9 @@
             return new Transform(collection, iterator, accumulator)._execute();
           }
         },
-        { './each': 12, './internal/collection': 36, './internal/util': 39 }
+        { './each': 13, './internal/collection': 37, './internal/util': 40 }
       ],
-      80: [
+      81: [
         function(require, module, exports) {
           'use strict';
 
@@ -11858,9 +11928,9 @@
             return new TransformLimit(collection, limit, iterator, accumulator)._execute();
           }
         },
-        { './eachLimit': 13, './internal/collection': 36, './internal/util': 39 }
+        { './eachLimit': 14, './internal/collection': 37, './internal/util': 40 }
       ],
-      81: [
+      82: [
         function(require, module, exports) {
           'use strict';
 
@@ -11982,9 +12052,9 @@
             return new TransformSeries(collection, iterator, accumulator)._execute();
           }
         },
-        { './eachSeries': 14, './internal/collection': 36, './internal/util': 39 }
+        { './eachSeries': 15, './internal/collection': 37, './internal/util': 40 }
       ],
-      82: [
+      83: [
         function(require, module, exports) {
           'use strict';
 
@@ -12020,9 +12090,9 @@
             return new AigleWhilst(new UntilTester(tester), iterator)._iterate(value);
           }
         },
-        { './whilst': 84 }
+        { './whilst': 85 }
       ],
-      83: [
+      84: [
         function(require, module, exports) {
           'use strict';
 
@@ -12135,9 +12205,9 @@
             return new Using(array, handler)._promise;
           }
         },
-        { './aigle': 2, './internal/util': 39, 'aigle-core': 85 }
+        { './aigle': 2, './internal/util': 40, 'aigle-core': 86 }
       ],
-      84: [
+      85: [
         function(require, module, exports) {
           'use strict';
 
@@ -12215,9 +12285,9 @@
             return new AigleWhilst(new WhilstTester(tester), iterator)._iterate(value);
           }
         },
-        { './aigle': 2, './internal/util': 39, 'aigle-core': 85 }
+        { './aigle': 2, './internal/util': 40, 'aigle-core': 86 }
       ],
-      85: [
+      86: [
         function(require, module, exports) {
           'use strict';
 
@@ -12233,7 +12303,7 @@
         },
         {}
       ],
-      86: [
+      87: [
         function(require, module, exports) {
           // shim for using process in browser
           var process = (module.exports = {});
@@ -12426,7 +12496,7 @@
         },
         {}
       ],
-      87: [
+      88: [
         function(require, module, exports) {
           (function(process, global) {
             (function(global, undefined) {
@@ -12629,9 +12699,9 @@
                   : {}
           ));
         },
-        { _process: 86 }
+        { _process: 87 }
       ],
-      88: [
+      89: [
         function(require, module, exports) {
           if (typeof Object.create === 'function') {
             // implementation from standard node.js 'util' module
@@ -12659,7 +12729,7 @@
         },
         {}
       ],
-      89: [
+      90: [
         function(require, module, exports) {
           module.exports = function isBuffer(arg) {
             return (
@@ -12673,7 +12743,7 @@
         },
         {}
       ],
-      90: [
+      91: [
         function(require, module, exports) {
           (function(process, global) {
             // Copyright Joyent, Inc. and other Node contributors.
@@ -13293,13 +13363,13 @@
                   : {}
           ));
         },
-        { './support/isBuffer': 89, _process: 86, inherits: 88 }
+        { './support/isBuffer': 90, _process: 87, inherits: 89 }
       ],
-      91: [
+      92: [
         function(require, module, exports) {
           module.exports = {
             name: 'aigle',
-            version: '1.13.1',
+            version: '1.14.0',
             description:
               'Aigle is an ideal Promise library, faster and more functional than other Promise libraries',
             main: 'index.js',
@@ -13346,7 +13416,7 @@
               'lint-staged': '^8.0.5',
               lodash: '^4.15.0',
               minimist: '^1.2.0',
-              mocha: '^6.0.2',
+              mocha: '^6.1.4',
               'mocha.parallel': '0.15.6',
               'neo-async': '^2.6.0',
               'npm-run-all': '^4.1.5',
@@ -13358,7 +13428,7 @@
               tslint: '^5.11.0',
               typeg: '^0.1.3',
               typescript: '^3.1.6',
-              'uglify-js': '^3.5.1'
+              'uglify-js': '^3.5.14'
             },
             dependencies: {
               'aigle-core': '^1.0.0'
