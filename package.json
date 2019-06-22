@@ -44,7 +44,7 @@
     "buble": "^0.19.6",
     "codecov": "^3.2.0",
     "docdash": "^1.0.0",
-    "eslint": "^5.0.0",
+    "eslint": "^6.0.0",
     "fs-extra": "^8.0.0",
     "gulp": "^4.0.0",
     "gulp-bump": "^3.0.0",
