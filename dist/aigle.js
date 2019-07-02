@@ -4279,13 +4279,11 @@
               if (Array.isArray(result)) {
                 result = result.map(iterator);
               } else if (result instanceof Map) {
-                for (const [key, val] of result) {
-                  result.set(key, iterator(val, key));
-                }
+                const map = result;
+                result = map;
+                map.forEach((val, key) => result.set(key, iterator(val, key)));
               } else {
-                for (const [key, val] of Object.entries(result)) {
-                  result[key] = iterator(val, key);
-                }
+                Object.entries(result).forEach(([key, val]) => (result[key] = iterator(val, key)));
               }
               _resolve.call(_promise, result);
             };
@@ -13369,7 +13367,7 @@
         function(require, module, exports) {
           module.exports = {
             name: 'aigle',
-            version: '1.14.0',
+            version: '1.14.1',
             description:
               'Aigle is an ideal Promise library, faster and more functional than other Promise libraries',
             main: 'index.js',
