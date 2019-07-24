@@ -8,6 +8,7 @@ const argv = require('minimist')(process.argv.slice(2));
 
 const Aigle = require('../');
 const Bluebird = require('bluebird');
+const async = require('async');
 const neoAsync = require('neo-async');
 
 const defaults = { count: 100 };
@@ -21,6 +22,7 @@ const Benchmark = require('./benchmark');
 const functions = {
   Aigle,
   Bluebird,
+  async,
   neoAsync
 };
 if (makeDoc) {
@@ -29,8 +31,12 @@ if (makeDoc) {
 
 console.log('======================================');
 const versionMap = _.mapValues(functions, (obj, key) => {
-  const version = `v${obj.version || obj.VERSION || '0.0.0'}`;
-  console.log(`[${key}] ${version}`);
+  const version =
+    obj.version ||
+    obj.VERSION ||
+    require(path.resolve(__dirname, '..', 'node_modules', _.kebabCase(key), 'package.json'))
+      .version;
+  console.log(`[${key}] v${version}`);
   return version;
 });
 versionMap.native = process.version;
