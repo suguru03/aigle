@@ -16,6 +16,7 @@ rules:
   no-return-assign: error
   no-proto: error
   no-case-declarations: off
+  no-prototype-builtins: off
 
   # Strict Mode
   strict:

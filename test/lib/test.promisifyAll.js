@@ -94,12 +94,8 @@ parallel('promisifyAll', () => {
         setImmediate(() => callback(null, this._value));
       }
     }
-    try {
-      Aigle.promisifyAll(Test);
-      Aigle.promisifyAll(Test);
-    } catch (e) {
-      throw e;
-    }
+    Aigle.promisifyAll(Test);
+    Aigle.promisifyAll(Test);
   });
 
   it('should work even if null is included', () => {
