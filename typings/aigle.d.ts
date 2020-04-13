@@ -4587,6 +4587,7 @@ declare namespace Aigle {
   export interface RetryOpts {
     times?: number;
     interval?: number | ((count?: number) => number);
+    predicate?: (error?: any) => boolean;
   }
 
   export class Disposer<T> {}
