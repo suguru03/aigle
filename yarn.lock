@@ -1856,10 +1856,10 @@ dateformat@^1.0.11:
     get-stdin "^4.0.1"
     meow "^3.3.0"
 
-dcp@^0.1.4:
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/dcp/-/dcp-0.1.4.tgz#ba4864a8ab5f131a78e797d0d4fd246975246de2"
-  integrity sha512-FYBO+wVtRsNXvY2QLwVk4wMRiuXGddvM0Xo6I0USxtfHfyWFSP4GHaQw5TRD7qnNP4AC54kuuKnRKjKs7mQO+A==
+dcp@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/dcp/-/dcp-0.2.0.tgz#23d1caae2c4c07037d88cb13e2d3faa50d1e7976"
+  integrity sha512-C9TipJ1UCb73x4wRzfLy3XeI1Y1PEMs8FgDwnL8Gr3rUR2aRV5hMJNU0Jz0f8wN78tB/mm8RkLWveOHxD2L5QA==
 
 debug@3.2.6:
   version "3.2.6"
@@ -2219,12 +2219,12 @@ escape-string-regexp@1.0.5, escape-string-regexp@^1.0.2, escape-string-regexp@^1
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
   integrity sha1-G2HAViGQqN/2rjuyzwIAyhMLhtQ=
 
-escodegen@^1.8.1:
-  version "1.11.0"
-  resolved "https://registry.yarnpkg.com/escodegen/-/escodegen-1.11.0.tgz#b27a9389481d5bfd5bec76f7bb1eb3f8f4556589"
-  integrity sha512-IeMV45ReixHS53K/OmfKAIztN/igDHzTJUhZM3k1jMhIZWjk45SMwAtBsEXiJp3vSPmTcu6CXn7mDvFHRN66fw==
+escodegen@^1.12.0:
+  version "1.14.1"
+  resolved "https://registry.yarnpkg.com/escodegen/-/escodegen-1.14.1.tgz#ba01d0c8278b5e95a9a45350142026659027a457"
+  integrity sha512-Bmt7NcRySdIfNPfU2ZoXDrrXsG9ZjvDxcAlMfDUgRBjLOWTuIACXPBFJH7Z+cLb40JeQco5toikyc9t9P8E9SQ==
   dependencies:
-    esprima "^3.1.3"
+    esprima "^4.0.1"
     estraverse "^4.2.0"
     esutils "^2.0.2"
     optionator "^0.8.1"
@@ -2303,15 +2303,15 @@ espree@^6.1.2:
     acorn-jsx "^5.1.0"
     eslint-visitor-keys "^1.1.0"
 
-esprima@^3.1.3:
-  version "3.1.3"
-  resolved "https://registry.yarnpkg.com/esprima/-/esprima-3.1.3.tgz#fdca51cee6133895e3c88d535ce49dbff62a4633"
-  integrity sha1-/cpRzuYTOJXjyI1TXOSdv/YqRjM=
-
 esprima@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/esprima/-/esprima-4.0.0.tgz#4499eddcd1110e0b218bacf2fa7f7f59f55ca804"
   integrity sha512-oftTcaMu/EGrEIu904mWteKIv8vMuOgGYo7EhVJJN00R/EED9DCua/xxHRdYnKtcECzVg7xOWhflvJMnqcFZjw==
+
+esprima@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/esprima/-/esprima-4.0.1.tgz#13b04cdb3e6c5d19df91ab6987a8695619b0aa71"
+  integrity sha512-eGuFFw7Upda+g4p+QHvnW0RyTX/SVeJBDM/gCtMARO0cLuT2HcEKnTPvhjV6aGeqrCB/sbNop0Kszm0jsaWU4A==
 
 esquery@^1.0.1:
   version "1.0.1"
@@ -5297,12 +5297,13 @@ preserve@^0.2.0:
   resolved "https://registry.yarnpkg.com/preserve/-/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
   integrity sha1-gV7R9uvGWSb4ZbMQwHE7yzMVzks=
 
-prettier-hook@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/prettier-hook/-/prettier-hook-0.2.0.tgz#607a3ad63f4f103b9d287d78ad3c364517d41c72"
-  integrity sha512-ei9ERDtczpu2wnOY+XP+7dvQmuf1NGex+6h3MZfvk32SRSbEayoDKfH6O6kOB7OQx6HPLXNG1zzExp+V4qN2tA==
+prettier-hook@^0.4.6:
+  version "0.4.6"
+  resolved "https://registry.yarnpkg.com/prettier-hook/-/prettier-hook-0.4.6.tgz#08f0044b28d973f0d50d556cd44028de428ff59e"
+  integrity sha512-I1v+4Eb8qnzF63g4Gm7kbp2ZVepuP5rg4Mj8vOXt2oQoqHzTWZGbwM/xov236URNscV4/iBIepcqr6PfDS+gSg==
   dependencies:
-    vm-agent "^0.5.7"
+    minimist "^1.2.0"
+    vm-agent "^0.6.0"
 
 prettier@^2.0.0:
   version "2.0.0"
@@ -6603,14 +6604,14 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typeg@^0.1.3:
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/typeg/-/typeg-0.1.3.tgz#7020779a2d271186c04dbd6e509b434c9a8816ae"
-  integrity sha512-TGCYItXjOPCwCIDN0m+Em1vujVtFQfVmBcdKnw9es9b0B+kO2+84HII3NX2PTsWzWQAKlTkaevbzgyyhe6NOcA==
+typeg@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/typeg/-/typeg-0.2.0.tgz#b81265006c1b9b95773f89d185875885d9f3dadd"
+  integrity sha512-NT019bl28JLocgBy53kccpkSA5Bg/IH7PPtuXeWPlEa2ujgXIDk3IoRnw1F2dC2cyw1ofUNyinO9WceiusbLFA==
   dependencies:
-    dcp "^0.1.4"
+    dcp "^0.2.0"
     minimist "^1.2.0"
-    prettier-hook "^0.2.0"
+    prettier-hook "^0.4.6"
 
 typescript@^3.1.6:
   version "3.1.6"
@@ -6882,13 +6883,13 @@ vinyl@^2.0.1:
     remove-trailing-separator "^1.0.1"
     replace-ext "^1.0.0"
 
-vm-agent@^0.5.7:
-  version "0.5.8"
-  resolved "https://registry.yarnpkg.com/vm-agent/-/vm-agent-0.5.8.tgz#97b37701138826f2d55f142de60e0660c1646e43"
-  integrity sha512-9MEjHLK7gMuBbTaYyOO0aoFbm5MGPbCh0o6ntFJExAOZ1xvmJvRuoRqzRlOayU8vZh63GLPi3v+UQa6foXqj4Q==
+vm-agent@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/vm-agent/-/vm-agent-0.6.0.tgz#435c9baaae85d7d071fbab86c6bf1129edb642ca"
+  integrity sha512-4UdK0uSqbnc5x+ctBLL1yW5nsDTn7vFMFhFPazaeVu0WaWJXcdWptJsYvnG17zhge6IEFDXJUlmvHrgbewOncg==
   dependencies:
-    escodegen "^1.8.1"
-    esprima "^4.0.0"
+    escodegen "^1.12.0"
+    esprima "^4.0.1"
 
 vm-browserify@^1.0.0:
   version "1.0.1"
