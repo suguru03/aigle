@@ -82,6 +82,43 @@ parallel('retry', () => {
       });
   });
 
+  it('should execute with predicate function', () => {
+    let count = 0;
+    const limit = 2;
+    const makeIterator = (error) => () => {
+      return new Aigle((resolve, reject) => {
+        if (++count === limit) {
+          resolve(count);
+        } else {
+          reject(error);
+        }
+      });
+    };
+    const errorRetry = new Error('retry');
+    const errorDontRetry = new Error('dontRetry');
+    const predicate = err => err.message === errorRetry.message;
+    const retryOpts = { limit, predicate };
+    return Aigle
+      .retry(retryOpts, makeIterator(errorRetry))
+      .then(res => {
+        assert.strictEqual(res, limit);
+        assert.strictEqual(count, limit);
+      })
+      .then(() => Aigle.retry(retryOpts, makeIterator(errorDontRetry)))
+      .then(() => assert(false))
+      .catch(err => {
+        assert.strictEqual(err, errorDontRetry);
+        assert.strictEqual(count, limit + 1);
+      });
+  });
+
+  it('should throw if predicate is set but is not a function', () => {
+    return assert.throws(
+      () => Aigle.retry({ predicate: 'bad' }, () => true),
+      new Error('predicate needs to be a function')
+    );
+  });
+
   it('should throw an error', () => {
     let count = 0;
     const limit = 5;
