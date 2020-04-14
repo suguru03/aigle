@@ -1,14 +1,12 @@
 {
   "tags": {
-     "allowUnknownTags": false
+    "allowUnknownTags": false
   },
   "source": {
     "includePattern": ".js$",
     "excludePattern": "(node_modules/|docs)"
   },
-  "plugins": [
-     "plugins/markdown"
-  ],
+  "plugins": ["plugins/markdown"],
   "opts": {
     "template": "node_modules/docdash",
     "encoding": "utf8",

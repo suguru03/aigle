@@ -12,24 +12,28 @@ parallel('concatSeries', () => {
     const collection = [1, 4, 2];
     const iterator = (value, key, coll) => {
       assert.strictEqual(coll, collection);
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve([value]);
         }, DELAY * value)
       );
     };
-    return Aigle.concatSeries(collection, iterator).then(res => {
+    return Aigle.concatSeries(collection, iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
       assert.deepStrictEqual(res, [1, 4, 2]);
-      assert.deepStrictEqual(order, [[0, 1], [1, 4], [2, 2]]);
+      assert.deepStrictEqual(order, [
+        [0, 1],
+        [1, 4],
+        [2, 2],
+      ]);
     });
   });
 
   it('should execute on synchronous', () => {
     const collection = [1, 4, 2];
-    const iterator = value => [value];
-    return Aigle.concatSeries(collection, iterator).then(res => {
+    const iterator = (value) => [value];
+    return Aigle.concatSeries(collection, iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
       assert.deepStrictEqual(res, [1, 4, 2]);
     });
@@ -40,57 +44,61 @@ parallel('concatSeries', () => {
     const collection = {
       task1: 1,
       task2: 4,
-      task3: 2
+      task3: 2,
     };
     const iterator = (value, key, coll) => {
       assert.strictEqual(coll, collection);
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve([value]);
         }, DELAY * value)
       );
     };
-    return Aigle.concatSeries(collection, iterator).then(res => {
+    return Aigle.concatSeries(collection, iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
       assert.deepStrictEqual(res, [1, 4, 2]);
-      assert.deepStrictEqual(order, [['task1', 1], ['task2', 4], ['task3', 2]]);
+      assert.deepStrictEqual(order, [
+        ['task1', 1],
+        ['task2', 4],
+        ['task3', 2],
+      ]);
     });
   });
 
   it('should pass falthy except for undefined', () => {
     const collection = [null, undefined, 0, '', false];
-    const iterator = value => value;
-    return Aigle.concatSeries(collection, iterator).then(res =>
+    const iterator = (value) => value;
+    return Aigle.concatSeries(collection, iterator).then((res) =>
       assert.deepStrictEqual(res, [null, 0, '', false])
     );
   });
 
   it('should return an empty array if collection is an empty array', () => {
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
-    return Aigle.concatSeries([], iterator).then(res => {
+    return Aigle.concatSeries([], iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
       assert.strictEqual(res.length, 0);
     });
   });
 
   it('should return an empty array if collection is an empty object', () => {
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
-    return Aigle.concatSeries({}, iterator).then(res => {
+    return Aigle.concatSeries({}, iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
       assert.strictEqual(res.length, 0);
     });
   });
 
   it('should return an empty array if collection is string', () => {
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
-    return Aigle.concatSeries('test', iterator).then(res => {
+    return Aigle.concatSeries('test', iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
       assert.strictEqual(res.length, 0);
     });
@@ -98,12 +106,12 @@ parallel('concatSeries', () => {
 
   it('should throw TypeError', () => {
     const collection = [1, 4, 2];
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
     return Aigle.concatSeries(collection, iterator)
       .then(() => assert.ok(false))
-      .catch(TypeError, error => {
+      .catch(TypeError, (error) => {
         assert.ok(error);
         assert.ok(error instanceof TypeError);
       });
@@ -115,7 +123,7 @@ parallel('#concatSeries', () => {
     const order = [];
     const collection = [1, 4, 2];
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value);
@@ -124,9 +132,13 @@ parallel('#concatSeries', () => {
     };
     return Aigle.resolve(collection)
       .concatSeries(iterator)
-      .then(res => {
+      .then((res) => {
         assert.deepStrictEqual(res, [1, 4, 2]);
-        assert.deepStrictEqual(order, [[0, 1], [1, 4], [2, 2]]);
+        assert.deepStrictEqual(order, [
+          [0, 1],
+          [1, 4],
+          [2, 2],
+        ]);
       });
   });
 
@@ -135,10 +147,10 @@ parallel('#concatSeries', () => {
     const collection = {
       task1: 1,
       task2: 4,
-      task3: 2
+      task3: 2,
     };
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value);
@@ -147,21 +159,25 @@ parallel('#concatSeries', () => {
     };
     return Aigle.resolve(collection)
       .concatSeries(iterator)
-      .then(res => {
+      .then((res) => {
         assert.deepStrictEqual(res, [1, 4, 2]);
-        assert.deepStrictEqual(order, [['task1', 1], ['task2', 4], ['task3', 2]]);
+        assert.deepStrictEqual(order, [
+          ['task1', 1],
+          ['task2', 4],
+          ['task3', 2],
+        ]);
       });
   });
 
   it('should throw TypeError', () => {
     const collection = [1, 4, 2];
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
     return Aigle.resolve(collection)
       .concatSeries(iterator)
       .then(() => assert.ok(false))
-      .catch(TypeError, error => {
+      .catch(TypeError, (error) => {
         assert.ok(error);
         assert.ok(error instanceof TypeError);
       });

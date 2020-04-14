@@ -11,17 +11,21 @@ parallel('map', () => {
     const order = [];
     const collection = [1, 4, 2];
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value * 2);
         }, DELAY * value)
       );
     };
-    return Aigle.map(collection, iterator).then(res => {
+    return Aigle.map(collection, iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
       assert.deepStrictEqual(res, [2, 8, 4]);
-      assert.deepStrictEqual(order, [[0, 1], [2, 2], [1, 4]]);
+      assert.deepStrictEqual(order, [
+        [0, 1],
+        [2, 2],
+        [1, 4],
+      ]);
     });
   });
 
@@ -30,48 +34,52 @@ parallel('map', () => {
     const collection = {
       task1: 1,
       task2: 4,
-      task3: 2
+      task3: 2,
     };
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value * 2);
         }, DELAY * value)
       );
     };
-    return Aigle.map(collection, iterator).then(res => {
+    return Aigle.map(collection, iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
       assert.deepStrictEqual(res, [2, 8, 4]);
-      assert.deepStrictEqual(order, [['task1', 1], ['task3', 2], ['task2', 4]]);
+      assert.deepStrictEqual(order, [
+        ['task1', 1],
+        ['task3', 2],
+        ['task2', 4],
+      ]);
     });
   });
 
   it('should return an empty array if collection is an empty array', () => {
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
-    return Aigle.map([], iterator).then(res => {
+    return Aigle.map([], iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
       assert.strictEqual(res.length, 0);
     });
   });
 
   it('should return an empty array if collection is an empty object', () => {
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
-    return Aigle.map({}, iterator).then(res => {
+    return Aigle.map({}, iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
       assert.strictEqual(res.length, 0);
     });
   });
 
   it('should return an empty array if collection is string', () => {
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
-    return Aigle.map('test', iterator).then(res => {
+    return Aigle.map('test', iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
       assert.strictEqual(res.length, 0);
     });
@@ -81,19 +89,19 @@ parallel('map', () => {
     const collection = [
       {
         uid: 1,
-        name: 'test1'
+        name: 'test1',
       },
       {
         uid: 4,
-        name: 'test4'
+        name: 'test4',
       },
       {
         uid: 2,
-        name: 'test2'
-      }
+        name: 'test2',
+      },
     ];
     let sync = true;
-    const promise = Aigle.map(collection, 'uid').then(array => {
+    const promise = Aigle.map(collection, 'uid').then((array) => {
       assert.deepStrictEqual(array, [1, 4, 2]);
       assert.strictEqual(sync, false);
     });
@@ -105,10 +113,10 @@ parallel('map', () => {
     const collection = {
       task1: { uid: 1, name: 'test1' },
       task2: { uid: 4, name: 'test4' },
-      task3: { uid: 2, name: 'test2' }
+      task3: { uid: 2, name: 'test2' },
     };
     let sync = true;
-    const promise = Aigle.map(collection, 'uid').then(array => {
+    const promise = Aigle.map(collection, 'uid').then((array) => {
       assert.deepStrictEqual(array, [1, 4, 2]);
       assert.strictEqual(sync, false);
     });
@@ -118,21 +126,26 @@ parallel('map', () => {
 
   it('should execute with multiple receivers on asynchronous', () => {
     const array = [1, 2, 3];
-    const promise = new Aigle(resolve => setImmediate(() => resolve(array)));
-    const iterator = value => Aigle.delay(value * DELAY, value * 2);
+    const promise = new Aigle((resolve) => setImmediate(() => resolve(array)));
+    const iterator = (value) => Aigle.delay(value * DELAY, value * 2);
     return Aigle.all([promise.map(iterator), promise.map(iterator), promise.map(iterator)]).then(
-      value => assert.deepStrictEqual(value, [[2, 4, 6], [2, 4, 6], [2, 4, 6]])
+      (value) =>
+        assert.deepStrictEqual(value, [
+          [2, 4, 6],
+          [2, 4, 6],
+          [2, 4, 6],
+        ])
     );
   });
 
   it('should catch a TypeError', () => {
     const collection = [1, 4, 2];
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
     return Aigle.map(collection, iterator)
       .then(() => assert.ok(false))
-      .catch(TypeError, error => {
+      .catch(TypeError, (error) => {
         assert.ok(error);
         assert.ok(error instanceof TypeError);
       });
@@ -144,7 +157,7 @@ parallel('#map', () => {
     const order = [];
     const collection = [1, 4, 2];
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value * 2);
@@ -153,9 +166,13 @@ parallel('#map', () => {
     };
     return Aigle.resolve(collection)
       .map(iterator)
-      .then(res => {
+      .then((res) => {
         assert.deepStrictEqual(res, [2, 8, 4]);
-        assert.deepStrictEqual(order, [[0, 1], [2, 2], [1, 4]]);
+        assert.deepStrictEqual(order, [
+          [0, 1],
+          [2, 2],
+          [1, 4],
+        ]);
       });
   });
 
@@ -164,10 +181,10 @@ parallel('#map', () => {
     const collection = {
       task1: 1,
       task2: 4,
-      task3: 2
+      task3: 2,
     };
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value * 2);
@@ -176,9 +193,13 @@ parallel('#map', () => {
     };
     return Aigle.resolve(collection)
       .map(iterator)
-      .then(res => {
+      .then((res) => {
         assert.deepStrictEqual(res, [2, 8, 4]);
-        assert.deepStrictEqual(order, [['task1', 1], ['task3', 2], ['task2', 4]]);
+        assert.deepStrictEqual(order, [
+          ['task1', 1],
+          ['task3', 2],
+          ['task2', 4],
+        ]);
       });
   });
 
@@ -186,7 +207,7 @@ parallel('#map', () => {
     const order = [];
     const collection = [1, 4, 2];
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value * 2);
@@ -195,9 +216,13 @@ parallel('#map', () => {
     };
     return Aigle.delay(DELAY, collection)
       .map(iterator)
-      .then(res => {
+      .then((res) => {
         assert.deepStrictEqual(res, [2, 8, 4]);
-        assert.deepStrictEqual(order, [[0, 1], [2, 2], [1, 4]]);
+        assert.deepStrictEqual(order, [
+          [0, 1],
+          [2, 2],
+          [1, 4],
+        ]);
       });
   });
 
@@ -205,21 +230,21 @@ parallel('#map', () => {
     const collection = [
       {
         uid: 1,
-        name: 'test1'
+        name: 'test1',
       },
       {
         uid: 4,
-        name: 'test4'
+        name: 'test4',
       },
       {
         uid: 2,
-        name: 'test2'
-      }
+        name: 'test2',
+      },
     ];
     let sync = true;
     const promise = Aigle.resolve(collection)
       .map('uid')
-      .then(array => {
+      .then((array) => {
         assert.deepStrictEqual(array, [1, 4, 2]);
         assert.strictEqual(sync, false);
       });
@@ -231,12 +256,12 @@ parallel('#map', () => {
     const collection = {
       task1: { uid: 1, name: 'test1' },
       task2: { uid: 4, name: 'test4' },
-      task3: { uid: 2, name: 'test2' }
+      task3: { uid: 2, name: 'test2' },
     };
     let sync = true;
     const promise = Aigle.resolve(collection)
       .map('uid')
-      .then(array => {
+      .then((array) => {
         assert.deepStrictEqual(array, [1, 4, 2]);
         assert.strictEqual(sync, false);
       });
@@ -248,28 +273,28 @@ parallel('#map', () => {
     const collection = {
       task1: { uid: 1, bool: 0 },
       task2: { uid: 4, bool: 1 },
-      task3: { uid: 2, bool: 1 }
+      task3: { uid: 2, bool: 1 },
     };
     return Aigle.resolve(collection)
       .groupBy(['bool', 1])
-      .then(object =>
+      .then((object) =>
         assert.deepStrictEqual(object, {
           true: [
             {
               uid: 4,
-              bool: 1
+              bool: 1,
             },
             {
               uid: 2,
-              bool: 1
-            }
+              bool: 1,
+            },
           ],
           false: [
             {
               uid: 1,
-              bool: 0
-            }
-          ]
+              bool: 0,
+            },
+          ],
         })
       );
   });
@@ -278,29 +303,29 @@ parallel('#map', () => {
     const collection = [{ uid: 1, name: 'test1' }, null, undefined, NaN];
     return Aigle.resolve(collection)
       .map('uid')
-      .then(array => assert.deepStrictEqual(array, [1, undefined, undefined, undefined]));
+      .then((array) => assert.deepStrictEqual(array, [1, undefined, undefined, undefined]));
   });
 
   it('should execute using shorthand with an object of random parameters', () => {
     const collection = {
       task1: { uid: 1, name: 'test1' },
       task2: null,
-      task3: undefined
+      task3: undefined,
     };
     return Aigle.resolve(collection)
       .map('uid')
-      .then(array => assert.deepStrictEqual(array, [1, undefined, undefined]));
+      .then((array) => assert.deepStrictEqual(array, [1, undefined, undefined]));
   });
 
   it('should catch a TypeError', () => {
     const collection = [1, 4, 2];
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
     return Aigle.resolve(collection)
       .map(iterator)
       .then(() => assert.ok(false))
-      .catch(TypeError, error => {
+      .catch(TypeError, (error) => {
         assert.ok(error);
         assert.ok(error instanceof TypeError);
       });

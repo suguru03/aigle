@@ -24,20 +24,20 @@ class Benchmark {
       if (key === 'neoAsync') {
         suite.add(key, {
           defer: true,
-          fn: deferred => func(() => deferred.resolve())
+          fn: (deferred) => func(() => deferred.resolve()),
         });
       } else {
         suite.add(key, {
           defer: true,
-          fn: deferred => func().then(() => deferred.resolve())
+          fn: (deferred) => func().then(() => deferred.resolve()),
         });
       }
     });
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       suite
-        .on('complete', function() {
+        .on('complete', function () {
           const result = _.chain(this)
-            .map(data => {
+            .map((data) => {
               const { name, stats } = data;
               const { mean } = stats;
               return { name, mean };

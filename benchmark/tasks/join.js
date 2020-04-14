@@ -49,7 +49,7 @@ module.exports = ({ Aigle, Bluebird }) => {
           this._f9(),
           this._fn
         );
-      }
+      },
     },
     'join:1': {
       setup: () => {
@@ -61,7 +61,7 @@ module.exports = ({ Aigle, Bluebird }) => {
       },
       bluebird: () => {
         return Bluebird.join(this._f0, this._fn);
-      }
+      },
     },
     'join:5': {
       setup: () => {
@@ -77,7 +77,7 @@ module.exports = ({ Aigle, Bluebird }) => {
       },
       bluebird: () => {
         return Bluebird.join(this._f0(), this._f1(), this._f2(), this._f3(), this._f4(), this._fn);
-      }
-    }
+      },
+    },
   };
 };

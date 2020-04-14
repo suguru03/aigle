@@ -11,14 +11,14 @@ parallel('someSeries', () => {
     const order = [];
     const collection = [1, 4, 2];
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
         }, DELAY * value)
       );
     };
-    return Aigle.someSeries(collection, iterator).then(res => {
+    return Aigle.someSeries(collection, iterator).then((res) => {
       assert.strictEqual(res, true);
       assert.deepStrictEqual(order, [[0, 1]]);
     });
@@ -26,8 +26,8 @@ parallel('someSeries', () => {
 
   it('should execute on synchronous', () => {
     const collection = [1, 4, 2];
-    const iterator = value => value % 2;
-    return Aigle.someSeries(collection, iterator).then(res => assert.strictEqual(res, true));
+    const iterator = (value) => value % 2;
+    return Aigle.someSeries(collection, iterator).then((res) => assert.strictEqual(res, true));
   });
 
   it('should execute with object collection in series', () => {
@@ -35,17 +35,17 @@ parallel('someSeries', () => {
     const collection = {
       task1: 1,
       task2: 4,
-      task3: 2
+      task3: 2,
     };
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
         }, DELAY * value)
       );
     };
-    return Aigle.someSeries(collection, iterator).then(res => {
+    return Aigle.someSeries(collection, iterator).then((res) => {
       assert.strictEqual(res, true);
       assert.deepStrictEqual(order, [['task1', 1]]);
     });
@@ -55,16 +55,20 @@ parallel('someSeries', () => {
     const order = [];
     const collection = [0, 4, 2];
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
         }, DELAY * value)
       );
     };
-    return Aigle.someSeries(collection, iterator).then(res => {
+    return Aigle.someSeries(collection, iterator).then((res) => {
       assert.strictEqual(res, false);
-      assert.deepStrictEqual(order, [[0, 0], [1, 4], [2, 2]]);
+      assert.deepStrictEqual(order, [
+        [0, 0],
+        [1, 4],
+        [2, 2],
+      ]);
     });
   });
 
@@ -73,50 +77,54 @@ parallel('someSeries', () => {
     const collection = {
       task1: 0,
       task2: 4,
-      task3: 2
+      task3: 2,
     };
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
         }, DELAY * value)
       );
     };
-    return Aigle.someSeries(collection, iterator).then(res => {
+    return Aigle.someSeries(collection, iterator).then((res) => {
       assert.strictEqual(res, false);
-      assert.deepStrictEqual(order, [['task1', 0], ['task2', 4], ['task3', 2]]);
+      assert.deepStrictEqual(order, [
+        ['task1', 0],
+        ['task2', 4],
+        ['task3', 2],
+      ]);
     });
   });
 
   it('should return an empty array if collection is an empty array', () => {
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
-    return Aigle.someSeries([], iterator).then(res => assert.strictEqual(res, false));
+    return Aigle.someSeries([], iterator).then((res) => assert.strictEqual(res, false));
   });
 
   it('should return an empty array if collection is an empty object', () => {
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
-    return Aigle.someSeries({}, iterator).then(res => assert.strictEqual(res, false));
+    return Aigle.someSeries({}, iterator).then((res) => assert.strictEqual(res, false));
   });
 
   it('should return an empty array if collection is string', () => {
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
-    return Aigle.someSeries('test', iterator).then(res => assert.strictEqual(res, false));
+    return Aigle.someSeries('test', iterator).then((res) => assert.strictEqual(res, false));
   });
   it('should throw TypeError', () => {
     const collection = [1, 4, 2];
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
     return Aigle.someSeries(collection, iterator)
       .then(() => assert.ok(false))
-      .catch(TypeError, error => {
+      .catch(TypeError, (error) => {
         assert.ok(error);
         assert.ok(error instanceof TypeError);
       });
@@ -128,7 +136,7 @@ parallel('#someSeries', () => {
     const order = [];
     const collection = [1, 4, 2];
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
@@ -137,7 +145,7 @@ parallel('#someSeries', () => {
     };
     return Aigle.resolve(collection)
       .someSeries(iterator)
-      .then(res => {
+      .then((res) => {
         assert.strictEqual(res, true);
         assert.deepStrictEqual(order, [[0, 1]]);
       });
@@ -148,10 +156,10 @@ parallel('#someSeries', () => {
     const collection = {
       task1: 1,
       task2: 4,
-      task3: 2
+      task3: 2,
     };
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
@@ -160,7 +168,7 @@ parallel('#someSeries', () => {
     };
     return Aigle.resolve(collection)
       .someSeries(iterator)
-      .then(res => {
+      .then((res) => {
         assert.strictEqual(res, true);
         assert.deepStrictEqual(order, [['task1', 1]]);
       });
@@ -170,7 +178,7 @@ parallel('#someSeries', () => {
     const order = [];
     const collection = [1, 4, 2];
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
@@ -179,7 +187,7 @@ parallel('#someSeries', () => {
     };
     return Aigle.delay(DELAY, collection)
       .someSeries(iterator)
-      .then(res => {
+      .then((res) => {
         assert.strictEqual(res, true);
         assert.deepStrictEqual(order, [[0, 1]]);
       });
@@ -187,13 +195,13 @@ parallel('#someSeries', () => {
 
   it('should throw TypeError', () => {
     const collection = [1, 4, 2];
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
     return Aigle.resolve(collection)
       .someSeries(iterator)
       .then(() => assert.ok(false))
-      .catch(TypeError, error => {
+      .catch(TypeError, (error) => {
         assert.ok(error);
         assert.ok(error instanceof TypeError);
       });

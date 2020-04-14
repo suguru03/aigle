@@ -13,7 +13,7 @@ parallel('join', () => {
     const delay = util.makeDelayTask(order);
     const tasks = [delay(1, DELAY * 3), delay(2, DELAY * 2), delay(3, DELAY * 1)];
     const fn = (arg1, arg2, arg3) => arg1 + arg2 + arg3;
-    return Aigle.join(tasks[0], tasks[1], tasks[2], fn).then(res => {
+    return Aigle.join(tasks[0], tasks[1], tasks[2], fn).then((res) => {
       assert.strictEqual(res, 6);
       assert.deepStrictEqual(order, [3, 2, 1]);
     });
@@ -22,29 +22,29 @@ parallel('join', () => {
   it('should work by non promise tasks', () => {
     const tasks = [2, 3, 1];
     const fn = (arg1, arg2, arg3) => arg1 + arg2 + arg3;
-    return Aigle.join(tasks[0], tasks[1], tasks[2], fn).then(res => assert.strictEqual(res, 6));
+    return Aigle.join(tasks[0], tasks[1], tasks[2], fn).then((res) => assert.strictEqual(res, 6));
   });
 
   it('should ignore if last argument is not function', () => {
     const tasks = [2, 3, 1];
-    return Aigle.join(tasks[0], tasks[1], tasks[2]).then(res =>
+    return Aigle.join(tasks[0], tasks[1], tasks[2]).then((res) =>
       assert.deepStrictEqual(res, [2, 3, 1])
     );
   });
 
   it('should throw typeEror', () => {
     const tasks = [2, 3, 1];
-    return Aigle.join(tasks[0], tasks[1], tasks[2]).then(res =>
+    return Aigle.join(tasks[0], tasks[1], tasks[2]).then((res) =>
       assert.deepStrictEqual(res, [2, 3, 1])
     );
   });
 
   it('should throw TypeError', () => {
     const tasks = [1, 4, 2];
-    const fn = value => value.test();
+    const fn = (value) => value.test();
     return Aigle.join(tasks[0], tasks[1], tasks[2], fn)
       .then(() => assert.ok(false))
-      .catch(TypeError, error => {
+      .catch(TypeError, (error) => {
         assert.ok(error);
         assert.ok(error instanceof TypeError);
       });
@@ -65,7 +65,7 @@ parallel('#spread', () => {
     const object = {
       task1: 1,
       task2: 4,
-      task3: 2
+      task3: 2,
     };
     return Aigle.resolve(object).spread((arg1, arg2, arg3) => {
       assert.strictEqual(arg1, object.task1);
@@ -76,7 +76,7 @@ parallel('#spread', () => {
 
   it('should work on asynchronous', () => {
     const array = [1, 2, 3];
-    return new Aigle(resolve => setImmediate(() => resolve(array))).spread((arg1, arg2, arg3) => {
+    return new Aigle((resolve) => setImmediate(() => resolve(array))).spread((arg1, arg2, arg3) => {
       assert.strictEqual(arg1, array[0]);
       assert.strictEqual(arg2, array[1]);
       assert.strictEqual(arg3, array[2]);
@@ -125,7 +125,7 @@ parallel('#spread', () => {
 
   it('should not spread if first argument is a number', () => {
     const num = 10;
-    return Aigle.resolve(num).spread(arg1 => assert.strictEqual(arg1, num));
+    return Aigle.resolve(num).spread((arg1) => assert.strictEqual(arg1, num));
   });
 
   it('should spread if first argument is a string', () => {
@@ -142,7 +142,7 @@ parallel('#spread', () => {
     const array = [1, 2, 3];
     return Aigle.resolve(array)
       .spread()
-      .then(value => assert.strictEqual(value, array));
+      .then((value) => assert.strictEqual(value, array));
   });
 
   it('should not execute if error is caused', () => {
@@ -151,13 +151,13 @@ parallel('#spread', () => {
     return Aigle.resolve(array)
       .then(() => Aigle.reject(error))
       .spread(() => assert.ok(false))
-      .catch(err => assert.strictEqual(err, error));
+      .catch((err) => assert.strictEqual(err, error));
   });
 
   it('should throw TypeError', () => {
     return Aigle.resolve('test')
-      .spread(arg1 => arg1())
+      .spread((arg1) => arg1())
       .then(() => assert(false))
-      .catch(TypeError, error => assert.ok(error));
+      .catch(TypeError, (error) => assert.ok(error));
   });
 });

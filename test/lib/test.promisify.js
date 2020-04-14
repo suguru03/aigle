@@ -28,10 +28,10 @@ parallel('promisify', () => {
   });
 
   it('should execute', () => {
-    const fn = callback => {
+    const fn = (callback) => {
       setTimeout(() => callback(null, 1), 10);
     };
-    return Aigle.promisify(fn)().then(res => assert.strictEqual(res, 1));
+    return Aigle.promisify(fn)().then((res) => assert.strictEqual(res, 1));
   });
 
   it('should execute with an argument', () => {
@@ -39,7 +39,7 @@ parallel('promisify', () => {
       assert.strictEqual(a, 1);
       setTimeout(() => callback(null, a + 1), 10);
     };
-    return Aigle.promisify(fn)(1).then(res => assert.strictEqual(res, 2));
+    return Aigle.promisify(fn)(1).then((res) => assert.strictEqual(res, 2));
   });
 
   it('should execute with two arguments', () => {
@@ -48,7 +48,7 @@ parallel('promisify', () => {
       assert.strictEqual(b, 2);
       setTimeout(() => callback(null, a + b + 1), 10);
     };
-    return Aigle.promisify(fn)(1, 2).then(res => assert.strictEqual(res, 4));
+    return Aigle.promisify(fn)(1, 2).then((res) => assert.strictEqual(res, 4));
   });
 
   it('should execute with five arguments', () => {
@@ -60,7 +60,7 @@ parallel('promisify', () => {
       assert.strictEqual(e, 5);
       callback(null, a + b + c + d + e + 1);
     };
-    return Aigle.promisify(fn)(1, 2, 3, 4, 5).then(res => assert.strictEqual(res, 16));
+    return Aigle.promisify(fn)(1, 2, 3, 4, 5).then((res) => assert.strictEqual(res, 16));
   });
 
   it('should execute with non-argument', () => {
@@ -68,36 +68,36 @@ parallel('promisify', () => {
       assert.strictEqual(arg, undefined);
       callback(null, 1);
     };
-    return Aigle.promisify(fn)().then(res => assert.strictEqual(res, 1));
+    return Aigle.promisify(fn)().then((res) => assert.strictEqual(res, 1));
   });
 
-  it('should call again', done => {
+  it('should call again', (done) => {
     let callCount = 0;
-    const fn = callback => {
+    const fn = (callback) => {
       callCount++;
       callback(null, callCount);
     };
     const promisified = Aigle.promisify(fn);
     const first = promisified();
     const second = promisified();
-    first.then(res => assert.strictEqual(res, 1));
-    second.then(res => assert.strictEqual(res, 2));
-    first.then(res => assert.strictEqual(res, 1));
-    second.then(res => assert.strictEqual(res, 2));
+    first.then((res) => assert.strictEqual(res, 1));
+    second.then((res) => assert.strictEqual(res, 2));
+    first.then((res) => assert.strictEqual(res, 1));
+    second.then((res) => assert.strictEqual(res, 2));
     assert.strictEqual(callCount, 2);
     setTimeout(done, DELAY);
   });
 
   it('should bind oneself with string argument', () => {
     const obj = {
-      fn: function(arg, callback) {
+      fn: function (arg, callback) {
         assert.strictEqual(this, obj);
         assert.strictEqual(arg, 1);
         callback(null, 2);
-      }
+      },
     };
     const promisified = Aigle.promisify(obj, 'fn');
-    return promisified(1).then(res => {
+    return promisified(1).then((res) => {
       assert.strictEqual(res, 2);
     });
   });
@@ -105,14 +105,14 @@ parallel('promisify', () => {
   it('should bind context', () => {
     const ctx = {};
     const obj = {
-      fn: function(arg, callback) {
+      fn: function (arg, callback) {
         assert.strictEqual(this, ctx);
         assert.strictEqual(arg, 1);
         callback(null, 2);
-      }
+      },
     };
     const promisified = Aigle.promisify(obj.fn, { context: ctx });
-    return promisified(1).then(res => {
+    return promisified(1).then((res) => {
       assert.strictEqual(res, 2);
     });
   });
@@ -127,19 +127,19 @@ parallel('promisify', () => {
       callback(null, a + b + c + d + e + 1);
     };
     const obj = { fn };
-    return Aigle.promisify(obj, 'fn')(1, 2, 3, 4, 5).then(res => assert.strictEqual(res, 16));
+    return Aigle.promisify(obj, 'fn')(1, 2, 3, 4, 5).then((res) => assert.strictEqual(res, 16));
   });
 
   it('should throw an error if second argument is boolean', () => {
     const obj = {
-      fn: callback => callback()
+      fn: (callback) => callback(),
     };
     assert.throws(() => Aigle.promisify(obj, true), TypeError);
   });
 
   it('should throw an error if second argument is boolean', () => {
     const obj = {
-      fn: callback => callback()
+      fn: (callback) => callback(),
     };
     assert.throws(() => Aigle.promisify(obj, 'func'), TypeError);
   });
@@ -151,34 +151,34 @@ parallel('promisify', () => {
   it('should throw an error if error is caused', () => {
     const error = new TypeError('error');
     const obj = {
-      test: callback => callback(error)
+      test: (callback) => callback(error),
     };
     return Aigle.promisify(obj, 'test')()
       .then(() => assert(false))
-      .catch(TypeError, err => assert.strictEqual(err, error));
+      .catch(TypeError, (err) => assert.strictEqual(err, error));
   });
 
   it('should not cause error even if the function is already promisified', () => {
     const obj = {
-      fn: function(arg, callback) {
+      fn: function (arg, callback) {
         assert.strictEqual(this, obj);
         assert.strictEqual(arg, 1);
         callback(null, 2);
-      }
+      },
     };
     const promisified = Aigle.promisify(obj, 'fn');
     Aigle.promisify(promisified);
     const key = 'test';
     obj[key] = promisified;
     Aigle.promisify(obj, key);
-    return obj[key](1).then(value => assert.strictEqual(value, 2));
+    return obj[key](1).then((value) => assert.strictEqual(value, 2));
   });
 
   it('should work setTimeout the same functionality as util.promisify', () => {
     const setTimeoutPromise = Aigle.promisify(setTimeout);
     const str = 'foobar';
     assert.notStrictEqual(setTimeoutPromise, setTimeout[custom]);
-    const promise = setTimeoutPromise(DELAY, str).then(value => assert.strictEqual(value, str));
+    const promise = setTimeoutPromise(DELAY, str).then((value) => assert.strictEqual(value, str));
     assert.ok(promise instanceof Aigle);
     return promise;
   });
@@ -187,7 +187,7 @@ parallel('promisify', () => {
     const setImmediatePromise = Aigle.promisify(setImmediate);
     const str = 'foobar';
     assert.notStrictEqual(setImmediatePromise, setImmediate[custom]);
-    const promise = setImmediatePromise(str).then(value => assert.strictEqual(value, str));
+    const promise = setImmediatePromise(str).then((value) => assert.strictEqual(value, str));
     assert.ok(promise instanceof Aigle);
     return promise;
   });
@@ -202,8 +202,8 @@ parallel('promisify', () => {
     const setImmediatePromise = Aigle.promisify(setImmediate);
     return setImmediatePromise()
       .then(() => setImmediatePromise([1, 2, 3]))
-      .map(v => v * 2)
-      .then(arr => assert.deepStrictEqual(arr, [2, 4, 6]));
+      .map((v) => v * 2)
+      .then((arr) => assert.deepStrictEqual(arr, [2, 4, 6]));
   });
 
   it('should work with setImmediate even if util promisify does not exist', () => {
@@ -212,7 +212,7 @@ parallel('promisify', () => {
     const setImmediatePromise = Aigle.promisify(setImmediate);
     assert.notStrictEqual(setImmediatePromise, setImmediate[custom]);
     const str = 'foobar';
-    const promise = setImmediatePromise(str).then(value => assert.strictEqual(value, str));
+    const promise = setImmediatePromise(str).then((value) => assert.strictEqual(value, str));
     assert.ok(promise instanceof Aigle);
     return promise;
   });
@@ -223,6 +223,6 @@ parallel('promisify', () => {
     const setTimeoutPromise = Aigle.promisify(setTimeout);
     assert.notStrictEqual(setTimeoutPromise, setTimeout[custom]);
     const str = 'foobar';
-    return setTimeoutPromise(DELAY, str).then(value => assert.strictEqual(value, str));
+    return setTimeoutPromise(DELAY, str).then((value) => assert.strictEqual(value, str));
   });
 });

@@ -18,7 +18,7 @@ describe('#cancel', () => {
       onCancel(() => (called = true));
     });
     promise.cancel();
-    return promise.then(assert.fail).catch(error => {
+    return promise.then(assert.fail).catch((error) => {
       assert.ok(called);
       assert.ok(error instanceof CancellationError);
       assert.strictEqual(error.message, 'late cancellation observer');
@@ -35,7 +35,7 @@ describe('#cancel', () => {
       onCancel(() => called++);
     });
     promise.cancel();
-    return promise.then(assert.fail).catch(error => {
+    return promise.then(assert.fail).catch((error) => {
       assert.strictEqual(called, 4);
       assert.ok(error instanceof CancellationError);
       assert.strictEqual(error.message, 'late cancellation observer');
@@ -53,7 +53,7 @@ describe('#cancel', () => {
       resolve(promise);
       onCancel(() => called++);
     }).suppressUnhandledRejections();
-    return promise.then(assert.fail).catch(error => {
+    return promise.then(assert.fail).catch((error) => {
       assert.strictEqual(called, 1);
       assert.ok(error instanceof CancellationError);
       assert.strictEqual(error.message, 'late cancellation observer');
@@ -69,7 +69,7 @@ describe('#cancel', () => {
     promise.cancel();
     promise.cancel();
     promise.cancel();
-    return promise.then(assert.fail).catch(error => {
+    return promise.then(assert.fail).catch((error) => {
       assert.strictEqual(called, 1);
       assert.ok(error instanceof CancellationError);
     });
@@ -83,7 +83,7 @@ describe('#cancel', () => {
       onCancel(() => called++);
     })
       .then(assert.fail)
-      .catch(err => {
+      .catch((err) => {
         assert.strictEqual(called, 0);
         assert.strictEqual(err, error);
       });
@@ -105,7 +105,7 @@ describe('#cancel', () => {
       setImmediate(reject, 3);
       setImmediate(reject, 4);
       onCancel(() => called++);
-    }).then(value => {
+    }).then((value) => {
       assert.strictEqual(called, 0);
       assert.strictEqual(value, 1);
     });
@@ -114,10 +114,12 @@ describe('#cancel', () => {
   it('should cancel a delayed promise', () => {
     const promise = Aigle.delay(DELAY);
     promise.cancel();
-    return promise.then(assert.fail).catch(error => assert.ok(error instanceof CancellationError));
+    return promise
+      .then(assert.fail)
+      .catch((error) => assert.ok(error instanceof CancellationError));
   });
 
-  it('should not notify unhandled rejection error', done => {
+  it('should not notify unhandled rejection error', (done) => {
     process.on('unhandledRejection', done);
     let called = 0;
     const promise = new Aigle((resolve, reject, onCancel) => {
@@ -136,8 +138,8 @@ describe('#cancel', () => {
     }, DELAY);
   });
 
-  it('should not catch an error if a promise is fulfilled', done => {
-    new Aigle(resolve => {
+  it('should not catch an error if a promise is fulfilled', (done) => {
+    new Aigle((resolve) => {
       resolve();
       throw new Error('error');
     })
@@ -150,7 +152,7 @@ describe('#cancel', () => {
     const called = {
       p1: false,
       p2: false,
-      p3: false
+      p3: false,
     };
     const p1 = new Aigle((resolve, reject, onCancel) => onCancel(() => (called.p1 = true)));
     const p2 = new Aigle((resolve, reject, onCancel) => {
@@ -165,7 +167,7 @@ describe('#cancel', () => {
     assert.deepStrictEqual(called, {
       p1: true,
       p2: true,
-      p3: true
+      p3: true,
     });
   });
 });
@@ -180,17 +182,17 @@ parallel('#cancel:false', () => {
       onCancel(() => called++);
     })
       .then(assert.fail)
-      .catch(error => {
+      .catch((error) => {
         assert.ok(error);
         assert.ok(error instanceof TypeError);
       });
   });
 
   it('should not work a canceling function', () => {
-    const promise = new Aigle(resolve => {
+    const promise = new Aigle((resolve) => {
       setTimeout(resolve, DELAY, 1);
     });
     promise.cancel();
-    return promise.then(value => assert.strictEqual(value, 1));
+    return promise.then((value) => assert.strictEqual(value, 1));
   });
 });

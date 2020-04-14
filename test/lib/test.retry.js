@@ -19,7 +19,7 @@ parallel('retry', () => {
         }
       });
     };
-    return Aigle.retry(limit, iterator).then(res => {
+    return Aigle.retry(limit, iterator).then((res) => {
       assert.strictEqual(res, 6);
       assert.strictEqual(count, 6);
     });
@@ -34,7 +34,7 @@ parallel('retry', () => {
     };
     return Aigle.retry(iterator)
       .then(() => assert(false))
-      .catch(error => {
+      .catch((error) => {
         assert.ok(error instanceof TypeError);
         assert.strictEqual(count, 5);
       });
@@ -53,7 +53,7 @@ parallel('retry', () => {
     const start = Date.now();
     return Aigle.retry(opts, iterator)
       .then(() => assert(false))
-      .catch(err => {
+      .catch((err) => {
         assert.strictEqual(err, error);
 
         const diff = Date.now() - start;
@@ -63,7 +63,7 @@ parallel('retry', () => {
   });
 
   it('should execute with a interval function', () => {
-    const interval = c => c * DELAY;
+    const interval = (c) => c * DELAY;
     const opts = { interval };
     let count = 0;
     const error = new Error('error');
@@ -74,7 +74,7 @@ parallel('retry', () => {
     const start = Date.now();
     return Aigle.retry(opts, iterator)
       .then(() => assert(false))
-      .catch(err => {
+      .catch((err) => {
         assert.strictEqual(err, error);
         const diff = Date.now() - start;
         assert(diff >= DELAY * 10);
@@ -96,17 +96,16 @@ parallel('retry', () => {
     };
     const errorRetry = new Error('retry');
     const errorDontRetry = new Error('dontRetry');
-    const predicate = err => err.message === errorRetry.message;
+    const predicate = (err) => err.message === errorRetry.message;
     const retryOpts = { limit, predicate };
-    return Aigle
-      .retry(retryOpts, makeIterator(errorRetry))
-      .then(res => {
+    return Aigle.retry(retryOpts, makeIterator(errorRetry))
+      .then((res) => {
         assert.strictEqual(res, limit);
         assert.strictEqual(count, limit);
       })
       .then(() => Aigle.retry(retryOpts, makeIterator(errorDontRetry)))
       .then(() => assert(false))
-      .catch(err => {
+      .catch((err) => {
         assert.strictEqual(err, errorDontRetry);
         assert.strictEqual(count, limit + 1);
       });
@@ -128,7 +127,7 @@ parallel('retry', () => {
         reject('continue');
       });
     };
-    return Aigle.retry(limit, iterator).catch(error => {
+    return Aigle.retry(limit, iterator).catch((error) => {
       assert.ok(error);
       assert.strictEqual(count, 5);
     });

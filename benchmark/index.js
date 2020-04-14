@@ -23,7 +23,7 @@ const functions = {
   Aigle,
   Bluebird,
   async,
-  neoAsync
+  neoAsync,
 };
 if (makeDoc) {
   delete functions.neoAsync;
@@ -59,7 +59,7 @@ async function execute() {
   const result = {};
   for (const obj of allTasks) {
     const config = {
-      count: count || _.get(obj.config, ['count'], defaults.count)
+      count: count || _.get(obj.config, ['count'], defaults.count),
     };
     const map = _.omit(obj, 'config');
     for (const [name, tasks] of Object.entries(map)) {
@@ -87,10 +87,7 @@ async function executeTasks(config, tasks, name) {
 
   console.log('--------------------------------------');
   console.log(`[${name}] Executing...`);
-  const result = await new Benchmark()
-    .config(config)
-    .tasks(tasks)
-    .execute();
+  const result = await new Benchmark().config(config).tasks(tasks).execute();
   return _.transform(
     result,
     (memo, { name, mean }, index) => {
@@ -130,7 +127,7 @@ function makeDocs(result) {
   doc += _.reduce(
     result,
     (memo, obj, key) => {
-      const array = _.map(names, key => {
+      const array = _.map(names, (key) => {
         const { index, mean, diff } = obj[key] || {};
         if (!index) {
           return '';

@@ -13,7 +13,7 @@ parallel('all', () => {
     const order = [];
     const delay = util.makeDelayTask(order);
     const tasks = [delay('test1', DELAY * 3), delay('test2', DELAY * 2), delay('test3', DELAY * 1)];
-    return Aigle.all(tasks).then(res => {
+    return Aigle.all(tasks).then((res) => {
       assert.deepStrictEqual(res, ['test1', 'test2', 'test3']);
       assert.deepStrictEqual(order, ['test3', 'test2', 'test1']);
     });
@@ -25,9 +25,9 @@ parallel('all', () => {
     const tasks = new Set([
       delay('test1', DELAY * 3),
       delay('test2', DELAY * 2),
-      delay('test3', DELAY * 1)
+      delay('test3', DELAY * 1),
     ]);
-    return Aigle.all(tasks).then(res => {
+    return Aigle.all(tasks).then((res) => {
       assert.deepStrictEqual(res, ['test1', 'test2', 'test3']);
       assert.deepStrictEqual(order, ['test3', 'test2', 'test1']);
     });
@@ -35,13 +35,17 @@ parallel('all', () => {
 
   it('should work with a Set instnce which has Aigle instances', () => {
     const tasks = new Set([Aigle.delay(DELAY * 3, 1), Aigle.resolve(2), 3]);
-    return Aigle.all(tasks).then(res => assert.deepStrictEqual(res, [1, 2, 3]));
+    return Aigle.all(tasks).then((res) => assert.deepStrictEqual(res, [1, 2, 3]));
   });
 
   it('should work with iteratable tasks', () => {
-    const arr = [['task1', Aigle.delay(DELAY * 3, 1)], ['task2', Aigle.resolve(2)], ['task3', 3]];
+    const arr = [
+      ['task1', Aigle.delay(DELAY * 3, 1)],
+      ['task2', Aigle.resolve(2)],
+      ['task3', 3],
+    ];
     const tasks = new Map(arr);
-    return Aigle.all(tasks).then(res => assert.deepStrictEqual(res, arr));
+    return Aigle.all(tasks).then((res) => assert.deepStrictEqual(res, arr));
   });
 
   it('should catch an error', () => {
@@ -50,11 +54,11 @@ parallel('all', () => {
     const tasks = [
       delay('test1', new Error('error1'), DELAY * 3),
       delay('test2', new Error('error2'), DELAY * 2),
-      delay('test3', null, DELAY * 1)
+      delay('test3', null, DELAY * 1),
     ];
     return Aigle.all(tasks)
       .then(() => assert(false))
-      .catch(err => {
+      .catch((err) => {
         assert.ok(err);
         assert.strictEqual(err.message, 'error2');
         assert.deepStrictEqual(order, ['test3', 'test2']);
@@ -66,21 +70,21 @@ parallel('all', () => {
     const tasks = new Set([Aigle.reject(error1), Aigle.reject(new TypeError('error2'))]);
     return Aigle.all(tasks)
       .then(() => assert(false))
-      .catch(TypeError, error => assert.strictEqual(error, error1));
+      .catch(TypeError, (error) => assert.strictEqual(error, error1));
   });
 
   it('should execute on native promise', () => {
     const limit = 5;
     const order = [];
-    const tasks = _.times(limit, n => {
-      return new Aigle(resolve => {
+    const tasks = _.times(limit, (n) => {
+      return new Aigle((resolve) => {
         setTimeout(() => {
           order.push(n);
           resolve(n);
         }, DELAY * (limit - n));
       });
     });
-    return global.Promise.all(tasks).then(res => {
+    return global.Promise.all(tasks).then((res) => {
       assert.deepStrictEqual(res, [0, 1, 2, 3, 4]);
       assert.deepStrictEqual(order, [4, 3, 2, 1, 0]);
     });
@@ -88,31 +92,31 @@ parallel('all', () => {
 
   it('should execute with instances of Aigle promise', () => {
     const tasks = [
-      new Aigle(resolve => resolve(1)),
-      new Aigle(resolve => setTimeout(() => resolve(2), 20)),
-      new Aigle(resolve => setTimeout(() => resolve(3), 10))
+      new Aigle((resolve) => resolve(1)),
+      new Aigle((resolve) => setTimeout(() => resolve(2), 20)),
+      new Aigle((resolve) => setTimeout(() => resolve(3), 10)),
     ];
-    return Aigle.all(tasks).then(res => assert.deepStrictEqual(res, [1, 2, 3]));
+    return Aigle.all(tasks).then((res) => assert.deepStrictEqual(res, [1, 2, 3]));
   });
 
   it('should execute with not promise instance', () => {
-    const tasks = [new Aigle(resolve => resolve(1)), 2, 3];
-    return Aigle.all(tasks).then(res => assert.deepStrictEqual(res, [1, 2, 3]));
+    const tasks = [new Aigle((resolve) => resolve(1)), 2, 3];
+    return Aigle.all(tasks).then((res) => assert.deepStrictEqual(res, [1, 2, 3]));
   });
 
   it('should return immediately', () => {
-    return Aigle.all([]).then(res => assert.deepStrictEqual(res, []));
+    return Aigle.all([]).then((res) => assert.deepStrictEqual(res, []));
   });
 
   it('should throw an error', () => {
     return Aigle.all([Aigle.reject(new TypeError('error1')), Aigle.reject(new TypeError('error2'))])
       .then(() => assert(false))
-      .catch(TypeError, error => assert.ok(error));
+      .catch(TypeError, (error) => assert.ok(error));
   });
 
-  it('should execute with an error promise', done => {
+  it('should execute with an error promise', (done) => {
     const promise = Aigle.reject(1);
-    Aigle.all([Aigle.reject(1), promise]).catch(error => {
+    Aigle.all([Aigle.reject(1), promise]).catch((error) => {
       assert(error);
       done();
     });
@@ -126,7 +130,7 @@ parallel('#all', () => {
     const tasks = [delay('test1', DELAY * 3), delay('test2', DELAY * 2), delay('test3', DELAY * 1)];
     return Aigle.resolve(tasks)
       .all()
-      .then(res => {
+      .then((res) => {
         assert.deepStrictEqual(res, ['test1', 'test2', 'test3']);
         assert.deepStrictEqual(order, ['test3', 'test2', 'test1']);
       });
@@ -136,44 +140,44 @@ parallel('#all', () => {
     const array = [1, 2, 3];
     const promise = Aigle.resolve(array);
     return Aigle.all([
-      promise.all().then(value => {
+      promise.all().then((value) => {
         assert.deepStrictEqual(value, array);
         return 4;
       }),
-      promise.all().then(value => {
+      promise.all().then((value) => {
         assert.deepStrictEqual(value, array);
         return 5;
       }),
-      promise.all().then(value => {
+      promise.all().then((value) => {
         assert.deepStrictEqual(value, array);
         return 6;
-      })
-    ]).then(value => assert.deepStrictEqual(value, [4, 5, 6]));
+      }),
+    ]).then((value) => assert.deepStrictEqual(value, [4, 5, 6]));
   });
 
   it('should execute with multiple receivers on asynchronous', () => {
     const array = [1, 2, 3];
-    const promise = new Aigle(resolve => setImmediate(() => resolve(array)));
+    const promise = new Aigle((resolve) => setImmediate(() => resolve(array)));
     return Aigle.all([
-      promise.all().then(value => {
+      promise.all().then((value) => {
         assert.deepStrictEqual(value, array);
         return 4;
       }),
-      promise.all().then(value => {
+      promise.all().then((value) => {
         assert.deepStrictEqual(value, array);
         return 5;
       }),
-      promise.all().then(value => {
+      promise.all().then((value) => {
         assert.deepStrictEqual(value, array);
         return 6;
-      })
-    ]).then(value => assert.deepStrictEqual(value, [4, 5, 6]));
+      }),
+    ]).then((value) => assert.deepStrictEqual(value, [4, 5, 6]));
   });
 
   it('should return an empty array if the previous value is not array', () => {
     return Aigle.resolve(1)
       .all()
-      .then(res => assert.deepStrictEqual(res, []));
+      .then((res) => assert.deepStrictEqual(res, []));
   });
 
   it('should catch error with multiple receivers on asynchronous', () => {
@@ -181,7 +185,7 @@ parallel('#all', () => {
     const promise = new Aigle((resolve, reject) => setImmediate(() => reject(error)));
     return Aigle.all([promise.all(), promise.all(), promise.all()])
       .then(() => assert(false))
-      .catch(TypeError, err => assert.strictEqual(err, error));
+      .catch(TypeError, (err) => assert.strictEqual(err, error));
   });
 
   it('should catch an error', () => {
@@ -190,19 +194,19 @@ parallel('#all', () => {
     const tasks = [
       delay('test1', new Error('error1'), DELAY * 3),
       delay('test2', new Error('error2'), DELAY * 2),
-      delay('test3', null, DELAY * 1)
+      delay('test3', null, DELAY * 1),
     ];
     return Aigle.resolve(tasks)
       .all()
       .then(() => assert(false))
-      .catch(err => {
+      .catch((err) => {
         assert.ok(err);
         assert.strictEqual(err.message, 'error2');
         assert.deepStrictEqual(order, ['test3', 'test2']);
       });
   });
 
-  it('should throw an error with a reject promise', done => {
+  it('should throw an error with a reject promise', (done) => {
     process.on('unhandledRejection', done);
     const error = new Error('error');
     const promise = Aigle.reject(error);
@@ -211,7 +215,7 @@ parallel('#all', () => {
     return Aigle.delay(DELAY, tasks)
       .all()
       .then(() => assert(false))
-      .catch(err => {
+      .catch((err) => {
         assert.strictEqual(err, error);
         done();
       });

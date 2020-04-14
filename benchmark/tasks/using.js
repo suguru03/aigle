@@ -36,7 +36,7 @@ module.exports = ({ Aigle, Bluebird }) => {
       },
       bluebird: () => {
         return Bluebird.using(this.getBluebirdResorce(), this.iterator);
-      }
-    }
+      },
+    },
   };
 };

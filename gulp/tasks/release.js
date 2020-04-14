@@ -21,7 +21,7 @@ const types = [
   'preminor-beta',
   'major',
   'premajor-alpha',
-  'premajor-beta'
+  'premajor-beta',
 ];
 
 gulp.task('release:tag', () => {
@@ -36,7 +36,7 @@ gulp.task('release:commit', () => {
 
 gulp.task('release:package', createPackage);
 
-_.forEach(types, type => {
+_.forEach(types, (type) => {
   gulp.task(`release:package:${type}`, updateVersion(type));
   gulp.task(
     `release:${type}`,
@@ -61,10 +61,7 @@ function updateVersion(type) {
       identifier && new RegExp(identifier).test(prev) ? 'prerelease' : release,
       identifier
     );
-    return gulp
-      .src(packagepath)
-      .pipe(bump({ version }))
-      .pipe(gulp.dest('./'));
+    return gulp.src(packagepath).pipe(bump({ version })).pipe(gulp.dest('./'));
   };
 }
 

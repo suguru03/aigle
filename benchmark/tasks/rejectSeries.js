@@ -5,30 +5,30 @@ const _ = require('lodash');
 module.exports = ({ Aigle, neoAsync }) => {
   return {
     'rejectSeries:array': {
-      setup: config => {
+      setup: (config) => {
         this.array = _.times(config.count);
-        this.promiseIterator = value => value % 2;
+        this.promiseIterator = (value) => value % 2;
         this.neoAsyncIterator = (n, cb) => cb(null, n % 2);
       },
       aigle: () => {
         return Aigle.rejectSeries(this.array, this.promiseIterator);
       },
-      neoAsync: callback => {
+      neoAsync: (callback) => {
         neoAsync.rejectSeries(this.array, this.neoAsyncIterator, callback);
-      }
+      },
     },
     'rejectSeries:array:async': {
-      setup: config => {
+      setup: (config) => {
         this.array = _.times(config.count);
-        this.promiseIterator = value => new Aigle(resolve => setImmediate(resolve, value % 2));
+        this.promiseIterator = (value) => new Aigle((resolve) => setImmediate(resolve, value % 2));
         this.neoAsyncIterator = (n, cb) => setImmediate(cb, null, n % 2);
       },
       aigle: () => {
         return Aigle.rejectSeries(this.array, this.promiseIterator);
       },
-      neoAsync: callback => {
+      neoAsync: (callback) => {
         neoAsync.rejectSeries(this.array, this.neoAsyncIterator, callback);
-      }
-    }
+      },
+    },
   };
 };

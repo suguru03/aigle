@@ -13,21 +13,27 @@ parallel('pickByLimit', () => {
     const order = [];
     const collection = [1, 5, 3, 4, 2];
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
         }, DELAY * value)
       );
     };
-    return Aigle.pickByLimit(collection, 2, iterator).then(res => {
+    return Aigle.pickByLimit(collection, 2, iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {
         '0': 1,
         '1': 5,
-        '2': 3
+        '2': 3,
       });
-      assert.deepStrictEqual(order, [[0, 1], [2, 3], [1, 5], [4, 2], [3, 4]]);
+      assert.deepStrictEqual(order, [
+        [0, 1],
+        [2, 3],
+        [1, 5],
+        [4, 2],
+        [3, 4],
+      ]);
     });
   });
 
@@ -38,29 +44,29 @@ parallel('pickByLimit', () => {
       task2: 5,
       task3: 3,
       task4: 4,
-      task5: 2
+      task5: 2,
     };
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
         }, DELAY * value)
       );
     };
-    return Aigle.pickByLimit(collection, 2, iterator).then(res => {
+    return Aigle.pickByLimit(collection, 2, iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {
         task1: 1,
         task2: 5,
-        task3: 3
+        task3: 3,
       });
       assert.deepStrictEqual(order, [
         ['task1', 1],
         ['task3', 3],
         ['task2', 5],
         ['task5', 2],
-        ['task4', 4]
+        ['task4', 4],
       ]);
     });
   });
@@ -68,7 +74,7 @@ parallel('pickByLimit', () => {
   it('should execute with default concurrency which is 8', () => {
     const collection = _.times(10);
     const order = [];
-    const iterator = value => {
+    const iterator = (value) => {
       order.push(value);
       return new Aigle(_.noop);
     };
@@ -79,30 +85,30 @@ parallel('pickByLimit', () => {
   });
 
   it('should return an empty array if collection is an empty array', () => {
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
-    return Aigle.pickByLimit([], iterator).then(res => {
+    return Aigle.pickByLimit([], iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {});
     });
   });
 
   it('should return an empty array if collection is an empty object', () => {
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
-    return Aigle.pickByLimit({}, iterator).then(res => {
+    return Aigle.pickByLimit({}, iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {});
     });
   });
 
   it('should return an empty array if collection is string', () => {
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
-    return Aigle.pickByLimit('test', iterator).then(res => {
+    return Aigle.pickByLimit('test', iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {});
     });
@@ -120,11 +126,15 @@ parallel('pickByLimit', () => {
       );
     };
     return Aigle.pickByLimit(collection, 2, iterator)
-      .catch(error => error)
+      .catch((error) => error)
       .delay(DELAY * 5)
-      .then(res => {
+      .then((res) => {
         assert.deepStrictEqual(res, 'error');
-        assert.deepStrictEqual(order, [[0, 1], [2, 3], [1, 5]]);
+        assert.deepStrictEqual(order, [
+          [0, 1],
+          [2, 3],
+          [1, 5],
+        ]);
       });
   });
 
@@ -135,7 +145,7 @@ parallel('pickByLimit', () => {
       task2: 5,
       task3: 3,
       task4: 4,
-      task5: 2
+      task5: 2,
     };
     const iterator = (value, key) => {
       return new Aigle((resolve, reject) =>
@@ -146,11 +156,15 @@ parallel('pickByLimit', () => {
       );
     };
     return Aigle.pickByLimit(collection, 2, iterator)
-      .catch(error => error)
+      .catch((error) => error)
       .delay(DELAY * 5)
-      .then(res => {
+      .then((res) => {
         assert.deepStrictEqual(res, 'error');
-        assert.deepStrictEqual(order, [['task1', 1], ['task3', 3], ['task2', 5]]);
+        assert.deepStrictEqual(order, [
+          ['task1', 1],
+          ['task3', 3],
+          ['task2', 5],
+        ]);
       });
   });
 });
@@ -160,7 +174,7 @@ parallel('#pickByLimit', () => {
     const order = [];
     const collection = [1, 5, 3, 4, 2];
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
@@ -169,14 +183,20 @@ parallel('#pickByLimit', () => {
     };
     return Aigle.resolve(collection)
       .pickByLimit(2, iterator)
-      .then(res => {
+      .then((res) => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepStrictEqual(res, {
           '0': 1,
           '1': 5,
-          '2': 3
+          '2': 3,
         });
-        assert.deepStrictEqual(order, [[0, 1], [2, 3], [1, 5], [4, 2], [3, 4]]);
+        assert.deepStrictEqual(order, [
+          [0, 1],
+          [2, 3],
+          [1, 5],
+          [4, 2],
+          [3, 4],
+        ]);
       });
   });
 
@@ -187,10 +207,10 @@ parallel('#pickByLimit', () => {
       task2: 5,
       task3: 3,
       task4: 4,
-      task5: 2
+      task5: 2,
     };
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
@@ -199,19 +219,19 @@ parallel('#pickByLimit', () => {
     };
     return Aigle.resolve(collection)
       .pickByLimit(2, iterator)
-      .then(res => {
+      .then((res) => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepStrictEqual(res, {
           task1: 1,
           task2: 5,
-          task3: 3
+          task3: 3,
         });
         assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 3],
           ['task2', 5],
           ['task5', 2],
-          ['task4', 4]
+          ['task4', 4],
         ]);
       });
   });
@@ -220,7 +240,7 @@ parallel('#pickByLimit', () => {
     const order = [];
     const collection = [1, 5, 3, 4, 2];
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
@@ -229,29 +249,35 @@ parallel('#pickByLimit', () => {
     };
     return Aigle.delay(DELAY, collection)
       .pickByLimit(2, iterator)
-      .then(res => {
+      .then((res) => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepStrictEqual(res, {
           '0': 1,
           '1': 5,
-          '2': 3
+          '2': 3,
         });
-        assert.deepStrictEqual(order, [[0, 1], [2, 3], [1, 5], [4, 2], [3, 4]]);
+        assert.deepStrictEqual(order, [
+          [0, 1],
+          [2, 3],
+          [1, 5],
+          [4, 2],
+          [3, 4],
+        ]);
       });
   });
 
   it('should execute with default concurrency which is 8', () => {
     const collection = _.times(10);
     const order = [];
-    const iterator = value => {
+    const iterator = (value) => {
       order.push(value);
       return new Aigle(_.noop);
     };
     return Aigle.resolve(collection)
       .pickByLimit(iterator)
       .timeout(DELAY)
-      .catch(TimeoutError, error => error)
-      .then(error => {
+      .catch(TimeoutError, (error) => error)
+      .then((error) => {
         assert.ok(error instanceof TimeoutError);
         assert.deepStrictEqual(order, _.times(8));
       });
@@ -263,7 +289,7 @@ parallel('#pickLimit', () => {
     const order = [];
     const collection = [1, 5, 3, 4, 2];
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
@@ -272,14 +298,20 @@ parallel('#pickLimit', () => {
     };
     return Aigle.resolve(collection)
       .pickLimit(2, iterator)
-      .then(res => {
+      .then((res) => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepStrictEqual(res, {
           '0': 1,
           '1': 5,
-          '2': 3
+          '2': 3,
         });
-        assert.deepStrictEqual(order, [[0, 1], [2, 3], [1, 5], [4, 2], [3, 4]]);
+        assert.deepStrictEqual(order, [
+          [0, 1],
+          [2, 3],
+          [1, 5],
+          [4, 2],
+          [3, 4],
+        ]);
       });
   });
 });

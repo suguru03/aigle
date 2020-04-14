@@ -13,7 +13,7 @@ parallel('longStackTraces', () => {
       setImmediate(reject, error);
     })
       .then(() => assert(false))
-      .catch(error => {
+      .catch((error) => {
         const { stack } = error;
         assert(/From previous event/.test(stack));
       });
@@ -21,16 +21,16 @@ parallel('longStackTraces', () => {
 
   it('should get long trace using config', () => {
     Aigle.config({ longStackTraces: true });
-    return new Aigle(resolve => setImmediate(resolve))
+    return new Aigle((resolve) => setImmediate(resolve))
       .then(() => {
         return [
-          new Aigle(resolve => setImmediate(resolve)),
-          new Aigle(resolve => setImmediate(resolve)),
-          Aigle.reject(new Error('error'))
+          new Aigle((resolve) => setImmediate(resolve)),
+          new Aigle((resolve) => setImmediate(resolve)),
+          Aigle.reject(new Error('error')),
         ];
       })
       .all()
-      .catch(err => {
+      .catch((err) => {
         const { stack } = err;
         assert(/From previous event/.test(stack));
       });

@@ -15,16 +15,22 @@ parallel('eachLimit', () => {
     const collection = [1, 5, 3, 4, 2];
     const iterator = (value, key, coll) => {
       assert.strictEqual(coll, collection);
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value);
         }, DELAY * value)
       );
     };
-    return Aigle.eachLimit(collection, 2, iterator).then(res => {
+    return Aigle.eachLimit(collection, 2, iterator).then((res) => {
       assert.deepStrictEqual(res, collection);
-      assert.deepStrictEqual(order, [[0, 1], [2, 3], [1, 5], [4, 2], [3, 4]]);
+      assert.deepStrictEqual(order, [
+        [0, 1],
+        [2, 3],
+        [1, 5],
+        [4, 2],
+        [3, 4],
+      ]);
     });
   });
 
@@ -35,25 +41,25 @@ parallel('eachLimit', () => {
       task2: 5,
       task3: 3,
       task4: 4,
-      task5: 2
+      task5: 2,
     };
     const iterator = (value, key, coll) => {
       assert.strictEqual(coll, collection);
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value);
         }, DELAY * value)
       );
     };
-    return Aigle.eachLimit(collection, 2, iterator).then(res => {
+    return Aigle.eachLimit(collection, 2, iterator).then((res) => {
       assert.deepStrictEqual(res, collection);
       assert.deepStrictEqual(order, [
         ['task1', 1],
         ['task3', 3],
         ['task2', 5],
         ['task5', 2],
-        ['task4', 4]
+        ['task4', 4],
       ]);
     });
   });
@@ -61,7 +67,7 @@ parallel('eachLimit', () => {
   it('should execute with default concurrency which is 8', () => {
     const collection = _.times(10);
     const order = [];
-    const iterator = value => {
+    const iterator = (value) => {
       order.push(value);
       return new Aigle(_.noop);
     };
@@ -75,16 +81,20 @@ parallel('eachLimit', () => {
     const order = [];
     const collection = [1, 5, 3, 4, 2];
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value !== 5);
         }, DELAY * value)
       );
     };
-    return Aigle.eachLimit(collection, 2, iterator).then(res => {
+    return Aigle.eachLimit(collection, 2, iterator).then((res) => {
       assert.deepStrictEqual(res, collection);
-      assert.deepStrictEqual(order, [[0, 1], [2, 3], [1, 5]]);
+      assert.deepStrictEqual(order, [
+        [0, 1],
+        [2, 3],
+        [1, 5],
+      ]);
     });
   });
 
@@ -95,19 +105,23 @@ parallel('eachLimit', () => {
       task2: 5,
       task3: 3,
       task4: 4,
-      task5: 2
+      task5: 2,
     };
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value !== 5);
         }, DELAY * value)
       );
     };
-    return Aigle.eachLimit(collection, 2, iterator).then(res => {
+    return Aigle.eachLimit(collection, 2, iterator).then((res) => {
       assert.deepStrictEqual(res, collection);
-      assert.deepStrictEqual(order, [['task1', 1], ['task3', 3], ['task2', 5]]);
+      assert.deepStrictEqual(order, [
+        ['task1', 1],
+        ['task3', 3],
+        ['task2', 5],
+      ]);
     });
   });
 
@@ -123,11 +137,15 @@ parallel('eachLimit', () => {
       );
     };
     return Aigle.eachLimit(collection, 2, iterator)
-      .catch(error => error)
+      .catch((error) => error)
       .delay(DELAY * 5)
-      .then(res => {
+      .then((res) => {
         assert.deepStrictEqual(res, 'error');
-        assert.deepStrictEqual(order, [[0, 1], [2, 3], [1, 5]]);
+        assert.deepStrictEqual(order, [
+          [0, 1],
+          [2, 3],
+          [1, 5],
+        ]);
       });
   });
 
@@ -138,7 +156,7 @@ parallel('eachLimit', () => {
       task2: 5,
       task3: 3,
       task4: 4,
-      task5: 2
+      task5: 2,
     };
     const iterator = (value, key) => {
       return new Aigle((resolve, reject) =>
@@ -149,30 +167,34 @@ parallel('eachLimit', () => {
       );
     };
     return Aigle.eachLimit(collection, 2, iterator)
-      .catch(error => error)
+      .catch((error) => error)
       .delay(DELAY * 5)
-      .then(res => {
+      .then((res) => {
         assert.deepStrictEqual(res, 'error');
-        assert.deepStrictEqual(order, [['task1', 1], ['task3', 3], ['task2', 5]]);
+        assert.deepStrictEqual(order, [
+          ['task1', 1],
+          ['task3', 3],
+          ['task2', 5],
+        ]);
       });
   });
 
   it('should return the first argument if collection is an empty array', () => {
     const collection = [];
-    const iterator = value => value;
-    return Aigle.eachLimit(collection, iterator).then(res => assert.strictEqual(res, collection));
+    const iterator = (value) => value;
+    return Aigle.eachLimit(collection, iterator).then((res) => assert.strictEqual(res, collection));
   });
 
   it('should return collection if collection is an empty object', () => {
     const collection = {};
-    const iterator = value => value;
-    return Aigle.eachLimit(collection, iterator).then(res => assert.strictEqual(res, collection));
+    const iterator = (value) => value;
+    return Aigle.eachLimit(collection, iterator).then((res) => assert.strictEqual(res, collection));
   });
 
   it('should return collection if collection is an empty string', () => {
     const collection = '';
-    const iterator = value => value;
-    return Aigle.eachLimit(collection, iterator).then(res => assert.strictEqual(res, collection));
+    const iterator = (value) => value;
+    return Aigle.eachLimit(collection, iterator).then((res) => assert.strictEqual(res, collection));
   });
 });
 
@@ -181,16 +203,22 @@ parallel('forEachLimit', () => {
     const order = [];
     const collection = [1, 5, 3, 4, 2];
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value);
         }, DELAY * value)
       );
     };
-    return Aigle.forEachLimit(collection, 2, iterator).then(res => {
+    return Aigle.forEachLimit(collection, 2, iterator).then((res) => {
       assert.deepStrictEqual(res, collection);
-      assert.deepStrictEqual(order, [[0, 1], [2, 3], [1, 5], [4, 2], [3, 4]]);
+      assert.deepStrictEqual(order, [
+        [0, 1],
+        [2, 3],
+        [1, 5],
+        [4, 2],
+        [3, 4],
+      ]);
     });
   });
 });
@@ -201,7 +229,7 @@ parallel('#eachLimit', () => {
     const collection = [1, 5, 3, 4, 2];
     const iterator = (value, key, coll) => {
       assert.strictEqual(coll, collection);
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value);
@@ -210,9 +238,15 @@ parallel('#eachLimit', () => {
     };
     return Aigle.resolve(collection)
       .eachLimit(2, iterator)
-      .then(res => {
+      .then((res) => {
         assert.deepStrictEqual(res, collection);
-        assert.deepStrictEqual(order, [[0, 1], [2, 3], [1, 5], [4, 2], [3, 4]]);
+        assert.deepStrictEqual(order, [
+          [0, 1],
+          [2, 3],
+          [1, 5],
+          [4, 2],
+          [3, 4],
+        ]);
       });
   });
 
@@ -222,9 +256,15 @@ parallel('#eachLimit', () => {
     const iterator = (value, key) => order.push([key, value]);
     return Aigle.resolve(collection)
       .eachLimit(2, iterator)
-      .then(res => {
+      .then((res) => {
         assert.deepStrictEqual(res, collection);
-        assert.deepStrictEqual(order, [[0, 1], [1, 5], [2, 3], [3, 4], [4, 2]]);
+        assert.deepStrictEqual(order, [
+          [0, 1],
+          [1, 5],
+          [2, 3],
+          [3, 4],
+          [4, 2],
+        ]);
       });
   });
 
@@ -235,11 +275,11 @@ parallel('#eachLimit', () => {
       task2: 5,
       task3: 3,
       task4: 4,
-      task5: 2
+      task5: 2,
     };
     const iterator = (value, key, coll) => {
       assert.strictEqual(coll, collection);
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value);
@@ -248,14 +288,14 @@ parallel('#eachLimit', () => {
     };
     return Aigle.resolve(collection)
       .eachLimit(2, iterator)
-      .then(res => {
+      .then((res) => {
         assert.deepStrictEqual(res, collection);
         assert.deepStrictEqual(order, [
           ['task1', 1],
           ['task3', 3],
           ['task2', 5],
           ['task5', 2],
-          ['task4', 4]
+          ['task4', 4],
         ]);
       });
   });
@@ -263,15 +303,15 @@ parallel('#eachLimit', () => {
   it('should execute with default concurrency which is 8', () => {
     const collection = _.times(10);
     const order = [];
-    const iterator = value => {
+    const iterator = (value) => {
       order.push(value);
       return new Aigle(_.noop);
     };
     return Aigle.resolve(collection)
       .eachLimit(iterator)
       .timeout(DELAY)
-      .catch(TimeoutError, error => error)
-      .then(error => {
+      .catch(TimeoutError, (error) => error)
+      .then((error) => {
         assert.ok(error instanceof TimeoutError);
         assert.deepStrictEqual(order, _.times(8));
       });
@@ -283,23 +323,23 @@ parallel('#eachLimit', () => {
     return new Aigle((resolve, reject) => setTimeout(reject, DELAY, error))
       .eachLimit(iterator)
       .then(() => assert.ok(false))
-      .catch(TypeError, error => {
+      .catch(TypeError, (error) => {
         assert.ok(error);
         assert.ok(error instanceof TypeError);
       });
   });
 
-  it('should not call each function if the parent promise is rejected', done => {
+  it('should not call each function if the parent promise is rejected', (done) => {
     process.on('unhandledRejection', done);
     const error = new Error('error');
     const promise = Aigle.reject(error);
-    promise.catch(error => assert(error));
+    promise.catch((error) => assert(error));
     const iterator = () => promise;
     setTimeout(() => {
       promise
         .eachLimit(iterator)
         .then(() => assert(false))
-        .catch(err => {
+        .catch((err) => {
           assert.strictEqual(err, error);
           done();
         });
@@ -312,7 +352,7 @@ parallel('#forEachLimit', () => {
     const order = [];
     const collection = [1, 5, 3, 4, 2];
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value);
@@ -321,9 +361,15 @@ parallel('#forEachLimit', () => {
     };
     return Aigle.resolve(collection)
       .forEachLimit(2, iterator)
-      .then(res => {
+      .then((res) => {
         assert.deepStrictEqual(res, collection);
-        assert.deepStrictEqual(order, [[0, 1], [2, 3], [1, 5], [4, 2], [3, 4]]);
+        assert.deepStrictEqual(order, [
+          [0, 1],
+          [2, 3],
+          [1, 5],
+          [4, 2],
+          [3, 4],
+        ]);
       });
   });
 });

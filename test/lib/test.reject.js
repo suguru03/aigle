@@ -11,17 +11,21 @@ parallel('reject', () => {
     const order = [];
     const collection = [1, 4, 2];
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
         }, DELAY * value)
       );
     };
-    return Aigle.reject(collection, iterator).then(res => {
+    return Aigle.reject(collection, iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
       assert.deepStrictEqual(res, [4, 2]);
-      assert.deepStrictEqual(order, [[0, 1], [2, 2], [1, 4]]);
+      assert.deepStrictEqual(order, [
+        [0, 1],
+        [2, 2],
+        [1, 4],
+      ]);
     });
   });
 
@@ -30,48 +34,52 @@ parallel('reject', () => {
     const collection = {
       task1: 1,
       task2: 4,
-      task3: 2
+      task3: 2,
     };
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
         }, DELAY * value)
       );
     };
-    return Aigle.reject(collection, iterator).then(res => {
+    return Aigle.reject(collection, iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
       assert.deepStrictEqual(res, [4, 2]);
-      assert.deepStrictEqual(order, [['task1', 1], ['task3', 2], ['task2', 4]]);
+      assert.deepStrictEqual(order, [
+        ['task1', 1],
+        ['task3', 2],
+        ['task2', 4],
+      ]);
     });
   });
 
   it('should return an empty array if collection is an empty array', () => {
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
-    return Aigle.reject([], iterator).then(res => {
+    return Aigle.reject([], iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
       assert.strictEqual(res.length, 0);
     });
   });
 
   it('should return an empty array if collection is an empty object', () => {
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
-    return Aigle.reject({}, iterator).then(res => {
+    return Aigle.reject({}, iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
       assert.strictEqual(res.length, 0);
     });
   });
 
   it('should return an empty array if collection is string', () => {
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
-    return Aigle.reject('test', iterator).then(res => {
+    return Aigle.reject('test', iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Array]');
       assert.strictEqual(res.length, 0);
     });
@@ -79,12 +87,12 @@ parallel('reject', () => {
 
   it('should throw TypeError', () => {
     const collection = [1, 4, 2];
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
     return Aigle.reject(collection, iterator)
       .then(() => assert.ok(false))
-      .catch(TypeError, error => {
+      .catch(TypeError, (error) => {
         assert.ok(error);
         assert.ok(error instanceof TypeError);
       });
@@ -96,7 +104,7 @@ parallel('#reject', () => {
     const order = [];
     const collection = [1, 4, 2];
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
@@ -105,9 +113,13 @@ parallel('#reject', () => {
     };
     return Aigle.resolve(collection)
       .reject(iterator)
-      .then(res => {
+      .then((res) => {
         assert.deepStrictEqual(res, [4, 2]);
-        assert.deepStrictEqual(order, [[0, 1], [2, 2], [1, 4]]);
+        assert.deepStrictEqual(order, [
+          [0, 1],
+          [2, 2],
+          [1, 4],
+        ]);
       });
   });
 
@@ -116,10 +128,10 @@ parallel('#reject', () => {
     const collection = {
       task1: 1,
       task2: 4,
-      task3: 2
+      task3: 2,
     };
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
@@ -128,9 +140,13 @@ parallel('#reject', () => {
     };
     return Aigle.resolve(collection)
       .reject(iterator)
-      .then(res => {
+      .then((res) => {
         assert.deepStrictEqual(res, [4, 2]);
-        assert.deepStrictEqual(order, [['task1', 1], ['task3', 2], ['task2', 4]]);
+        assert.deepStrictEqual(order, [
+          ['task1', 1],
+          ['task3', 2],
+          ['task2', 4],
+        ]);
       });
   });
 
@@ -138,7 +154,7 @@ parallel('#reject', () => {
     const order = [];
     const collection = [1, 4, 2];
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
@@ -147,9 +163,13 @@ parallel('#reject', () => {
     };
     return Aigle.delay(DELAY, collection)
       .reject(iterator)
-      .then(res => {
+      .then((res) => {
         assert.deepStrictEqual(res, [4, 2]);
-        assert.deepStrictEqual(order, [[0, 1], [2, 2], [1, 4]]);
+        assert.deepStrictEqual(order, [
+          [0, 1],
+          [2, 2],
+          [1, 4],
+        ]);
       });
   });
 
@@ -157,26 +177,26 @@ parallel('#reject', () => {
     const collection = [
       {
         uid: 1,
-        bool: 0
+        bool: 0,
       },
       {
         uid: 4,
-        bool: 1
+        bool: 1,
       },
       {
         uid: 2,
-        bool: 1
-      }
+        bool: 1,
+      },
     ];
     let sync = true;
     const promise = Aigle.resolve(collection)
       .reject('bool')
-      .then(array => {
+      .then((array) => {
         assert.deepStrictEqual(array, [
           {
             uid: 1,
-            bool: 0
-          }
+            bool: 0,
+          },
         ]);
         assert.strictEqual(sync, false);
       });
@@ -188,17 +208,17 @@ parallel('#reject', () => {
     const collection = {
       task1: { uid: 1, bool: 0 },
       task2: { uid: 4, bool: 1 },
-      task3: { uid: 2, bool: 1 }
+      task3: { uid: 2, bool: 1 },
     };
     let sync = true;
     const promise = Aigle.resolve(collection)
       .reject('bool')
-      .then(array => {
+      .then((array) => {
         assert.deepStrictEqual(array, [
           {
             uid: 1,
-            bool: 0
-          }
+            bool: 0,
+          },
         ]);
         assert.strictEqual(sync, false);
       });
@@ -210,31 +230,31 @@ parallel('#reject', () => {
     const collection = [
       {
         uid: 1,
-        bool: 0
+        bool: 0,
       },
       {
         uid: 4,
-        bool: 1
+        bool: 1,
       },
       {
         uid: 2,
-        bool: 1
+        bool: 1,
       },
-      null
+      null,
     ];
     return Aigle.resolve(collection)
       .reject(['uid', 4])
-      .then(array =>
+      .then((array) =>
         assert.deepStrictEqual(array, [
           {
             uid: 1,
-            bool: 0
+            bool: 0,
           },
           {
             uid: 2,
-            bool: 1
+            bool: 1,
           },
-          null
+          null,
         ])
       );
   });
@@ -244,21 +264,21 @@ parallel('#reject', () => {
       task1: { uid: 1, bool: 0 },
       task2: { uid: 4, bool: 1 },
       task3: { uid: 2, bool: 1 },
-      task4: null
+      task4: null,
     };
     return Aigle.resolve(collection)
       .reject(['uid', 4])
-      .then(array =>
+      .then((array) =>
         assert.deepStrictEqual(array, [
           {
             uid: 1,
-            bool: 0
+            bool: 0,
           },
           {
             uid: 2,
-            bool: 1
+            bool: 1,
           },
-          null
+          null,
         ])
       );
   });
@@ -267,31 +287,31 @@ parallel('#reject', () => {
     const collection = [
       {
         uid: 1,
-        bool: 0
+        bool: 0,
       },
       {
         uid: 4,
-        bool: 1
+        bool: 1,
       },
       {
         uid: 2,
-        bool: 1
+        bool: 1,
       },
-      null
+      null,
     ];
     return Aigle.resolve(collection)
       .reject({ uid: 4 })
-      .then(array =>
+      .then((array) =>
         assert.deepStrictEqual(array, [
           {
             uid: 1,
-            bool: 0
+            bool: 0,
           },
           {
             uid: 2,
-            bool: 1
+            bool: 1,
           },
-          null
+          null,
         ])
       );
   });
@@ -301,34 +321,34 @@ parallel('#reject', () => {
       task1: { uid: 1, bool: 0 },
       task2: { uid: 4, bool: 1 },
       task3: { uid: 2, bool: 1 },
-      task4: null
+      task4: null,
     };
     return Aigle.resolve(collection)
       .reject({ uid: 4 })
-      .then(array =>
+      .then((array) =>
         assert.deepStrictEqual(array, [
           {
             uid: 1,
-            bool: 0
+            bool: 0,
           },
           {
             uid: 2,
-            bool: 1
+            bool: 1,
           },
-          null
+          null,
         ])
       );
   });
 
   it('should throw TypeError', () => {
     const collection = [1, 4, 2];
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
     return Aigle.resolve(collection)
       .reject(iterator)
       .then(() => assert.ok(false))
-      .catch(TypeError, error => {
+      .catch(TypeError, (error) => {
         assert.ok(error);
         assert.ok(error instanceof TypeError);
       });

@@ -32,33 +32,33 @@ parallel('promisifyAll', () => {
     return test
       .setAsync(str)
       .then(() => test.getAsync())
-      .then(value => assert.strictEqual(value, str));
+      .then((value) => assert.strictEqual(value, str));
   });
 
   it('should extend redis sample', () => {
     const test = 'test';
     function RedisClient() {}
-    RedisClient.prototype.get = function(key, callback) {
+    RedisClient.prototype.get = function (key, callback) {
       callback(null, `${key}_${test}`);
     };
-    RedisClient.test = function() {};
+    RedisClient.test = function () {};
     const redis = {
       RedisClient: RedisClient,
-      test: function() {}
+      test: function () {},
     };
     Aigle.promisifyAll(redis);
     assert.strictEqual(typeof redis.RedisClient.prototype.getAsync, 'function');
     assert.strictEqual(typeof redis.RedisClient.testAsync, 'function');
     const client = new RedisClient();
     const key = 'key';
-    return client.getAsync(key).then(value => assert.strictEqual(value, `${key}_${test}`));
+    return client.getAsync(key).then((value) => assert.strictEqual(value, `${key}_${test}`));
   });
 
   it('should throw an error if suffix is invalid', () => {
     let error;
     const obj = {
       get: () => {},
-      getAsync: () => {}
+      getAsync: () => {},
     };
     try {
       Aigle.promisifyAll(obj);
@@ -76,7 +76,7 @@ parallel('promisifyAll', () => {
       },
       set value(value) {
         this._value = value + 10;
-      }
+      },
     };
     const promisified = Aigle.promisifyAll(obj);
     assert.strictEqual(promisified.getAsync, undefined);
@@ -103,7 +103,7 @@ parallel('promisifyAll', () => {
       get() {
         return 1;
       },
-      obj: null
+      obj: null,
     };
     Aigle.promisifyAll(obj);
     assert.deepStrictEqual(Object.keys(obj), ['get', 'obj', 'getAsync']);
@@ -122,7 +122,7 @@ parallel('promisifyAll', () => {
     Aigle.promisifyAll(Test, {
       filter(name) {
         return name === 'set';
-      }
+      },
     });
     const test = new Test();
     assert.ok(test.get);

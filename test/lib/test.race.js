@@ -13,7 +13,7 @@ parallel('race', () => {
     const order = [];
     const delay = util.makeDelayTask(order);
     const tasks = [delay('test1', DELAY * 3), delay('test2', DELAY * 2), delay('test3', DELAY * 1)];
-    return Aigle.race(tasks).then(res => {
+    return Aigle.race(tasks).then((res) => {
       assert.strictEqual(res, 'test3');
       assert.deepStrictEqual(order, ['test3']);
     });
@@ -25,9 +25,9 @@ parallel('race', () => {
     const tasks = {
       task1: delay('test1', DELAY * 3),
       task2: delay('test2', DELAY * 2),
-      task3: delay('test3', DELAY * 1)
+      task3: delay('test3', DELAY * 1),
     };
-    return Aigle.race(tasks).then(res => {
+    return Aigle.race(tasks).then((res) => {
       assert.strictEqual(res, 'test3');
       assert.deepStrictEqual(order, ['test3']);
     });
@@ -39,9 +39,9 @@ parallel('race', () => {
     const tasks = new Set([
       delay('test1', DELAY * 3),
       delay('test2', DELAY * 2),
-      delay('test3', DELAY * 1)
+      delay('test3', DELAY * 1),
     ]);
-    return Aigle.race(tasks).then(res => {
+    return Aigle.race(tasks).then((res) => {
       assert.strictEqual(res, 'test3');
       assert.deepStrictEqual(order, ['test3']);
     });
@@ -53,9 +53,9 @@ parallel('race', () => {
     const tasks = new Map([
       ['task1', delay('test1', DELAY * 3)],
       ['task2', delay('test2', DELAY * 2)],
-      ['task3', delay('test3', DELAY * 1)]
+      ['task3', delay('test3', DELAY * 1)],
     ]);
-    return Aigle.race(tasks).then(res => {
+    return Aigle.race(tasks).then((res) => {
       assert.strictEqual(res, 'test3');
       assert.deepStrictEqual(order, ['test3']);
     });
@@ -80,11 +80,15 @@ parallel('race', () => {
   });
 
   it('should return a resolved promise', () => {
-    return Aigle.race([Aigle.race(), Aigle.resolve(1), 2]).then(res => assert.strictEqual(res, 1));
+    return Aigle.race([Aigle.race(), Aigle.resolve(1), 2]).then((res) =>
+      assert.strictEqual(res, 1)
+    );
   });
 
   it('should return a value', () => {
-    return Aigle.race([Aigle.race(), 1, Aigle.resolve(2)]).then(res => assert.strictEqual(res, 1));
+    return Aigle.race([Aigle.race(), 1, Aigle.resolve(2)]).then((res) =>
+      assert.strictEqual(res, 1)
+    );
   });
 
   it('should catch an error', () => {
@@ -93,11 +97,11 @@ parallel('race', () => {
     const tasks = [
       delay('test1', new Error('error1'), DELAY * 3),
       delay('test2', null, DELAY * 2),
-      delay('test3', new Error('error3'), DELAY * 1)
+      delay('test3', new Error('error3'), DELAY * 1),
     ];
     return Aigle.race(tasks)
       .then(() => assert(false))
-      .catch(err => {
+      .catch((err) => {
         assert.ok(err);
         assert.strictEqual(err.message, 'error3');
         assert.deepStrictEqual(order, ['test3']);
@@ -110,11 +114,11 @@ parallel('race', () => {
     const tasks = {
       task1: delay('test1', new Error('error1'), DELAY * 3),
       task2: delay('test2', null, DELAY * 2),
-      task3: delay('test3', new Error('error3'), DELAY * 1)
+      task3: delay('test3', new Error('error3'), DELAY * 1),
     };
     return Aigle.race(tasks)
       .then(() => assert(false))
-      .catch(err => {
+      .catch((err) => {
         assert.ok(err);
         assert.strictEqual(err.message, 'error3');
         assert.deepStrictEqual(order, ['test3']);
@@ -129,7 +133,7 @@ parallel('#race', () => {
     const tasks = [delay('test1', DELAY * 3), delay('test2', DELAY * 2), delay('test3', DELAY * 1)];
     return Aigle.resolve(tasks)
       .race()
-      .then(res => {
+      .then((res) => {
         assert.strictEqual(res, 'test3');
         assert.deepStrictEqual(order, ['test3']);
       });
@@ -142,14 +146,14 @@ parallel('#race', () => {
     const promise = Aigle.resolve(tasks);
     return Aigle.delay(DELAY * 4)
       .then(() => promise.race())
-      .then(value => assert.strictEqual(value, 'test1'));
+      .then((value) => assert.strictEqual(value, 'test1'));
   });
 
   it('should work with pending proimse', () => {
     const tasks = [Aigle.delay(DELAY * 4, 1), Aigle.delay(DELAY * 3, 2), Aigle.delay(DELAY * 2, 3)];
     return Aigle.delay(DELAY, tasks)
       .race()
-      .then(res => assert.strictEqual(res, 3));
+      .then((res) => assert.strictEqual(res, 3));
   });
 
   it('should catch an error', () => {
@@ -158,12 +162,12 @@ parallel('#race', () => {
     const tasks = [
       delay('test1', new Error('error1'), DELAY * 3),
       delay('test2', null, DELAY * 2),
-      delay('test3', new Error('error3'), DELAY * 1)
+      delay('test3', new Error('error3'), DELAY * 1),
     ];
     return Aigle.resolve(tasks)
       .race()
       .then(() => assert(false))
-      .catch(err => {
+      .catch((err) => {
         assert.ok(err);
         assert.strictEqual(err.message, 'error3');
         assert.deepStrictEqual(order, ['test3']);

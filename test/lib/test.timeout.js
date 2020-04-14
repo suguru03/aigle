@@ -13,7 +13,7 @@ parallel('#timeout', () => {
     return Aigle.delay(DELAY * 3, value)
       .timeout(DELAY)
       .then(() => assert(false))
-      .catch(error => {
+      .catch((error) => {
         assert.ok(error);
         assert.ok(error instanceof TimeoutError);
         assert.strictEqual(error.message, 'operation timed out');
@@ -24,7 +24,7 @@ parallel('#timeout', () => {
     const value = 10;
     return Aigle.delay(DELAY, value)
       .timeout(DELAY * 3)
-      .then(res => assert.strictEqual(res, value))
+      .then((res) => assert.strictEqual(res, value))
       .delay(DELAY * 5)
       .catch(() => assert.ok(false));
   });
@@ -34,7 +34,7 @@ parallel('#timeout', () => {
     return Aigle.delay(DELAY * 3, 'delay')
       .timeout(DELAY, message)
       .then(() => assert(false))
-      .catch(error => assert.strictEqual(error.message, message));
+      .catch((error) => assert.strictEqual(error.message, message));
   });
 
   it('should time out with an error instance', () => {
@@ -42,7 +42,7 @@ parallel('#timeout', () => {
     return Aigle.delay(DELAY * 3, 'delay')
       .timeout(DELAY, err)
       .then(() => assert(false))
-      .catch(error => assert.strictEqual(error, err));
+      .catch((error) => assert.strictEqual(error, err));
   });
 
   it('should timeout with native promise instance', () => {
@@ -50,7 +50,7 @@ parallel('#timeout', () => {
     return Aigle.resolve(promise)
       .timeout(DELAY)
       .then(() => assert(false))
-      .catch(error => {
+      .catch((error) => {
         assert.ok(error);
         assert.ok(error instanceof TimeoutError);
         assert.strictEqual(error.message, 'operation timed out');

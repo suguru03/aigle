@@ -8,34 +8,34 @@ module.exports = ({ Aigle, Bluebird }) => {
   return {
     race: {
       doc: true,
-      setup: config => (count = config.count),
+      setup: (config) => (count = config.count),
       aigle: () => {
         const tasks = _.times(count, () => {
-          return new Aigle(resolve => setImmediate(resolve));
+          return new Aigle((resolve) => setImmediate(resolve));
         });
         return Aigle.race(tasks);
       },
       bluebird: () => {
         const tasks = _.times(count, () => {
-          return new Bluebird(resolve => setImmediate(resolve));
+          return new Bluebird((resolve) => setImmediate(resolve));
         });
         return Bluebird.race(tasks);
-      }
+      },
     },
     'race:sync': {
-      setup: config => (count = config.count),
+      setup: (config) => (count = config.count),
       aigle: () => {
-        const tasks = _.times(count, n => {
-          return new Aigle(resolve => resolve(n));
+        const tasks = _.times(count, (n) => {
+          return new Aigle((resolve) => resolve(n));
         });
         return Aigle.race(tasks);
       },
       bluebird: () => {
-        const tasks = _.times(count, n => {
-          return new Bluebird(resolve => resolve(n));
+        const tasks = _.times(count, (n) => {
+          return new Bluebird((resolve) => resolve(n));
         });
         return Bluebird.race(tasks);
-      }
-    }
+      },
+    },
   };
 };

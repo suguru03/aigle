@@ -21,10 +21,10 @@ parallel('Aigle', () => {
 });
 
 parallel('resolve', () => {
-  it('should resolve', done => {
+  it('should resolve', (done) => {
     const str = 'test';
     const p = Aigle.resolve(str);
-    p.then(res => {
+    p.then((res) => {
       assert.strictEqual(res, str);
       done();
     });
@@ -35,45 +35,45 @@ parallel('resolve', () => {
     return Aigle.all([
       Aigle.resolve().then(() => assert.strictEqual(++count, 1)),
       Aigle.resolve().then(() => assert.strictEqual(++count, 2)),
-      Aigle.resolve().then(() => assert.strictEqual(++count, 3))
+      Aigle.resolve().then(() => assert.strictEqual(++count, 3)),
     ]).then(() => assert.strictEqual(count, 3));
   });
 
   it('should resolve even if the value is an Aigle instnace', () => {
     const value = 1;
-    const promise = new Aigle(resolve => setTimeout(resolve, DELAY, value));
-    return Aigle.resolve(promise).then(res => assert.strictEqual(res, value));
+    const promise = new Aigle((resolve) => setTimeout(resolve, DELAY, value));
+    return Aigle.resolve(promise).then((res) => assert.strictEqual(res, value));
   });
 
   it('should resolve even if the value is a Promise instance', () => {
     const value = 1;
-    const promise = new Promise(resolve => setTimeout(resolve, DELAY, value));
-    return Aigle.resolve(promise).then(res => assert.strictEqual(res, value));
+    const promise = new Promise((resolve) => setTimeout(resolve, DELAY, value));
+    return Aigle.resolve(promise).then((res) => assert.strictEqual(res, value));
   });
 
   it('should be the same insntace', () => {
-    const promise1 = new Aigle(resolve => setTimeout(resolve, DELAY));
+    const promise1 = new Aigle((resolve) => setTimeout(resolve, DELAY));
     const promise2 = Aigle.resolve(promise1);
     assert.strictEqual(promise1, promise2);
   });
 });
 
 parallel('reject', () => {
-  it('should reject', done => {
+  it('should reject', (done) => {
     let called = 0;
     const err = new Error('error');
     const p = Aigle.reject(err);
-    p.then(res => {
+    p.then((res) => {
       assert(false);
       called++;
       return res;
     })
-      .catch(err => {
+      .catch((err) => {
         assert.ok(err);
         called++;
         return err;
       })
-      .then(err => {
+      .then((err) => {
         assert.ok(err);
         called++;
         assert.strictEqual(called, 2);
@@ -81,19 +81,19 @@ parallel('reject', () => {
       });
   });
 
-  it('should reject without unhandledRejection error', done => {
+  it('should reject without unhandledRejection error', (done) => {
     const error = new Error('error');
     process.on('unhandledRejection', done);
     const p = Aigle.reject(error);
-    p.catch(err => {
+    p.catch((err) => {
       assert.strictEqual(err, error);
       done();
     }).finally(() => process.removeListener('unhandledRejection', done));
   });
 
-  it('should notify unhandledRejection', done => {
+  it('should notify unhandledRejection', (done) => {
     const error = new Error('error');
-    const callback = err => {
+    const callback = (err) => {
       assert(err);
       process.removeListener('unhandledRejection', callback);
       done();
@@ -118,18 +118,18 @@ parallel('config', () => {
 });
 
 parallel('#then', () => {
-  it('should resolve on synchronous', done => {
+  it('should resolve on synchronous', (done) => {
     let called = 0;
-    new Aigle(resolve => {
+    new Aigle((resolve) => {
       resolve(0);
       ++called;
     })
-      .then(value => {
+      .then((value) => {
         assert.strictEqual(value, 0);
         ++called;
         return ++value;
       })
-      .then(value => {
+      .then((value) => {
         assert.strictEqual(value, 1);
         ++called;
         assert.strictEqual(called, 3);
@@ -137,24 +137,24 @@ parallel('#then', () => {
       });
   });
 
-  it('should resolve on asynchronous', done => {
+  it('should resolve on asynchronous', (done) => {
     let called = 0;
-    new Aigle(resolve => {
+    new Aigle((resolve) => {
       setTimeout(() => {
         called++;
         resolve(0);
       }, DELAY);
     })
-      .then(value => {
+      .then((value) => {
         assert.strictEqual(value, 0);
-        return new Aigle(resolve => {
+        return new Aigle((resolve) => {
           setTimeout(() => {
             called++;
             resolve(1);
           }, DELAY);
         });
       })
-      .then(value => {
+      .then((value) => {
         assert.strictEqual(value, 1);
         called++;
         assert.strictEqual(called, 3);
@@ -162,29 +162,29 @@ parallel('#then', () => {
       });
   });
 
-  it('should re-call', done => {
-    const p = new Aigle(resolve => {
+  it('should re-call', (done) => {
+    const p = new Aigle((resolve) => {
       resolve(1);
     });
     Aigle.resolve()
       .then(() => {
         return p;
       })
-      .then(value => {
+      .then((value) => {
         assert.strictEqual(value, 1);
         return p;
       })
-      .then(value => {
+      .then((value) => {
         assert.strictEqual(value, 1);
         const p2 = p
           .then(() => {
             return 2;
           })
-          .then(value => {
+          .then((value) => {
             assert.strictEqual(value, 2);
-            p.then(value => {
+            p.then((value) => {
               assert.strictEqual(value, 1);
-              p2.then(value => {
+              p2.then((value) => {
                 assert.strictEqual(value, 3);
                 done();
               });
@@ -194,25 +194,25 @@ parallel('#then', () => {
       });
   });
 
-  it('should execute with multiple receivers on synchronous', done => {
+  it('should execute with multiple receivers on synchronous', (done) => {
     let called = 0;
-    const p = new Aigle(resolve => resolve(0));
-    p.then(value => {
+    const p = new Aigle((resolve) => resolve(0));
+    p.then((value) => {
       called++;
       assert.strictEqual(value, 0);
       return ++value;
     });
-    p.then(value => {
+    p.then((value) => {
       called++;
       assert.strictEqual(value, 0);
       return ++value;
     });
-    p.then(value => {
+    p.then((value) => {
       called++;
       assert.strictEqual(value, 0);
       return ++value;
     });
-    p.then(value => {
+    p.then((value) => {
       called++;
       assert.strictEqual(value, 0);
       return ++value;
@@ -223,36 +223,36 @@ parallel('#then', () => {
     }, DELAY);
   });
 
-  it('should execute with multiple receivers on asynchronous', done => {
+  it('should execute with multiple receivers on asynchronous', (done) => {
     let called = 0;
-    const p = new Aigle(resolve => setImmediate(() => resolve(0)));
-    p.then(value => {
+    const p = new Aigle((resolve) => setImmediate(() => resolve(0)));
+    p.then((value) => {
       assert.strictEqual(value, 0);
       assert.strictEqual(called++, 0);
-      return new Aigle(resolve => {
+      return new Aigle((resolve) => {
         setImmediate(() => resolve(++value));
       });
     });
-    p.then(value => {
+    p.then((value) => {
       assert.strictEqual(value, 0);
       assert.strictEqual(called++, 1);
-      return new Aigle(resolve => {
+      return new Aigle((resolve) => {
         setImmediate(() => resolve(++value));
       });
     });
-    p.then(value => {
+    p.then((value) => {
       assert.strictEqual(value, 0);
       assert.strictEqual(called++, 2);
-      return new Aigle(resolve => {
+      return new Aigle((resolve) => {
         setImmediate(() => resolve(++value));
       });
-    }).then(value => {
+    }).then((value) => {
       assert.strictEqual(value, 1);
     });
-    p.then(value => {
+    p.then((value) => {
       assert.strictEqual(value, 0);
       assert.strictEqual(called++, 3);
-      return new Aigle(resolve => {
+      return new Aigle((resolve) => {
         setImmediate(() => resolve(++value));
       });
     });
@@ -262,39 +262,39 @@ parallel('#then', () => {
     }, DELAY);
   });
 
-  it('should execute with native Promise', done => {
+  it('should execute with native Promise', (done) => {
     Aigle.resolve(1)
       .then(
-        value =>
-          new Promise(resolve => {
+        (value) =>
+          new Promise((resolve) => {
             setImmediate(() => resolve(++value));
           })
       )
-      .then(value => new Promise(resolve => resolve(++value)))
-      .then(value => {
+      .then((value) => new Promise((resolve) => resolve(++value)))
+      .then((value) => {
         assert.strictEqual(value, 3);
         done();
       });
   });
 
-  it('should execute a resolve function with promise object', done => {
-    const promise = new Aigle(resolve => resolve(1));
-    new Aigle(resolve => resolve(promise)).then(value => {
+  it('should execute a resolve function with promise object', (done) => {
+    const promise = new Aigle((resolve) => resolve(1));
+    new Aigle((resolve) => resolve(promise)).then((value) => {
       assert.strictEqual(value, 1);
       done();
     });
   });
 
-  it('should execute a reject function with promise object', done => {
+  it('should execute a reject function with promise object', (done) => {
     const error = new Error('error');
     const promise = new Aigle((resolve, reject) => reject(error));
-    new Aigle(resolve => resolve(promise)).then(assert.fail).catch(err => {
+    new Aigle((resolve) => resolve(promise)).then(assert.fail).catch((err) => {
       assert.strictEqual(err, error);
       done();
     });
   });
 
-  it('should not change status', done => {
+  it('should not change status', (done) => {
     const str = 'success';
     const err = new Error('error');
     const p = new Aigle((resolve, reject) => {
@@ -302,9 +302,9 @@ parallel('#then', () => {
       setTimeout(() => reject(err), DELAY);
     });
 
-    p.then(value => assert.strictEqual(value, str));
+    p.then((value) => assert.strictEqual(value, str));
     setTimeout(() => {
-      p.then(value => {
+      p.then((value) => {
         assert.strictEqual(value, str);
         done();
       });
@@ -314,19 +314,19 @@ parallel('#then', () => {
 });
 
 describe('#catch', () => {
-  it('should catch an error', done => {
+  it('should catch an error', (done) => {
     const str = 'test';
     let called = 0;
     new Aigle((resolve, reject) => {
       reject(new Error('error'));
       called++;
     })
-      .catch(err => {
+      .catch((err) => {
         assert.ok(err);
         called++;
         return str;
       })
-      .then(res => {
+      .then((res) => {
         assert.strictEqual(res, str);
         called++;
         assert.strictEqual(called, 3);
@@ -334,25 +334,25 @@ describe('#catch', () => {
       });
   });
 
-  it('should catch a TypeError from error type', done => {
+  it('should catch a TypeError from error type', (done) => {
     const str = 'test';
     let called = 0;
     new Aigle((resolve, reject) => {
       reject(new TypeError('error'));
       called++;
     })
-      .catch(ReferenceError, TypeError, err => {
+      .catch(ReferenceError, TypeError, (err) => {
         assert.ok(err);
         called++;
         return str;
       })
       // should not be called this function
-      .catch(err => {
+      .catch((err) => {
         assert(false);
         called++;
         return err;
       })
-      .then(res => {
+      .then((res) => {
         assert.strictEqual(res, str);
         called++;
         assert.strictEqual(called, 3);
@@ -360,32 +360,32 @@ describe('#catch', () => {
       });
   });
 
-  it('should catch a ReferenceError', done => {
+  it('should catch a ReferenceError', (done) => {
     Aigle.resolve()
       .then(() => {
         test;
       })
-      .catch(ReferenceError, err => {
+      .catch(ReferenceError, (err) => {
         assert.ok(err);
         done();
       });
   });
 
-  it('should catch a TypeError', done => {
+  it('should catch a TypeError', (done) => {
     Aigle.resolve()
       .then(() => {
         const test = 1;
         test.test();
       })
-      .catch(TypeError, err => {
+      .catch(TypeError, (err) => {
         assert.ok(err);
         done();
       });
   });
 
-  it('should catch an unhandled rejection error', done => {
+  it('should catch an unhandled rejection error', (done) => {
     let called = false;
-    const callback = err => {
+    const callback = (err) => {
       assert.ok(err);
       called = true;
     };
@@ -394,7 +394,7 @@ describe('#catch', () => {
       test;
     });
     setTimeout(() => {
-      p.catch(ReferenceError, err => {
+      p.catch(ReferenceError, (err) => {
         assert.ok(err);
         assert.ok(called);
         done();
@@ -404,33 +404,33 @@ describe('#catch', () => {
     }, DELAY);
   });
 
-  it('should just ignore if onRejected is not a function', done => {
+  it('should just ignore if onRejected is not a function', (done) => {
     const error = new TypeError('error');
     Aigle.reject(error)
       .catch(TypeError, 'test')
-      .catch(err => {
+      .catch((err) => {
         assert.strictEqual(err, error);
         done();
       });
   });
 
-  it('should caatch an error with multiple receivers on synchronous', done => {
+  it('should caatch an error with multiple receivers on synchronous', (done) => {
     let called = 0;
     const error = new Error('error');
     const p = Aigle.reject(error);
-    p.catch(err => {
+    p.catch((err) => {
       called++;
       assert.strictEqual(err, error);
     });
-    p.catch(err => {
+    p.catch((err) => {
       called++;
       assert.strictEqual(err, error);
     });
-    p.catch(err => {
+    p.catch((err) => {
       called++;
       assert.strictEqual(err, error);
     });
-    p.catch(err => {
+    p.catch((err) => {
       called++;
       assert.strictEqual(err, error);
     });
@@ -440,23 +440,23 @@ describe('#catch', () => {
     }, DELAY);
   });
 
-  it('should caatch error with multiple receivers on asynchronous', done => {
+  it('should caatch error with multiple receivers on asynchronous', (done) => {
     let called = 0;
     const error = new Error('error');
     const p = new Aigle((resolve, reject) => setImmediate(() => reject(error)));
-    p.catch(err => {
+    p.catch((err) => {
       called++;
       assert.strictEqual(err, error);
     });
-    p.catch(err => {
+    p.catch((err) => {
       called++;
       assert.strictEqual(err, error);
     });
-    p.catch(err => {
+    p.catch((err) => {
       called++;
       assert.strictEqual(err, error);
     });
-    p.catch(err => {
+    p.catch((err) => {
       called++;
       assert.strictEqual(err, error);
     });
@@ -466,34 +466,34 @@ describe('#catch', () => {
     }, DELAY);
   });
 
-  it('should catch TypeError caused by executor', done => {
-    new Aigle(resolve => resolve.test()).catch(TypeError, error => {
+  it('should catch TypeError caused by executor', (done) => {
+    new Aigle((resolve) => resolve.test()).catch(TypeError, (error) => {
       assert.ok(error instanceof TypeError);
       done();
     });
   });
 
-  it('should catch ReferenceError in onRejected', done => {
+  it('should catch ReferenceError in onRejected', (done) => {
     const error = new Error('error');
     Aigle.reject(error)
-      .catch(err => {
+      .catch((err) => {
         assert.strictEqual(err, error);
         test;
       })
-      .catch(ReferenceError, error => {
+      .catch(ReferenceError, (error) => {
         assert.ok(error instanceof ReferenceError);
         done();
       });
   });
 
-  it('should catch error and call Aigle instance', done => {
+  it('should catch error and call Aigle instance', (done) => {
     Aigle.reject(new TypeError('error'))
-      .catch(error => {
+      .catch((error) => {
         assert.ok(error instanceof Error);
         return Aigle.reject(new TypeError('error'));
       })
       .catch(ReferenceError, () => assert(false))
-      .catch(TypeError, error => {
+      .catch(TypeError, (error) => {
         assert.ok(error instanceof TypeError);
         return new Aigle((resolve, reject) =>
           setImmediate(() => {
@@ -501,47 +501,47 @@ describe('#catch', () => {
           })
         );
       })
-      .catch(SyntaxError, error => {
+      .catch(SyntaxError, (error) => {
         assert.ok(error instanceof SyntaxError);
         return Aigle.resolve(new RangeError('error'));
       })
-      .then(value => {
+      .then((value) => {
         assert.ok(value instanceof RangeError);
         done();
       });
   });
 
-  it('should execute with native Promise', done => {
+  it('should execute with native Promise', (done) => {
     Aigle.reject(1)
       .catch(
-        value =>
+        (value) =>
           new Promise((resolve, reject) => {
             setImmediate(() => reject(++value));
           })
       )
       .catch(
-        value =>
+        (value) =>
           new Promise((resolve, reject) => {
             reject(++value);
           })
       )
-      .catch(value => {
+      .catch((value) => {
         assert.strictEqual(value, 3);
         done();
       });
   });
 
-  it('should not call unhandledRejection', done => {
+  it('should not call unhandledRejection', (done) => {
     process.on('unhandledRejection', done);
     new Aigle((resolve, reject) => reject('error'))
-      .catch(error => {
+      .catch((error) => {
         assert.strictEqual(error, 'error');
         done();
       })
       .finally(() => process.removeAllListeners('unhandledRejection'));
   });
 
-  it('should not change status', done => {
+  it('should not change status', (done) => {
     const str = 'success';
     const err = new Error('error');
     const p = new Aigle((resolve, reject) => {
@@ -550,36 +550,36 @@ describe('#catch', () => {
     });
 
     p.then(done);
-    p.catch(error => assert.strictEqual(error, err));
+    p.catch((error) => assert.strictEqual(error, err));
     setTimeout(() => {
       p.then(() => done('should be not called'));
-      p.catch(error => {
+      p.catch((error) => {
         assert.strictEqual(error, err);
         done();
       });
     }, DELAY * 2);
   });
 
-  it('should return an error with a rejected promise', done => {
+  it('should return an error with a rejected promise', (done) => {
     process.on('unhandledRejection', done);
     const error1 = new Error('error1');
     const error2 = new Error('error2');
     const promise = Aigle.reject(error1);
-    promise.catch(error => assert.strictEqual(error, error1));
+    promise.catch((error) => assert.strictEqual(error, error1));
     Aigle.reject(error2)
-      .catch(error => {
+      .catch((error) => {
         assert.strictEqual(error, error2);
         return promise;
       })
-      .catch(error => {
+      .catch((error) => {
         assert.strictEqual(error, error1);
         done();
       })
       .finally(() => process.removeListener('unhandledRejection', done));
   });
 
-  it('should not catch an error if a promise is fulfilled', done => {
-    new Aigle(resolve => {
+  it('should not catch an error if a promise is fulfilled', (done) => {
+    new Aigle((resolve) => {
       resolve();
       throw new Error('error');
     })
@@ -588,16 +588,16 @@ describe('#catch', () => {
       .then(done);
   });
 
-  it('should catch with a filter', done => {
+  it('should catch with a filter', (done) => {
     let called = 0;
     const error = new Error('error');
     Aigle.reject(error).catch(
-      err => {
+      (err) => {
         called++;
         assert.strictEqual(err, error);
         return true;
       },
-      err => {
+      (err) => {
         assert.strictEqual(err, error);
         assert.strictEqual(called, 1);
         done();
@@ -607,29 +607,29 @@ describe('#catch', () => {
 });
 
 describe('#finally', () => {
-  it('should ignore empty arugment calls', done => {
-    new Aigle(resolve => {
+  it('should ignore empty arugment calls', (done) => {
+    new Aigle((resolve) => {
       process.nextTick(() => resolve(1));
     })
       .then(2)
       .catch()
       .finally()
-      .then(res => {
+      .then((res) => {
         assert.strictEqual(res, 1);
         done();
       });
   });
 
-  it('should execute finally function', done => {
+  it('should execute finally function', (done) => {
     let called = 0;
     const err = new Error('error');
     const p = Aigle.reject(err);
-    p.then(res => {
+    p.then((res) => {
       assert(false);
       called++;
       return res;
     })
-      .catch(err => {
+      .catch((err) => {
         assert.ok(err);
         called++;
         return err;
@@ -648,7 +648,7 @@ describe('#finally', () => {
         called++;
         return 'then';
       })
-      .catch(err => {
+      .catch((err) => {
         assert.ok(err);
         assert.strictEqual(err.message, 'error2');
         called++;
@@ -660,7 +660,7 @@ describe('#finally', () => {
         assert.strictEqual(called, 4);
         return 'finally';
       })
-      .then(res => {
+      .then((res) => {
         assert.strictEqual(res, 'catch');
         called++;
         assert.strictEqual(called, 5);
@@ -668,9 +668,9 @@ describe('#finally', () => {
       });
   });
 
-  it('should call on asynchronous', done => {
+  it('should call on asynchronous', (done) => {
     let async = false;
-    Aigle.resolve(1).finally(value => {
+    Aigle.resolve(1).finally((value) => {
       assert.strictEqual(value, undefined);
       assert.ok(async);
       done();
@@ -678,55 +678,55 @@ describe('#finally', () => {
     async = true;
   });
 
-  it('should cause TypeError in handler', done => {
+  it('should cause TypeError in handler', (done) => {
     Aigle.resolve(1)
-      .finally(value => value.test())
-      .catch(TypeError, error => {
+      .finally((value) => value.test())
+      .catch(TypeError, (error) => {
         assert.ok(error instanceof TypeError);
         done();
       });
   });
 
-  it('should execute with aigle instance', done => {
+  it('should execute with aigle instance', (done) => {
     Aigle.resolve(1)
-      .finally(() => new Aigle(resolve => resolve(2)))
-      .then(value => assert.strictEqual(value, 1))
+      .finally(() => new Aigle((resolve) => resolve(2)))
+      .then((value) => assert.strictEqual(value, 1))
       .finally(() => new Aigle((resolve, reject) => reject(3)))
-      .catch(error => {
+      .catch((error) => {
         assert.strictEqual(error, 3);
         done();
       });
   });
 
-  it('should execute with error', done => {
+  it('should execute with error', (done) => {
     Aigle.reject(1)
-      .finally(value => {
+      .finally((value) => {
         assert.strictEqual(value, undefined);
-        return new Promise(value => setImmediate(() => value(2)));
+        return new Promise((value) => setImmediate(() => value(2)));
       })
-      .catch(error => {
+      .catch((error) => {
         assert.strictEqual(error, 1);
         done();
       });
   });
 
-  it('should return an error promise in finally function', done => {
+  it('should return an error promise in finally function', (done) => {
     const promise = Aigle.reject(1);
-    promise.catch(error => assert(error));
+    promise.catch((error) => assert(error));
     Aigle.resolve()
       .finally(() => promise)
-      .catch(error => {
+      .catch((error) => {
         assert(error);
         done();
       });
   });
 
-  it('should return an rejected promise', done => {
+  it('should return an rejected promise', (done) => {
     const error = new TypeError('error');
     const promise = Aigle.reject(error);
     Aigle.resolve()
       .finally(() => promise)
-      .catch(TypeError, err => assert(err, error))
+      .catch(TypeError, (err) => assert(err, error))
       .finally(done);
   });
 });

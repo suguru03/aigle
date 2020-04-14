@@ -11,20 +11,24 @@ parallel('groupBy', () => {
     const order = [];
     const collection = [1, 4, 2];
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
         }, DELAY * value)
       );
     };
-    return Aigle.groupBy(collection, iterator).then(res => {
+    return Aigle.groupBy(collection, iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {
         '0': [2, 4],
-        '1': [1]
+        '1': [1],
       });
-      assert.deepStrictEqual(order, [[0, 1], [2, 2], [1, 4]]);
+      assert.deepStrictEqual(order, [
+        [0, 1],
+        [2, 2],
+        [1, 4],
+      ]);
     });
   });
 
@@ -33,51 +37,55 @@ parallel('groupBy', () => {
     const collection = {
       task1: 1,
       task2: 4,
-      task3: 2
+      task3: 2,
     };
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
         }, DELAY * value)
       );
     };
-    return Aigle.groupBy(collection, iterator).then(res => {
+    return Aigle.groupBy(collection, iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {
         '0': [2, 4],
-        '1': [1]
+        '1': [1],
       });
-      assert.deepStrictEqual(order, [['task1', 1], ['task3', 2], ['task2', 4]]);
+      assert.deepStrictEqual(order, [
+        ['task1', 1],
+        ['task3', 2],
+        ['task2', 4],
+      ]);
     });
   });
 
   it('should return an empty object if collection is an empty array', () => {
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
-    return Aigle.groupBy([], iterator).then(res => {
+    return Aigle.groupBy([], iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {});
     });
   });
 
   it('should return an empty ojbect if collection is an empty object', () => {
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
-    return Aigle.groupBy({}, iterator).then(res => {
+    return Aigle.groupBy({}, iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {});
     });
   });
 
   it('should return an empty object if collection is string', () => {
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
-    return Aigle.groupBy('test', iterator).then(res => {
+    return Aigle.groupBy('test', iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {});
     });
@@ -85,12 +93,12 @@ parallel('groupBy', () => {
 
   it('should throw TypeError', () => {
     const collection = [1, 4, 2];
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
     return Aigle.groupBy(collection, iterator)
       .then(() => assert.ok(false))
-      .catch(TypeError, error => {
+      .catch(TypeError, (error) => {
         assert.ok(error);
         assert.ok(error instanceof TypeError);
       });
@@ -102,7 +110,7 @@ parallel('#groupBy', () => {
     const order = [];
     const collection = [1, 4, 2];
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
@@ -111,12 +119,16 @@ parallel('#groupBy', () => {
     };
     return Aigle.resolve(collection)
       .groupBy(iterator)
-      .then(res => {
+      .then((res) => {
         assert.deepStrictEqual(res, {
           '0': [2, 4],
-          '1': [1]
+          '1': [1],
         });
-        assert.deepStrictEqual(order, [[0, 1], [2, 2], [1, 4]]);
+        assert.deepStrictEqual(order, [
+          [0, 1],
+          [2, 2],
+          [1, 4],
+        ]);
       });
   });
 
@@ -125,10 +137,10 @@ parallel('#groupBy', () => {
     const collection = {
       task1: 1,
       task2: 4,
-      task3: 2
+      task3: 2,
     };
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
@@ -137,12 +149,16 @@ parallel('#groupBy', () => {
     };
     return Aigle.resolve(collection)
       .groupBy(iterator)
-      .then(res => {
+      .then((res) => {
         assert.deepStrictEqual(res, {
           '0': [2, 4],
-          '1': [1]
+          '1': [1],
         });
-        assert.deepStrictEqual(order, [['task1', 1], ['task3', 2], ['task2', 4]]);
+        assert.deepStrictEqual(order, [
+          ['task1', 1],
+          ['task3', 2],
+          ['task2', 4],
+        ]);
       });
   });
 
@@ -150,7 +166,7 @@ parallel('#groupBy', () => {
     const order = [];
     const collection = [1, 4, 2];
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
@@ -159,12 +175,16 @@ parallel('#groupBy', () => {
     };
     return Aigle.delay(DELAY, collection)
       .groupBy(iterator)
-      .then(res => {
+      .then((res) => {
         assert.deepStrictEqual(res, {
           '0': [2, 4],
-          '1': [1]
+          '1': [1],
         });
-        assert.deepStrictEqual(order, [[0, 1], [2, 2], [1, 4]]);
+        assert.deepStrictEqual(order, [
+          [0, 1],
+          [2, 2],
+          [1, 4],
+        ]);
       });
   });
 
@@ -172,38 +192,38 @@ parallel('#groupBy', () => {
     const collection = [
       {
         uid: 1,
-        bool: 0
+        bool: 0,
       },
       {
         uid: 4,
-        bool: 1
+        bool: 1,
       },
       {
         uid: 2,
-        bool: 1
-      }
+        bool: 1,
+      },
     ];
     let sync = true;
     const promise = Aigle.resolve(collection)
       .groupBy('bool')
-      .then(object => {
+      .then((object) => {
         assert.deepStrictEqual(object, {
           '0': [
             {
               uid: 1,
-              bool: 0
-            }
+              bool: 0,
+            },
           ],
           '1': [
             {
               uid: 4,
-              bool: 1
+              bool: 1,
             },
             {
               uid: 2,
-              bool: 1
-            }
-          ]
+              bool: 1,
+            },
+          ],
         });
         assert.strictEqual(sync, false);
       });
@@ -215,29 +235,29 @@ parallel('#groupBy', () => {
     const collection = {
       task1: { uid: 1, bool: 0 },
       task2: { uid: 4, bool: 1 },
-      task3: { uid: 2, bool: 1 }
+      task3: { uid: 2, bool: 1 },
     };
     let sync = true;
     const promise = Aigle.resolve(collection)
       .groupBy('bool')
-      .then(object => {
+      .then((object) => {
         assert.deepStrictEqual(object, {
           '0': [
             {
               uid: 1,
-              bool: 0
-            }
+              bool: 0,
+            },
           ],
           '1': [
             {
               uid: 4,
-              bool: 1
+              bool: 1,
             },
             {
               uid: 2,
-              bool: 1
-            }
-          ]
+              bool: 1,
+            },
+          ],
         });
         assert.strictEqual(sync, false);
       });
@@ -249,37 +269,37 @@ parallel('#groupBy', () => {
     const collection = [
       {
         uid: 1,
-        bool: 0
+        bool: 0,
       },
       {
         uid: 4,
-        bool: 1
+        bool: 1,
       },
       {
         uid: 2,
-        bool: 1
-      }
+        bool: 1,
+      },
     ];
     return Aigle.resolve(collection)
       .groupBy(['bool', 1])
-      .then(object =>
+      .then((object) =>
         assert.deepStrictEqual(object, {
           true: [
             {
               uid: 4,
-              bool: 1
+              bool: 1,
             },
             {
               uid: 2,
-              bool: 1
-            }
+              bool: 1,
+            },
           ],
           false: [
             {
               uid: 1,
-              bool: 0
-            }
-          ]
+              bool: 0,
+            },
+          ],
         })
       );
   });
@@ -288,28 +308,28 @@ parallel('#groupBy', () => {
     const collection = {
       task1: { uid: 1, bool: 0 },
       task2: { uid: 4, bool: 1 },
-      task3: { uid: 2, bool: 1 }
+      task3: { uid: 2, bool: 1 },
     };
     return Aigle.resolve(collection)
       .groupBy(['bool', 1])
-      .then(object =>
+      .then((object) =>
         assert.deepStrictEqual(object, {
           true: [
             {
               uid: 4,
-              bool: 1
+              bool: 1,
             },
             {
               uid: 2,
-              bool: 1
-            }
+              bool: 1,
+            },
           ],
           false: [
             {
               uid: 1,
-              bool: 0
-            }
-          ]
+              bool: 0,
+            },
+          ],
         })
       );
   });
@@ -318,37 +338,37 @@ parallel('#groupBy', () => {
     const collection = [
       {
         uid: 1,
-        bool: 0
+        bool: 0,
       },
       {
         uid: 4,
-        bool: 1
+        bool: 1,
       },
       {
         uid: 2,
-        bool: 1
-      }
+        bool: 1,
+      },
     ];
     return Aigle.resolve(collection)
       .groupBy({ bool: 0 })
-      .then(object =>
+      .then((object) =>
         assert.deepStrictEqual(object, {
           true: [
             {
               uid: 1,
-              bool: 0
-            }
+              bool: 0,
+            },
           ],
           false: [
             {
               uid: 4,
-              bool: 1
+              bool: 1,
             },
             {
               uid: 2,
-              bool: 1
-            }
-          ]
+              bool: 1,
+            },
+          ],
         })
       );
   });
@@ -357,41 +377,41 @@ parallel('#groupBy', () => {
     const collection = {
       task1: { uid: 1, bool: 0 },
       task2: { uid: 4, bool: 1 },
-      task3: { uid: 2, bool: 1 }
+      task3: { uid: 2, bool: 1 },
     };
     return Aigle.resolve(collection)
       .groupBy({ bool: 0 })
-      .then(object =>
+      .then((object) =>
         assert.deepStrictEqual(object, {
           true: [
             {
               uid: 1,
-              bool: 0
-            }
+              bool: 0,
+            },
           ],
           false: [
             {
               uid: 4,
-              bool: 1
+              bool: 1,
             },
             {
               uid: 2,
-              bool: 1
-            }
-          ]
+              bool: 1,
+            },
+          ],
         })
       );
   });
 
   it('should throw TypeError', () => {
     const collection = [1, 4, 2];
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
     return Aigle.resolve(collection)
       .groupBy(iterator)
       .then(() => assert.ok(false))
-      .catch(TypeError, error => {
+      .catch(TypeError, (error) => {
         assert.ok(error);
         assert.ok(error instanceof TypeError);
       });

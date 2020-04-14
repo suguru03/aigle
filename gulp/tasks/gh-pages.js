@@ -25,15 +25,15 @@ gulp.task('gh-pages:reset', () => git.reset('HEAD'));
 
 gulp.task('gh-pages:stash', git.stash);
 
-gulp.task('gh-pages:stash:drop', cb => git.stash({ args: 'drop' }, cb));
+gulp.task('gh-pages:stash:drop', (cb) => git.stash({ args: 'drop' }, cb));
 
-gulp.task('gh-pages:pop', cb => git.exec({ args: 'checkout stash -- .' }, cb));
+gulp.task('gh-pages:pop', (cb) => git.exec({ args: 'checkout stash -- .' }, cb));
 
 gulp.task('gh-pages:commit', () =>
   gulp.src('./docs/*').pipe(
     git.commit(`docs(jsdoc): v${version} [ci skip]`, {
       args: '--no-verify',
-      disableAppendPaths: true
+      disableAppendPaths: true,
     })
   )
 );

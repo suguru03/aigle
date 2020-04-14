@@ -18,7 +18,7 @@ parallel('delay', () => {
   it('should be delay with value', () => {
     const start = Date.now();
     const str = 'test';
-    return Aigle.delay(DELAY, str).then(value => {
+    return Aigle.delay(DELAY, str).then((value) => {
       const diff = Date.now() - start + 1;
       assert.ok(diff >= DELAY, `diff: ${diff}ms, DELAY: ${DELAY}ms`);
       assert.strictEqual(value, str);
@@ -29,7 +29,7 @@ parallel('delay', () => {
 parallel('#delay', () => {
   it('should be delay', () => {
     const start = Date.now();
-    return new Aigle(resolve => resolve()).delay(DELAY).then(() => {
+    return new Aigle((resolve) => resolve()).delay(DELAY).then(() => {
       const diff = Date.now() - start + 1;
       assert.ok(diff >= DELAY, `diff: ${diff}ms, DELAY: ${DELAY}ms`);
     });
@@ -37,7 +37,7 @@ parallel('#delay', () => {
 
   it('should be delay multiple times', () => {
     const start = Date.now();
-    return new Aigle(resolve => resolve())
+    return new Aigle((resolve) => resolve())
       .delay(DELAY)
       .delay(DELAY)
       .delay(DELAY)
@@ -52,7 +52,7 @@ parallel('#delay', () => {
     const str = 'test';
     return Aigle.resolve(str)
       .delay(DELAY)
-      .then(value => {
+      .then((value) => {
         const diff = Date.now() - start + 1;
         assert.ok(diff >= DELAY, `diff: ${diff}ms, DELAY: ${DELAY}ms`);
         assert.strictEqual(value, str);
@@ -64,24 +64,24 @@ parallel('#delay', () => {
     const str = 'test';
     return Aigle.reject(str)
       .delay(DELAY)
-      .catch(value => {
+      .catch((value) => {
         const diff = Date.now() - start + 1;
         assert.ok(diff < DELAY, `diff: ${diff}ms, DELAY: ${DELAY}ms`);
         assert.strictEqual(value, str);
       });
   });
 
-  it('should not delay with a rejected promise', done => {
+  it('should not delay with a rejected promise', (done) => {
     process.on('unhandledRejection', done);
     const error = new Error('error');
     const promise = Aigle.reject(error);
-    promise.catch(error => assert(error));
+    promise.catch((error) => assert(error));
     setTimeout(() => {
       const start = Date.now();
       promise
         .delay(DELAY)
         .then(() => assert(false))
-        .catch(err => {
+        .catch((err) => {
           const diff = Date.now() - start + 1;
           assert.ok(diff < DELAY, `diff: ${diff}, DELAY: ${DELAY}`);
           assert.strictEqual(err, error);

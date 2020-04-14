@@ -11,19 +11,23 @@ parallel('pickBy', () => {
     const order = [];
     const collection = [1, 4, 2];
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
         }, DELAY * value)
       );
     };
-    return Aigle.pickBy(collection, iterator).then(res => {
+    return Aigle.pickBy(collection, iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {
-        '0': 1
+        '0': 1,
       });
-      assert.deepStrictEqual(order, [[0, 1], [2, 2], [1, 4]]);
+      assert.deepStrictEqual(order, [
+        [0, 1],
+        [2, 2],
+        [1, 4],
+      ]);
     });
   });
 
@@ -32,50 +36,54 @@ parallel('pickBy', () => {
     const collection = {
       task1: 1,
       task2: 4,
-      task3: 2
+      task3: 2,
     };
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
         }, DELAY * value)
       );
     };
-    return Aigle.pickBy(collection, iterator).then(res => {
+    return Aigle.pickBy(collection, iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {
-        task1: 1
+        task1: 1,
       });
-      assert.deepStrictEqual(order, [['task1', 1], ['task3', 2], ['task2', 4]]);
+      assert.deepStrictEqual(order, [
+        ['task1', 1],
+        ['task3', 2],
+        ['task2', 4],
+      ]);
     });
   });
 
   it('should return an empty array if collection is an empty array', () => {
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
-    return Aigle.pickBy([], iterator).then(res => {
+    return Aigle.pickBy([], iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {});
     });
   });
 
   it('should return an empty array if collection is an empty object', () => {
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
-    return Aigle.pickBy({}, iterator).then(res => {
+    return Aigle.pickBy({}, iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {});
     });
   });
 
   it('should return an empty array if collection is string', () => {
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
-    return Aigle.pickBy('test', iterator).then(res => {
+    return Aigle.pickBy('test', iterator).then((res) => {
       assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
       assert.deepStrictEqual(res, {});
     });
@@ -85,28 +93,28 @@ parallel('pickBy', () => {
     const collection = [
       {
         uid: 1,
-        bool: 0
+        bool: 0,
       },
       {
         uid: 4,
-        bool: 1
+        bool: 1,
       },
       {
         uid: 2,
-        bool: 1
-      }
+        bool: 1,
+      },
     ];
     let sync = true;
-    const promise = Aigle.pickBy(collection, 'bool').then(object => {
+    const promise = Aigle.pickBy(collection, 'bool').then((object) => {
       assert.deepStrictEqual(object, {
         '1': {
           uid: 4,
-          bool: 1
+          bool: 1,
         },
         '2': {
           uid: 2,
-          bool: 1
-        }
+          bool: 1,
+        },
       });
       assert.strictEqual(sync, false);
     });
@@ -118,19 +126,19 @@ parallel('pickBy', () => {
     const collection = {
       task1: { uid: 1, bool: 0 },
       task2: { uid: 4, bool: 1 },
-      task3: { uid: 2, bool: 1 }
+      task3: { uid: 2, bool: 1 },
     };
     let sync = true;
-    const promise = Aigle.pickBy(collection, 'bool').then(object => {
+    const promise = Aigle.pickBy(collection, 'bool').then((object) => {
       assert.deepStrictEqual(object, {
         task2: {
           uid: 4,
-          bool: 1
+          bool: 1,
         },
         task3: {
           uid: 2,
-          bool: 1
-        }
+          bool: 1,
+        },
       });
       assert.strictEqual(sync, false);
     });
@@ -142,24 +150,24 @@ parallel('pickBy', () => {
     const collection = [
       {
         uid: 1,
-        bool: 0
+        bool: 0,
       },
       {
         uid: 4,
-        bool: 1
+        bool: 1,
       },
       {
         uid: 2,
-        bool: 1
+        bool: 1,
       },
-      null
+      null,
     ];
-    return Aigle.pickBy(collection, ['uid', 4]).then(object =>
+    return Aigle.pickBy(collection, ['uid', 4]).then((object) =>
       assert.deepStrictEqual(object, {
         '1': {
           uid: 4,
-          bool: 1
-        }
+          bool: 1,
+        },
       })
     );
   });
@@ -169,14 +177,14 @@ parallel('pickBy', () => {
       task1: { uid: 1, bool: 0 },
       task2: { uid: 4, bool: 1 },
       task3: { uid: 2, bool: 1 },
-      task4: null
+      task4: null,
     };
-    return Aigle.pickBy(collection, ['uid', 4]).then(object =>
+    return Aigle.pickBy(collection, ['uid', 4]).then((object) =>
       assert.deepStrictEqual(object, {
         task2: {
           uid: 4,
-          bool: 1
-        }
+          bool: 1,
+        },
       })
     );
   });
@@ -185,24 +193,24 @@ parallel('pickBy', () => {
     const collection = [
       {
         uid: 1,
-        bool: 0
+        bool: 0,
       },
       {
         uid: 4,
-        bool: 1
+        bool: 1,
       },
       {
         uid: 2,
-        bool: 1
+        bool: 1,
       },
-      null
+      null,
     ];
-    return Aigle.pickBy(collection, { uid: 4 }).then(object =>
+    return Aigle.pickBy(collection, { uid: 4 }).then((object) =>
       assert.deepStrictEqual(object, {
         '1': {
           uid: 4,
-          bool: 1
-        }
+          bool: 1,
+        },
       })
     );
   });
@@ -212,26 +220,26 @@ parallel('pickBy', () => {
       task1: { uid: 1, bool: 0 },
       task2: { uid: 4, bool: 1 },
       task3: { uid: 2, bool: 1 },
-      task4: null
+      task4: null,
     };
-    return Aigle.pickBy(collection, { uid: 4 }).then(object =>
+    return Aigle.pickBy(collection, { uid: 4 }).then((object) =>
       assert.deepStrictEqual(object, {
         task2: {
           uid: 4,
-          bool: 1
-        }
+          bool: 1,
+        },
       })
     );
   });
 
   it('should throw TypeError', () => {
     const collection = [1, 4, 2];
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
     return Aigle.pickBy(collection, iterator)
       .then(() => assert.ok(false))
-      .catch(TypeError, error => {
+      .catch(TypeError, (error) => {
         assert.ok(error);
         assert.ok(error instanceof TypeError);
       });
@@ -243,7 +251,7 @@ parallel('#pickBy', () => {
     const order = [];
     const collection = [1, 4, 2];
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
@@ -252,12 +260,16 @@ parallel('#pickBy', () => {
     };
     return Aigle.resolve(collection)
       .pickBy(iterator)
-      .then(res => {
+      .then((res) => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepStrictEqual(res, {
-          '0': 1
+          '0': 1,
         });
-        assert.deepStrictEqual(order, [[0, 1], [2, 2], [1, 4]]);
+        assert.deepStrictEqual(order, [
+          [0, 1],
+          [2, 2],
+          [1, 4],
+        ]);
       });
   });
 
@@ -266,10 +278,10 @@ parallel('#pickBy', () => {
     const collection = {
       task1: 1,
       task2: 4,
-      task3: 2
+      task3: 2,
     };
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
@@ -278,12 +290,16 @@ parallel('#pickBy', () => {
     };
     return Aigle.resolve(collection)
       .pickBy(iterator)
-      .then(res => {
+      .then((res) => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepStrictEqual(res, {
-          task1: 1
+          task1: 1,
         });
-        assert.deepStrictEqual(order, [['task1', 1], ['task3', 2], ['task2', 4]]);
+        assert.deepStrictEqual(order, [
+          ['task1', 1],
+          ['task3', 2],
+          ['task2', 4],
+        ]);
       });
   });
 
@@ -291,7 +307,7 @@ parallel('#pickBy', () => {
     const order = [];
     const collection = [1, 4, 2];
     const iterator = (value, key) => {
-      return new Aigle(resolve =>
+      return new Aigle((resolve) =>
         setTimeout(() => {
           order.push([key, value]);
           resolve(value % 2);
@@ -300,12 +316,16 @@ parallel('#pickBy', () => {
     };
     return Aigle.delay(DELAY, collection)
       .pickBy(iterator)
-      .then(res => {
+      .then((res) => {
         assert.strictEqual(Object.prototype.toString.call(res), '[object Object]');
         assert.deepStrictEqual(res, {
-          '0': 1
+          '0': 1,
         });
-        assert.deepStrictEqual(order, [[0, 1], [2, 2], [1, 4]]);
+        assert.deepStrictEqual(order, [
+          [0, 1],
+          [2, 2],
+          [1, 4],
+        ]);
       });
   });
 
@@ -313,30 +333,30 @@ parallel('#pickBy', () => {
     const collection = [
       {
         uid: 1,
-        bool: 0
+        bool: 0,
       },
       {
         uid: 4,
-        bool: 1
+        bool: 1,
       },
       {
         uid: 2,
-        bool: 1
-      }
+        bool: 1,
+      },
     ];
     let sync = true;
     const promise = Aigle.resolve(collection)
       .pickBy('bool')
-      .then(object => {
+      .then((object) => {
         assert.deepStrictEqual(object, {
           '1': {
             uid: 4,
-            bool: 1
+            bool: 1,
           },
           '2': {
             uid: 2,
-            bool: 1
-          }
+            bool: 1,
+          },
         });
         assert.strictEqual(sync, false);
       });
@@ -348,21 +368,21 @@ parallel('#pickBy', () => {
     const collection = {
       task1: { uid: 1, bool: 0 },
       task2: { uid: 4, bool: 1 },
-      task3: { uid: 2, bool: 1 }
+      task3: { uid: 2, bool: 1 },
     };
     let sync = true;
     const promise = Aigle.resolve(collection)
       .pickBy('bool')
-      .then(object => {
+      .then((object) => {
         assert.deepStrictEqual(object, {
           task2: {
             uid: 4,
-            bool: 1
+            bool: 1,
           },
           task3: {
             uid: 2,
-            bool: 1
-          }
+            bool: 1,
+          },
         });
         assert.strictEqual(sync, false);
       });
@@ -374,26 +394,26 @@ parallel('#pickBy', () => {
     const collection = [
       {
         uid: 1,
-        bool: 0
+        bool: 0,
       },
       {
         uid: 4,
-        bool: 1
+        bool: 1,
       },
       {
         uid: 2,
-        bool: 1
+        bool: 1,
       },
-      null
+      null,
     ];
     return Aigle.resolve(collection)
       .pickBy(['uid', 4])
-      .then(object =>
+      .then((object) =>
         assert.deepStrictEqual(object, {
           '1': {
             uid: 4,
-            bool: 1
-          }
+            bool: 1,
+          },
         })
       );
   });
@@ -403,16 +423,16 @@ parallel('#pickBy', () => {
       task1: { uid: 1, bool: 0 },
       task2: { uid: 4, bool: 1 },
       task3: { uid: 2, bool: 1 },
-      task4: null
+      task4: null,
     };
     return Aigle.resolve(collection)
       .pickBy(['uid', 4])
-      .then(object =>
+      .then((object) =>
         assert.deepStrictEqual(object, {
           task2: {
             uid: 4,
-            bool: 1
-          }
+            bool: 1,
+          },
         })
       );
   });
@@ -421,26 +441,26 @@ parallel('#pickBy', () => {
     const collection = [
       {
         uid: 1,
-        bool: 0
+        bool: 0,
       },
       {
         uid: 4,
-        bool: 1
+        bool: 1,
       },
       {
         uid: 2,
-        bool: 1
+        bool: 1,
       },
-      null
+      null,
     ];
     return Aigle.resolve(collection)
       .pickBy({ uid: 4 })
-      .then(object =>
+      .then((object) =>
         assert.deepStrictEqual(object, {
           '1': {
             uid: 4,
-            bool: 1
-          }
+            bool: 1,
+          },
         })
       );
   });
@@ -450,29 +470,29 @@ parallel('#pickBy', () => {
       task1: { uid: 1, bool: 0 },
       task2: { uid: 4, bool: 1 },
       task3: { uid: 2, bool: 1 },
-      task4: null
+      task4: null,
     };
     return Aigle.resolve(collection)
       .pickBy({ uid: 4 })
-      .then(object =>
+      .then((object) =>
         assert.deepStrictEqual(object, {
           task2: {
             uid: 4,
-            bool: 1
-          }
+            bool: 1,
+          },
         })
       );
   });
 
   it('should throw TypeError', () => {
     const collection = [1, 4, 2];
-    const iterator = value => {
+    const iterator = (value) => {
       value.test();
     };
     return Aigle.resolve(collection)
       .pickBy(iterator)
       .then(() => assert.ok(false))
-      .catch(TypeError, error => {
+      .catch(TypeError, (error) => {
         assert.ok(error);
         assert.ok(error instanceof TypeError);
       });

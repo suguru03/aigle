@@ -5,30 +5,30 @@ const _ = require('lodash');
 module.exports = ({ Aigle, neoAsync }) => {
   return {
     'pick:array': {
-      setup: config => {
+      setup: (config) => {
         this.array = _.times(config.count);
-        this.promiseIterator = value => value % 2;
+        this.promiseIterator = (value) => value % 2;
         this.neoAsyncIterator = (n, cb) => cb(null, n % 2);
       },
       aigle: () => {
         return Aigle.pick(this.array, this.promiseIterator);
       },
-      neoAsync: callback => {
+      neoAsync: (callback) => {
         neoAsync.pick(this.array, this.neoAsyncIterator, callback);
-      }
+      },
     },
     'pick:array:async': {
-      setup: config => {
+      setup: (config) => {
         this.array = _.times(config.count);
-        this.aigleIterator = value => new Aigle(resolve => setImmediate(resolve, value % 2));
+        this.aigleIterator = (value) => new Aigle((resolve) => setImmediate(resolve, value % 2));
         this.neoAsyncIterator = (n, cb) => setImmediate(cb, null, n % 2);
       },
       aigle: () => {
         return Aigle.pick(this.array, this.aigleIterator);
       },
-      neoAsync: callback => {
+      neoAsync: (callback) => {
         neoAsync.pick(this.array, this.neoAsyncIterator, callback);
-      }
-    }
+      },
+    },
   };
 };

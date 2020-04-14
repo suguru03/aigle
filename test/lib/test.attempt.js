@@ -12,7 +12,7 @@ parallel('attempt', () => {
     const handler = () => {
       return Aigle.delay(DELAY).then(() => value);
     };
-    return Aigle.attempt(handler).then(res => assert.strictEqual(res, value));
+    return Aigle.attempt(handler).then((res) => assert.strictEqual(res, value));
   });
 
   it('should throw an error on synchronous', () => {
@@ -22,7 +22,7 @@ parallel('attempt', () => {
     };
     return Aigle.attempt(handler)
       .then(() => assert(false))
-      .catch(err => assert.strictEqual(err, error));
+      .catch((err) => assert.strictEqual(err, error));
   });
 
   it('should throw an error on asynchronous', () => {
@@ -34,7 +34,7 @@ parallel('attempt', () => {
     };
     return Aigle.attempt(handler)
       .then(() => assert(false))
-      .catch(err => assert.strictEqual(err, error));
+      .catch((err) => assert.strictEqual(err, error));
   });
 });
 
@@ -44,6 +44,6 @@ parallel('try', () => {
     const handler = () => {
       return Aigle.delay(DELAY).then(() => value);
     };
-    return Aigle.try(handler).then(res => assert.strictEqual(res, value));
+    return Aigle.try(handler).then((res) => assert.strictEqual(res, value));
   });
 });

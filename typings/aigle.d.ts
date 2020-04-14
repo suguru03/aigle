@@ -2331,7 +2331,7 @@ declare class Aigle<R> implements PromiseLike<R> {
     ]
   ): Aigle<[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10]>;
 
-  static all<T>(values: (Aigle.ReturnType<T>)[]): Aigle<T[]>;
+  static all<T>(values: Aigle.ReturnType<T>[]): Aigle<T[]>;
 
   /* allSettled */
 
@@ -2609,7 +2609,7 @@ declare class Aigle<R> implements PromiseLike<R> {
     ]
   ): Aigle<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9 | T10>;
 
-  static race<T>(values: (Aigle.ReturnType<T>)[]): Aigle<T>;
+  static race<T>(values: Aigle.ReturnType<T>[]): Aigle<T>;
 
   /* props */
 
@@ -4518,7 +4518,7 @@ declare namespace Aigle {
   export enum State {
     Pending = 'pending',
     Fulfilled = 'fulfilled',
-    Rejected = 'rejected'
+    Rejected = 'rejected',
   }
 
   export class CancellationError extends Error {}

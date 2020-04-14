@@ -5,7 +5,7 @@ const path = require('path');
 
 const _ = require('lodash');
 
-module.exports = funcs => {
+module.exports = (funcs) => {
   return _.transform(
     fs.readdirSync(__dirname),
     (result, filename) => {

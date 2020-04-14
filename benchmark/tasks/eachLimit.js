@@ -5,7 +5,7 @@ const _ = require('lodash');
 module.exports = ({ Aigle, neoAsync }) => {
   return {
     'eachLimit:array': {
-      setup: config => {
+      setup: (config) => {
         this.limit = 8;
         this.array = _.times(config.count);
         this.aigleIterator = () => {};
@@ -14,12 +14,12 @@ module.exports = ({ Aigle, neoAsync }) => {
       aigle: () => {
         return Aigle.eachLimit(this.array, this.limit, this.aigleIterator);
       },
-      neoAsync: callback => {
+      neoAsync: (callback) => {
         neoAsync.eachLimit(this.array, this.limit, this.neoAsyncIterator, callback);
-      }
+      },
     },
     'eachLimit:array:async': {
-      setup: config => {
+      setup: (config) => {
         this.limit = 8;
         this.array = _.times(config.count);
         this.aigleIterator = () => new Aigle(next);
@@ -31,9 +31,9 @@ module.exports = ({ Aigle, neoAsync }) => {
       aigle: () => {
         return Aigle.eachLimit(this.array, this.limit, this.aigleIterator);
       },
-      neoAsync: callback => {
+      neoAsync: (callback) => {
         neoAsync.eachLimit(this.array, this.limit, this.neoAsyncIterator, callback);
-      }
-    }
+      },
+    },
   };
 };

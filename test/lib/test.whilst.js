@@ -16,9 +16,9 @@ parallel('whilst', () => {
     };
     const iterator = () => {
       order.iterator.push(count++);
-      return new Aigle(resolve => setImmediate(resolve, count));
+      return new Aigle((resolve) => setImmediate(resolve, count));
     };
-    return Aigle.whilst(test, iterator).then(res => {
+    return Aigle.whilst(test, iterator).then((res) => {
       assert.deepStrictEqual(order.iterator, [0, 1, 2, 3, 4]);
       assert.deepStrictEqual(order.test, [0, 1, 2, 3, 4, 5]);
       assert.strictEqual(res, 5);
@@ -29,15 +29,15 @@ parallel('whilst', () => {
     const value = 1;
     const limit = 5;
     const order = { test: [], iterator: [] };
-    const test = value => {
+    const test = (value) => {
       order.test.push(value);
       return value < limit;
     };
-    const iterator = value => {
+    const iterator = (value) => {
       order.iterator.push(value++);
-      return new Aigle(resolve => setImmediate(resolve, value));
+      return new Aigle((resolve) => setImmediate(resolve, value));
     };
-    return Aigle.whilst(value, test, iterator).then(res => {
+    return Aigle.whilst(value, test, iterator).then((res) => {
       assert.deepStrictEqual(order.iterator, [1, 2, 3, 4]);
       assert.deepStrictEqual(order.test, [1, 2, 3, 4, 5]);
       assert.strictEqual(res, 5);
@@ -47,9 +47,9 @@ parallel('whilst', () => {
   it('should execute with synchronous function', () => {
     let sync = true;
     let count = 0;
-    const test = str => str.length < 10;
-    const iterator = str => str + count++;
-    const promise = Aigle.whilst('num', test, iterator).then(res => {
+    const test = (str) => str.length < 10;
+    const iterator = (str) => str + count++;
+    const promise = Aigle.whilst('num', test, iterator).then((res) => {
       assert.strictEqual(res, 'num0123456');
       assert.strictEqual(sync, false);
     });
@@ -63,13 +63,13 @@ parallel('whilst', () => {
     const order = { test: [], iterator: [] };
     const test = () => {
       order.test.push(count);
-      return new Aigle(resolve => setImmediate(() => resolve(count < limit)));
+      return new Aigle((resolve) => setImmediate(() => resolve(count < limit)));
     };
     const iterator = () => {
       order.iterator.push(count++);
-      return new Aigle(resolve => setImmediate(resolve, count));
+      return new Aigle((resolve) => setImmediate(resolve, count));
     };
-    return Aigle.whilst(test, iterator).then(res => {
+    return Aigle.whilst(test, iterator).then((res) => {
       assert.deepStrictEqual(order.iterator, [0, 1, 2, 3, 4]);
       assert.deepStrictEqual(order.test, [0, 1, 2, 3, 4, 5]);
       assert.strictEqual(res, 5);
@@ -78,10 +78,10 @@ parallel('whilst', () => {
 
   it('should throw TypeError', () => {
     const test = () => test.value();
-    const iterator = () => new Aigle(resolve => setImmediate(resolve));
+    const iterator = () => new Aigle((resolve) => setImmediate(resolve));
     return Aigle.whilst(test, iterator)
       .then(() => assert(false))
-      .catch(TypeError, error => assert.ok(error));
+      .catch(TypeError, (error) => assert.ok(error));
   });
 
   it('should throw TypeError', () => {
@@ -98,17 +98,17 @@ parallel('#whilst', () => {
     const value = 1;
     const limit = 5;
     const order = { test: [], iterator: [] };
-    const test = value => {
+    const test = (value) => {
       order.test.push(value);
       return value < limit;
     };
-    const iterator = value => {
+    const iterator = (value) => {
       order.iterator.push(value++);
-      return new Aigle(resolve => setImmediate(resolve, value));
+      return new Aigle((resolve) => setImmediate(resolve, value));
     };
     return Aigle.resolve(value)
       .whilst(test, iterator)
-      .then(res => {
+      .then((res) => {
         assert.deepStrictEqual(order.iterator, [1, 2, 3, 4]);
         assert.deepStrictEqual(order.test, [1, 2, 3, 4, 5]);
         assert.strictEqual(res, 5);
