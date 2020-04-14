@@ -12940,7 +12940,7 @@ function hasOwnProperty(obj, prop) {
 },{"./support/isBuffer":91,"_process":87,"inherits":90}],93:[function(require,module,exports){
 module.exports={
   "name": "aigle",
-  "version": "1.14.1",
+  "version": "1.15.0-alpha.0",
   "description": "Aigle is an ideal Promise library, faster and more functional than other Promise libraries",
   "main": "index.js",
   "typings": "aigle.d.ts",
