@@ -1,11 +1,11 @@
 <p align="center">
-  <img alt="aigle" src="https://raw.githubusercontent.com/suguru03/aigle/gh-pages/images/logo.png" width=500>
+  <img alt="aigle" src="https://raw.githubusercontent.com/suguru03/aigle/gh-pages/images/logo.png" width=500 />
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/aigle"><img alt="npm" src="https://img.shields.io/npm/v/aigle.svg"></a>
-  <a href="https://circleci.com/gh/suguru03/aigle/tree/master"><img alt="CircleCI Status" src="https://img.shields.io/circleci/project/github/suguru03/aigle/master.svg"></a>
-  <a href="https://codecov.io/gh/suguru03/aigle"><img alt="Coverage Status" src="https://img.shields.io/codecov/c/github/suguru03/aigle/master.svg"></a>
+  <a href="https://www.npmjs.com/package/aigle"><img alt="npm" src="https://img.shields.io/npm/v/aigle.svg" /></a>
+  <a href="https://circleci.com/gh/suguru03/aigle/tree/master"><img alt="CircleCI Status" src="https://img.shields.io/circleci/project/github/suguru03/aigle/master.svg" /></a>
+  <a href="https://codecov.io/gh/suguru03/aigle"><img alt="Coverage Status" src="https://img.shields.io/codecov/c/github/suguru03/aigle/master.svg" /></a>
 </p>
 
 Aigle is an ideal promise library which is faster and more efficient than other libraries.
@@ -16,10 +16,10 @@ Also it has a lot of [async](https://github.com/caolan/async) style functions, y
 - [benchmark](https://github.com/suguru03/bluebird/tree/aigle/benchmark)
 - [What makes Aigle fast](https://hackernoon.com/how-to-make-the-fastest-promise-library-f632fd69f3cb)
 
-Usage
---
+## Usage
 
 ### Node.js
+
 ```sh
 npm install --save aigle
 ```
@@ -56,8 +56,7 @@ async function getUsers(ids) {
 }
 
 async function getUsers(ids) {
-  return await Promise.map(ids, getUser)
-    .filter(filterUser);
+  return await Promise.map(ids, getUser).filter(filterUser);
 }
 ```
 
@@ -66,18 +65,21 @@ async function getUsers(ids) {
 ```js
 Aigle.mixin(require('lodash'));
 
-return Aigle.map([1.1, 1.4, 2.2], n => Aigle.delay(10, n * 2)) // [2.2, 2.8, 4.4]
-  .uniqBy(n => Aigle.delay(10, Math.floor(n))) // [2.2, 4.4]
+return Aigle.map([1.1, 1.4, 2.2], (n) => Aigle.delay(10, n * 2)) // [2.2, 2.8, 4.4]
+  .uniqBy((n) => Aigle.delay(10, Math.floor(n))) // [2.2, 4.4]
   .sum() // 6.6
   .times() // [0, 1, 2, 3, 4, 5];
-  .then(value => console.log(value)); // [0, 1, 2, 3, 4, 5];
+  .then((value) => console.log(value)); // [0, 1, 2, 3, 4, 5];
 ```
 
 ### browser
+
 Recommend to use [webpack](https://github.com/webpack/webpack), [browserify](https://github.com/substack/node-browserify), [Rollup](https://github.com/rollup/rollup) or any bundling tool.
 
 #### or prebuilt scripts from [here](https://github.com/suguru03/aigle/tree/master/dist/).
+
 This will expose to global as `window.Promise`.
+
 ```html
 <script src="dist/aigle.min.js"></script>
 ```
@@ -86,8 +88,7 @@ This will expose to global as `window.Promise`.
 window.Promise;
 ```
 
-Functions
---
+## Functions
 
 ### Core
 
