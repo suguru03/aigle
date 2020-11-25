@@ -56,6 +56,11 @@ parallel('resolve', () => {
     const promise2 = Aigle.resolve(promise1);
     assert.strictEqual(promise1, promise2);
   });
+
+  it('should resolve if then is not a function', () => {
+    const obj = { then: 1 };
+    return Aigle.resolve(obj).then((res) => assert.strictEqual(res, obj));
+  });
 });
 
 parallel('reject', () => {
