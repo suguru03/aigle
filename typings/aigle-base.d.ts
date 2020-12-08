@@ -9,6 +9,8 @@ declare class Aigle<R> implements PromiseLike<R> {
     ) => void
   );
 
+  static get [Symbol.species](): typeof Aigle;
+
   then<T>(
     onFulfill?: (value: R) => Aigle.ReturnType<T>,
     onReject?: (error: any) => Aigle.ReturnType<T>

@@ -851,3 +851,10 @@ parallel('#reason', () => {
     assert.strictEqual(reason, 1);
   });
 });
+
+parallel('#Symbol.species', () => {
+  it('should return the Aigle class', () => {
+    assert.strictEqual(Aigle[Symbol.species], Aigle);
+    assert.ok(Aigle.resolve(1) instanceof Aigle);
+  });
+});

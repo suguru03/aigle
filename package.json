@@ -37,6 +37,7 @@
   "author": "Suguru Motegi",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^14.14.10",
     "async": "^3.1.0",
     "babili": "0.1.4",
     "benchmark": "^2.1.1",
