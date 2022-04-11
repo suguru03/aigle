@@ -55,7 +55,7 @@
     "jsdoc": "^3.5.5",
     "lint-staged": "^10.2.7",
     "lodash": "^4.17.21",
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.6",
     "mocha": "^7.2.0",
     "mocha.parallel": "0.15.6",
     "neo-async": "^2.6.0",
