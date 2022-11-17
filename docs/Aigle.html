@@ -696,7 +696,7 @@ the iterator will be assigned as the second argument.</p>
     
     <pre class="prettyprint"><code>const order = [];
 const collection = [1, 4, 2];
-const iterator = (num, index, collectioin) => {
+const iterator = (num, index, collection) => {
   return Aigle.delay(num * 10)
     .then(() => {
       order.push(num);
